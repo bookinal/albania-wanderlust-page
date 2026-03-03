@@ -1,0 +1,45 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": false,
+    "noImplicitAny": false,
+    "noUnusedParameters": false,
+    "noUnusedLocals": false,
+    "strictNullChecks": false,
+    "allowJs": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "react-jsx",
+    "baseUrl": ".",
+    "paths": {
+      "@albania/shared-types": ["./packages/shared-types/src"],
+      "@albania/api-client": ["./packages/api-client/src"],
+      "@albania/hooks": ["./packages/hooks/src"],
+      "@albania/utils": ["./packages/utils/src"]
+    }
+  },
+  "references": [
+    {
+      "path": "./apps/web/tsconfig.json"
+    },
+    {
+      "path": "./packages/shared-types"
+    },
+    {
+      "path": "./packages/api-client"
+    },
+    {
+      "path": "./packages/hooks"
+    },
+    {
+      "path": "./packages/utils"
+    }
+  ],
+  "include": [],
+  "exclude": ["node_modules", "dist"]
+}

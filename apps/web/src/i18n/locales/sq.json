@@ -1,0 +1,1340 @@
+{
+  "home": {
+    "trustIndicators": {
+      "propertiesListed": "Prona të Shënuara",
+      "happyGuests": "Mysafir të Lumtur",
+      "averageRating": "Vlerësim në Mesatare",
+      "secureBooking": "Rezervim i Sigurte",
+      "statistics": {
+        "properties": "500+",
+        "guests": "10K+",
+        "rating": "4.8",
+        "security": "100%"
+      }
+    },
+    "accommodations": {
+      "badge": "Zgjedhur Për Ju",
+      "title": "Gjeni Qendrimin e Përsosur",
+      "description": "Nga hotelet luksusë deri te apartamentet të rehatshme, zbuloni në qëndrime që përshkruhen me stilin dhe buxhetin tuaj"
+    },
+    "hero": {
+      "badge": "Gjemica e Lindore e Evropës - Këmb i Fshehur",
+      "discover": "Zbuloni",
+      "albania": "Shqipërinë",
+      "subheading": "Rezervo hotele, apartamente dhe makina për aventurën tuaj të përkryer në Shqipëri. Nga Alpet Shqiptare deri në bregdetin Jonianë dhe Adriatik.",
+      "exploreMap": "Shploro Hartën",
+      "browseProperties": "Shfleto Prona"
+    },
+    "reservationPicker": {
+      "carModel": "Modeli i Makina",
+      "Destination": "Destinacioni",
+      "carDate": "Zgjidh datat e marrjes dhe kthimit",
+      "period": "Periudha",
+      "adults": "Të Rritur",
+      "children": "Fëmijë",
+      "rooms": "Dhoma",
+      "search": "Kërko"
+    },
+    "apartmentsPreview": {
+      "title": "Apartamente",
+      "description": "Mikpritje autentike shqiptare në rezidenca private",
+      "viewAll": "Shiko të Gjitha Apartamentet",
+      "noApartments": "Nuk ka apartamente të disponueshme"
+    },
+    "hotelsPreview": {
+      "title": "Hotele",
+      "description": "Hotele premium në destinacionet më ikonike të Shqipërisë",
+      "viewAll": "Shiko të Gjitha Hotelet",
+      "noHotels": "Nuk ka hotele të disponueshme"
+    },
+    "carsPreview": {
+      "chip": "Eksploro në Termat Tuaj",
+      "title": "Makinat Premium për Qira",
+      "description": "Përzgjedhje e kuruar e automjeteve cilësore për udhëtimin tuaj nëpër peizazhet mahnitëse të Shqipërisë",
+      "viewAll": "Shiko të Gjitha Makinat",
+      "noCars": "Nuk ka makina të disponueshme",
+      "pricePerDay": "për ditë (për këtë muaj)",
+      "seats": "Vende"
+    },
+    "destinations": {
+      "title": "Destinacionet Kryesore",
+      "description": "Eksploroni destinacionet më tërheqëse të Shqipërisë, nga kryeqyteti i gjallë deri te qytetet bregdetare të qeta dhe malet madhështore.",
+      "noDestinations": "Nuk ka destinacione të disponueshme",
+      "addedToWishlist": "Destinacioni u shtua në listën e dëshirave.",
+      "alreadyInWishlist": "Destinacioni është tashmë në listën e dëshirave.",
+      "loginToAddWishlist": "Ju lutemi hyni për të shtuar në listën e dëshirave."
+    },
+    "culture": {
+      "title": "Kultura & Kuzhina",
+      "description": "Zhytuni në traditat e pasura, shijet dhe trashëgiminë kulturore të gjallë të Shqipërisë.",
+      "traditionalCuisine": "Kuzhina Tradicionale",
+      "culturalExperiences": "Përvoja Kulturore"
+    }
+  },
+  "appBar": {
+    "myBookings": "Rezervimet e Mia",
+    "myWishlist": "Lista Ime e Dëshirave",
+    "becomeProvider": "Bëhu Ofrues",
+    "account": "Llogaria",
+    "dashboard": "Paneli",
+    "propertiesManagement": "Menaxhimi i Pronave",
+    "myAccount": "Llogaria Ime",
+    "completeProfile": "Plotëso Profilin Tim",
+    "logout": "Dalje",
+    "login": "Hyrje",
+    "profile": "Profili"
+  },
+  "footer": {
+    "description": "Platforma juaj e besuar për zbulimin dhe rezervimin e akomodimeve dhe makinave me qira në Shqipëri.",
+    "explore": "Eksploro",
+    "hotelsApartments": "Hotele & Apartamente",
+    "carRentals": "Makina me Qira",
+    "mapView": "Pamje në Hartë",
+    "cultureCuisine": "Kulturë & Kuzhinë",
+    "support": "Mbështetje",
+    "helpCenter": "Qendra e Ndihmës",
+    "cancellationPolicy": "Politika e Anulimit",
+    "privacyPolicy": "Politika e Privatësisë",
+    "termsOfService": "Kushtet e Shërbimit",
+    "contactUs": "Na Kontaktoni",
+    "addressCity": "Tiranë, Shqipëri",
+    "addressStreet": "Rruga e Kavajës",
+    "rightsReserved": "Të gjitha të drejtat e rezervuara.",
+    "securePayments": "Pagesa të Sigurta"
+  },
+  "billing": {
+    "vehicleSpecifications": "Specifikimet e Automjetit",
+    "featuresAndEquipment": "Karakteristikat & Pajisjet",
+    "pickUpAndContactInformation": "Informacioni i Marrjes & Kontaktit",
+    "rentalTermsAndConditions": "Kushtet e Qirasë",
+    "pickUpLocation": "Vendndodhja e Marrjes",
+    "flexibleCancellation": "Anulim fleksibël • Ndihmë në rrugë 24/7",
+    "insurance": "Sigurimi",
+    "pricePerDay": "për ditë (për këtë muaj)",
+    "aboutThisApartment": "Rreth këtij apartamenti",
+    "rentalPeriod": "Periudha e Qirasë",
+    "pickUpDropOffDates": "Datat e Marrjes & Kthimit",
+    "selectRentalDates": "Zgjidh datat e qirasë",
+    "pickUpTime": "Ora e Marrjes",
+    "dropOffTime": "Ora e Kthimit",
+    "dropOffLocation": "Vendndodhja e Kthimit",
+    "rentalDuration": "Kohëzgjatja e Qirasë",
+    "priceSummary": "Përmbledhja e Çmimeve",
+    "subtotal": "Nëntotali",
+    "pricesVaryByMonth": "Çmimet ndryshojnë sipas muajit bazuar në tarifat sezonale.",
+    "selectDatesForBreakdown": "Zgjidh datat për të parë ndarjen e çmimeve.",
+    "serviceFee": "Tarifa e shërbimit",
+    "serviceFeeDescription": "Mbulon operacionet e platformës, mbështetjen e klientit dhe mbrojtjen e rezervimit.",
+    "tax": "Taksa (10%)",
+    "taxDescription": "Taksa lokale dhe qeveritare e aplikuar për qiranë tuaj.",
+    "total": "Totali",
+    "totalDescription": "Ky është shuma e plotë që do paguani nëse konfirmoni rezervimin.",
+    "confirmBooking": "Konfirmo Rezervimin",
+    "processing": "Duke përpunuar...",
+    "paymentNote": "Nuk do të tarifoheni ende. Pagesa përfundohet pas konfirmimit.",
+    "loadingCarDetails": "Duke ngarkuar detajet e makinës…",
+    "carNotFound": "Makina nuk u gjet",
+    "invalidPhoneNumber": "Numër telefoni i pavlefshëm",
+    "enterValidPhoneNumber": "Ju lutemi shkruani një numër telefoni të vlefshëm para se të konfirmoni rezervimin tuaj.",
+    "missingDates": "Mungojnë datat",
+    "selectPickUpDropOffDates": "Ju lutemi zgjidhni datat e marrjes dhe kthimit.",
+    "bookingConfirmed": "Rezervimi u konfirmua",
+    "carBookingSuccess": "Rezervimi juaj i makinës është krijuar me sukses.",
+    "bookingFailed": "Rezervimi dështoi",
+    "bookingFailedMessage": "Nuk mundëm të krijojmë rezervimin tuaj. Ju lutemi provoni përsëri ose hyni përsëri.",
+    "fullNamePlaceholder": "Emri dhe Mbiemri",
+    "emailPlaceholder": "emri@example.com",
+    "phonePlaceholder": "Shkruani numrin e telefonit",
+    "phoneRequired": "Numri i telefonit është i kërkuar",
+    "invalidPhone": "Numër telefoni i pavlefshëm"
+  },
+  "terms": {
+    "minimumRentalPeriod": "Periudha minimale e qirasë",
+    "validDriversLicense": "Leje drejtimi e vlefshme e kërkuar (minimum 1 vit)",
+    "fullInsuranceCoverageIncluded": "Përfshirë mbulim të plotë të sigurimit",
+    "24/7RoadsideAssistance": "Ndihmë në rrugë 24/7",
+    "freeCancellation": "Anulim falas deri 48 orë para marrjes"
+  },
+  "searchResults": {
+    "filters": {
+      "filters": "Filtra",
+      "reset": "Rivendos",
+      "search": "Kërko",
+      "searchPlaceholderCars": "Marka, modeli ose vendndodhja...",
+      "searchPlaceholderProperties": "Emri ose vendndodhja...",
+      "rentalDates": "Datat e qirasë",
+      "pickupDate": "Data e marrjes",
+      "returnDate": "Data e kthimit",
+      "showingCarsForDates": "Po shfaqen makina të disponueshme për datat e zgjedhura",
+      "stayDates": "Datat e qëndrimit",
+      "checkInDate": "Data e hyrjes",
+      "checkOutDate": "Data e daljes",
+      "showingPropertiesForDates": "Po shfaqen prona të disponueshme për datat e zgjedhura",
+      "propertyType": "Lloji i pronës",
+      "all": "Të gjitha",
+      "hotel": "Hotel",
+      "apartment": "Apartament",
+      "guests": "Mysafirë",
+      "adults": "Të rritur",
+      "children": "Fëmijë",
+      "rooms": "Dhoma",
+      "filteringApartments": "Po filtrohen apartamentet me shtretër ≥ {{beds}} dhe dhoma ≥ {{rooms}}",
+      "priceRange": "Gama e çmimeve",
+      "perNight": "për natë",
+      "perDay": "për ditë",
+      "rating": "Vlerësimi",
+      "allRatings": "Të gjitha vlerësimet",
+      "availability": "Disponueshmëria",
+      "allStatus": "Të gjitha statuset",
+      "active": "Aktive",
+      "maintenance": "Në mirëmbajtje",
+      "available": "E disponueshme",
+      "rented": "E zënë",
+      "min": "Min",
+      "max": "Max",
+      "amenities": "Pajisje",
+      "amenityWifi": "WiFi",
+      "amenityParking": "Parkim",
+      "amenityPool": "Pishinë",
+      "amenityGym": "Palestër",
+      "amenitySpa": "Spa",
+      "amenityRestaurant": "Restorant",
+      "amenityBar": "Bar",
+      "beds": "Shtretër",
+      "bathrooms": "Banjo",
+      "kitchens": "Kuzhina",
+      "livingRooms": "Dhoma të Ndenjës",
+      "applySearch": "Kërko",
+      "searching": "Duke kërkuar...",
+      "dailyPriceRange": "Gama ditore e çmimeve",
+      "carType": "Lloji i makinës",
+      "allTypes": "Të gjitha llojet",
+      "sedan": "Sedan",
+      "suv": "SUV",
+      "sports": "Sportive",
+      "transmission": "Transmisioni",
+      "any": "Çdo",
+      "automatic": "Automatik",
+      "manual": "Manual",
+      "fuelType": "Lloji i karburantit",
+      "anyFuel": "Çdo karburant",
+      "petrol": "Benzinë",
+      "diesel": "Dizel",
+      "hybrid": "Hibrid",
+      "electric": "Elektrik",
+      "minSeats": "Minimumi i vendeve",
+      "seatsPlaceholder": "p.sh. 4",
+      "features": "Karakteristika",
+      "loadingFeatures": "Po ngarkohen karakteristikat...",
+      "noFeatures": "Nuk ka karakteristika të disponueshme"
+    },
+    "mapPreview": {
+      "title": "Parapamje në hartë",
+      "description": "Shihni ku ndodhet çdo rezultat në të gjithë Shqipërinë",
+      "button": "Shfaq në hartë",
+      "ariaOpen": "Hap hartën e pronave në një skedë të re"
+    },
+    "cars": {
+      "title": "Makina të disponueshme",
+      "found": "U gjetën {{count}} makina me qira",
+      "errorFetch": "Nuk u arrit të merren makinat e disponueshme. Ju lutemi provoni përsëri më vonë.",
+      "tryAgain": "Provo përsëri",
+      "emptyTitle": "Nuk u gjetën makina",
+      "emptyDescription": "Nuk gjetëm makina që përputhen me filtrat tuaj aktual.",
+      "clearFilters": "Pastro filtrat",
+      "brand": "Marka",
+      "model": "Modeli",
+      "year": "Viti",
+      "seats": "Vende",
+      "Mileage": "Kilometrazhi",
+      "color": "Ngjyra",
+      "plate": "Targa"
+    },
+    "properties": {
+      "title": "Rezultatet e kërkimit",
+      "found": "U gjetën {{count}} prona që përputhen me kriteret tuaja",
+      "emptyTitle": "Nuk u gjetën prona",
+      "emptyDescription": "Provoni të ndryshoni filtrat ose kriteret e kërkimit për të gjetur më shumë prona",
+      "resetFilters": "Rivendos filtrat"
+    }
+  },
+  "navigation": {
+    "backToCars": "Kthehu te makinat",
+    "backToApartments": "Kthehu te apartamentet",
+    "backToHotels": "Kthehu te hotelet",
+    "backToDestinations": "Kthehu te destinacionet",
+    "backToCulture": "Kthehu te kultura",
+    "backToHome": "Kthehu te faqja kryesore"
+  },
+  "booking": {
+    "bookNow": "Rezervo Tani",
+    "completeYourBooking": "Plotëso Rezervimin Tuaj",
+    "justAFewMoreDetails": "Vetëm disa detaje të tjera dhe jeni gati të shkoni",
+    "personalInformation": "Informacion Personal",
+    "stayPeriod": "Periudha e qëndrimit",
+    "myBookings": "Rezervimet e Mia",
+    "noBookings": "Nuk keni rezervime ende. Filloni të eksploroni prona dhe makina për të krijuar rezervimin tuaj të parë!",
+    "startExploring": "Filloni të eksploroni prona dhe makina për të krijuar rezervimin tuaj të parë.",
+    "bookingSummaryDescription": "Rishikoni të gjitha rezervimet tuaja në makina, hotele dhe apartamente në një vend.",
+    "cancelBooking": "Anulo Rezervimin",
+    "awaitingConfirmation": "Rezervimi duke pritur konfirmimin",
+    "bookingStatus": "Statusi i Rezervimit",
+    "confirmed": "Rezervimi i konfirmuar",
+    "cancelled": "Rezervimi i anuluar",
+    "completed": "Rezervimi i përfunduar",
+    "paymentStatus": "Statusi i Pagesës",
+    "paymentCompleted": "Pagesa e kryer",
+    "paymentRequired": "Kërkohet pagesa",
+    "paymentPending": "Pagesa në pritje",
+    "paymentFailed": "Pagesa dështoi",
+    "paymentSuccess": "Pagesa e suksesshme",
+    "refundWillBeProcessed": "Rimbursimi do të përpilohet",
+    "downloadInvoice": "Shkarko faturën"
+  },
+  "user": {
+    "fullName": "Emri i plotë",
+    "email": "Email",
+    "phone": "Telefoni",
+    "password": "Fjalëkalimi",
+    "confirmPassword": "Konfirmo fjalëkalimin",
+    "register": "Regjistrohu",
+    "login": "Hyrje",
+    "logout": "Dalje",
+    "updateProfile": "Përditëso Profilin",
+    "deleteAccount": "Fshij Llogarinë",
+    "accountDetails": "Detajet e Llogarisë",
+    "personalInformation": "Informacion Personal",
+    "changePassword": "Ndrysho Fjalëkalimin",
+    "currentPassword": "Fjalëkalimi aktual",
+    "newPassword": "Fjalëkalimi i ri",
+    "alreadyHaveAccount": "Keni tashmë një llogari? Hyni",
+    "dontHaveAccount": "Nuk keni llogari? Regjistrohuni",
+    "invalidCredentials": "Email ose fjalëkalim i pavlefshëm",
+    "registrationSuccess": "Regjistrimi u krye me sukses! Ju lutemi hyni.",
+    "registrationError": "Regjistrimi dështoi. Ju lutemi provoni përsëri.",
+    "fullNameLabel": "Emri i Plotë",
+    "emailLabel": "Adresa Email",
+    "passwordLabel": "Fjalëkalimi",
+    "confirmPasswordLabel": "Konfirmo Fjalëkalimin",
+    "locationLabel": "Vendndodhja",
+    "createAccount": "Krijo Llogari",
+    "signIn": "Hyrje",
+    "processing": "Duke përpunuar...",
+    "continueWithGoogle": "Vazhdo me Google",
+    "or": "OSE",
+    "alreadyHaveAccountText": "Keni tashmë një llogari? ",
+    "dontHaveAccountText": "Nuk keni llogari? ",
+    "joinBookinAL": "Bashkohu me BookinAL",
+    "startAlbanianAdventure": "Fillo aventurën tuaj shqiptare",
+    "welcomeBack": "Mirë se keni kthyer",
+    "continueExploringAlbania": "Vazhdoni të eksploroni Shqipërinë",
+    "welcomeToAlbania": "Mirë se vini në Shqipëri",
+    "gatewayToExperiences": "Porta juaj për përvoja të paharrueshme shqiptare",
+    "getStarted": "Filloni",
+    "orContinueWithEmail": "ose vazhdoni me email",
+    "signInWithEmail": "Hyni me email",
+    "createNewAccount": "Krijo llogari të re",
+    "termsAgreement": "Duke vazhduar, ju pranoni",
+    "termsOfService": "Kushtet e Shërbimit",
+    "and": "dhe",
+    "privacyPolicy": "Politikën e Privatësisë",
+    "hotels": "Hotele",
+    "apartments": "Apartamente",
+    "carRentals": "Makinat me Qira",
+    "fillAllFields": "Ju lutemi plotësoni të gjitha fushat",
+    "signInSuccessful": "Hyrja u krye me sukses!",
+    "signInFailed": "Hyrja dështoi",
+    "passwordsDontMatch": "Fjalëkalimet nuk përputhen",
+    "passwordTooShort": "Fjalëkalimi duhet të jetë të paktën 6 karaktere",
+    "accountCreated": "Llogaria u krijua! Ju lutemi kontrolloni email-in tuaj për të verifikuar llogarinë.",
+    "accountCreationFailed": "Krijimi i llogarisë dështoi",
+    "googleSignInFailed": "Hyrja me Google dështoi",
+    "fullNamePlaceholder": "Emri dhe Mbiemri",
+    "emailPlaceholder": "ju@shembull.com",
+    "passwordPlaceholder": "••••••••",
+    "locationPlaceholder": "Qyteti juaj"
+  },
+  "map": {
+    "openInGoogleMaps": "Hap në Google Maps",
+    "locationOnMap": "Vendndodhja në Hartë"
+  },
+  "common": {
+    "success": "Sukses",
+    "warning": "Kujdes",
+    "error": "Gabim",
+    "bookNow": "Rezervo Tani",
+    "view": "Shiko",
+    "language": "Gjuha",
+    "english": "English",
+    "albanian": "Shqip",
+    "welcome": "Mirë se vini",
+    "logout": "Dalje",
+    "loading": "Duke ngarkuar...",
+    "car": "Makina",
+    "apartment": "Apartament",
+    "hotel": "Hotel",
+    "stay": "Qëndrim",
+    "explore": "Eksploro Më Shumë",
+    "learnMore": "Mëso Më Shumë",
+    "tryAgain": "Provo Përsëri",
+    "or": "ose",
+    "yes": "Po",
+    "no": "Jo",
+    "confirm": "Konfirmo",
+    "day": "ditë",
+    "days": "ditë",
+    "pageNotFound": "Oops! Faqja nuk u gjet",
+    "returnToHome": "Kthehu në Faqen Kryesore",
+    "accountSuspended": "Oops! Duket se llogaria juaj është pezulluar për disa arsye nga një Admin",
+    "unauthorizedAccess": "Oops! Ju nuk jeni të autorizuar të hyni në këtë faqe"
+  },
+  "wishlist": {
+    "savedForLater": "Ruajtur për më vonë",
+    "destinationsCount": "Ju keni {{count}} destinacione të ruajtura në listën e dëshirave.",
+    "findingFavorites": "Duke gjetur të preferuarat tuaja...",
+    "loadError": "Nuk mund të ngarkohej lista e dëshirave tuaja.",
+    "emptyTitle": "Lista e dëshirave tuaja është bosh",
+    "emptyDescription": "Filloni eksplorimin e botës dhe ruani vendet tuaja të preferuara për aventurën tuaj të ardhshme.",
+    "exploreDestinations": "Eksploro Destinacionet",
+    "topRated": "Më të Vlerësuarat",
+    "international": "Ndërkombëtar",
+    "seeMore": "Shiko Më Shumë",
+    "removeError": "Dështoi të hiqej artikulli. Ju lutemi provoni përsëri."
+  },
+  "provider": {
+    "backToHome": "Kthehu në Shtëpi",
+    "becomeProvider": "Bëhu Ofrues",
+    "becomeProviderDescription": "Paraqisni një kërkesë për të bërë ofrues shërbimi dhe filloni të ofroni pronat dhe shërbimet tuaja në platformën tonë.",
+    "alreadyProvider": "Ju jeni tashmë {{role}}. Nuk ka nevojë të paraqisni kërkesë.",
+    "requestPending": "Kërkesa Në Pritje të Rishikimit",
+    "requestPendingDescription": "Kërkesa juaj për të bërë ofrues është duke u rishikuar nga ekipi ynë i admin.",
+    "submittedOn": "Paraqitur më:",
+    "yourReason": "Arsyeja juaj:",
+    "cancelRequest": "Anulo Kërkesën",
+    "submitRequest": "Paraqisni Kërkesën Tuaj",
+    "reasonLabel": "Pse doni të bëheni ofrues? *",
+    "reasonPlaceholder": "Ju lutemi jepni një shpjegim të detajuar se pse doni të bëheni ofrues. Përfshini informacion rreth përvojës suaj, shërbimeve që planifikoni të ofroni dhe si mund të kontribuoni në platformën tonë. (Minimumi 50 karaktere)",
+    "charactersCount": "{{count}} / 50 karaktere minimum",
+    "whatHappensNext": "Çfarë ndodh më pas?",
+    "nextSteps": {
+      "review": "Kërkesa juaj do të rishikohet nga ekipi ynë i admin",
+      "notification": "Do të njoftoheni sapo të merret një vendim",
+      "upgrade": "Nëse miratohet, llogaria juaj do të përmirësohet në statusin e ofruesit",
+      "manage": "Pastaj do të jeni në gjendje të shtoni dhe menaxhoni pronat dhe shërbimet tuaja"
+    },
+    "submit": "Paraqis Kërkesën",
+    "submitting": "Duke paraqitur...",
+    "requestSubmitted": "Kërkesa juaj është paraqitur me sukses! Një admin do ta rishikojë së shpejti.",
+    "requestCancelled": "Kërkesa u anulua me sukses",
+    "cancelFailed": "Dështoi të anulohej kërkesa",
+    "reasonRequired": "Ju lutemi jepni një arsye për kërkesën tuaj",
+    "reasonTooShort": "Ju lutemi jepni një arsye më të detajuar (të paktën 50 karaktere)",
+    "submitFailed": "Dështoi të paraqitej kërkesa",
+    "requestHistory": "Historia e Kërkesave",
+    "submittedOnDate": "Paraqitur më {{date}}",
+    "reviewedOnDate": "Rishikuar më {{date}}",
+    "reason": "Arsyeja:",
+    "pending": "Në Pritje",
+    "approved": "Miratuar",
+    "rejected": "Refuzuar"
+  },
+  "propertiesMap": {
+    "title": "Hotele dhe Apartamente të Disponueshme",
+    "description": "Eksploroni përzgjedhjen tonë të hoteleve dhe apartamenteve në të gjithë Shqipërinë",
+    "interactiveMap": "📍 Harta Interaktive",
+    "interactiveMapDescription": "Klikoni në çdo marker për të parë më shumë detaje rreth hotelit ose apartamentit",
+    "wideSelection": "🏨 Përzgjedhje e Gjërë",
+    "wideSelectionDescription": "Nga hotelet luksoze deri te hostelet buxhetore në të gjithë Shqipërinë",
+    "bestPrices": "💰 Çmimet Më të Mira",
+    "bestPricesDescription": "Çmime konkurruese me tarifa transparente për natë"
+  },
+  "account": {
+    "profileSettings": "Cilësimet e Profilit",
+    "managePersonalInfo": "Menaxhoni informacionin tuaj personal dhe preferencat",
+    "failedToLoadProfile": "Dështoi të ngarkohej profili",
+    "avatarUpdated": "Avatari u përditësua me sukses!",
+    "failedToUploadAvatar": "Dështoi të ngarkohej avatari",
+    "fileSizeTooLarge": "Madhësia e skedarit duhet të jetë më pak se 5MB",
+    "pleaseUploadImage": "Ju lutemi ngarkoni një skedar imazhi",
+    "profileUpdated": "Profili u përditësua me sukses!",
+    "failedToUpdateProfile": "Dështoi të përditësohej profili",
+    "editProfile": "Ndrysho Profilin",
+    "saving": "Duke ruajtur...",
+    "save": "Ruaj",
+    "cancel": "Anulo",
+    "fullName": "Emri dhe Mbiemri",
+    "enterFullName": "Shkruani emrin dhe mbiemrin tuaj",
+    "role": "Roli",
+    "phoneNumber": "Numri i Telefonit",
+    "phonePlaceholder": "+355 69 123 4567",
+    "location": "Vendndodhja",
+    "locationPlaceholder": "Tirana, Shqipëri",
+    "bio": "Biografia",
+    "bioPlaceholder": "Na tregoni për veten...",
+    "accountInformation": "Informacioni i Llogarisë",
+    "memberSince": "Anëtar që nga:",
+    "lastUpdated": "Përditësuar së fundmi:"
+  },
+  "hotel": {
+    "loadingHotelDetails": "Duke ngarkuar detajet e hotelit...",
+    "hotelNotFound": "Hoteli Nuk U Gjet",
+    "hotelNotFoundDescription": "Hoteli që po kërkoni nuk ekziston ose është hequr.",
+    "backToHotels": "Kthehu te Hotelet",
+    "viewAllPhotos": "Shiko të Gjitha {{count}} Fotot",
+    "pricePerNight": "Çmimi për natë",
+    "taxesAndFees": "+ taksa & tarifa",
+    "roomsAvailable": "Dhoma të Disponueshme",
+    "checkIn": "Regjistrimi",
+    "checkOut": "Çregjistrimi",
+    "bookNow": "Rezervo Tani",
+    "freeCancellation": "Anulim falas deri në 24 orë para regjistrimit",
+    "aboutThisHotel": "Rreth Këtij Hoteli",
+    "amenitiesAndServices": "Pajisjet dhe Shërbimet",
+    "contactInformation": "Informacioni i Kontaktit",
+    "emailAddress": "Adresa Email",
+    "phoneNumber": "Numri i Telefonit",
+    "address": "Adresa",
+    "location": "Vendndodhja",
+    "noImagesAvailable": "Nuk ka imazhe të disponueshme",
+    "reservation": "Rezervimi",
+    "reservationComingSoon": "Funksioni i rezervimit vjen së shpejti!",
+    "amenities": {
+      "freeWifi": "WiFi Falas",
+      "parking": "Parking",
+      "fitnessCenter": "Qendra e Fitnesit",
+      "restaurant": "Restorant",
+      "bar": "Bar",
+      "spa": "Spa",
+      "swimmingPool": "Pishinë Notimi"
+    }
+  },
+  "apartment": {
+    "addApartment": "Shto Apartament",
+    "addNewApartment": "Shto Apartament të Ri",
+    "addDescription": "Plotësoni detajet më poshtë për të shtuar një apartament të ri në listën tuaj të pronave.",
+    "apartmentName": "Emri i Apartamentit",
+    "address": "Adresa",
+    "cityLocation": "Qyteti/Vendndodhja",
+    "rating": "Vlerësimi (0-5)",
+    "pricePerDay": "Çmimi për Ditë ($)",
+    "status": "Statusi",
+    "available": "I Disponueshëm",
+    "rented": "I Qiruar",
+    "maintenance": "Në Mirëmbajtje",
+    "rooms": "Dhoma",
+    "beds": "Krevate",
+    "kitchens": "Kuzhina",
+    "bathrooms": "Banja",
+    "livingRooms": "Dhoma Jetesë",
+    "contactEmail": "Email Kontakti",
+    "contactPhone": "Telefon Kontakti",
+    "amenities": "Pajisjet (të ndara me presje)",
+    "selectLocation": "Zgjidh Vendndodhjen e Apartamentit në Hartë",
+    "description": "Përshkrimi",
+    "cancel": "Anulo",
+    "adding": "Duke shtuar...",
+    "requiredFields": "Ju lutemi plotësoni të gjitha fushat e kërkuara (emri dhe çmimi)",
+    "uploadImage": "Ju lutemi ngarkoni të paktën një imazh",
+    "addFailed": "Dështoi shtimi i apartamentit",
+    "allApartments": "Të Gjithë Apartamentet",
+    "manageApartments": "Menaxhoni dhe monitoroni të gjitha listimet e apartamenteve tuaja",
+    "searchPlaceholder": "Kërko sipas emri ose adrese...",
+    "allStatuses": "Të Gjithë Statuset",
+    "allRatings": "Të Gjithë Vlerësimet",
+    "rating4_5": "4.5+",
+    "rating4": "4+",
+    "noApartmentsFound": "Nuk u gjetën apartamente",
+    "noAddress": "Pa adresë",
+    "roomsCount": "{{count}} dhoma",
+    "bedCount": "{{count}} krevat",
+    "kitchenCount": "{{count}} kuzhinë",
+    "bathroomCount": "{{count}} banjë",
+    "livingRoomCount": "{{count}} dhomë jetese",
+    "perDay": "/ditë",
+    "noAmenities": "Nuk ka pajisje të listuara",
+    "view": "Shiko",
+    "confirmDelete": "Jeni i sigurt?",
+    "deleteWarning": "Nuk do të mund ta ktheni këtë!",
+    "confirmDeleteButton": "Po, fshije!",
+    "deleteSuccess": "U Fshi!",
+    "deleteSuccessMessage": "Apartamenti juaj është fshirë.",
+    "loadFailed": "Dështoi ngarkimi i apartamenteve.",
+    "retry": "Provo Përsëri",
+    "apartmentNotFound": "Apartamenti Nuk U Gjet",
+    "backToApartments": "Kthehu te Apartamentet",
+    "editApartment": "Ndrysho Apartamentin",
+    "apartmentDetails": "Detajet e Apartamentit",
+    "updateInfo": "Përditëso informacionin e apartamentit",
+    "viewDetails": "Shiko detajet e plota të apartamentit",
+    "saving": "Duke ruajtur...",
+    "save": "Ruaj",
+    "basicInformation": "Informacioni Bazë",
+    "name": "Emri",
+    "contact": "Kontakti",
+    "email": "Email",
+    "phone": "Telefon",
+    "apartmentLocation": "Vendndodhja e Apartamentit",
+    "noDescription": "Nuk ka përshkrim të disponueshëm.",
+    "noImages": "Nuk ka imazhe të disponueshme",
+    "photos": "foto",
+    "updateSuccess": "Apartamenti u përditësua me sukses!",
+    "updateFailed": "Dështoi përditësimi i apartamentit."
+  },
+  "bookingManagement": {
+    "title": "Menaxhimi i Rezervimeve",
+    "subtitle": "Shiko dhe menaxho të gjitha kërkesat e rezervimit për pronat e tua",
+    "stats": {
+      "totalBookings": "Rezervime Totale",
+      "pending": "Në Pritje",
+      "confirmed": "Konfirmuar",
+      "totalRevenue": "Të Ardhura Totale"
+    },
+    "filters": {
+      "searchPlaceholder": "Kërko sipas emrit të klientit, email, telefonit, ose ID-së së pronës...",
+      "allStatuses": "Të Gjitha Statuset",
+      "allTypes": "Të Gjitha Llojet",
+      "cars": "Makina",
+      "apartments": "Apartamente",
+      "hotels": "Hotele"
+    },
+    "table": {
+      "headers": {
+        "property": "Prona",
+        "customer": "Klient",
+        "dates": "Data",
+        "price": "Çmimi",
+        "bookingStatus": "Statusi i Rezervimit",
+        "paymentStatus": "Statusi i Pagesës",
+        "actions": "Veprimet"
+      },
+      "to": "deri"
+    },
+    "statusOptions": {
+      "pending": "Në Pritje",
+      "confirmed": "Konfirmuar",
+      "canceled": "Anuluar",
+      "completed": "Përfunduar"
+    },
+    "confirmations": {
+      "updateStatusTitle": "Përditëso Statusin e Rezervimit?",
+      "updateStatusText": "Je i sigurt që dëshiron të ndryshosh statusin në \"{{status}}\"?",
+      "confirmButton": "Po, përditësoje!",
+      "statusUpdated": "Statusi u Përditësua",
+      "statusUpdatedSuccess": "Statusi i rezervimit është përditësuar me sukses.",
+      "updateFailed": "Përditësimi Dështoi",
+      "updateFailedText": "Dështoi përditësimi i statusit të rezervimit. Ju lutemi provoni përsëri."
+    },
+    "email": {
+      "subject": "Rezervimi Konfirmuar - {{propertyName}}",
+      "greeting": "I dashur {{requesterName}},",
+      "confirmationMessage": "Rezervimi juaj është konfirmuar, ju lutemi vazhdoni me pagesën. Këtu janë detajet:",
+      "checkIn": "Regjistrimi:",
+      "checkOut": "Çregjistrimi:",
+      "time": "Ora:",
+      "totalPrice": "Çmimi Total:",
+      "status": "Statusi:",
+      "confirmed": "Konfirmuar",
+      "questions": "Nëse keni ndonjë pyetje, ju lutemi na kontaktoni.",
+      "regards": "Me respekt,<br>Ekipi i Shqipërisë"
+    },
+    "errors": {
+      "loadFailed": "Dështoi ngarkimi i rezervimeve. Ju lutemi provoni përsëri më vonë.",
+      "retry": "Provo Përsëri"
+    },
+    "emptyState": {
+      "noBookings": "Nuk u gjetën rezervime",
+      "adjustFilters": "Provo të rregullosh filtrat",
+      "noBookingsYet": "Ende nuk ke ndonjë rezervim"
+    }
+  },
+  "cars": {
+    "addCarDialog": {
+      "title": "Shto Makina të Re",
+      "subtitle": "Plotësoni detajet më poshtë për të shtuar një makinë të re në flotën tuaj. Makina juaj do të rishikohet nga një administrator përpara se të bëhet e disponueshme për rezervim.",
+      "submitButton": "Dërgo për Rishikim",
+      "adding": "Duke shtuar...",
+      "successTitle": "Makina u Dërgua për Rishikim",
+      "successMessage": "Makina juaj është dërguar me sukses dhe është në pritje të miratimit nga administratori. Do të njoftoheni sapo të rishikohet lista juaj. Makina do të bëhet e disponueshme për rezervim pas miratimit.",
+      "statusPending": "Statusi: Në Pritje të Rishikimit",
+      "statusDescription": "Një administrator do të rishikojë detajet e makinës suaj dhe do të miratojë ose kërkojë ndryshime.",
+      "close": "Mbyll",
+      "validation": {
+        "requiredFields": "Ju lutemi plotësoni të gjitha fushat e kërkuara",
+        "locationRequired": "Ju lutemi zgjidhni një vendndodhje në hartë",
+        "imageRequired": "Ju lutemi ngarkoni të paktën një imazh"
+      },
+      "form": {
+        "carName": "Emri i Makina",
+        "brand": "Marka",
+        "type": "Lloji",
+        "year": "Viti",
+        "transmission": "Transmisioni",
+        "fuelType": "Lloji i Karburantit",
+        "seats": "Ullëset",
+        "mileage": "Kilometra (km)",
+        "basePrice": "Çmimi Bazë për Ditë ($)",
+        "priceHelp": "Ky është çmimi i paracaktuar. Mund të vendosni çmime sezonale më poshtë.",
+        "status": "Statusi",
+        "color": "Ngjyra",
+        "plateNumber": "Numri i Targës",
+        "features": "Karakteristikat",
+        "suggestedFeatures": "Klikoni për të shtuar karakteristika të zakonshme:",
+        "selectedFeatures": "Karakteristikat e zgjedhura:",
+        "customFeature": "Shto një karakteristikë të personalizuar...",
+        "add": "Shto",
+        "pickupLocation": "Vendndodhja e Marrjes",
+        "mapLabel": "Zgjidh Vendndodhjen e Marrjes në Hartë (E Detyrueshme)"
+      },
+      "buttons": {
+        "cancel": "Anulo",
+        "addCar": "Shto Makina"
+      }
+    },
+    "allCars": {
+      "title": "Të Gjitha Makinat",
+      "subtitle": "Menaxho dhe monitoro të gjithë flotën tënde",
+      "loading": "Duke ngarkuar makinat...",
+      "error": "Dështoi ngarkimi i makinave. Ju lutemi provoni përsëri më vonë.",
+      "retry": "Provo Përsëri",
+      "stats": {
+        "available": "Makina të Disponueshme",
+        "availableDesc": "Gati për qira",
+        "rented": "Aktualisht të Qirësuara",
+        "rentedDesc": "Në rrugë",
+        "maintenance": "Në Mirëmbajtje",
+        "maintenanceDesc": "Duke u shërbyer",
+        "avgRate": "Çmimi Mesatar Ditor",
+        "avgRateDesc": "Për makinë"
+      },
+      "filters": {
+        "search": "Kërko sipas emrit, markës, ose targës...",
+        "allStatus": "Të Gjithë Statuset",
+        "allTypes": "Të Gjithë Llojet",
+        "allTransmission": "Të Gjithë Transmisionet"
+      },
+      "results": "{{count}} makina të gjetura",
+      "empty": {
+        "title": "Nuk u Gjetën Makina",
+        "message": "Provo të rregullosh termat e kërkimit ose filtrat."
+      },
+      "card": {
+        "basePrice": "Çmimi Bazë",
+        "view": "Shiko",
+        "seats_one": "{{count}} Vend",
+        "seats_other": "{{count}} Vende"
+      },
+      "delete": {
+        "confirmTitle": "Je i sigurt?",
+        "confirmMessage": "Nuk do të mund ta kthesh këtë!",
+        "confirmButton": "Po, fshije!",
+        "successTitle": "U Fshi!",
+        "successMessage": "Makina juaj është fshirë."
+      },
+      "pagination": {
+        "previous": "E Mëparshme",
+        "next": "Tjetra"
+      }
+    },
+    "carDetails": {
+      "loading": "Duke ngarkuar...",
+      "notFound": {
+        "title": "Makina Nuk u Gjet",
+        "message": "Makina që po kërkoni nuk ekziston.",
+        "backButton": "Kthehu te Makinat"
+      },
+      "headers": {
+        "edit": "Ndrysho Makina",
+        "details": "Detajet e Makina",
+        "editSubtitle": "Përditëso informacionin e makinës",
+        "detailsSubtitle": "Shiko informacionin e plotë të makinës"
+      },
+      "buttons": {
+        "cancel": "Anulo",
+        "saving": "Duke ruajtur...",
+        "saveChanges": "Ruaj Ndryshimet",
+        "editCar": "Ndrysho Makina"
+      },
+      "success": {
+        "title": "Sukses...",
+        "message": "Makina u përditësua me sukses!"
+      },
+      "error": {
+        "title": "Oops...",
+        "message": "Diçka shkoi keq!"
+      },
+      "sections": {
+        "status": "Statusi",
+        "basicInfo": "Informacioni Bazë",
+        "monthlyPricing": "Çmimet Mujore",
+        "vehicleDetails": "Detajet e Automjetit",
+        "features": "Karakteristikat",
+        "location": "Vendndodhja"
+      },
+      "fields": {
+        "carName": "Emri i Makina",
+        "brand": "Marka",
+        "selectBrand": "Zgjidh një markë",
+        "type": "Lloji",
+        "year": "Viti",
+        "transmission": "Transmisioni",
+        "fuelType": "Lloji i Karburantit",
+        "seats": "Ullëset",
+        "basePrice": "Çmimi Bazë për Ditë",
+        "priceHelp": "Çmimi i paracaktuar kur nuk është vendosur çmimi mujor",
+        "color": "Ngjyra",
+        "plateNumber": "Numri i Targës",
+        "mileage": "Kilometra",
+        "pickupLocation": "Vendndodhja e Marrjes",
+        "addFeature": "Shto një karakteristikë të re",
+        "noFeatures": "Nuk ka karakteristika të listuara.",
+        "mapLabel": "Vendndodhja e Makina në Hartë"
+      },
+      "pricing": {
+        "noSeasonal": "Nuk ka çmime sezonale të konfiguruar. Duke përdorur çmimin bazë të ${{price}}/ditë për të gjithë muajt."
+      }
+    }
+  },
+  "destinationsManagement": {
+    "title": "Menaxhimi i Destinacioneve",
+    "subtitle": "Menaxho destinacionet turistike në të gjithë Shqipërinë",
+    "loading": "Duke ngarkuar destinacionet...",
+    "error": "Dështoi ngarkimi i destinacioneve",
+    "retry": "Provo Përsëri",
+    "addDestination": "Shto Destinacion",
+    "stats": {
+      "total": "Destinacione Totale",
+      "adventure": "Aventura",
+      "historic": "Historike",
+      "beach": "Plazh"
+    },
+    "filters": {
+      "search": "Kërko destinacione...",
+      "allCategories": "Të Gjitha Kategoritë"
+    },
+    "empty": {
+      "title": "Nuk u gjetën destinacione",
+      "message": "Nuk u gjetën destinacione"
+    },
+    "dialog": {
+      "addTitle": "Shto Destinacion të Ri",
+      "editTitle": "Ndrysho Destinacionin",
+      "viewTitle": "Shiko Destinacionin",
+      "addDescription": "Plotëso detajet për të shtuar një destinacion të ri turistik",
+      "editDescription": "Përditëso informacionin e destinacionit",
+      "viewDescription": "Detajet e destinacionit",
+      "cancel": "Anulo",
+      "create": "Krijo",
+      "update": "Përditëso",
+      "saving": "Duke ruajtur...",
+      "close": "Mbyll"
+    },
+    "form": {
+      "name": "Emri i Destinacionit",
+      "namePlaceholder": "p.sh., Kalaja e Beratit",
+      "category": "Kategoria",
+      "categoryPlaceholder": "Zgjidh një kategori",
+      "description": "Përshkrimi",
+      "descriptionPlaceholder": "Përshkruaj destinacionin...",
+      "images": "Imazhe",
+      "location": "Vendndodhja në Hartë",
+      "locationLabel": "Zgjidh vendndodhjen e destinacionit në hartë",
+      "required": "E detyrueshme"
+    },
+    "validation": {
+      "requiredFields": "Ju lutem plotësoni të gjitha fushat e detyrueshme",
+      "imageRequired": "Ju lutem ngarkoni të paktën një imazh",
+      "locationRequired": "Ju lutem zgjidhni një vendndodhje në hartë"
+    },
+    "success": {
+      "created": "Sukses!",
+      "createdMessage": "Destinacioni u krijua me sukses",
+      "updated": "Sukses!",
+      "updatedMessage": "Destinacioni u përditësua me sukses"
+    },
+    "errorMessages": {
+      "createFailed": "Gabim",
+      "createFailedMessage": "Dështoi ruajtja e destinacionit",
+      "deleteFailed": "Gabim",
+      "deleteFailedMessage": "Dështoi fshirja e destinacionit"
+    },
+    "delete": {
+      "confirmTitle": "Jeni i sigurt?",
+      "confirmMessage": "Fshi destinacionin \"{{name}}\"?",
+      "confirmButton": "Po, fshije!",
+      "successTitle": "U Fshi!",
+      "successMessage": "Destinacioni është fshirë."
+    },
+    "card": {
+      "view": "Shiko",
+      "edit": "Ndrysho",
+      "delete": "Fshi"
+    },
+    "pagination": {
+      "previous": "E mëparshme",
+      "next": "Tjetra"
+    }
+  },
+  "hotels": {
+    "addHotelDialog": {
+      "title": "Shto Hotel të Ri",
+      "subtitle": "Plotëso detajet më poshtë për të shtuar një hotel të ri në listën e pronave tuaja.",
+      "submitButton": "Shto Hotel",
+      "adding": "Duke shtuar...",
+      "successTitle": "Hoteli u Shtua",
+      "successMessage": "Hoteli është shtuar me sukses në listën e pronave tuaja.",
+      "validation": {
+        "requiredFields": "Ju lutem plotësoni të gjitha fushat e detyrueshme",
+        "imageRequired": "Ju lutem ngarkoni të paktën një imazh"
+      },
+      "form": {
+        "hotelName": "Emri i Hotelit",
+        "hotelNamePlaceholder": "Grand Plaza Hotel",
+        "location": "Vendndodhja",
+        "locationPlaceholder": "Tiranë, Shqipëri",
+        "rating": "Vlerësimi (0-5)",
+        "ratingPlaceholder": "4.5",
+        "price": "Çmimi për Natë ($)",
+        "pricePlaceholder": "299",
+        "rooms": "Numri Total i Dhoma",
+        "roomsPlaceholder": "150",
+        "occupancy": "Zënia (%)",
+        "occupancyPlaceholder": "85",
+        "status": "Statusi",
+        "statusActive": "Aktiv",
+        "statusMaintenance": "Në Mirëmbajtje",
+        "contactEmail": "Email Kontakti",
+        "contactEmailPlaceholder": "info@hotel.com",
+        "contactPhone": "Telefoni i Kontaktit",
+        "contactPhonePlaceholder": "+355 69 123 4567",
+        "address": "Adresa e Plotë",
+        "addressPlaceholder": "Rruga Kryesore 123, Qyteti, Shteti, Kodi Postar",
+        "mapLabel": "Zgjidh Vendndodhjen e Hotelit në Hartë",
+        "description": "Përshkrimi",
+        "descriptionPlaceholder": "Përshkruaj facilitetet dhe veçoritë e hotelit..."
+      },
+      "buttons": {
+        "cancel": "Anulo",
+        "addHotel": "Shto Hotel"
+      },
+      "error": {
+        "addFailed": "Dështoi shtimi i hotelit"
+      }
+    },
+    "allHotels": {
+      "title": "Të Gjithë Hotelet",
+      "subtitle": "Menaxho dhe monitoro të gjitha pronat e tua hotelierike",
+      "loading": "Duke ngarkuar hotelet...",
+      "error": {
+        "title": "Gabim në Ngarkimin e Hoteleve"
+      },
+      "stats": {
+        "totalHotels": "Totali i Hoteleve",
+        "totalRooms": "Totali i Dhoma",
+        "avgOccupancy": "Mesatarja e Zënies",
+        "avgRating": "Mesatarja e Vlerësimit"
+      },
+      "search": {
+        "placeholder": "Kërko hotele sipas emrit ose vendndodhjes..."
+      },
+      "filters": {
+        "status": {
+          "all": "Të Gjithë Statuset",
+          "active": "Aktiv",
+          "maintenance": "Në Mirëmbajtje"
+        },
+        "rating": {
+          "all": "Të Gjitha Vlerësimet",
+          "fourFivePlus": "4.5+ Yje",
+          "fourPlus": "4+ Yje"
+        }
+      },
+      "results": "{{count}} rezultate",
+      "empty": {
+        "title": "Nuk u gjetën hotele",
+        "message": "Provoni të rregulloni kërkimin ose filtrat tuaja"
+      },
+      "pagination": {
+        "previous": "E Mëparshme",
+        "next": "Tjetra"
+      },
+      "card": {
+        "rooms": "{{count}} Dhoma",
+        "occupancy": "{{percentage}}% Plotë",
+        "perNight": "/natë",
+        "view": "Shiko"
+      },
+      "confirmDelete": {
+        "title": "Jeni i sigurt?",
+        "message": "Nuk do të jeni në gjendje ta ktheni këtë!",
+        "confirmButton": "Po, fshije!",
+        "successTitle": "U Fshi!",
+        "successMessage": "Hoteli juaj është fshirë."
+      }
+    },
+    "hotelDetails": {
+      "view": {
+        "title": "Detajet e Hotelit",
+        "subtitle": "Shiko dhe menaxho informacionin e hotelit"
+      },
+      "edit": {
+        "title": "Ndrysho Hotelin",
+        "subtitle": "Përditëso informacionin dhe cilësimet e hotelit"
+      },
+      "backToHotels": "Kthehu te Hotelet",
+      "buttons": {
+        "editHotel": "Ndrysho Hotelin",
+        "cancel": "Anulo",
+        "saving": "Duke ruajtur...",
+        "saveChanges": "Ruaj Ndryshimet"
+      },
+      "success": {
+        "title": "Sukses",
+        "message": "Hoteli u përditësua me sukses"
+      },
+      "error": {
+        "title": "Gabim",
+        "message": "Dështoi përditësimi i hotelit"
+      },
+      "notFound": {
+        "title": "Hoteli Nuk u Gjet",
+        "description": "Hoteli që po kërkoni nuk ekziston ose është hequr."
+      },
+      "sections": {
+        "status": "Statusi",
+        "basicInformation": "Informacioni Bazë",
+        "contactInformation": "Informacioni i Kontaktit",
+        "location": "Vendndodhja",
+        "description": "Përshkrimi"
+      },
+      "fields": {
+        "hotelName": "Emri i Hotelit",
+        "location": "Vendndodhja",
+        "rating": "Vlerësimi",
+        "pricePerNight": "Çmimi për Natë",
+        "totalRooms": "Numri Total i Dhoma",
+        "occupancyRate": "Shkalla e Zënies",
+        "email": "Email",
+        "phone": "Telefoni",
+        "fullAddress": "Adresa e Plotë",
+        "hotelLocationOnMap": "Vendndodhja e Hotelit në Hartë"
+      },
+      "statusOptions": {
+        "active": "Aktiv",
+        "maintenance": "Në Mirëmbajtje"
+      },
+      "images": {
+        "noImagesAvailable": "Nuk ka imazhe të disponueshme",
+        "photos": "{{count}} foto"
+      },
+      "display": {
+        "rooms": "Dhoma",
+        "noDescription": "Nuk ka përshkrim të disponueshëm."
+      }
+    }
+  },
+  "userManagement": {
+    "title": "Menaxhimi i Përdoruesve",
+    "error": "Dështoi ngarkimi i përdoruesve",
+    "loading": "Duke ngarkuar përdoruesit...",
+    "columns": {
+      "name": "Emri",
+      "email": "Email",
+      "role": "Roli",
+      "status": "Statusi",
+      "registered": "Regjistruar",
+      "actions": "Veprimet"
+    },
+    "viewDetails": "Shiko Detajet",
+    "stats": {
+      "totalUsers": "Totali i Përdoruesve",
+      "active": "Aktiv",
+      "suspended": "Pezulluar"
+    },
+    "filters": {
+      "searchPlaceholder": "Kërko sipas emrit ose email-it...",
+      "allRoles": "Të Gjithë Rolet",
+      "user": "Përdorues",
+      "admin": "Administrator",
+      "allStatus": "Të Gjithë Statuset",
+      "active": "Aktiv",
+      "suspended": "Pezulluar",
+      "pending": "Në Pritje"
+    },
+    "status": {
+      "active": "Aktiv",
+      "suspended": "Pezulluar",
+      "pending": "Në Pritje"
+    },
+    "roles": {
+      "user": "Përdorues",
+      "admin": "Administrator",
+      "provider": "Ofrues"
+    }
+  },
+  "requestsManagement": {
+    "title": "Menaxhimi i Kërkesave për Ofrues",
+    "subtitle": "Rishikoni dhe menaxhoni kërkesat e përdoruesve për të bërë ofrues shërbimi",
+    "loading": "Duke ngarkuar kërkesat...",
+    "error": "Dështoi ngarkimi i kërkesave",
+    "success": {
+      "approve": "Kërkesa u miratua me sukses! Përdoruesi është përmirësuar në statusin e ofruesit.",
+      "reject": "Kërkesa u refuzua me sukses."
+    },
+    "errors": {
+      "approve": "Dështoi miratimi i kërkesës",
+      "reject": "Dështoi refuzimi i kërkesës"
+    },
+    "confirmations": {
+      "approve": "Jeni i sigurt që dëshironi të miratoni këtë kërkesë? Përdoruesi do të përmirësohet në statusin e ofruesit.",
+      "reject": "Jeni i sigurt që dëshironi të refuzoni këtë kërkesë?"
+    },
+    "filters": {
+      "status": {
+        "all": "Të Gjitha",
+        "pending": "Në Pritje",
+        "approved": "Miratuar",
+        "rejected": "Refuzuar"
+      }
+    },
+    "status": {
+      "pending": "Në Pritje",
+      "approved": "Miratuar",
+      "rejected": "Refuzuar"
+    },
+    "empty": {
+      "title": "Nuk u gjetën kërkesa",
+      "noRequests": "Nuk ka ende kërkesa për ofrues.",
+      "noFilteredRequests": "Nuk ka kërkesa {{filter}}."
+    },
+    "user": {
+      "unknown": "Përdorues i Panjohur",
+      "submitted": "Paraqitur",
+      "reviewed": "Rishikuar më",
+      "reasonLabel": "Arsyeja për Kërkesën:"
+    },
+    "actions": {
+      "approve": "Mirato",
+      "reject": "Refuzo",
+      "processing": "Duke përpunuar..."
+    }
+  },
+  "propertyRequestsManagement": {
+    "title": "Menaxhimi i Kërkesave për Prona",
+    "subtitle": "Rishikoni dhe menaxhoni parashtrimet e pronave të ofruesve për makina, apartamente dhe hotele",
+    "loading": "Duke ngarkuar kërkesat për prona...",
+    "error": "Dështoi ngarkimi i kërkesave për prona",
+    "success": {
+      "approve": "Prona u miratua me sukses! Tani është e disponueshme për rezervim.",
+      "reject": "Kërkesa për pronë u refuzua."
+    },
+    "errors": {
+      "approve": "Dështoi miratimi i kërkesës",
+      "reject": "Dështoi refuzimi i kërkesës",
+      "loadDetails": "Dështoi ngarkimi i detajeve të pronës",
+      "rejectionReasonRequired": "Ju lutemi jepni një arsye për refuzimin"
+    },
+    "confirmations": {
+      "approve": "Jeni i sigurt që dëshironi të miratoni këtë pronë? Do të bëhet e disponueshme për rezervim.",
+      "reject": "Jeni i sigurt që dëshironi të refuzoni këtë kërkesë?"
+    },
+    "filters": {
+      "status": {
+        "label": "Statusi:",
+        "all": "Të Gjitha",
+        "pending": "Në Pritje",
+        "approved": "Miratuar",
+        "rejected": "Refuzuar"
+      },
+      "type": {
+        "label": "Lloji:",
+        "all": "Të Gjitha Llojet",
+        "car": "Makina",
+        "apartment": "Apartamente",
+        "hotel": "Hotele"
+      }
+    },
+    "status": {
+      "pending": "Në Pritje",
+      "approved": "Miratuar",
+      "rejected": "Refuzuar"
+    },
+    "propertyTypes": {
+      "car": "Makina",
+      "apartment": "Apartament",
+      "hotel": "Hotel"
+    },
+    "empty": {
+      "title": "Nuk u gjetën kërkesa për prona",
+      "noPendingRequests": "Nuk ka kërkesa për prona në pritje në këtë moment.",
+      "noFilteredRequests": "Nuk ka kërkesa që përputhen me filtrat tuaj aktual."
+    },
+    "provider": {
+      "unknown": "Ofrues i Panjohur",
+      "noEmail": "Pa email",
+      "submitted": "Paraqitur:",
+      "reviewed": "Rishikuar:",
+      "rejectionReason": "Arsyeja e Refuzimit:"
+    },
+    "dates": {
+      "submitted": "Paraqitur:",
+      "reviewed": "Rishikuar:"
+    },
+    "rejection": {
+      "reason": "Arsyeja e Refuzimit",
+      "placeholder": "Ju lutemi jepni një arsye të detajuar për refuzimin...",
+      "required": "Arsyeja e refuzimit është e detyrueshme"
+    },
+    "actions": {
+      "viewDetails": "Shiko Detajet",
+      "approve": "Mirato",
+      "reject": "Refuzo",
+      "processing": "Duke përpunuar..."
+    },
+    "modal": {
+      "details": {
+        "title": "Detajet e Pronës",
+        "description": "Rishikoni informacionin e pronës të parashtruar nga ofruesi",
+        "close": "Mbyll",
+        "approve": "Mirato Pronën"
+      },
+      "reject": {
+        "title": "Refuzo Kërkesën për Pronë",
+        "description": "Ju lutemi jepni një arsye për refuzimin e këtij parashtrimi të pronës. Ofruesi do të njoftohet për refuzimin.",
+        "reasonLabel": "Arsyeja e Refuzimit *",
+        "placeholder": "Shpjegoni pse po refuzohet kjo pronë...",
+        "cancel": "Anulo",
+        "confirm": "Konfirmo Refuzimin"
+      }
+    }
+  },
+  "userDetails": {
+    "loading": "Duke ngarkuar përdoruesin...",
+    "backToUsers": "Kthehu te Përdoruesit",
+    "backToUserList": "Kthehu te Lista e Përdoruesve",
+    "userProfile": "Profili i Përdoruesit",
+    "labels": {
+      "email": "Email",
+      "phone": "Telefoni",
+      "registrationDate": "Data e Regjistrimit",
+      "lastLogin": "Hyrja e Fundit",
+      "address": "Adresa"
+    },
+    "managementActions": "Veprimet e Menaxhimit",
+    "buttons": {
+      "editProfile": "Ndrysho Profilin",
+      "suspendUser": "Pezullo Përdoruesin",
+      "activateUser": "Aktivizo Përdoruesin"
+    },
+    "recentActivity": "Aktiviteti i Fundit",
+    "noActivityData": "Nuk ka të dhëna aktiviteti të disponueshme.",
+    "modal": {
+      "editUserProfile": "Ndrysho Profilin e Përdoruesit"
+    },
+    "form": {
+      "fullName": "Emri i Plotë",
+      "avatarUrl": "URL e Avatarit",
+      "phone": "Telefoni",
+      "bio": "Bio",
+      "location": "Vendndodhja",
+      "role": "Roli",
+      "user": "Përdorues",
+      "admin": "Administrator",
+      "provider": "Ofrues",
+      "saving": "Duke ruajtur...",
+      "save": "Ruaj",
+      "cancel": "Anulo"
+    },
+    "errors": {
+      "fetchUser": "Përdoruesi nuk u gjet ose gabim gjatë marrjes së përdoruesit.",
+      "userNotFound": "Përdoruesi nuk u gjet.",
+      "suspendUser": "Dështoi pezullimi i përdoruesit.",
+      "activateUser": "Dështoi aktivizimi i përdoruesit.",
+      "updateProfile": "Dështoi përditësimi i profilit të përdoruesit."
+    },
+    "status": {
+      "active": "Aktiv",
+      "suspended": "Pezulluar",
+      "pending": "Në Pritje"
+    },
+    "roles": {
+      "user": "Përdorues",
+      "admin": "Administrator",
+      "provider": "Ofrues"
+    }
+  },
+  "sidebar": {
+    "brand": "VizitoShqipërinë",
+    "collapse": "Mbyll",
+    "home": "Kryefaqja",
+    "apartments": {
+      "title": "Apartamente",
+      "allApartments": "Të Gjitha Apartamentet",
+      "ownersManagement": "Menaxhimi i Pronarëve",
+      "bookings": "Rezervimet",
+      "availability": "Disponueshmëria"
+    },
+    "hotels": {
+      "title": "Hotele",
+      "allHotels": "Të Gjitha Hotelet",
+      "roomsManagement": "Menaxhimi i Dhoma",
+      "bookings": "Rezervimet",
+      "availability": "Disponueshmëria"
+    },
+    "cars": {
+      "title": "Makinat me Qira",
+      "fleetManagement": "Menaxhimi i Flotës",
+      "activeRentals": "Qirat Aktive",
+      "maintenance": "Mirëmbajtja"
+    },
+    "bookings": {
+      "title": "Rezervimet",
+      "allBookings": "Të Gjitha Rezervimet"
+    },
+    "destinations": {
+      "title": "Destinacionet",
+      "management": "Menaxhimi i Destinacioneve"
+    },
+    "support": {
+      "title": "Biseda Mbështetëse",
+      "chatDashboard": "Paneli i Bisedës"
+    },
+    "users": {
+      "title": "Përdoruesit",
+      "management": "Menaxhimi i Përdoruesve",
+      "providerRequests": "Kërkesat për Ofrues",
+      "propertyRequests": "Kërkesat për Prona"
+    }
+  },
+  "availabilityCalendar": {
+    "title": "Disponueshmëria",
+    "error": "Dështoi ngarkimi i disponueshmërisë",
+    "legend": {
+      "booked": "Rezervuar",
+      "available": "Disponueshëm"
+    },
+    "info": {
+      "allAvailable": "Të gjitha datat janë të disponueshme",
+      "daysBooked": "ditë",
+      "daysBookedPlural": "ditë të rezervuara"
+    }
+  },
+  "monthlyPricingEditor": {
+    "title": "Çmimet Mujore",
+    "buttons": {
+      "applyBase": "Apliko Bazën (${{basePrice}}) për të Gjitha",
+      "summerPremium": "Premium Verës (+20%)"
+    },
+    "stats": {
+      "avg": "Mes:",
+      "min": "Min:",
+      "max": "Maks:"
+    },
+    "seasons": {
+      "winter": "Dimër",
+      "spring": "Pranverë",
+      "summer": "Verë",
+      "fall": "Vjeshtë"
+    },
+    "tip": "💡 Këshillë: Vendosni çmime të ndryshme për sezonet kulmore (vera) dhe periudhat jashtë sezonit. Çmimi bazë do të përdoret si alternativë nëse nuk është vendosur çmim mujor."
+  }
+}

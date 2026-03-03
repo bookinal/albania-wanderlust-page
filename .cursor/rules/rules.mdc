@@ -1,0 +1,253 @@
+---
+alwaysApply: true
+---
+
+# Overview
+
+Cursor Rule: FE-albania (Discover Albania Frontend)
+
+1. Stack, Tooling & Versions (DO NOT UPGRADE BY DEFAULT)
+   Languages & Runtime
+   TypeScript: Use the existing TypeScript setup (typescript@^5.8.3), no strict-mode migration unless explicitly requested.
+   JavaScript/TS Interop: allowJs is enabled; prefer TypeScript for all new code. Only touch .js files if necessary for a specific bug.
+   Frameworks & Core Libraries
+   React: Use React 18 (react@^18.3.1, react-dom@^18.3.1).
+   Routing: Use React Router 7 (react-router@^7.9.4, react-router-dom@^7.9.4).
+   State & Data Fetching:
+   Prefer React Query v5 (@tanstack/react-query@^5.83.0) for async server state.
+   Use local component state (useState, useReducer, useMemo, useCallback) for UI-only state.
+   Do not introduce any new global state libraries (Redux, Zustand, Jotai, etc.) without explicit instruction.
+   Backend Client: Use Supabase only through the existing client:
+   src/services/api/apiClient.ts with @supabase/supabase-js@^2.86.0.
+   Build & Tooling
+   Bundler/Dev Server: Vite 5 (vite@^5.4.19) with @vitejs/plugin-react-swc@^3.11.0.
+   Linting:
+   Uses ESLint 9 with typescript-eslint and React Hooks rules via eslint.config.js.
+   Do not change ESLint config or rules unless explicitly requested.
+   Styling Tooling:
+   Tailwind CSS 3 (tailwindcss@^3.4.17, tailwindcss-animate@^1.0.7, @tailwindcss/typography).
+   PostCSS/Autoprefixer as currently configured.
+   UI/Component Libraries:
+   Radix-based shadcn-style UI under src/components/ui/\*\*.
+   MUI (@mui/material, @mui/icons-material, @mui/x-date-pickers) already in use – do not add new design systems.
+   Other helpers (Embla, Keen Slider, Lucide, Sonner, React Spinners, Recharts, etc.) should be used in a way consistent with existing patterns.
+   Version Policy
+   Do NOT upgrade library versions, React, TypeScript, Vite, or any tooling unless the task specifically asks for upgrades.
+   When adding imports, reuse existing libraries only; do not add new dependencies without explicit instruction.
+2. High-Level Architecture & Boundaries
+   Overall Architecture
+   Single-page app (SPA) with:
+   Entry: src/main.tsx (createRoot + <App />).
+   Routing & Providers: src/App.tsx (React Router, React Query client, toast providers, Tooltip provider, Speed Insights).
+   Layering (Conceptual)
+   UI Layer: src/components/** (reusable components), src/pages/** (routed screens).
+   Hooks Layer: src/hooks/** (shared stateful logic, e.g., useSearchFilters).
+   Domain Types: src/types/** (entity and DTO typings).
+   Data/Service Layer: src/services/api/** (Supabase access and domain-specific services).
+   Utilities: src/lib/** (generic utilities).
+   Routing Boundary
+   All routing is defined in src/App.tsx via <BrowserRouter> + <Routes> and nested <Route>s.
+   Do not introduce other routers or scattered routing definitions.
+   Protected routes must go through the existing ProtectedRoute component.
+   Always add new routes in App.tsx, above the catch-all "\*" route as indicated by the existing comment.
+   Service/Data Boundary
+   All Supabase calls must be made through service functions in src/services/api/** using the shared apiClient.
+   Do not call createClient or apiClient directly from components/pages; encapsulate in services.
+   Business logic around entities (hotels, apartments, cars, users, auth) belongs in service modules, not in components.
+   UI & Domain Separation
+   Pages (src/pages/**):
+   Compose components, call hooks (including React Query hooks) and service functions.
+   Contain page-level layout and orchestration but minimal domain logic.
+   Components (src/components/**):
+   Presentational or small container components reused across pages.
+   Should receive data and handlers via props instead of reaching into services directly whenever possible.
+   Hooks (src/hooks/**):
+   Encapsulate reusable state and behavior (e.g., complex filter logic, query coordination).
+   May call services, but must expose a clean interface (data, loading, error, callbacks).
+3. Critical / High-Risk Files & Folders
+   These areas require extra caution; treat them as stable APIs and avoid structural changes unless explicitly requested:
+   App Entrypoints
+   src/main.tsx
+   src/App.tsx (routing, providers, and top-level app shell)
+   Routing/Access Control
+   src/components/ProtectedRoute.tsx
+   Supabase Client & Auth
+   src/services/api/apiClient.ts
+   src/services/api/authService.ts
+   src/services/api/userService.ts
+   Core Domain Services
+   src/services/api/hotelService.ts
+   src/services/api/apartmentService.ts
+   src/services/api/carService.ts
+   src/services/api/storageService.ts
+   Shared Hooks & Search Logic
+   src/hooks/useSearchFilters.ts
+   Shared Types
+   Entire src/types/** directory (especially hotel.types.ts, apartment.type.ts, car.types.ts, user.types.ts, search.types.ts).
+   UI Foundations
+   src/components/ui/** (shadcn-like primitives; treat as mostly read-only except for necessary bug fixes).
+   Dashboard Shell
+   src/components/dashboard/hsidebar.tsx and src/pages/dashboard/dashboard.tsx.
+   Rules for these files:
+   Do not:
+   Rename, move, or significantly refactor them without an explicit, justified request.
+   Change their external API (exported functions, types, or component props) without updating all usages and clearly explaining the impact.
+   Allowed changes (by default):
+   Localized bug fixes.
+   Non-breaking additions (e.g., adding a new service method, adding optional props, strengthening runtime checks).
+   Adding comments and small refactorings that do not alter external behavior.
+4. Project Structure & How to Add New Features
+   Existing Structure (follow this)
+   src/pages/home/**: Home-facing pages (landing, search results, reservations, culture details, etc.).
+   src/pages/dashboard/**: Admin/provider dashboard pages, segmented by domain (Hotels, Cars, Apartments, Users, etc.).
+   src/components/home/**: Reusable components for the home/marketing side.
+   src/components/dashboard/**: Layout and components for the dashboard (e.g., hsidebar, ImageUpload, mapPicker).
+   src/components/ui/**: Low-level reusable UI primitives (buttons, cards, modals, etc.).
+   src/services/api/**: Service modules per domain (hotels, apartments, cars, users, auth, storage).
+   src/hooks/**: Shared hooks.
+   src/assets/**: Static assets (images, icons).
+   src/types/**: Types per domain.
+   src/components/home/data-map/**: Map components and static map data.
+   Adding a New Feature (Pattern)
+
+1) Decide the area
+   User-facing: create a new page under src/pages/home/YourFeature.tsx.
+   Dashboard/admin: create under src/pages/dashboard/<Domain>/YourFeature.tsx.
+2) Register the route
+   Add a <Route> in src/App.tsx within the correct area (<ProtectedRoute> for authenticated dashboard, outside for public pages).
+3) Add services (if needed)
+   Create or extend a service file under src/services/api/yourDomainService.ts:
+   Export domain functions (getX, createX, updateX, deleteX, and any search/filter functions).
+   Optionally export a default object aggregating those functions (copy existing pattern from hotelService or apartmentService).
+4) Add types
+   Add or extend domain types in src/types/yourDomain.types.ts (follow naming like CreateHotelDto, UpdateHotelDto).
+5) Add UI components
+   Shared or reusable components: place in src/components/home or src/components/dashboard as appropriate.
+   Keep components small, focused, and pass data via props.
+6) Add hooks
+   For complex shared state or logic, add a custom hook in src/hooks/YourHookName.ts:
+   Use useSearchFilters as a reference for structure and error handling.
+   Naming & Conventions
+   Components: PascalCase file name and component name (HotelsPreview.tsx, Hsidebar.tsx).
+   Hooks: camelCase starting with use (useSearchFilters.ts).
+   Services: camelCase exported functions (getAllHotels, createApartment) and optionally a default object hotelService/apartmentService.
+   Types: PascalCase with clear suffix (Hotel, CreateHotelDto, HotelFilters).
+   Routes: Keep consistent naming and capitalization with existing paths; do not arbitrarily change existing paths.
+
+5. Data Fetching, State Management & Async Safety
+   React Query Usage
+   Use useQuery, useMutation, and QueryClientProvider configured in App.tsx.
+   Prefer React Query for:
+   Fetching lists or details from Supabase (e.g., hotels, apartments, cars, users).
+   Any data that can be cached and shared across pages.
+   Query functions should be service functions from src/services/api/\*\*.
+   Handle isLoading, isError, and error states in UI components (see HotelsPreview.tsx for a pattern).
+   Avoiding Anti-Patterns
+   Do NOT:
+   Mix raw fetch/axios calls in components for domains already covered by services.
+   Duplicate domain logic (e.g., reimplement filters already found in useSearchFilters or service-level searchX functions) unless truly necessary.
+   Introduce global mutable singletons other than QueryClient in App.tsx.
+   Async Safety & Error Handling
+   In services:
+   Always handle Supabase error responses:
+   Log context and rethrow as Error or the original Supabase error.
+   Return safe defaults where appropriate (e.g., data || [] for list fetches).
+   Wrap multi-step flows (upload + DB insert) in try/catch and provide useful error messages, similar to createHotel and createApartment.
+   In components/hooks:
+   Assume services may throw; wrap await calls in try/catch or rely on React Query’s error surface.
+   Surface user-friendly error messages via existing toast/toaster components where appropriate.
+   Do not introduce unhandled promises; always await or explicitly handle Promise rejections.
+6. Null Safety & Type Safety
+   TypeScript Configuration
+   Current tsconfig.json has:
+   strictNullChecks: false
+   noImplicitAny: false
+   Do NOT change these compiler options without an explicit migration request.
+   Code-Level Practices
+   Despite relaxed compiler settings:
+   Prefer explicit, non-any types for new functions, props, and service returns.
+   Always account for null/undefined from Supabase (e.g., data || [], Hotel | null).
+   Use narrowing and optional chaining instead of unsafe assumptions.
+   Avoid casting with as any; use precise interfaces/types in src/types/\*\*.
+7. Styling Conventions
+   Preferred Styling
+   Default to Tailwind CSS classes in JSX for layout and styling (see Index.tsx, HotelsPreview.tsx).
+   Use existing shadcn-style components in src/components/ui/\*\* where appropriate instead of hand-rolling primitives.
+   Conditional & Utility Classes
+   Use existing helpers like clsx and Tailwind utilities; do not introduce new class-manipulation libraries.
+   Avoiding Anti-Patterns
+   Minimize inline styles, except for small one-off cases (e.g., Dashboard title styles); prefer Tailwind classes.
+   Do not introduce additional CSS frameworks or design systems (e.g., Bootstrap, Chakra, etc.).
+8. Acceptable vs Unacceptable Patterns
+   Acceptable
+   Minimal, focused changes that:
+   Fix a specific bug.
+   Add a well-scoped feature following existing patterns.
+   Extend service modules with new functions without breaking existing ones.
+   Using existing hooks/services:
+   Use useSearchFilters for property search features instead of duplicating filter logic.
+   Reuse hotelService, apartmentService, carService, userService, authService rather than creating parallel APIs.
+   UI Composition
+   Building new pages from existing components in src/components/home/** and src/components/dashboard/**.
+   Unacceptable (without explicit instruction)
+   Cross-cutting rewrites:
+   Migrating to a different router, state library, or data fetching library.
+   Replacing Supabase with another backend or adding another backend client.
+   Converting the project to a different framework (Next.js, Remix, etc.).
+   Large-scale refactors:
+   Restructuring the entire src/pages/** or src/components/** hierarchy.
+   Renaming domains (Apartments → Apartments, etc.) if it breaks paths, types, or table names.
+   Diverging patterns:
+   Adding new API calls directly in components when a service module for that domain exists.
+   Creating “utility” functions that encapsulate business logic but live in unrelated folders.
+9. Rules for Modifying Existing Code vs Creating New Code
+   Modify Existing Code When:
+   Fixing a bug in the current behavior.
+   Extending a feature that is already implemented and you need to maintain consistency.
+   Making small, non-breaking enhancements (e.g., adding an optional field or behavior).
+   Create New Code When:
+   Implementing a new feature or page that is not conceptually the same as an existing one.
+   Adding a new domain concept (with its own types, services, and pages).
+   Introducing reusable UI primitives or hooks that can serve multiple pages.
+   Modification Rules
+   Prefer small, localized diffs:
+   Do not “rewrite the file” when a small change is sufficient.
+   Preserve existing formatting and style where possible.
+   Keep public APIs stable:
+   If you must change the shape of props or service return types, ensure all call sites are updated and the change is clearly explained.
+10. Error Handling, Logging & Observability
+    Services
+    Follow patterns in hotelService, apartmentService, carService, userService, authService:
+    Check error after Supabase calls.
+    Include descriptive console.error messages with context.
+    Throw errors that provide enough information to act on.
+    Components & Hooks
+    Expose error states via:
+    React Query’s error or custom hook error state (string | null), as in useSearchFilters.
+    For user-facing messages, use the existing toast mechanisms (Toaster, Sonner).
+    Logging
+    console.log and console.error are acceptable for debugging-style logs, but:
+    Do not add noisy logging in tight loops or high-frequency code.
+    When adding logs, include module context (e.g., [Car Service], [useSearchFilters]).
+11. AI Agent Behavior & Change Management
+    Minimal, Localized Diffs
+    Always prefer the smallest change that solves the task:
+    Modify only the functions or components directly involved.
+    Avoid changing unrelated imports, formatting, or moving code around.
+    Do not reformat entire files or apply stylistic refactors unless explicitly asked.
+    Explaining Risky Changes
+    Before applying any change that:
+    Alters routing in App.tsx.
+    Modifies apiClient, authService, or userService.
+    Changes data models in src/types/\*\*.
+    Changes patterns in core services (hotelService, apartmentService, carService, storageService).
+    The AI agent must:
+    Explain the intent, potential impact, and alternatives in natural language.
+    Confirm how backward compatibility is preserved (or clearly note breaking changes if explicitly requested).
+    No New Libraries/Frameworks
+    Do not add new entries to dependencies or devDependencies unless:
+    The user explicitly requests a new library.
+    The impact and rationale are clearly documented.
+    Linting & Formatting
+    Respect existing lint rules from eslint.config.js.
+    Do not change ESLint, TypeScript, Tailwind, Vite, or other config files unless the task requires it.

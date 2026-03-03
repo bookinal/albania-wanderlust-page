@@ -1,0 +1,28 @@
+services:
+  web-dev:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile.dev
+    container_name: albania-web-dev
+    ports:
+      - "8080:8080"
+    volumes:
+      # Mount source code for hot reload
+      - ./apps/web/src:/app/apps/web/src
+      - ./apps/web/index.html:/app/apps/web/index.html
+      - ./apps/web/vite.config.ts:/app/apps/web/vite.config.ts
+      - ./packages:/app/packages
+      # Exclude node_modules
+      - /app/node_modules
+      - /app/apps/web/node_modules
+    environment:
+      - NODE_ENV=development
+      - CHOKIDAR_USEPOLLING=true
+    restart: unless-stopped
+    networks:
+      - albania-network
+    command: npm run dev -- --host 0.0.0.0
+
+networks:
+  albania-network:
+    driver: bridge

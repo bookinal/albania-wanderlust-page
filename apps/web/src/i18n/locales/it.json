@@ -1,0 +1,1323 @@
+{
+  "home": {
+    "trustIndicators": {
+      "propertiesListed": "Strutture Elencate",
+      "happyGuests": "Ospiti Soddisfatti",
+      "averageRating": "Valutazione Media",
+      "secureBooking": "Prenotazione Sicura",
+      "statistics": {
+        "properties": "500+",
+        "guests": "10K+",
+        "rating": "4,8",
+        "security": "100%"
+      }
+    },
+    "accommodations": {
+      "badge": "Selezionati per Te",
+      "title": "Trova il Soggiorno Perfetto",
+      "description": "Dagli hotel di lusso agli accoglienti appartamenti, scopri strutture che corrispondono al tuo stile e budget"
+    },
+    "hero": {
+      "badge": "La Perla Nascosta del Sud-Est Europa",
+      "discover": "Scopri",
+      "albania": "l'Albania",
+      "subheading": "Prenota hotel, appartamenti e auto per la tua avventura albanese perfetta. Dalle Alpi Albanesi alla costa della Riviera.",
+      "exploreMap": "Esplora Mappa",
+      "browseProperties": "Sfoglia Strutture"
+    },
+    "reservationPicker": {
+      "carModel": "Modello Auto",
+      "Destination": "Destinazione",
+      "carDate": "Seleziona date di ritiro e riconsegna",
+      "period": "Periodo",
+      "adults": "Adulti",
+      "children": "Bambini",
+      "rooms": "Camere",
+      "search": "Cerca"
+    },
+    "apartmentsPreview": {
+      "title": "Appartamenti",
+      "description": "Autentica ospitalità albanese in residenze private",
+      "viewAll": "Vedi Tutti gli Appartamenti",
+      "noApartments": "Nessun appartamento disponibile"
+    },
+    "hotelsPreview": {
+      "title": "Hotel",
+      "description": "Hotel premium nelle destinazioni più iconiche dell'Albania",
+      "viewAll": "Vedi Tutti gli Hotel",
+      "noHotels": "Nessun hotel disponibile"
+    },
+    "carsPreview": {
+      "chip": "Esplora alle Tue Condizioni",
+      "title": "Noleggio Auto Premium",
+      "description": "Selezione curata di veicoli di qualità per il tuo viaggio on the road attraverso gli stupendi paesaggi albanesi",
+      "viewAll": "Vedi Tutte le Auto",
+      "noCars": "Nessuna auto disponibile",
+      "seats": "Posti"
+    },
+    "destinations": {
+      "title": "Destinazioni Top",
+      "description": "Vivi le località più affascinanti dell'Albania, dalle città antiche alle spiagge incontaminate.",
+      "noDestinations": "Nessuna destinazione disponibile",
+      "addedToWishlist": "Destinazione aggiunta ai preferiti.",
+      "alreadyInWishlist": "Destinazione già presente nei preferiti.",
+      "loginToAddWishlist": "Effettua il login per aggiungere ai preferiti."
+    },
+    "culture": {
+      "title": "Cultura & Cucina",
+      "description": "Immergiti nelle ricche tradizioni, sapori e patrimonio culturale dell'Albania.",
+      "traditionalCuisine": "Cucina Tradizionale",
+      "festivalsAndTraditions": "Festival & Tradizioni"
+    }
+  },
+  "appBar": {
+    "myBookings": "Le Mie Prenotazioni",
+    "myWishlist": "I Miei Preferiti",
+    "becomeProvider": "Diventa un Fornitore",
+    "account": "Account",
+    "dashboard": "Dashboard",
+    "propertiesManagement": "Gestione Strutture",
+    "myAccount": "Il Mio Account",
+    "completeProfile": "Completa il Mio Profilo",
+    "logout": "Esci",
+    "login": "Accedi",
+    "profile": "Profilo"
+  },
+  "footer": {
+    "description": "La tua piattaforma affidabile per scoprire e prenotare i migliori alloggi e noleggi auto in Albania.",
+    "explore": "Esplora",
+    "hotelsApartments": "Hotel & Appartamenti",
+    "carRentals": "Noleggio Auto",
+    "mapView": "Vista Mappa",
+    "cultureCuisine": "Cultura & Cucina",
+    "support": "Supporto",
+    "helpCenter": "Centro Assistenza",
+    "cancellationPolicy": "Politica di Cancellazione",
+    "privacyPolicy": "Privacy Policy",
+    "termsOfService": "Termini di Servizio",
+    "contactUs": "Contattaci",
+    "addressCity": "Tirana, Albania",
+    "addressStreet": "Rruga e Kavajës",
+    "rightsReserved": "Tutti i diritti riservati.",
+    "securePayments": "Pagamenti Sicuri"
+  },
+  "billing": {
+    "vehicleSpecifications": "Specifiche del Veicolo",
+    "featuresAndEquipment": "Caratteristiche & Dotazioni",
+    "pickUpAndContactInformation": "Informazioni Ritiro e Contatto",
+    "rentalTermsAndConditions": "Termini e Condizioni di Noleggio",
+    "pickUpLocation": "Luogo di Ritiro",
+    "flexibleCancellation": "Cancellazione flessibile • Assistenza stradale 24/7",
+    "insurance": "Assicurazione",
+    "pricePerDay": "al giorno (per questo mese)",
+    "aboutThisApartment": "Informazioni su Questo Appartamento",
+    "rentalPeriod": "Periodo di Noleggio",
+    "pickUpDropOffDates": "Date di Ritiro e Riconsegna",
+    "selectRentalDates": "Seleziona le date di noleggio",
+    "pickUpTime": "Ora di Ritiro",
+    "dropOffTime": "Ora di Riconsegna",
+    "dropOffLocation": "Luogo di Riconsegna",
+    "rentalDuration": "Durata Noleggio",
+    "priceSummary": "Riepilogo Prezzi",
+    "subtotal": "Subtotale",
+    "pricesVaryByMonth": "I prezzi variano mensilmente in base alle tariffe stagionali.",
+    "selectDatesForBreakdown": "Seleziona le date per vedere il dettaglio prezzi.",
+    "serviceFee": "Commissione di servizio",
+    "serviceFeeDescription": "Copre le operazioni della piattaforma, l'assistenza clienti e la protezione della prenotazione.",
+    "tax": "Tasse (10%)",
+    "taxDescription": "Tasse locali e governative applicate al tuo noleggio.",
+    "total": "Totale",
+    "totalDescription": "Questo è l'importo totale che pagherai se confermi la prenotazione.",
+    "confirmBooking": "Conferma Prenotazione",
+    "processing": "Elaborazione in corso...",
+    "paymentNote": "Non verrai ancora addebitato. Il pagamento viene completato dopo la conferma.",
+    "loadingCarDetails": "Caricamento dettagli auto…",
+    "carNotFound": "Auto non trovata",
+    "invalidPhoneNumber": "Numero di telefono non valido",
+    "enterValidPhoneNumber": "Inserisci un numero di telefono valido prima di confermare la prenotazione.",
+    "missingDates": "Date mancanti",
+    "selectPickUpDropOffDates": "Seleziona le date di ritiro e riconsegna.",
+    "bookingConfirmed": "Prenotazione confermata",
+    "carBookingSuccess": "La tua prenotazione auto è stata creata con successo.",
+    "bookingFailed": "Prenotazione fallita",
+    "bookingFailedMessage": "Impossibile creare la tua prenotazione. Riprova o effettua nuovamente il login.",
+    "fullNamePlaceholder": "Mario Rossi",
+    "emailPlaceholder": "mario.rossi@esempio.com",
+    "phonePlaceholder": "Inserisci il numero di telefono",
+    "phoneRequired": "Numero di telefono obbligatorio",
+    "invalidPhone": "Numero di telefono non valido"
+  },
+  "terms": {
+    "minimumRentalPeriod": "Periodo Minimo di Noleggio",
+    "validDriversLicense": "Patente di Guida Valida Richiesta (minimo 1 anno)",
+    "fullInsuranceCoverageIncluded": "Copertura Assicurativa Completa Inclusa",
+    "24/7RoadsideAssistance": "Assistenza Stradale 24/7",
+    "freeCancellation": "Cancellazione Gratuita fino a 48 ore prima del ritiro"
+  },
+  "searchResults": {
+    "filters": {
+      "filters": "Filtri",
+      "reset": "Reimposta",
+      "search": "Cerca",
+      "searchPlaceholderCars": "Marca, modello o località...",
+      "searchPlaceholderProperties": "Nome o località...",
+      "rentalDates": "Date di Noleggio",
+      "pickupDate": "Data di Ritiro",
+      "returnDate": "Data di Riconsegna",
+      "showingCarsForDates": "Mostra auto disponibili per le date selezionate",
+      "stayDates": "Date di Soggiorno",
+      "checkInDate": "Data Check-in",
+      "checkOutDate": "Data Check-out",
+      "showingPropertiesForDates": "Mostra strutture disponibili per le date selezionate",
+      "propertyType": "Tipo di Struttura",
+      "all": "Tutti",
+      "hotel": "Hotel",
+      "apartment": "Appartamento",
+      "guests": "Ospiti",
+      "adults": "Adulti",
+      "children": "Bambini",
+      "rooms": "Camere",
+      "filteringApartments": "Filtraggio appartamenti per letti ≥ {{beds}} e camere ≥ {{rooms}}",
+      "priceRange": "Fascia di Prezzo",
+      "perNight": "a notte",
+      "perDay": "al giorno",
+      "rating": "Valutazione",
+      "allRatings": "Tutte le Valutazioni",
+      "availability": "Disponibilità",
+      "allStatus": "Tutti gli Stati",
+      "active": "Attivo",
+      "maintenance": "Manutenzione",
+      "available": "Disponibile",
+      "rented": "Noleggiata",
+      "min": "Min",
+      "max": "Max",
+      "amenities": "Servizi",
+      "amenityWifi": "WiFi",
+      "amenityParking": "Parcheggio",
+      "amenityPool": "Piscina",
+      "amenityGym": "Palestra",
+      "amenitySpa": "Spa",
+      "amenityRestaurant": "Ristorante",
+      "amenityBar": "Bar",
+      "beds": "Letti",
+      "bathrooms": "Bagni",
+      "kitchens": "Cucine",
+      "livingRooms": "Soggiorni",
+      "applySearch": "Cerca",
+      "searching": "Ricerca in corso...",
+      "dailyPriceRange": "Fascia Prezzo Giornaliero",
+      "carType": "Tipo di Auto",
+      "allTypes": "Tutti i Tipi",
+      "sedan": "Berlina",
+      "suv": "SUV",
+      "sports": "Sportiva",
+      "transmission": "Cambio",
+      "any": "Qualsiasi",
+      "automatic": "Automatico",
+      "manual": "Manuale",
+      "fuelType": "Tipo di Carburante",
+      "anyFuel": "Qualsiasi",
+      "petrol": "Benzina",
+      "diesel": "Diesel",
+      "hybrid": "Ibrida",
+      "electric": "Elettrica",
+      "minSeats": "Numero Minimo Posti",
+      "seatsPlaceholder": "es. 4",
+      "features": "Caratteristiche",
+      "loadingFeatures": "Caricamento caratteristiche...",
+      "noFeatures": "Nessuna caratteristica disponibile"
+    },
+    "mapPreview": {
+      "title": "Anteprima sulla mappa",
+      "description": "Guida visiva per trovare la sistemazione perfetta",
+      "button": "Mostra sulla mappa",
+      "ariaOpen": "Apri la mappa delle strutture in una nuova scheda"
+    },
+    "cars": {
+      "title": "Auto Disponibili",
+      "found": "Trovate {{count}} auto disponibili per il noleggio",
+      "errorFetch": "Impossibile recuperare le auto disponibili. Riprova più tardi.",
+      "tryAgain": "Riprova",
+      "emptyTitle": "Nessuna auto trovata",
+      "emptyDescription": "Non abbiamo trovato auto corrispondenti ai filtri selezionati.",
+      "clearFilters": "Cancella Filtri",
+      "brand": "Marca",
+      "model": "Modello",
+      "year": "Anno",
+      "seats": "Posti",
+      "Mileage": "Chilometraggio",
+      "color": "Colore",
+      "plate": "Targa"
+    },
+    "properties": {
+      "title": "Risultati della Ricerca",
+      "found": "Trovate {{count}} strutture corrispondenti ai tuoi criteri",
+      "emptyTitle": "Nessuna struttura trovata",
+      "emptyDescription": "Prova a modificare i filtri o i criteri di ricerca per trovare più strutture",
+      "resetFilters": "Reimposta Filtri"
+    }
+  },
+  "navigation": {
+    "backToCars": "Torna alle Auto",
+    "backToApartments": "Torna agli Appartamenti",
+    "backToHotels": "Torna agli Hotel",
+    "backToDestinations": "Torna alle Destinazioni",
+    "backToCulture": "Torna alla Cultura",
+    "backToHome": "Torna alla Home"
+  },
+  "booking": {
+    "bookNow": "Prenota Ora",
+    "completeYourBooking": "Completa la Tua Prenotazione",
+    "justAFewMoreDetails": "Ancora qualche dettaglio e sei pronto per partire",
+    "personalInformation": "Informazioni Personali",
+    "stayPeriod": "Periodo di Soggiorno",
+    "myBookings": "Le Mie Prenotazioni",
+    "noBookings": "Non hai ancora prenotazioni. Inizia a esplorare strutture e auto per creare la tua prima prenotazione!",
+    "startExploring": "Inizia a esplorare strutture e auto per creare la tua prima prenotazione.",
+    "bookingSummaryDescription": "Rivedi tutte le tue prenotazioni di auto, hotel e appartamenti in un unico posto.",
+    "cancelBooking": "Cancella Prenotazione",
+    "awaitingConfirmation": "Prenotazione in Attesa di Conferma",
+    "bookingStatus": "Stato Prenotazione",
+    "confirmed": "Prenotazione Confermata",
+    "cancelled": "Prenotazione Cancellata",
+    "completed": "Prenotazione Completata",
+    "paymentStatus": "Stato Pagamento",
+    "paymentCompleted": "Pagamento Completato",
+    "paymentRequired": "Pagamento Richiesto",
+    "paymentPending": "Pagamento in Attesa",
+    "paymentFailed": "Pagamento Fallito",
+    "paymentSuccess": "Pagamento Riuscito",
+    "refundWillBeProcessed": "Il rimborso verrà elaborato",
+    "downloadInvoice": "Scarica Fattura"
+  },
+  "user": {
+    "fullName": "Nome Completo",
+    "email": "Email",
+    "phone": "Numero di Telefono",
+    "password": "Password",
+    "confirmPassword": "Conferma Password",
+    "register": "Registrati",
+    "login": "Accedi",
+    "logout": "Esci",
+    "alreadyHaveAccount": "Hai già un account? Accedi",
+    "dontHaveAccount": "Non hai un account? Registrati",
+    "invalidCredentials": "Email o password non validi",
+    "registrationSuccess": "Registrazione riuscita! Effettua il login.",
+    "registrationError": "Registrazione fallita. Riprova.",
+    "fullNameLabel": "Nome Completo",
+    "emailLabel": "Indirizzo Email",
+    "passwordLabel": "Password",
+    "confirmPasswordLabel": "Conferma Password",
+    "locationLabel": "Località",
+    "createAccount": "Crea Account",
+    "signIn": "Accedi",
+    "processing": "Elaborazione...",
+    "continueWithGoogle": "Continua con Google",
+    "or": "OPPURE",
+    "alreadyHaveAccountText": "Hai già un account? ",
+    "dontHaveAccountText": "Non hai un account? ",
+    "joinBookinAL": "Unisciti a BookinAL",
+    "startAlbanianAdventure": "Inizia la tua avventura albanese",
+    "welcomeBack": "Bentornato",
+    "continueExploringAlbania": "Continua ad esplorare l'Albania",
+    "welcomeToAlbania": "Benvenuto in Albania",
+    "gatewayToExperiences": "La tua porta d'accesso a esperienze albanesi indimenticabili",
+    "getStarted": "Inizia",
+    "orContinueWithEmail": "o continua con l'email",
+    "signInWithEmail": "Accedi con email",
+    "createNewAccount": "Crea un nuovo account",
+    "termsAgreement": "Continuando, accetti i nostri",
+    "termsOfService": "Termini di Servizio",
+    "and": "e",
+    "privacyPolicy": "Privacy Policy",
+    "hotels": "Hotel",
+    "apartments": "Appartamenti",
+    "carRentals": "Noleggio Auto",
+    "fillAllFields": "Compila tutti i campi",
+    "signInSuccessful": "Accesso riuscito!",
+    "signInFailed": "Accesso fallito",
+    "passwordsDontMatch": "Le password non corrispondono",
+    "passwordTooShort": "La password deve contenere almeno 6 caratteri",
+    "accountCreated": "Account creato! Controlla la tua email per verificare l'account.",
+    "accountCreationFailed": "Creazione account fallita",
+    "googleSignInFailed": "Accesso con Google fallito",
+    "fullNamePlaceholder": "Mario Rossi",
+    "emailPlaceholder": "tuo@esempio.com",
+    "passwordPlaceholder": "••••••••",
+    "locationPlaceholder": "La tua città"
+  },
+  "map": {
+    "openInGoogleMaps": "Apri in Google Maps",
+    "locationOnMap": "Posizione sulla Mappa"
+  },
+  "common": {
+    "success": "Operazione Riuscita",
+    "warning": "Attenzione",
+    "error": "Errore",
+    "bookNow": "Prenota Ora",
+    "view": "Visualizza",
+    "language": "Lingua",
+    "english": "Inglese",
+    "albanian": "Albanese",
+    "welcome": "Benvenuto",
+    "logout": "Esci",
+    "loading": "Caricamento...",
+    "car": "Auto",
+    "apartment": "Appartamento",
+    "hotel": "Hotel",
+    "stay": "Soggiorno",
+    "explore": "Esplora di Più",
+    "learnMore": "Scopri di Più",
+    "tryAgain": "Riprova",
+    "or": "o",
+    "yes": "Sì",
+    "no": "No",
+    "confirm": "Conferma",
+    "day": "giorno",
+    "days": "giorni",
+    "pageNotFound": "Oops! Pagina non trovata",
+    "returnToHome": "Torna alla Home",
+    "accountSuspended": "Oops! Sembra che il tuo account sia stato sospeso per qualche motivo da un Amministratore",
+    "unauthorizedAccess": "Oops! Non sei autorizzato ad accedere a questa pagina"
+  },
+  "wishlist": {
+    "savedForLater": "Salvato per dopo",
+    "destinationsCount": "Hai {{count}} destinazioni salvate nella tua lista dei desideri.",
+    "findingFavorites": "Ricerca dei tuoi preferiti...",
+    "loadError": "Impossibile caricare la lista dei desideri.",
+    "emptyTitle": "La tua lista dei desideri è vuota",
+    "emptyDescription": "Inizia ad esplorare il mondo e salva i tuoi posti preferiti per la tua prossima avventura.",
+    "exploreDestinations": "Esplora Destinazioni",
+    "topRated": "Più Votati",
+    "international": "Internazionale",
+    "seeMore": "Vedi Altro",
+    "removeError": "Impossibile rimuovere l'elemento. Riprova."
+  },
+  "provider": {
+    "backToHome": "Torna alla Home",
+    "becomeProvider": "Diventa un Fornitore",
+    "becomeProviderDescription": "Invia una richiesta per diventare un fornitore di servizi e iniziare a offrire le tue strutture e servizi sulla nostra piattaforma.",
+    "alreadyProvider": "Sei già un {{role}}. Non è necessario inviare una richiesta.",
+    "requestPending": "Richiesta in Attesa di Revisione",
+    "requestPendingDescription": "La tua richiesta per diventare fornitore è attualmente in fase di revisione da parte del nostro team di amministrazione.",
+    "submittedOn": "Inviata il:",
+    "yourReason": "La tua motivazione:",
+    "cancelRequest": "Annulla Richiesta",
+    "submitRequest": "Invia la Tua Richiesta",
+    "reasonLabel": "Perché vuoi diventare un fornitore? *",
+    "reasonPlaceholder": "Fornisci una spiegazione dettagliata del motivo per cui vuoi diventare fornitore. Includi informazioni sulla tua esperienza, i servizi che intendi offrire e come puoi contribuire alla nostra piattaforma. (Minimo 50 caratteri)",
+    "charactersCount": "{{count}} / 50 caratteri minimo",
+    "whatHappensNext": "Cosa succede dopo?",
+    "nextSteps": {
+      "review": "La tua richiesta sarà esaminata dal nostro team di amministrazione",
+      "notification": "Riceverai una notifica non appena verrà presa una decisione",
+      "upgrade": "Se approvata, il tuo account verrà aggiornato allo stato di fornitore",
+      "manage": "Potrai quindi aggiungere e gestire le tue strutture e servizi"
+    },
+    "submit": "Invia Richiesta",
+    "submitting": "Invio in corso...",
+    "requestSubmitted": "La tua richiesta è stata inviata con successo! Un amministratore la esaminerà a breve.",
+    "requestCancelled": "Richiesta annullata con successo",
+    "cancelFailed": "Annullamento richiesta fallito",
+    "reasonRequired": "Fornisci una motivazione per la tua richiesta",
+    "reasonTooShort": "Fornisci una motivazione più dettagliata (almeno 50 caratteri)",
+    "submitFailed": "Invio richiesta fallito",
+    "requestHistory": "Cronologia Richieste",
+    "submittedOnDate": "Inviata il {{date}}",
+    "reviewedOnDate": "Revisionata il {{date}}",
+    "reason": "Motivazione:",
+    "pending": "In Attesa",
+    "approved": "Approvata",
+    "rejected": "Respinta"
+  },
+  "propertiesMap": {
+    "title": "Hotel e Appartamenti Disponibili",
+    "description": "Esplora la nostra selezione di hotel e appartamenti in tutta l'Albania",
+    "interactiveMap": "📍 Mappa Interattiva",
+    "interactiveMapDescription": "Clicca su un segnaposto per vedere maggiori dettagli su hotel o appartamento",
+    "wideSelection": "🏨 Ampia Selezione",
+    "wideSelectionDescription": "Dagli hotel di lusso agli ostelli economici in tutta l'Albania",
+    "bestPrices": "💰 Migliori Prezzi",
+    "bestPricesDescription": "Prezzi competitivi con tariffe notturne trasparenti"
+  },
+  "account": {
+    "profileSettings": "Impostazioni Profilo",
+    "managePersonalInfo": "Gestisci le tue informazioni personali e preferenze",
+    "failedToLoadProfile": "Caricamento profilo fallito",
+    "avatarUpdated": "Avatar aggiornato con successo!",
+    "failedToUploadAvatar": "Caricamento avatar fallito",
+    "fileSizeTooLarge": "La dimensione del file deve essere inferiore a 5MB",
+    "pleaseUploadImage": "Carica un file immagine",
+    "profileUpdated": "Profilo aggiornato con successo!",
+    "failedToUpdateProfile": "Aggiornamento profilo fallito",
+    "editProfile": "Modifica Profilo",
+    "saving": "Salvataggio...",
+    "save": "Salva",
+    "cancel": "Annulla",
+    "fullName": "Nome Completo",
+    "enterFullName": "Inserisci il tuo nome completo",
+    "role": "Ruolo",
+    "phoneNumber": "Numero di Telefono",
+    "phonePlaceholder": "+355 69 123 4567",
+    "location": "Località",
+    "locationPlaceholder": "Tirana, Albania",
+    "bio": "Biografia",
+    "bioPlaceholder": "Parlaci di te...",
+    "accountInformation": "Informazioni Account",
+    "memberSince": "Membro dal:",
+    "lastUpdated": "Ultimo aggiornamento:"
+  },
+  "hotel": {
+    "loadingHotelDetails": "Caricamento dettagli hotel...",
+    "hotelNotFound": "Hotel Non Trovato",
+    "hotelNotFoundDescription": "L'hotel che stai cercando non esiste o è stato rimosso.",
+    "backToHotels": "Torna agli Hotel",
+    "viewAllPhotos": "Vedi Tutte le {{count}} Foto",
+    "pricePerNight": "Prezzo a notte",
+    "taxesAndFees": "+ tasse & commissioni",
+    "roomsAvailable": "Camere Disponibili",
+    "checkIn": "Check-in",
+    "checkOut": "Check-out",
+    "bookNow": "Prenota Ora",
+    "freeCancellation": "Cancellazione gratuita fino a 24 ore prima del check-in",
+    "aboutThisHotel": "Informazioni su Questo Hotel",
+    "amenitiesAndServices": "Servizi e Dotazioni",
+    "contactInformation": "Informazioni di Contatto",
+    "emailAddress": "Indirizzo Email",
+    "phoneNumber": "Numero di Telefono",
+    "address": "Indirizzo",
+    "location": "Località",
+    "noImagesAvailable": "Nessuna immagine disponibile",
+    "reservation": "Prenotazione",
+    "reservationComingSoon": "Funzionalità di prenotazione in arrivo!",
+    "amenities": {
+      "freeWifi": "WiFi Gratuito",
+      "parking": "Parcheggio",
+      "fitnessCenter": "Centro Fitness",
+      "restaurant": "Ristorante",
+      "bar": "Bar",
+      "spa": "Spa",
+      "swimmingPool": "Piscina"
+    }
+  },
+  "apartment": {
+    "addApartment": "Aggiungi Appartamento",
+    "addNewApartment": "Aggiungi Nuovo Appartamento",
+    "addDescription": "Compila i dettagli qui sotto per aggiungere un nuovo appartamento al tuo elenco di proprietà.",
+    "apartmentName": "Nome Appartamento",
+    "address": "Indirizzo",
+    "cityLocation": "Città/Località",
+    "rating": "Valutazione (0-5)",
+    "pricePerDay": "Prezzo per Notte ($)",
+    "status": "Stato",
+    "available": "Disponibile",
+    "rented": "Affittato",
+    "maintenance": "Manutenzione",
+    "rooms": "Camere",
+    "beds": "Letti",
+    "kitchens": "Cucine",
+    "bathrooms": "Bagni",
+    "livingRooms": "Soggiorni",
+    "contactEmail": "Email di Contatto",
+    "contactPhone": "Telefono di Contatto",
+    "amenities": "Servizi (separati da virgola)",
+    "selectLocation": "Seleziona Posizione Appartamento sulla Mappa",
+    "description": "Descrizione",
+    "cancel": "Annulla",
+    "adding": "Aggiunta in corso...",
+    "requiredFields": "Compila tutti i campi obbligatori (nome e prezzo)",
+    "uploadImage": "Carica almeno un'immagine",
+    "addFailed": "Aggiunta appartamento fallita",
+    "allApartments": "Tutti gli Appartamenti",
+    "manageApartments": "Gestisci e monitora tutti i tuoi annunci di appartamenti",
+    "searchPlaceholder": "Cerca per nome o indirizzo...",
+    "allStatuses": "Tutti gli Stati",
+    "allRatings": "Tutte le Valutazioni",
+    "rating4_5": "4,5+",
+    "rating4": "4+",
+    "noApartmentsFound": "Nessun appartamento trovato",
+    "noAddress": "Nessun indirizzo",
+    "roomsCount": "{{count}} camere",
+    "bedCount": "{{count}} letto",
+    "kitchenCount": "{{count}} cucina",
+    "bathroomCount": "{{count}} bagno",
+    "livingRoomCount": "{{count}} soggiorno",
+    "perDay": "/giorno",
+    "noAmenities": "Nessun servizio elencato",
+    "view": "Visualizza",
+    "confirmDelete": "Sei sicuro?",
+    "deleteWarning": "Non potrai annullare questa operazione!",
+    "confirmDeleteButton": "Sì, eliminalo!",
+    "deleteSuccess": "Eliminato!",
+    "deleteSuccessMessage": "Il tuo appartamento è stato eliminato.",
+    "loadFailed": "Caricamento appartamenti fallito.",
+    "retry": "Riprova",
+    "apartmentNotFound": "Appartamento Non Trovato",
+    "backToApartments": "Torna agli Appartamenti",
+    "apartmentDetails": "Dettagli Appartamento",
+    "updateInfo": "Aggiorna le informazioni dell'appartamento",
+    "viewDetails": "Visualizza i dettagli completi dell'appartamento",
+    "saving": "Salvataggio...",
+    "save": "Salva",
+    "editApartment": "Modifica Appartamento",
+    "basicInformation": "Informazioni di Base",
+    "name": "Nome",
+    "contact": "Contatto",
+    "email": "Email",
+    "phone": "Telefono",
+    "apartmentLocation": "Posizione Appartamento",
+    "noDescription": "Nessuna descrizione disponibile.",
+    "noImages": "Nessuna immagine disponibile",
+    "photos": "foto",
+    "updateSuccess": "Appartamento aggiornato con successo!",
+    "updateFailed": "Aggiornamento appartamento fallito."
+  },
+  "bookingManagement": {
+    "title": "Gestione Prenotazioni",
+    "subtitle": "Visualizza e gestisci tutte le richieste di prenotazione per le tue strutture",
+    "stats": {
+      "totalBookings": "Prenotazioni Totali",
+      "pending": "In Attesa",
+      "confirmed": "Confermate",
+      "totalRevenue": "Incasso Totale"
+    },
+    "filters": {
+      "searchPlaceholder": "Cerca per nome cliente, email, telefono o ID struttura...",
+      "allStatuses": "Tutti gli Stati",
+      "allTypes": "Tutti i Tipi",
+      "cars": "Auto",
+      "apartments": "Appartamenti",
+      "hotels": "Hotel"
+    },
+    "table": {
+      "headers": {
+        "property": "Struttura",
+        "customer": "Cliente",
+        "dates": "Date",
+        "price": "Prezzo",
+        "bookingStatus": "Stato Prenotazione",
+        "paymentStatus": "Stato Pagamento",
+        "actions": "Azioni"
+      },
+      "to": "a"
+    },
+    "statusOptions": {
+      "pending": "In Attesa",
+      "confirmed": "Confermata",
+      "canceled": "Annullata",
+      "completed": "Completata"
+    },
+    "confirmations": {
+      "updateStatusTitle": "Aggiornare lo Stato della Prenotazione?",
+      "updateStatusText": "Sei sicuro di voler cambiare lo stato in \"{{status}}\"?",
+      "confirmButton": "Sì, aggiornalo!",
+      "statusUpdated": "Stato Aggiornato",
+      "statusUpdatedSuccess": "Lo stato della prenotazione è stato aggiornato con successo.",
+      "updateFailed": "Aggiornamento Fallito",
+      "updateFailedText": "Aggiornamento dello stato della prenotazione fallito. Riprova."
+    },
+    "email": {
+      "subject": "Prenotazione Confermata - {{propertyName}}",
+      "greeting": "Egregio/a {{requesterName}},",
+      "confirmationMessage": "La tua prenotazione è stata confermata, procedi al pagamento. Ecco i dettagli:",
+      "checkIn": "Check-in:",
+      "checkOut": "Check-out:",
+      "time": "Ora:",
+      "totalPrice": "Prezzo Totale:",
+      "status": "Stato:",
+      "confirmed": "Confermata",
+      "questions": "Per qualsiasi domanda, contattaci.",
+      "regards": "Cordiali saluti,<br>Il Team di Albania"
+    },
+    "errors": {
+      "loadFailed": "Caricamento prenotazioni fallito. Riprova più tardi.",
+      "retry": "Riprova"
+    },
+    "emptyState": {
+      "noBookings": "Nessuna prenotazione trovata",
+      "adjustFilters": "Prova a modificare i filtri",
+      "noBookingsYet": "Non hai ancora prenotazioni"
+    }
+  },
+  "cars": {
+    "addCarDialog": {
+      "title": "Aggiungi Nuova Auto",
+      "subtitle": "Compila i dettagli qui sotto per aggiungere una nuova auto alla tua flotta. L'auto sarà revisionata da un amministratore prima di diventare disponibile per la prenotazione.",
+      "submitButton": "Invia per Revisione",
+      "adding": "Aggiunta in corso...",
+      "successTitle": "Auto Inviata per Revisione",
+      "successMessage": "La tua auto è stata inviata con successo ed è in attesa di approvazione da parte dell'amministratore. Riceverai una notifica non appena il tuo annuncio sarà revisionato. L'auto diventerà disponibile per la prenotazione dopo l'approvazione.",
+      "statusPending": "Stato: In Attesa di Revisione",
+      "statusDescription": "Un amministratore esaminerà i dettagli dell'auto e la approverà o richiederà modifiche.",
+      "close": "Chiudi",
+      "validation": {
+        "requiredFields": "Compila tutti i campi obbligatori",
+        "locationRequired": "Seleziona una posizione sulla mappa",
+        "imageRequired": "Carica almeno un'immagine"
+      },
+      "form": {
+        "carName": "Nome Auto",
+        "brand": "Marca",
+        "type": "Tipo",
+        "year": "Anno",
+        "transmission": "Cambio",
+        "fuelType": "Tipo Carburante",
+        "seats": "Posti",
+        "mileage": "Chilometraggio (km)",
+        "basePrice": "Prezzo Base al Giorno (€)",
+        "priceHelp": "Questo è il prezzo predefinito. Puoi impostare prezzi stagionali qui sotto.",
+        "status": "Stato",
+        "color": "Colore",
+        "plateNumber": "Targa",
+        "features": "Caratteristiche",
+        "suggestedFeatures": "Clicca per aggiungere caratteristiche comuni:",
+        "selectedFeatures": "Caratteristiche selezionate:",
+        "customFeature": "Aggiungi una caratteristica personalizzata...",
+        "add": "Aggiungi",
+        "pickupLocation": "Luogo di Ritiro",
+        "mapLabel": "Seleziona il Luogo di Ritiro sulla Mappa (Obbligatorio)"
+      },
+      "buttons": {
+        "cancel": "Annulla",
+        "addCar": "Aggiungi Auto"
+      }
+    },
+    "allCars": {
+      "title": "Tutte le Auto",
+      "subtitle": "Gestisci e monitora tutta la tua flotta",
+      "loading": "Caricamento veicoli...",
+      "error": "Caricamento auto fallito. Riprova più tardi.",
+      "retry": "Riprova",
+      "stats": {
+        "available": "Auto Disponibili",
+        "availableDesc": "Pronto per il noleggio",
+        "rented": "Attualmente Noleggiate",
+        "rentedDesc": "Su strada",
+        "maintenance": "In Manutenzione",
+        "maintenanceDesc": "In assistenza",
+        "avgRate": "Tariffa Media Giornaliera",
+        "avgRateDesc": "Per veicolo"
+      },
+      "filters": {
+        "search": "Cerca per nome, marca o targa...",
+        "allStatus": "Tutti gli Stati",
+        "allTypes": "Tutti i Tipi",
+        "allTransmission": "Tutti i Cambi"
+      },
+      "results": "{{count}} veicoli trovati",
+      "empty": {
+        "title": "Nessun Veicolo Trovato",
+        "message": "Prova a modificare il termine di ricerca o i filtri."
+      },
+      "card": {
+        "basePrice": "Prezzo Base",
+        "view": "Visualizza",
+        "seats_one": "{{count}} Posto",
+        "seats_other": "{{count}} Posti"
+      },
+      "delete": {
+        "confirmTitle": "Sei sicuro?",
+        "confirmMessage": "Non potrai annullare questa operazione!",
+        "confirmButton": "Sì, eliminala!",
+        "successTitle": "Eliminata!",
+        "successMessage": "La tua auto è stata eliminata."
+      },
+      "pagination": {
+        "previous": "Precedente",
+        "next": "Successivo"
+      }
+    },
+    "carDetails": {
+      "loading": "Caricamento...",
+      "notFound": {
+        "title": "Auto Non Trovata",
+        "message": "L'auto che stai cercando non esiste.",
+        "backButton": "Torna alle Auto"
+      },
+      "headers": {
+        "edit": "Modifica Auto",
+        "details": "Dettagli Auto",
+        "editSubtitle": "Aggiorna le informazioni dell'auto",
+        "detailsSubtitle": "Visualizza le informazioni complete dell'auto"
+      },
+      "buttons": {
+        "cancel": "Annulla",
+        "saving": "Salvataggio...",
+        "saveChanges": "Salva Modifiche",
+        "editCar": "Modifica Auto"
+      },
+      "success": {
+        "title": "Operazione Riuscita...",
+        "message": "Auto aggiornata con successo!"
+      },
+      "error": {
+        "title": "Ops...",
+        "message": "Qualcosa è andato storto!"
+      },
+      "sections": {
+        "status": "Stato",
+        "basicInfo": "Informazioni di Base",
+        "monthlyPricing": "Prezzi Mensili",
+        "vehicleDetails": "Dettagli Veicolo",
+        "features": "Caratteristiche",
+        "location": "Posizione"
+      },
+      "fields": {
+        "carName": "Nome Auto",
+        "brand": "Marca",
+        "selectBrand": "Seleziona una marca",
+        "type": "Tipo",
+        "year": "Anno",
+        "transmission": "Cambio",
+        "fuelType": "Tipo Carburante",
+        "seats": "Posti",
+        "basePrice": "Prezzo Base al Giorno",
+        "priceHelp": "Prezzo predefinito utilizzato quando non è impostato un prezzo mensile",
+        "color": "Colore",
+        "plateNumber": "Targa",
+        "mileage": "Chilometraggio",
+        "pickupLocation": "Luogo di Ritiro",
+        "addFeature": "Aggiungi una nuova caratteristica",
+        "noFeatures": "Nessuna caratteristica elencata.",
+        "mapLabel": "Posizione Auto sulla Mappa"
+      },
+      "pricing": {
+        "noSeasonal": "Nessuna tariffa stagionale configurata. Utilizzo del prezzo base di €{{price}}/giorno per tutti i mesi."
+      }
+    }
+  },
+  "destinationsManagement": {
+    "title": "Gestione Destinazioni",
+    "subtitle": "Gestisci le destinazioni turistiche in tutta l'Albania",
+    "loading": "Caricamento destinazioni...",
+    "error": "Caricamento destinazioni fallito",
+    "retry": "Riprova",
+    "addDestination": "Aggiungi Destinazione",
+    "stats": {
+      "total": "Destinazioni Totali",
+      "adventure": "Avventura",
+      "historic": "Storiche",
+      "beach": "Spiaggia"
+    },
+    "filters": {
+      "search": "Cerca destinazioni...",
+      "allCategories": "Tutte le Categorie"
+    },
+    "empty": {
+      "title": "Nessuna destinazione trovata",
+      "message": "Nessuna destinazione trovata"
+    },
+    "dialog": {
+      "addTitle": "Aggiungi Nuova Destinazione",
+      "editTitle": "Modifica Destinazione",
+      "viewTitle": "Visualizza Destinazione",
+      "addDescription": "Compila i dettagli per aggiungere una nuova destinazione turistica",
+      "editDescription": "Aggiorna le informazioni della destinazione",
+      "viewDescription": "Dettagli destinazione",
+      "cancel": "Annulla",
+      "create": "Crea",
+      "update": "Aggiorna",
+      "saving": "Salvataggio...",
+      "close": "Chiudi"
+    },
+    "form": {
+      "name": "Nome Destinazione",
+      "namePlaceholder": "es., Castello di Berat",
+      "category": "Categoria",
+      "categoryPlaceholder": "Seleziona una categoria",
+      "description": "Descrizione",
+      "descriptionPlaceholder": "Descrivi la destinazione...",
+      "images": "Immagini",
+      "location": "Posizione sulla Mappa",
+      "locationLabel": "Seleziona la posizione della destinazione sulla mappa",
+      "required": "Obbligatorio"
+    },
+    "validation": {
+      "requiredFields": "Compila tutti i campi obbligatori",
+      "imageRequired": "Carica almeno un'immagine",
+      "locationRequired": "Seleziona una posizione sulla mappa"
+    },
+    "success": {
+      "created": "Operazione Riuscita!",
+      "createdMessage": "Destinazione creata con successo",
+      "updated": "Operazione Riuscita!",
+      "updatedMessage": "Destinazione aggiornata con successo"
+    },
+    "errorMessages": {
+      "createFailed": "Errore",
+      "createFailedMessage": "Salvataggio destinazione fallito",
+      "deleteFailed": "Errore",
+      "deleteFailedMessage": "Eliminazione destinazione fallita"
+    },
+    "delete": {
+      "confirmTitle": "Sei sicuro?",
+      "confirmMessage": "Eliminare la destinazione \"{{name}}\"?",
+      "confirmButton": "Sì, eliminala!",
+      "successTitle": "Eliminata!",
+      "successMessage": "La destinazione è stata eliminata."
+    },
+    "card": {
+      "view": "Visualizza",
+      "edit": "Modifica",
+      "delete": "Elimina"
+    },
+    "pagination": {
+      "previous": "Precedente",
+      "next": "Successivo"
+    }
+  },
+  "hotels": {
+    "addHotelDialog": {
+      "title": "Aggiungi Nuovo Hotel",
+      "subtitle": "Compila i dettagli qui sotto per aggiungere un nuovo hotel al tuo elenco di proprietà.",
+      "submitButton": "Aggiungi Hotel",
+      "adding": "Aggiunta in corso...",
+      "successTitle": "Hotel Aggiunto",
+      "successMessage": "L'hotel è stato aggiunto con successo al tuo elenco di proprietà.",
+      "validation": {
+        "requiredFields": "Compila tutti i campi obbligatori",
+        "imageRequired": "Carica almeno un'immagine"
+      },
+      "form": {
+        "hotelName": "Nome Hotel",
+        "hotelNamePlaceholder": "Grand Plaza Hotel",
+        "location": "Località",
+        "locationPlaceholder": "Tirana, Albania",
+        "rating": "Valutazione (0-5)",
+        "ratingPlaceholder": "4.5",
+        "price": "Prezzo per Notte (€)",
+        "pricePlaceholder": "299",
+        "rooms": "Camere Totali",
+        "roomsPlaceholder": "150",
+        "occupancy": "Occupazione (%)",
+        "occupancyPlaceholder": "85",
+        "status": "Stato",
+        "statusActive": "Attivo",
+        "statusMaintenance": "Manutenzione",
+        "contactEmail": "Email di Contatto",
+        "contactEmailPlaceholder": "info@hotel.com",
+        "contactPhone": "Telefono di Contatto",
+        "contactPhonePlaceholder": "+355 69 123 4567",
+        "address": "Indirizzo Completo",
+        "addressPlaceholder": "Via principale 123, Città, Provincia, CAP",
+        "mapLabel": "Seleziona Posizione Hotel sulla Mappa",
+        "description": "Descrizione",
+        "descriptionPlaceholder": "Descrivi i servizi e le caratteristiche dell'hotel..."
+      },
+      "buttons": {
+        "cancel": "Annulla",
+        "addHotel": "Aggiungi Hotel"
+      },
+      "error": {
+        "addFailed": "Aggiunta hotel fallita"
+      }
+    },
+    "allHotels": {
+      "title": "Tutti gli Hotel",
+      "subtitle": "Gestisci e monitora tutte le tue proprietà alberghiere",
+      "loading": "Caricamento hotel...",
+      "error": {
+        "title": "Errore Caricamento Hotel"
+      },
+      "stats": {
+        "totalHotels": "Hotel Totali",
+        "totalRooms": "Camere Totali",
+        "avgOccupancy": "Occupazione Media",
+        "avgRating": "Valutazione Media"
+      },
+      "search": {
+        "placeholder": "Cerca hotel per nome o località..."
+      },
+      "filters": {
+        "status": {
+          "all": "Tutti gli Stati",
+          "active": "Attivo",
+          "maintenance": "Manutenzione"
+        },
+        "rating": {
+          "all": "Tutte le Valutazioni",
+          "fourFivePlus": "4,5+ Stelle",
+          "fourPlus": "4+ Stelle"
+        }
+      },
+      "results": "{{count}} risultati",
+      "empty": {
+        "title": "Nessun hotel trovato",
+        "message": "Prova a modificare la ricerca o i filtri"
+      },
+      "pagination": {
+        "previous": "Precedente",
+        "next": "Successivo"
+      },
+      "card": {
+        "rooms": "{{count}} Camere",
+        "occupancy": "{{percentage}}% Occupato",
+        "perNight": "/notte",
+        "view": "Visualizza"
+      },
+      "confirmDelete": {
+        "title": "Sei sicuro?",
+        "message": "Non potrai annullare questa operazione!",
+        "confirmButton": "Sì, eliminalo!",
+        "successTitle": "Eliminato!",
+        "successMessage": "Il tuo hotel è stato eliminato."
+      }
+    },
+    "hotelDetails": {
+      "view": {
+        "title": "Dettagli Hotel",
+        "subtitle": "Visualizza e gestisci le informazioni dell'hotel"
+      },
+      "edit": {
+        "title": "Modifica Hotel",
+        "subtitle": "Aggiorna le informazioni e le impostazioni dell'hotel"
+      },
+      "backToHotels": "Torna agli Hotel",
+      "buttons": {
+        "editHotel": "Modifica Hotel",
+        "cancel": "Annulla",
+        "saving": "Salvataggio...",
+        "saveChanges": "Salva Modifiche"
+      },
+      "success": {
+        "title": "Operazione Riuscita",
+        "message": "Hotel aggiornato con successo"
+      },
+      "error": {
+        "title": "Errore",
+        "message": "Aggiornamento hotel fallito"
+      },
+      "notFound": {
+        "title": "Hotel Non Trovato",
+        "description": "L'hotel che stai cercando non esiste o è stato rimosso."
+      },
+      "sections": {
+        "status": "Stato",
+        "basicInformation": "Informazioni di Base",
+        "contactInformation": "Informazioni di Contatto",
+        "location": "Posizione",
+        "description": "Descrizione"
+      },
+      "fields": {
+        "hotelName": "Nome Hotel",
+        "location": "Località",
+        "rating": "Valutazione",
+        "pricePerNight": "Prezzo per Notte",
+        "totalRooms": "Camere Totali",
+        "occupancyRate": "Tasso di Occupazione",
+        "email": "Email",
+        "phone": "Telefono",
+        "fullAddress": "Indirizzo Completo",
+        "hotelLocationOnMap": "Posizione Hotel sulla Mappa"
+      },
+      "statusOptions": {
+        "active": "Attivo",
+        "maintenance": "Manutenzione"
+      },
+      "images": {
+        "noImagesAvailable": "Nessuna immagine disponibile",
+        "photos": "{{count}} foto"
+      },
+      "display": {
+        "rooms": "Camere",
+        "noDescription": "Nessuna descrizione disponibile."
+      }
+    }
+  },
+  "userManagement": {
+    "title": "Gestione Utenti",
+    "error": "Caricamento utenti fallito",
+    "loading": "Caricamento utenti...",
+    "columns": {
+      "name": "Nome",
+      "email": "Email",
+      "role": "Ruolo",
+      "status": "Stato",
+      "registered": "Registrato",
+      "actions": "Azioni"
+    },
+    "viewDetails": "Visualizza Dettagli",
+    "stats": {
+      "totalUsers": "Utenti Totali",
+      "active": "Attivi",
+      "suspended": "Sospesi"
+    },
+    "filters": {
+      "searchPlaceholder": "Cerca per nome o email...",
+      "allRoles": "Tutti i Ruoli",
+      "user": "Utente",
+      "admin": "Amministratore",
+      "allStatus": "Tutti gli Stati",
+      "active": "Attivo",
+      "suspended": "Sospeso",
+      "pending": "In Attesa"
+    },
+    "status": {
+      "active": "Attivo",
+      "suspended": "Sospeso",
+      "pending": "In Attesa"
+    },
+    "roles": {
+      "user": "Utente",
+      "admin": "Amministratore",
+      "provider": "Fornitore"
+    }
+  },
+  "requestsManagement": {
+    "title": "Gestione Richieste Fornitori",
+    "subtitle": "Rivedi e gestisci le richieste degli utenti per diventare fornitori di servizi",
+    "loading": "Caricamento richieste...",
+    "error": "Caricamento richieste fallito",
+    "success": {
+      "approve": "Richiesta approvata con successo! L'utente è stato promosso a fornitore.",
+      "reject": "Richiesta respinta con successo."
+    },
+    "errors": {
+      "approve": "Approvazione richiesta fallita",
+      "reject": "Reiezione richiesta fallita"
+    },
+    "confirmations": {
+      "approve": "Sei sicuro di voler approvare questa richiesta? L'utente verrà promosso a fornitore.",
+      "reject": "Sei sicuro di voler respingere questa richiesta?"
+    },
+    "filters": {
+      "status": {
+        "all": "Tutti",
+        "pending": "In Attesa",
+        "approved": "Approvate",
+        "rejected": "Respinte"
+      }
+    },
+    "status": {
+      "pending": "In Attesa",
+      "approved": "Approvata",
+      "rejected": "Respinta"
+    },
+    "empty": {
+      "title": "Nessuna richiesta trovata",
+      "noRequests": "Non ci sono ancora richieste di fornitori.",
+      "noFilteredRequests": "Non ci sono richieste {{filter}}."
+    },
+    "user": {
+      "unknown": "Utente Sconosciuto",
+      "submitted": "Inviata",
+      "reviewed": "Revisionata il",
+      "reasonLabel": "Motivazione della Richiesta:"
+    },
+    "actions": {
+      "approve": "Approva",
+      "reject": "Respingi",
+      "processing": "Elaborazione..."
+    }
+  },
+  "propertyRequestsManagement": {
+    "title": "Gestione Richieste Strutture",
+    "subtitle": "Rivedi e gestisci le proposte di strutture (auto, appartamenti, hotel) inviate dai fornitori",
+    "loading": "Caricamento richieste strutture...",
+    "error": "Caricamento richieste strutture fallito",
+    "success": {
+      "approve": "Struttura approvata con successo! Ora è disponibile per la prenotazione.",
+      "reject": "Richiesta struttura respinta."
+    },
+    "errors": {
+      "approve": "Approvazione richiesta fallita",
+      "reject": "Reiezione richiesta fallita",
+      "loadDetails": "Caricamento dettagli struttura fallito",
+      "rejectionReasonRequired": "Fornisci una motivazione per la reiezione"
+    },
+    "confirmations": {
+      "approve": "Sei sicuro di voler approvare questa struttura? Diventerà disponibile per la prenotazione.",
+      "reject": "Sei sicuro di voler respingere questa richiesta?"
+    },
+    "filters": {
+      "status": {
+        "label": "Stato:",
+        "all": "Tutti",
+        "pending": "In Attesa",
+        "approved": "Approvate",
+        "rejected": "Respinte"
+      },
+      "type": {
+        "label": "Tipo:",
+        "all": "Tutti i Tipi",
+        "car": "Auto",
+        "apartment": "Appartamenti",
+        "hotel": "Hotel"
+      }
+    },
+    "status": {
+      "pending": "In Attesa",
+      "approved": "Approvata",
+      "rejected": "Respinta"
+    },
+    "propertyTypes": {
+      "car": "Auto",
+      "apartment": "Appartamento",
+      "hotel": "Hotel"
+    },
+    "empty": {
+      "title": "Nessuna richiesta struttura trovata",
+      "noPendingRequests": "Non ci sono richieste di strutture in attesa al momento.",
+      "noFilteredRequests": "Nessuna richiesta corrisponde ai filtri selezionati."
+    },
+    "provider": {
+      "unknown": "Fornitore Sconosciuto",
+      "noEmail": "Nessuna email",
+      "submitted": "Inviata:",
+      "reviewed": "Revisionata:",
+      "rejectionReason": "Motivazione Reiezione:"
+    },
+    "actions": {
+      "viewDetails": "Visualizza Dettagli",
+      "approve": "Approva",
+      "reject": "Respingi",
+      "processing": "Elaborazione..."
+    },
+    "modal": {
+      "details": {
+        "title": "Dettagli Struttura",
+        "description": "Rivedi le informazioni della struttura inviate dal fornitore",
+        "close": "Chiudi",
+        "approve": "Approva Struttura"
+      },
+      "reject": {
+        "title": "Respingi Richiesta Struttura",
+        "description": "Fornisci una motivazione per respingere questa proposta di struttura. Il fornitore riceverà notifica della reiezione.",
+        "reasonLabel": "Motivazione Reiezione *",
+        "placeholder": "Spiega perché questa struttura viene respinta...",
+        "cancel": "Annulla",
+        "confirm": "Conferma Reiezione"
+      }
+    }
+  },
+  "userDetails": {
+    "loading": "Caricamento utente...",
+    "backToUsers": "Torna agli Utenti",
+    "backToUserList": "Torna alla Lista Utenti",
+    "userProfile": "Profilo Utente",
+    "labels": {
+      "email": "Email",
+      "phone": "Telefono",
+      "registrationDate": "Data di Registrazione",
+      "lastLogin": "Ultimo Accesso",
+      "address": "Indirizzo"
+    },
+    "managementActions": "Azioni di Gestione",
+    "buttons": {
+      "editProfile": "Modifica Profilo",
+      "suspendUser": "Sospendi Utente",
+      "activateUser": "Attiva Utente"
+    },
+    "recentActivity": "Attività Recente",
+    "noActivityData": "Nessun dato di attività disponibile.",
+    "modal": {
+      "editUserProfile": "Modifica Profilo Utente"
+    },
+    "form": {
+      "fullName": "Nome Completo",
+      "avatarUrl": "URL Avatar",
+      "phone": "Telefono",
+      "bio": "Biografia",
+      "location": "Località",
+      "role": "Ruolo",
+      "user": "Utente",
+      "admin": "Amministratore",
+      "provider": "Fornitore",
+      "saving": "Salvataggio...",
+      "save": "Salva",
+      "cancel": "Annulla"
+    },
+    "errors": {
+      "fetchUser": "Utente non trovato o errore nel recupero utente.",
+      "userNotFound": "Utente non trovato.",
+      "suspendUser": "Sospensione utente fallita.",
+      "activateUser": "Attivazione utente fallita.",
+      "updateProfile": "Aggiornamento profilo utente fallito."
+    },
+    "status": {
+      "active": "Attivo",
+      "suspended": "Sospeso",
+      "pending": "In Attesa"
+    },
+    "roles": {
+      "user": "Utente",
+      "admin": "Amministratore",
+      "provider": "Fornitore"
+    }
+  },
+  "sidebar": {
+    "brand": "VisitAlbania",
+    "collapse": "Comprimi",
+    "home": "Home",
+    "apartments": {
+      "title": "Appartamenti",
+      "allApartments": "Tutti gli Appartamenti",
+      "ownersManagement": "Gestione Proprietari",
+      "bookings": "Prenotazioni",
+      "availability": "Disponibilità"
+    },
+    "hotels": {
+      "title": "Hotel",
+      "allHotels": "Tutti gli Hotel",
+      "roomsManagement": "Gestione Camere",
+      "bookings": "Prenotazioni",
+      "availability": "Disponibilità"
+    },
+    "cars": {
+      "title": "Noleggio Auto",
+      "fleetManagement": "Gestione Flotta",
+      "activeRentals": "Noleggi Attivi",
+      "maintenance": "Manutenzione"
+    },
+    "bookings": {
+      "title": "Prenotazioni",
+      "allBookings": "Tutte le Prenotazioni"
+    },
+    "destinations": {
+      "title": "Destinazioni",
+      "management": "Gestione Destinazioni"
+    },
+    "support": {
+      "title": "Chat di Supporto",
+      "chatDashboard": "Dashboard Chat"
+    },
+    "users": {
+      "title": "Utenti",
+      "management": "Gestione Utenti",
+      "providerRequests": "Richieste Fornitori",
+      "propertyRequests": "Richieste Strutture"
+    }
+  },
+  "availabilityCalendar": {
+    "title": "Disponibilità",
+    "error": "Caricamento disponibilità fallito",
+    "legend": {
+      "booked": "Prenotato",
+      "available": "Disponibile"
+    },
+    "info": {
+      "allAvailable": "Tutte le date disponibili",
+      "daysBooked": "giorno",
+      "daysBookedPlural": "giorni prenotati"
+    }
+  },
+  "monthlyPricingEditor": {
+    "title": "Prezzi Mensili",
+    "buttons": {
+      "applyBase": "Applica Base (€{{basePrice}}) a Tutti",
+      "summerPremium": "Maggiorazione Estiva (+20%)"
+    },
+    "stats": {
+      "avg": "Media:",
+      "min": "Min:",
+      "max": "Max:"
+    },
+    "seasons": {
+      "winter": "Inverno",
+      "spring": "Primavera",
+      "summer": "Estate",
+      "fall": "Autunno"
+    },
+    "tip": "💡 Consiglio: Imposta prezzi diversi per l'alta stagione (estate) e i periodi di bassa stagione. Il prezzo base verrà utilizzato come ripiego se non viene impostato un prezzo mensile."
+  }
+}
