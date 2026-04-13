@@ -228,7 +228,7 @@ async function sendEmailViaResend(
   const to = Array.isArray(emailData.to) ? emailData.to : [emailData.to];
 
   const payload = {
-    from: "onboarding@resend.dev", // TODO/ change later on prod
+    from: "Bookinal <noreply@bookinal.com>",
     to: to,
     subject: emailData.subject,
     html: emailData.html,
