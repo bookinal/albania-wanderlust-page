@@ -32,3 +32,8 @@ vite.config.*.mjs
 
 .env
 .env.production
+
+.cursor
+.claude
+.expo
+.vscode
