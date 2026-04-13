@@ -15,6 +15,56 @@ interface ProviderData {
   full_name: string;
 }
 
+const getPropertyTypeLabel = (
+  propertyType: CreateBookingDto["propertyType"],
+): string => {
+  switch (propertyType) {
+    case "apartment":
+      return "Apartment";
+    case "car":
+      return "Car";
+    case "hotel":
+    default:
+      return "Hotel";
+  }
+};
+
+const getPropertyDisplayName = async (
+  propertyId: string,
+  propertyType: CreateBookingDto["propertyType"],
+): Promise<string> => {
+  const numericId = Number(propertyId);
+
+  if (!Number.isFinite(numericId)) {
+    return propertyId;
+  }
+
+  try {
+    switch (propertyType) {
+      case "car": {
+        const car = await getCarById(numericId);
+        return car ? `${car.brand} ${car.name}`.trim() : propertyId;
+      }
+      case "apartment": {
+        const apartment = await getApartmentById(numericId);
+        return apartment?.name || propertyId;
+      }
+      case "hotel":
+      default: {
+        const hotel = await getHotelById(numericId);
+        return hotel?.name || propertyId;
+      }
+    }
+  } catch (error) {
+    console.warn("[Booking Service] Unable to resolve property name:", {
+      propertyId,
+      propertyType,
+      error,
+    });
+    return propertyId;
+  }
+};
+
 /**
  * Get provider details by ID
  */
@@ -69,25 +119,28 @@ export const createBooking = async (
     console.log("[Booking Service] 📧 Starting email notification process...");
     console.log("[Booking Service] Provider ID:", payload.providerId);
 
-    const providerData = await getProviderEmail(payload.providerId);
+    const [providerData, propertyName] = await Promise.all([
+      getProviderEmail(payload.providerId),
+      getPropertyDisplayName(payload.propertyId, payload.propertyType),
+    ]);
+    const propertyTypeLabel = getPropertyTypeLabel(payload.propertyType);
+
     console.log("[Booking Service] Provider data retrieved:", {
       email: providerData?.email,
       fullName: providerData?.full_name,
       hasData: !!providerData,
     });
+    console.log("[Booking Service] Property details retrieved:", {
+      propertyId: payload.propertyId,
+      propertyName,
+      propertyType: propertyTypeLabel,
+    });
 
     if (providerData?.email) {
-      const propertyTypeLabel =
-        payload.propertyType === "apartment"
-          ? "Apartment"
-          : payload.propertyType === "car"
-            ? "Car"
-            : "Hotel";
-
       console.log("[Booking Service] Generating email template...");
       console.log("[Booking Service] Template data:", {
         providerName: providerData.full_name || "Provider",
-        propertyName: payload.propertyId,
+        propertyName,
         propertyType: propertyTypeLabel,
         guestName: payload.requesterName,
         guestEmail: payload.contactMail,
@@ -100,7 +153,7 @@ export const createBooking = async (
 
       const html = getProviderBookingNotificationTemplate({
         providerName: providerData.full_name || "Provider",
-        propertyName: payload.propertyId,
+        propertyName,
         propertyType: propertyTypeLabel,
         guestName: payload.requesterName,
         guestEmail: payload.contactMail,
@@ -124,7 +177,7 @@ export const createBooking = async (
       // Validate email data before sending
       const emailPayload = {
         to: providerData.email, // For testing
-        subject: `New Booking Request - ${propertyTypeLabel} #${booking.id}`,
+        subject: `New booking request for ${propertyName}`,
         html,
         replyTo: payload.contactMail,
         tags: {
