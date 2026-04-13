@@ -81,9 +81,6 @@ export const sendEmailDirect = async (
       "send-email",
       {
         body: emailData,
-        headers: {
-          Authorization: `Bearer ${session.access_token}`,
-        },
       },
     );
 
