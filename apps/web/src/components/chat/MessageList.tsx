@@ -3,6 +3,7 @@ import { ChatMessage } from "@albania/shared-types";
 import { MessageBubble } from "./MessageBubble";
 import { Loader2 } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useTheme } from "@/context/ThemeContext";
 
 interface MessageListProps {
   messages: ChatMessage[];
@@ -15,10 +16,15 @@ export const MessageList: React.FC<MessageListProps> = ({
   currentUserId,
   isLoading = false,
 }) => {
+  const { isDark } = useTheme();
   const scrollRef = useRef<HTMLDivElement>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
-  // Auto-scroll to bottom on new messages
+  const tk = {
+    emptyText: isDark ? "rgba(255,255,255,0.45)" : "#6b6663",
+    loaderColor: "#E8192C",
+  };
+
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollIntoView({ behavior: "smooth" });
@@ -27,15 +33,15 @@ export const MessageList: React.FC<MessageListProps> = ({
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-full">
-        <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", flex: 1 }}>
+        <Loader2 style={{ width: "32px", height: "32px", color: tk.loaderColor, animation: "spin 1s linear infinite" }} />
       </div>
     );
   }
 
   if (messages.length === 0) {
     return (
-      <div className="flex items-center justify-center h-full text-gray-500">
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", flex: 1, color: tk.emptyText }}>
         <p>No messages yet. Start the conversation!</p>
       </div>
     );

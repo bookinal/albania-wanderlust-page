@@ -1,32 +1,10 @@
-import { useEffect, useState } from "react";
-import { apiClient } from "@albania/api-client";
+import { useAuth } from "@/context/AuthContext";
 
 export const useUserRole = () => {
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [userId, setUserId] = useState<string | null>(null);
+  const { user, userRole, loading } = useAuth();
 
-  useEffect(() => {
-    const checkRole = async () => {
-      try {
-        const {
-          data: { user },
-        } = await apiClient.auth.getUser();
-        if (user) {
-          setUserId(user.id);
-          // Check if user has admin role in metadata
-          const role = user.user_metadata?.role;
-          setIsAdmin(role === "admin");
-        }
-      } catch (error) {
-        console.error("Error checking user role:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  const isAdmin = userRole?.role === "admin" || userRole === "admin";
+  const userId = user?.id || null;
 
-    checkRole();
-  }, []);
-
-  return { isAdmin, isLoading, userId };
+  return { isAdmin, isLoading: loading, userId };
 };

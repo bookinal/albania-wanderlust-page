@@ -84,6 +84,11 @@
     "login": "Hyrje",
     "profile": "Profili"
   },
+  "auth": {
+    "loginRequired": "Kërkohet hyrje",
+    "loginToBook": "Ju lutemi hyni për të bërë një rezervim.",
+    "login": "Hyrje"
+  },
   "footer": {
     "description": "Platforma juaj e besuar për zbulimin dhe rezervimin e akomodimeve dhe makinave me qira në Shqipëri.",
     "explore": "Eksploro",
@@ -93,6 +98,7 @@
     "cultureCuisine": "Kulturë & Kuzhinë",
     "support": "Mbështetje",
     "helpCenter": "Qendra e Ndihmës",
+    "rentalTerms": "Kushtet e Qirasë",
     "cancellationPolicy": "Politika e Anulimit",
     "privacyPolicy": "Politika e Privatësisë",
     "termsOfService": "Kushtet e Shërbimit",
@@ -123,12 +129,12 @@
     "subtotal": "Nëntotali",
     "pricesVaryByMonth": "Çmimet ndryshojnë sipas muajit bazuar në tarifat sezonale.",
     "selectDatesForBreakdown": "Zgjidh datat për të parë ndarjen e çmimeve.",
-    "serviceFee": "Tarifa e shërbimit",
+    "serviceFee": "+ Tarifa e shërbimit",
     "serviceFeeDescription": "Mbulon operacionet e platformës, mbështetjen e klientit dhe mbrojtjen e rezervimit.",
     "tax": "Taksa (10%)",
     "taxDescription": "Taksa lokale dhe qeveritare e aplikuar për qiranë tuaj.",
     "total": "Totali",
-    "totalDescription": "Ky është shuma e plotë që do paguani nëse konfirmoni rezervimin.",
+    "totalDescription": "Kjo është shuma e plotë që do të paguani 7% për të konfirmuar rezervimin.",
     "confirmBooking": "Konfirmo Rezervimin",
     "processing": "Duke përpunuar...",
     "paymentNote": "Nuk do të tarifoheni ende. Pagesa përfundohet pas konfirmimit.",
@@ -146,7 +152,9 @@
     "emailPlaceholder": "emri@example.com",
     "phonePlaceholder": "Shkruani numrin e telefonit",
     "phoneRequired": "Numri i telefonit është i kërkuar",
-    "invalidPhone": "Numër telefoni i pavlefshëm"
+    "invalidPhone": "Numër telefoni i pavlefshëm",
+    "ownPropertyTitle": "Nuk mund të rezervoni pronën tuaj",
+    "ownPropertyMessage": "Nuk mund të rezervoni një pronë që ju e zotëroni. Ju lutemi zgjidhni një listim tjetër."
   },
   "terms": {
     "minimumRentalPeriod": "Periudha minimale e qirasë",
@@ -174,6 +182,7 @@
       "all": "Të gjitha",
       "hotel": "Hotel",
       "apartment": "Apartament",
+      "destination": "Destinacion",
       "guests": "Mysafirë",
       "adults": "Të rritur",
       "children": "Fëmijë",
@@ -284,12 +293,34 @@
     "completed": "Rezervimi i përfunduar",
     "paymentStatus": "Statusi i Pagesës",
     "paymentCompleted": "Pagesa e kryer",
-    "paymentRequired": "Kërkohet pagesa",
+    "paymentRequired": "Kërkohet pagesa 7% për të konfirmuar rezervimin",
     "paymentPending": "Pagesa në pritje",
     "paymentFailed": "Pagesa dështoi",
     "paymentSuccess": "Pagesa e suksesshme",
     "refundWillBeProcessed": "Rimbursimi do të përpilohet",
-    "downloadInvoice": "Shkarko faturën"
+    "downloadInvoice": "Shkarko faturën",
+    "statusLabel": "Rezervimi",
+    "paymentLabel": "Pagesa",
+    "statusHint": {
+      "pending": "Duke pritur konfirmimin nga ofruesi",
+      "confirmed": "Rezervimi juaj është konfirmuar nga ofruesi",
+      "canceled": "Ky rezervim është anuluar"
+    },
+    "paymentHint": {
+      "pending": "Pagesa nuk është kryer ende",
+      "paid": "Pagesa u krye me sukses",
+      "failed": "Pagesa dështoi — ju lutemi provoni përsëri"
+    },
+    "combinedStatus": {
+      "pendingPending": "Duke pritur konfirmimin nga ofruesi",
+      "confirmedPending": "Konfirmuar nga ofruesi · Duke pritur pagesën tuaj",
+      "confirmedPaid": "Konfirmuar nga ofruesi · Pagesa u krye",
+      "canceledPaid": "Rezervimi u anulua · Rimbursimi do të përpunohet",
+      "canceledPending": "Rezervimi u anulua",
+      "confirmedFailed": "Konfirmuar nga ofruesi · Pagesa dështoi, provoni përsëri"
+    },
+    "currentlyRented": "Aktualisht me qira — mund të rezervoni për një periudhë tjetër",
+    "underMaintenance": "Në Mirëmbajtje"
   },
   "user": {
     "fullName": "Emri i plotë",
@@ -374,6 +405,8 @@
     "apartment": "Apartament",
     "hotel": "Hotel",
     "stay": "Qëndrim",
+    "culture": "Kulturë",
+    "map": "Hartë",
     "explore": "Eksploro Më Shumë",
     "learnMore": "Mëso Më Shumë",
     "tryAgain": "Provo Përsëri",
@@ -381,6 +414,8 @@
     "yes": "Po",
     "no": "Jo",
     "confirm": "Konfirmo",
+    "cancel": "Anulo",
+    "more": "Më shumë",
     "day": "ditë",
     "days": "ditë",
     "pageNotFound": "Oops! Faqja nuk u gjet",
@@ -578,11 +613,35 @@
     "noImages": "Nuk ka imazhe të disponueshme",
     "photos": "foto",
     "updateSuccess": "Apartamenti u përditësua me sukses!",
-    "updateFailed": "Dështoi përditësimi i apartamentit."
+    "updateFailed": "Dështoi përditësimi i apartamentit.",
+    "successTitle": "Dërgimi u Pranua!",
+    "successMessage": "Listimi i apartamentit tuaj është dërguar për shqyrtim. Ekipi ynë i administratorit do ta shqyrtojë listimin tuaj dhe do ta miratojë së shpejti.",
+    "statusPending": "Në Pritje të Shqyrtimit të Administratorit",
+    "statusDescription": "Listimi juaj aktualisht po shqyrtohet. Do të njoftoheni sapo të miratohet dhe të jetë i dukshëm për vizitorët.",
+    "close": "Mbyll",
+    "review": "Në Shqyrtim"
   },
   "bookingManagement": {
     "title": "Menaxhimi i Rezervimeve",
     "subtitle": "Shiko dhe menaxho të gjitha kërkesat e rezervimit për pronat e tua",
+    "cancelBooking": {
+      "title": "Anulo Rezervimin",
+      "subtitle": "Ju lutem zgjidhni arsyen e anulimit",
+      "reasonRequired": "Ju lutem zgjidhni ose jepni një arsye për anulimin",
+      "reasons": {
+        "dateConflict": "Konflikt datesh me një rezervim tjetër",
+        "propertyUnavailable": "Prona nuk është më e disponueshme",
+        "pricingIssue": "Gabim çmimi ose problem disponueshmërie",
+        "customerRequest": "Klienti kërkoi anulimin",
+        "maintenance": "Prona në mirëmbajtje",
+        "forceMajeure": "Rrethanë force / Circostanca të paparashikuara",
+        "other": "Arsye tjetër"
+      },
+      "customReasonLabel": "Arsye tjetër (ju lutem specifikoni)",
+      "customReasonPlaceholder": "Shkruani arsyen tuaj...",
+      "confirmCancel": "Konfirmo Anulimin",
+      "autoCancelled": "Rezervimi u anulua automatikisht për shkak të konfliktit të datave me një rezervim tjetër"
+    },
     "stats": {
       "totalBookings": "Rezervime Totale",
       "pending": "Në Pritje",
@@ -1204,6 +1263,14 @@
         "placeholder": "Shpjegoni pse po refuzohet kjo pronë...",
         "cancel": "Anulo",
         "confirm": "Konfirmo Refuzimin"
+      },
+      "approve": {
+        "title": "Mirato Pronën me Vlerësim",
+        "description": "Vendosni vlerësimin zyrtar për këtë apartament para miratimit. Vlerësimi i sugjeruar nga ofruesi tregohet si referencë.",
+        "providerRating": "Vlerësimi i sugjeruar nga ofruesi",
+        "adminRatingLabel": "Vendos Vlerësimin Zyrtar *",
+        "cancel": "Anulo",
+        "confirm": "Mirato me Vlerësim"
       }
     }
   },
@@ -1288,7 +1355,8 @@
     },
     "bookings": {
       "title": "Rezervimet",
-      "allBookings": "Të Gjitha Rezervimet"
+      "allBookings": "Të Gjitha Rezervimet",
+      "supervision": "Mbikëqyrja e Rezervimeve"
     },
     "destinations": {
       "title": "Destinacionet",
@@ -1304,6 +1372,69 @@
       "providerRequests": "Kërkesat për Ofrues",
       "propertyRequests": "Kërkesat për Prona"
     }
+  },
+  "adminProvidersList": {
+    "title": "Mbikëqyrja e Rezervimeve",
+    "subtitle": "Monitoro dhe gjurmo të gjitha rezervimet nëpas ofruesve në platform",
+    "searchPlaceholder": "Kërko ofrues sipas emrit, emailit ose vendndodhhjes...",
+    "totalProviders": "ofrues gjithsej",
+    "noProviders": "Nuk u gjetën ofrues",
+    "noProvidersSearch": "Asnjë ofrues nuk përputhet me kërkim",
+    "viewBookings": "Shiko Rezervimet",
+    "memberSince": "Anetarsuar që",
+    "unnamed": "Ofrues pa Emer",
+    "loading": "Duke ngarkuar ofruesit...",
+    "error": "Dështoi ngarkimi i ofruesve"
+  },
+  "adminProviderBookings": {
+    "title": "Rezervimet e Ofruesit",
+    "subtitle": "Të gjitha rezervimet e menaxhuara nga ky ofrues",
+    "backToProviders": "Kthehu tek Ofruesit",
+    "booked": "Rezervuar me",
+    "stats": {
+      "total": "Gjithsej",
+      "pending": "Në Pritje",
+      "confirmed": "Konfirmuar",
+      "canceled": "Anuluar",
+      "completed": "Kompletuar",
+      "revenue": "Të Ardhura"
+    },
+    "filters": {
+      "searchPlaceholder": "Kërko sipas mysafirit, pronës ose ID...",
+      "allStatuses": "Të Gjitha Statuset",
+      "allTypes": "Të Gjitha Llojet"
+    },
+    "table": {
+      "property": "Prona",
+      "guest": "Mysafiri",
+      "dates": "Datat",
+      "total": "Totali",
+      "status": "Statusi",
+      "paymentStatus": "Pagesa",
+      "cancellationReason": "Arsyeja e Anulimit"
+    },
+    "status": {
+      "pending": "Në Pritje",
+      "confirmed": "Konfirmuar",
+      "canceled": "Anuluar",
+      "completed": "Kompletuar"
+    },
+    "paymentStatus": {
+      "pending": "Në Pritje",
+      "paid": "Paguar",
+      "failed": "Dështuar",
+      "refunded": "Rimbursuar"
+    },
+    "propertyTypes": {
+      "car": "Makina",
+      "apartment": "Apartamenti",
+      "hotel": "Hoteli"
+    },
+    "noBookings": "Ky ofrues nuk ka akoma rezervime",
+    "noBookingsSearch": "Asnjë rezervim nuk përputhet me filtrat tuaj",
+    "loading": "Duke ngarkuar rezervimet...",
+    "error": "Dështoi ngarkimi i rezervimeve",
+    "noCancellationReason": "Asnjë arsye nuk është dhënë"
   },
   "availabilityCalendar": {
     "title": "Disponueshmëria",

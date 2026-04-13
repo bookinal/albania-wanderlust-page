@@ -6,7 +6,10 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { SpeedInsights } from "@vercel/speed-insights/react";
 import { PayPalScriptProvider } from "@paypal/react-paypal-js";
 import { I18nextProvider } from "react-i18next";
+import ScrollToTop from "./components/ScrollToTop";
 import i18n from "./i18n/i18n";
+import { ThemeProvider } from "./context/ThemeContext";
+import { AuthProvider } from "./context/AuthContext";
 import Index from "./pages/home/Index";
 import OAuthSignInPage from "./pages/home/Auth";
 import NotFound from "./pages/NotFound";
@@ -36,6 +39,8 @@ import CarBilling from "./pages/home/booking/CarBilling";
 import BookingsSummary from "./pages/home/booking/BookingsSummary";
 import ApartmentBilling from "./pages/home/booking/ApartmentBilling";
 import BookingsManagement from "./pages/dashboard/bookings/BookingsManagement";
+import AdminProvidersList from "./pages/dashboard/bookings/AdminProvidersList";
+import AdminProviderBookings from "./pages/dashboard/bookings/AdminProviderBookings";
 import ProviderRequest from "./pages/home/ProviderRequest";
 import RequestsManagement from "./pages/dashboard/Requests/RequestsManagement";
 import PropertyRequestsManagement from "./pages/dashboard/Requests/PropertyRequestsManagement";
@@ -43,6 +48,8 @@ import Wishlist from "./pages/home/Wishlist";
 import DestinationsManagement from "./pages/dashboard/Destinations/DestinationsManagement";
 import SupportChat from "./pages/dashboard/SupportChat";
 import { UserChatWidget } from "./components/chat/UserChatWidget";
+import DashboardLayout from "./components/dashboard/DashboardLayout";
+import RentalTerms from "./pages/home/RentalTerms";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -65,6 +72,8 @@ const queryClient = new QueryClient({
 const paypalClientId = import.meta.env.VITE_PAYPAL_CLIENT_ID || "";
 
 const App = () => (
+  <ThemeProvider>
+  <AuthProvider>
   <I18nextProvider i18n={i18n}>
     <PayPalScriptProvider
       options={{
@@ -79,6 +88,7 @@ const App = () => (
           <Sonner />
 
           <BrowserRouter>
+            <ScrollToTop />
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/auth" element={<OAuthSignInPage />} />
@@ -108,49 +118,60 @@ const App = () => (
               />
               <Route path="/myBookings" element={<BookingsSummary />} />
               <Route path="/ProviderRequest" element={<ProviderRequest />} />
+              <Route path="/rental-terms" element={<RentalTerms />} />
 
               <Route element={<ProtectedRoute />}>
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/dashboard/HotelsList" element={<AllHotels />} />
-                <Route
-                  path="/dashboard/hotels/:id"
-                  element={<HotelDetails />}
-                />
-                <Route
-                  path="/dashboard/ApartmentsList"
-                  element={<AllApartments />}
-                />
-                <Route
-                  path="/dashboard/apartments/:id"
-                  element={<ApartmentDetails />}
-                />
-                <Route path="/dashboard/carsList" element={<AllCars />} />
-                <Route path="/dashboard/carInfo/:id" element={<CarDetails />} />
-                <Route
-                  path="/dashboard/userManagement"
-                  element={<UserManagement />}
-                />
-                <Route
-                  path="/dashboard/requestsManagement"
-                  element={<RequestsManagement />}
-                />
-                <Route
-                  path="/dashboard/propertyRequestsManagement"
-                  element={<PropertyRequestsManagement />}
-                />
-                <Route
-                  path="/dashboard/user-details/:userId"
-                  element={<UserDetails />}
-                />
-                <Route
-                  path="/dashboard/bookings"
-                  element={<BookingsManagement />}
-                />
-                <Route
-                  path="/dashboard/destinations"
-                  element={<DestinationsManagement />}
-                />
-                <Route path="/dashboard/support" element={<SupportChat />} />
+                <Route element={<DashboardLayout />}>
+                  <Route path="/dashboard" element={<Dashboard />} />
+                  <Route path="/dashboard/HotelsList" element={<AllHotels />} />
+                  <Route
+                    path="/dashboard/hotels/:id"
+                    element={<HotelDetails />}
+                  />
+                  <Route
+                    path="/dashboard/ApartmentsList"
+                    element={<AllApartments />}
+                  />
+                  <Route
+                    path="/dashboard/apartments/:id"
+                    element={<ApartmentDetails />}
+                  />
+                  <Route path="/dashboard/carsList" element={<AllCars />} />
+                  <Route path="/dashboard/carInfo/:id" element={<CarDetails />} />
+                  <Route
+                    path="/dashboard/userManagement"
+                    element={<UserManagement />}
+                  />
+                  <Route
+                    path="/dashboard/requestsManagement"
+                    element={<RequestsManagement />}
+                  />
+                  <Route
+                    path="/dashboard/propertyRequestsManagement"
+                    element={<PropertyRequestsManagement />}
+                  />
+                  <Route
+                    path="/dashboard/user-details/:userId"
+                    element={<UserDetails />}
+                  />
+                  <Route
+                    path="/dashboard/bookings"
+                    element={<BookingsManagement />}
+                  />
+                  <Route
+                    path="/dashboard/bookings/providers"
+                    element={<AdminProvidersList />}
+                  />
+                  <Route
+                    path="/dashboard/bookings/provider/:providerId"
+                    element={<AdminProviderBookings />}
+                  />
+                  <Route
+                    path="/dashboard/destinations"
+                    element={<DestinationsManagement />}
+                  />
+                  <Route path="/dashboard/support" element={<SupportChat />} />
+                </Route>
               </Route>
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
@@ -165,6 +186,8 @@ const App = () => (
       </QueryClientProvider>
     </PayPalScriptProvider>
   </I18nextProvider>
+  </AuthProvider>
+  </ThemeProvider>
 );
 
 export default App;

@@ -32,7 +32,7 @@ class UserService {
     const { data, error } = await apiClient
       .from("users")
       .select(
-        "id, email, role, phone, created_at, updated_at, full_name, avatar_url, bio, location, status"
+        "id, email, role, phone, created_at, updated_at, full_name, avatar_url, bio, location, status",
       )
       .eq("id", userId)
       .single();
@@ -53,13 +53,39 @@ class UserService {
   }
 
   /**
+   * Get all users with provider role
+   */
+  async getProviderUsers(): Promise<User[]> {
+    const { data, error } = await apiClient
+      .from("users")
+      .select(
+        "id, email, role, phone, created_at, updated_at, full_name, avatar_url, bio, location, status",
+      )
+      .eq("role", "provider");
+    if (error) throw error;
+    return data.map((user: any) => ({
+      id: user.id,
+      email: user.email,
+      role: user.role,
+      phone: user.phone,
+      created_at: user.created_at,
+      updated_at: user.updated_at,
+      full_name: user.full_name,
+      location: user.location,
+      status: user.status,
+      avatar_url: user.avatar_url,
+      bio: user.bio,
+    }));
+  }
+
+  /**
    * get all users
    */
   async getAllUsers(): Promise<User[]> {
     const { data, error } = await apiClient
       .from("users")
       .select(
-        "id, email, role, phone, created_at, updated_at, full_name, avatar_url, bio, location, status"
+        "id, email, role, phone, created_at, updated_at, full_name, avatar_url, bio, location, status",
       );
     if (error) throw error;
     return data.map((user: any) => ({
@@ -96,7 +122,7 @@ class UserService {
       })
       .eq("id", userId)
       .select(
-        "id, email, role, phone, created_at, updated_at, full_name, avatar_url, bio, location, status"
+        "id, email, role, phone, created_at, updated_at, full_name, avatar_url, bio, location, status",
       )
       .single();
     if (error) throw error;
@@ -162,7 +188,7 @@ class UserService {
       // Provide a helpful error explaining the likely cause
       throw new Error(
         "Failed to upload avatar. Check the 'userAvatar' bucket policy (allow authenticated uploads) or use the service_role key on the server. Original: " +
-          msg
+          msg,
       );
     }
   }

@@ -1,8 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
 import {
   DollarSign,
   Calendar,
@@ -20,6 +17,7 @@ import {
   MONTH_NAMES,
   MonthlyPriceInput,
 } from "@/types/price.type";
+import { useTheme } from "@/context/ThemeContext";
 
 interface MonthlyPricingEditorProps {
   prices: MonthlyPriceInput[];
@@ -28,7 +26,7 @@ interface MonthlyPricingEditorProps {
   disabled?: boolean;
 }
 
-// Season icons and colors
+// Season icons and colors — these are functional color indicators, kept as-is
 const getSeasonInfo = (
   month: Month,
   t: (key: string) => string,
@@ -73,12 +71,31 @@ export const MonthlyPricingEditor: React.FC<MonthlyPricingEditorProps> = ({
   disabled = false,
 }) => {
   const { t } = useTranslation();
+  const { isDark } = useTheme();
   const [localPrices, setLocalPrices] = useState<Record<Month, number>>(
     {} as Record<Month, number>,
   );
   const [copiedMonth, setCopiedMonth] = useState<Month | null>(null);
 
-  // Initialize local prices from props
+  const tk = {
+    labelText: isDark ? "rgba(255,255,255,0.80)" : "#111115",
+    calIcon: "#E8192C",
+    btnBg: isDark ? "rgba(255,255,255,0.06)" : "#f5f2ee",
+    btnBorder: isDark ? "rgba(255,255,255,0.12)" : "#ddd9d5",
+    btnText: isDark ? "rgba(255,255,255,0.80)" : "#44403c",
+    btnDisabledOpacity: 0.4,
+    statsBg: isDark ? "rgba(255,255,255,0.04)" : "#f5f2ee",
+    statsText: isDark ? "rgba(255,255,255,0.55)" : "#6b6663",
+    statsValue: isDark ? "#ffffff" : "#111115",
+    statsMin: "#10b981",
+    statsMax: "#E8192C",
+    inputBg: isDark ? "rgba(0,0,0,0.25)" : "#ffffff",
+    inputBorder: isDark ? "rgba(255,255,255,0.15)" : "#d1cdc9",
+    inputText: isDark ? "#ffffff" : "#111115",
+    monthText: isDark ? "rgba(255,255,255,0.45)" : "#6b6663",
+    tipText: isDark ? "rgba(255,255,255,0.35)" : "#9e9994",
+  };
+
   useEffect(() => {
     const priceMap: Record<Month, number> = {} as Record<Month, number>;
     MONTHS.forEach((month) => {
@@ -88,13 +105,10 @@ export const MonthlyPricingEditor: React.FC<MonthlyPricingEditorProps> = ({
     setLocalPrices(priceMap);
   }, [prices, basePrice]);
 
-  // Handle price change for a specific month
   const handlePriceChange = (month: Month, value: string) => {
     const numValue = parseFloat(value) || 0;
     const newPrices = { ...localPrices, [month]: numValue };
     setLocalPrices(newPrices);
-
-    // Convert to array format and notify parent
     const pricesArray: MonthlyPriceInput[] = MONTHS.map((m) => ({
       month: m,
       pricePerDay: newPrices[m] ?? basePrice,
@@ -102,14 +116,10 @@ export const MonthlyPricingEditor: React.FC<MonthlyPricingEditorProps> = ({
     onChange(pricesArray);
   };
 
-  // Apply base price to all months
   const applyToAll = () => {
     const newPrices: Record<Month, number> = {} as Record<Month, number>;
-    MONTHS.forEach((month) => {
-      newPrices[month] = basePrice;
-    });
+    MONTHS.forEach((month) => { newPrices[month] = basePrice; });
     setLocalPrices(newPrices);
-
     const pricesArray: MonthlyPriceInput[] = MONTHS.map((m) => ({
       month: m,
       pricePerDay: basePrice,
@@ -117,21 +127,18 @@ export const MonthlyPricingEditor: React.FC<MonthlyPricingEditorProps> = ({
     onChange(pricesArray);
   };
 
-  // Copy price from one month to clipboard/state for pasting
   const copyPrice = (month: Month) => {
     setCopiedMonth(month);
     setTimeout(() => setCopiedMonth(null), 2000);
   };
 
-  // Apply summer premium (e.g., +20% for Jun, Jul, Aug)
   const applySummerPremium = () => {
-    const premium = 1.2; // 20% increase
+    const premium = 1.2;
     const newPrices = { ...localPrices };
     (["JUN", "JUL", "AUG"] as Month[]).forEach((month) => {
       newPrices[month] = Math.round(basePrice * premium);
     });
     setLocalPrices(newPrices);
-
     const pricesArray: MonthlyPriceInput[] = MONTHS.map((m) => ({
       month: m,
       pricePerDay: newPrices[m] ?? basePrice,
@@ -139,73 +146,77 @@ export const MonthlyPricingEditor: React.FC<MonthlyPricingEditorProps> = ({
     onChange(pricesArray);
   };
 
-  // Calculate stats
   const allPrices = Object.values(localPrices).filter((p) => p > 0);
-  const avgPrice =
-    allPrices.length > 0
-      ? Math.round(allPrices.reduce((a, b) => a + b, 0) / allPrices.length)
-      : 0;
+  const avgPrice = allPrices.length > 0
+    ? Math.round(allPrices.reduce((a, b) => a + b, 0) / allPrices.length)
+    : 0;
   const minPrice = allPrices.length > 0 ? Math.min(...allPrices) : 0;
   const maxPrice = allPrices.length > 0 ? Math.max(...allPrices) : 0;
 
+  const btnStyle = (isDisabled: boolean): React.CSSProperties => ({
+    display: "inline-flex",
+    alignItems: "center",
+    gap: "4px",
+    padding: "6px 12px",
+    fontSize: "12px",
+    fontWeight: 600,
+    background: tk.btnBg,
+    border: `1px solid ${tk.btnBorder}`,
+    borderRadius: "7px",
+    color: tk.btnText,
+    cursor: isDisabled ? "not-allowed" : "pointer",
+    opacity: isDisabled ? tk.btnDisabledOpacity : 1,
+    transition: "all 0.15s",
+  });
+
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <Label className="text-sm font-medium flex items-center gap-2">
-          <Calendar size={16} className="text-blue-500" />
+    <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <span style={{ fontSize: "13px", fontWeight: 600, color: tk.labelText, display: "flex", alignItems: "center", gap: "8px" }}>
+          <Calendar size={16} style={{ color: tk.calIcon }} />
           {t("monthlyPricingEditor.title")}
-        </Label>
-        <div className="flex gap-2">
-          <Button
+        </span>
+        <div style={{ display: "flex", gap: "8px" }}>
+          <button
             type="button"
-            variant="outline"
-            size="sm"
             onClick={applyToAll}
             disabled={disabled || basePrice <= 0}
-            className="text-xs"
+            style={btnStyle(disabled || basePrice <= 0)}
           >
-            <Copy size={12} className="mr-1" />
+            <Copy size={12} />
             {t("monthlyPricingEditor.buttons.applyBase", { basePrice })}
-          </Button>
-          <Button
+          </button>
+          <button
             type="button"
-            variant="outline"
-            size="sm"
             onClick={applySummerPremium}
             disabled={disabled || basePrice <= 0}
-            className="text-xs"
+            style={btnStyle(disabled || basePrice <= 0)}
           >
-            <Sun size={12} className="mr-1" />
+            <Sun size={12} />
             {t("monthlyPricingEditor.buttons.summerPremium")}
-          </Button>
+          </button>
         </div>
       </div>
 
       {/* Stats Bar */}
-      <div className="flex gap-4 p-3 bg-gray-50 rounded-lg text-sm">
-        <div className="flex items-center gap-2">
-          <TrendingUp size={14} className="text-gray-500" />
-          <span className="text-gray-600">
-            {t("monthlyPricingEditor.stats.avg")}
-          </span>
-          <span className="font-semibold">${avgPrice}</span>
+      <div style={{ display: "flex", gap: "16px", padding: "12px", background: tk.statsBg, borderRadius: "8px", fontSize: "13px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          <TrendingUp size={14} style={{ color: tk.statsText }} />
+          <span style={{ color: tk.statsText }}>{t("monthlyPricingEditor.stats.avg")}</span>
+          <span style={{ fontWeight: 700, color: tk.statsValue }}>${avgPrice}</span>
         </div>
-        <div className="flex items-center gap-2">
-          <span className="text-gray-600">
-            {t("monthlyPricingEditor.stats.min")}
-          </span>
-          <span className="font-semibold text-green-600">${minPrice}</span>
+        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          <span style={{ color: tk.statsText }}>{t("monthlyPricingEditor.stats.min")}</span>
+          <span style={{ fontWeight: 700, color: tk.statsMin }}>${minPrice}</span>
         </div>
-        <div className="flex items-center gap-2">
-          <span className="text-gray-600">
-            {t("monthlyPricingEditor.stats.max")}
-          </span>
-          <span className="font-semibold text-red-600">${maxPrice}</span>
+        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          <span style={{ color: tk.statsText }}>{t("monthlyPricingEditor.stats.max")}</span>
+          <span style={{ fontWeight: 700, color: tk.statsMax }}>${maxPrice}</span>
         </div>
       </div>
 
       {/* Monthly Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(100px, 1fr))", gap: "12px" }}>
         {MONTHS.map((month) => {
           const seasonInfo = getSeasonInfo(month, t);
           const price = localPrices[month] ?? basePrice;
@@ -214,47 +225,57 @@ export const MonthlyPricingEditor: React.FC<MonthlyPricingEditorProps> = ({
           return (
             <div
               key={month}
-              className={`relative p-3 rounded-lg border transition-all ${
-                disabled ? "opacity-60" : "hover:shadow-md"
-              } ${seasonInfo.color}`}
+              className={`relative p-3 rounded-lg border transition-all ${disabled ? "opacity-60" : "hover:shadow-md"} ${seasonInfo.color}`}
             >
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-1.5">
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "8px" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
                   {seasonInfo.icon}
-                  <span className="text-xs font-medium">{month}</span>
+                  <span style={{ fontSize: "12px", fontWeight: 600 }}>{month}</span>
                 </div>
                 {copiedMonth === month && (
-                  <Check size={12} className="text-green-500" />
+                  <Check size={12} style={{ color: "#10b981" }} />
                 )}
               </div>
-              <div className="text-[10px] text-gray-500 mb-1.5">
+              <div style={{ fontSize: "10px", color: tk.monthText, marginBottom: "6px" }}>
                 {MONTH_NAMES[month]}
               </div>
-              <div className="relative">
+              <div style={{ position: "relative" }}>
                 <DollarSign
                   size={14}
-                  className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-400"
+                  style={{ position: "absolute", left: "6px", top: "50%", transform: "translateY(-50%)", color: tk.statsText }}
                 />
-                <Input
+                <input
                   type="number"
                   min="0"
                   step="1"
                   value={price || ""}
                   onChange={(e) => handlePriceChange(month, e.target.value)}
                   disabled={disabled}
-                  className={`pl-7 h-8 text-sm font-semibold ${
-                    isPriceDifferent ? "ring-2 ring-blue-300" : ""
-                  }`}
                   placeholder="0"
+                  style={{
+                    width: "100%",
+                    paddingLeft: "22px",
+                    height: "32px",
+                    fontSize: "13px",
+                    fontWeight: 700,
+                    background: tk.inputBg,
+                    border: `1px solid ${isPriceDifferent ? "#E8192C" : tk.inputBorder}`,
+                    borderRadius: "6px",
+                    color: tk.inputText,
+                    outline: "none",
+                    boxSizing: "border-box",
+                    boxShadow: isPriceDifferent ? "0 0 0 2px rgba(232,25,44,0.20)" : "none",
+                  }}
                 />
               </div>
               {isPriceDifferent && (
-                <div className="absolute -top-1 -right-1">
-                  <div
-                    className={`w-2 h-2 rounded-full ${
-                      price > basePrice ? "bg-red-500" : "bg-green-500"
-                    }`}
-                  />
+                <div style={{ position: "absolute", top: "-4px", right: "-4px" }}>
+                  <div style={{
+                    width: "8px",
+                    height: "8px",
+                    borderRadius: "50%",
+                    background: price > basePrice ? "#ef4444" : "#10b981",
+                  }} />
                 </div>
               )}
             </div>
@@ -262,7 +283,7 @@ export const MonthlyPricingEditor: React.FC<MonthlyPricingEditorProps> = ({
         })}
       </div>
 
-      <p className="text-xs text-gray-500 mt-2">
+      <p style={{ fontSize: "12px", color: tk.tipText, marginTop: "8px" }}>
         {t("monthlyPricingEditor.tip")}
       </p>
     </div>

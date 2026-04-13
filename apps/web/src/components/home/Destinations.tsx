@@ -11,10 +11,12 @@ import { useToast } from "@/hooks/use-toast";
 import { getCurrentUserWishlist } from "@/services/api/destinationService";
 import { useTranslation } from "react-i18next";
 import { useLocalized } from "@/hooks/useLocalized";
+import { useTheme } from "@/context/ThemeContext";
 
 const Destinations = () => {
   const { t } = useTranslation();
   const { localize } = useLocalized();
+  const { isDark } = useTheme();
   const navigate = useNavigate();
   const sectionRef = useRef(null);
   const headingRef = useRef(null);
@@ -302,7 +304,10 @@ const Destinations = () => {
     <section
       id="destinations"
       ref={sectionRef}
-      className="py-24 bg-gradient-to-b from-muted via-muted to-muted relative overflow-hidden"
+      className="py-24 relative overflow-hidden transition-colors duration-300"
+      style={{
+        backgroundColor: isDark ? '#0A0A0B' : '#f8fafc',
+      }}
     >
       {/* Animated background elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -314,13 +319,15 @@ const Destinations = () => {
         <div className="text-center mb-16">
           <h2
             ref={headingRef}
-            className="mb-4 text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/70"
+            className="mb-4 text-4xl md:text-5xl font-bold transition-colors duration-300"
+            style={{ color: isDark ? '#ffffff' : '#0f172a' }}
           >
             {t("home.destinations.title")}
           </h2>
           <p
             ref={subtitleRef}
-            className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed"
+            className="text-lg md:text-xl max-w-2xl mx-auto leading-relaxed transition-colors duration-300"
+            style={{ color: isDark ? 'rgba(255, 255, 255, 0.7)' : '#475569' }}
           >
             {t("home.destinations.description")}
           </p>
@@ -354,7 +361,13 @@ const Destinations = () => {
               <Card
                 key={destination.id}
                 ref={(el) => (cardsRef.current[index] = el)}
-                className="group overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-shadow duration-300 bg-card/80 backdrop-blur-sm"
+                className="group overflow-hidden border shadow-lg hover:shadow-2xl transition-shadow duration-300 backdrop-blur-sm"
+                style={{
+                  background: isDark ? "#141417" : "rgba(255,255,255,0.96)",
+                  borderColor: isDark
+                    ? "rgba(232,25,44,0.18)"
+                    : "rgba(15,23,42,0.08)",
+                }}
               >
                 <div className="relative h-64 overflow-hidden">
                   <img
@@ -366,21 +379,51 @@ const Destinations = () => {
                     }}
                   />
                   <div className="destination-tag absolute top-4 right-4 z-20">
-                    <span className="bg-primary text-primary-foreground px-4 py-1.5 rounded-full text-sm font-semibold shadow-lg backdrop-blur-sm">
+                    <span
+                      className="px-4 py-1.5 rounded-full text-sm font-semibold shadow-lg backdrop-blur-sm"
+                      style={{
+                        background: isDark
+                          ? "rgba(20,20,23,0.92)"
+                          : "rgba(248,250,252,0.95)",
+                        color: isDark ? "#f9fafb" : "#0f172a",
+                        border: isDark
+                          ? "1px solid rgba(148,163,184,0.5)"
+                          : "1px solid rgba(148,163,184,0.4)",
+                      }}
+                    >
                       {destination.category}
                     </span>
                   </div>
-                  <div className="destination-overlay absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+                  <div
+                    className="destination-overlay absolute inset-0 bg-gradient-to-t to-transparent"
+                    style={{
+                      backgroundImage: isDark
+                        ? "linear-gradient(to top, rgba(0,0,0,0.9), rgba(15,23,42,0.55), transparent)"
+                        : "linear-gradient(to top, rgba(15,23,42,0.85), rgba(15,23,42,0.35), transparent)",
+                    }}
+                  />
                 </div>
 
                 <CardContent className="destination-content p-6">
                   <div className="flex items-start gap-2 mb-3">
                     <MapPin className="w-5 h-5 text-primary flex-shrink-0 mt-1 group-hover:scale-110 transition-transform duration-300" />
-                    <h3 className="text-2xl font-bold text-foreground group-hover:text-primary transition-colors duration-300">
+                    <h3
+                      className="text-2xl font-bold transition-colors duration-300"
+                      style={{
+                        color: isDark ? "#f9fafb" : "#020617",
+                      }}
+                    >
                       {localize(destination.name)}
                     </h3>
                   </div>
-                  <p className="text-muted-foreground mb-4 line-clamp-3 leading-relaxed">
+                  <p
+                    className="mb-4 line-clamp-3 leading-relaxed"
+                    style={{
+                      color: isDark
+                        ? "rgba(148,163,184,0.9)"
+                        : "rgba(71,85,105,1)",
+                    }}
+                  >
                     {localize(destination.description)}
                   </p>
                   <div className="flex gap-3">

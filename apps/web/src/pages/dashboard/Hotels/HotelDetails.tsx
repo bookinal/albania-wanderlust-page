@@ -1,9 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
-import Hsidebar from "../../../components/dashboard/hsidebar";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   ArrowLeft,
   Edit,
@@ -26,12 +22,57 @@ import { MapPicker } from "@/components/dashboard/mapPicker";
 import { ImageUpload } from "@/components/dashboard/ImageUpload";
 import Swal from "sweetalert2";
 import { useTranslation } from "react-i18next";
+import { useTheme } from "@/context/ThemeContext";
 
 const HotelDetails = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const editMode = searchParams.get("edit") === "true";
+  const { t } = useTranslation();
+  const { isDark } = useTheme();
+
+  const tk = {
+    pageBg: isDark ? '#0d0d0d' : '#f5f4f1',
+    pageText: isDark ? '#ffffff' : '#111115',
+    cardBg: isDark ? 'rgba(255,255,255,0.025)' : '#ffffff',
+    cardBorder: isDark ? 'rgba(255,255,255,0.07)' : '#ede9e5',
+    inputBg: isDark ? 'rgba(255,255,255,0.04)' : '#faf8f5',
+    inputBorder: isDark ? 'rgba(255,255,255,0.10)' : '#ddd9d5',
+    inputText: isDark ? '#ffffff' : '#111115',
+    mutedText: isDark ? 'rgba(255,255,255,0.40)' : '#6b6663',
+    dimText: isDark ? 'rgba(255,255,255,0.70)' : '#44403c',
+    labelText: isDark ? 'rgba(255,255,255,0.55)' : '#6b6663',
+    optionBg: isDark ? '#1a1a1a' : '#ffffff',
+    ghostBtnText: isDark ? 'rgba(255,255,255,0.70)' : '#44403c',
+    ghostBtnBorder: isDark ? 'rgba(255,255,255,0.10)' : '#ddd9d5',
+    primaryBtnBg: '#E8192C',
+    primaryBtnText: '#ffffff',
+  };
+
+  const inputStyle: React.CSSProperties = {
+    width: '100%',
+    padding: '8px 12px',
+    borderRadius: 6,
+    border: `1px solid ${tk.inputBorder}`,
+    background: tk.inputBg,
+    color: tk.inputText,
+    fontSize: 14,
+    outline: 'none',
+    boxSizing: 'border-box',
+  };
+
+  const selectStyle: React.CSSProperties = {
+    width: '100%',
+    height: 40,
+    padding: '0 12px',
+    borderRadius: 6,
+    border: `1px solid ${tk.inputBorder}`,
+    background: tk.inputBg,
+    color: tk.inputText,
+    fontSize: 14,
+    outline: 'none',
+  };
 
   const [hotel, setHotel] = useState<Hotel | null>(null);
   const [loading, setLoading] = useState(true);
@@ -40,20 +81,13 @@ const HotelDetails = () => {
   const [formData, setFormData] = useState<UpdateHotelDto>({});
   const [newImageFiles, setNewImageFiles] = useState<File[]>([]);
 
-  const { t } = useTranslation();
-
-  // Fetch hotel data
   useEffect(() => {
     const fetchHotel = async () => {
       if (!id) return;
-
       setLoading(true);
       try {
         const data = await getHotelById(parseInt(id));
-
-        // If no data from service, use mock data for demo
         if (!data) {
-          // Mock hotel data for demonstration
           const mockHotel: Hotel = {
             id: parseInt(id),
             name: "Grand Plaza Hotel",
@@ -63,20 +97,9 @@ const HotelDetails = () => {
             occupancy: 85,
             price: 299,
             status: "active",
-            imageUrls: [
-              "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800",
-            ],
-            description:
-              "Luxurious hotel in the heart of Manhattan with stunning city views, world-class amenities, and exceptional service. Perfect for business and leisure travelers.",
-            amenities: [
-              "Free WiFi",
-              "Pool",
-              "Spa",
-              "Gym",
-              "Restaurant",
-              "Room Service",
-              "Parking",
-            ],
+            imageUrls: ["https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800"],
+            description: "Luxurious hotel in the heart of Manhattan with stunning city views, world-class amenities, and exceptional service. Perfect for business and leisure travelers.",
+            amenities: ["Free WiFi", "Pool", "Spa", "Gym", "Restaurant", "Room Service", "Parking"],
             contactEmail: "info@grandplaza.com",
             contactPhone: "+1 (212) 555-0100",
             address: "123 Fifth Avenue, New York, NY 10001",
@@ -95,73 +118,45 @@ const HotelDetails = () => {
         setLoading(false);
       }
     };
-
     fetchHotel();
   }, [id]);
 
   const handleChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >,
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>,
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]:
-        name === "rating" ||
-        name === "rooms" ||
-        name === "occupancy" ||
-        name === "price"
-          ? parseFloat(value) || 0
-          : value,
+      [name]: name === "rating" || name === "rooms" || name === "occupancy" || name === "price"
+        ? parseFloat(value) || 0
+        : value,
     }));
   };
 
   const handleLocationSelect = (lat: number, lng: number) => {
-    setFormData((prev) => ({
-      ...prev,
-      lat,
-      lng,
-    }));
+    setFormData((prev) => ({ ...prev, lat, lng }));
   };
 
-  const handleEdit = () => {
-    setIsEditing(true);
-  };
+  const handleEdit = () => setIsEditing(true);
 
   const handleCancel = () => {
     setIsEditing(false);
-    if (hotel) {
-      setFormData(hotel);
-    }
+    if (hotel) setFormData(hotel);
     setNewImageFiles([]);
   };
 
   const handleSave = async () => {
     if (!id) return;
-
     setSaving(true);
     try {
-      const updatedHotel = await updateHotel(
-        parseInt(id),
-        formData,
-        newImageFiles,
-      );
+      const updatedHotel = await updateHotel(parseInt(id), formData, newImageFiles);
       setHotel(updatedHotel);
       setIsEditing(false);
       setNewImageFiles([]);
-      Swal.fire({
-        icon: "success",
-        title: t("hotels.hotelDetails.success.title"),
-        text: t("hotels.hotelDetails.success.message"),
-      });
+      Swal.fire({ icon: "success", title: t("hotels.hotelDetails.success.title"), text: t("hotels.hotelDetails.success.message") });
     } catch (error) {
       console.error("Error updating hotel:", error);
-      Swal.fire({
-        icon: "error",
-        title: t("hotels.hotelDetails.error.title"),
-        text: t("hotels.hotelDetails.error.message"),
-      });
+      Swal.fire({ icon: "error", title: t("hotels.hotelDetails.error.title"), text: t("hotels.hotelDetails.error.message") });
     } finally {
       setSaving(false);
     }
@@ -169,169 +164,239 @@ const HotelDetails = () => {
 
   if (loading) {
     return (
-      <Hsidebar>
-        <div className="flex items-center justify-center h-screen">
-          <Loader2 className="animate-spin text-blue-600" size={48} />
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', background: tk.pageBg }}>
+          <Loader2 className="animate-spin" size={48} style={{ color: '#E8192C' }} />
         </div>
-      </Hsidebar>
     );
   }
 
   if (!hotel) {
     return (
-      <Hsidebar>
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center py-20">
-            <h3 className="text-2xl font-bold text-gray-900 mb-4">
-              {t("hotels.hotelDetails.notFound.title")}
-            </h3>
-            <p className="text-gray-500 mb-8">
-              {t("hotels.hotelDetails.notFound.description")}
-            </p>
-            <Button onClick={() => navigate("/dashboard/HotelsList")}>
-              <ArrowLeft className="mr-2" size={16} />
-              {t("hotels.hotelDetails.backToHotels")}
-            </Button>
+      <div style={{ background: tk.pageBg, minHeight: '100vh', color: tk.pageText }}>
+          <div style={{ maxWidth: 1200, margin: '0 auto', textAlign: 'center', paddingTop: 80 }}>
+            <h3 style={{ fontSize: 24, fontWeight: 700, marginBottom: 16 }}>{t("hotels.hotelDetails.notFound.title")}</h3>
+            <p style={{ color: tk.mutedText, marginBottom: 32 }}>{t("hotels.hotelDetails.notFound.description")}</p>
+            <button
+              onClick={() => navigate("/dashboard/HotelsList")}
+              style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '10px 20px', borderRadius: 8, background: '#E8192C', color: '#fff', border: 'none', cursor: 'pointer', fontWeight: 600 }}
+            >
+              <ArrowLeft size={16} /> {t("hotels.hotelDetails.backToHotels")}
+            </button>
           </div>
         </div>
-      </Hsidebar>
     );
   }
 
   return (
-    <Hsidebar>
-      <div className="max-w-7xl mx-auto">
+    <div
+      style={{
+        background: tk.pageBg,
+        minHeight: "100vh",
+        color: tk.pageText,
+        padding: "24px",
+      }}
+    >
+      <div style={{ maxWidth: 1200, margin: "0 auto" }}>
         {/* Header */}
-        <div className="mb-8 flex items-center justify-between">
+        <div
+          style={{
+            marginBottom: 32,
+            display: "flex",
+            alignItems: "flex-start",
+            justifyContent: "space-between",
+          }}
+        >
           <div>
-            <Button
-              variant="ghost"
+            <button
               onClick={() => navigate("/dashboard/HotelsList")}
-              className="mb-4 -ml-4"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 6,
+                marginBottom: 16,
+                background: "transparent",
+                border: "none",
+                cursor: "pointer",
+                color: tk.dimText,
+                fontSize: 14,
+              }}
             >
-              <ArrowLeft className="mr-2" size={16} />
-              {t("hotels.hotelDetails.backToHotels")}
-            </Button>
-            <h1 className="text-3xl font-bold text-gray-900">
+              <ArrowLeft size={16} /> {t("hotels.hotelDetails.backToHotels")}
+            </button>
+            <h1 style={{ fontSize: 30, fontWeight: 700, margin: 0 }}>
               {isEditing
                 ? t("hotels.hotelDetails.edit.title")
                 : t("hotels.hotelDetails.view.title")}
             </h1>
-            <p className="text-gray-500 text-lg mt-1">
+            <p style={{ color: tk.mutedText, fontSize: 16, marginTop: 4 }}>
               {isEditing
                 ? t("hotels.hotelDetails.edit.subtitle")
                 : t("hotels.hotelDetails.view.subtitle")}
             </p>
           </div>
 
-          <div className="flex gap-3">
+          <div style={{ display: "flex", gap: 12 }}>
             {isEditing ? (
               <>
-                <Button
-                  variant="outline"
+                <button
                   onClick={handleCancel}
                   disabled={saving}
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: 6,
+                    padding: "10px 18px",
+                    borderRadius: 8,
+                    background: "transparent",
+                    border: `1px solid ${tk.ghostBtnBorder}`,
+                    color: tk.ghostBtnText,
+                    cursor: "pointer",
+                    fontWeight: 500,
+                  }}
                 >
-                  <X className="mr-2" size={16} />
-                  {t("hotels.hotelDetails.buttons.cancel")}
-                </Button>
-                <Button
+                  <X size={16} /> {t("hotels.hotelDetails.buttons.cancel")}
+                </button>
+                <button
                   onClick={handleSave}
                   disabled={saving}
-                  className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: 6,
+                    padding: "10px 18px",
+                    borderRadius: 8,
+                    background: tk.primaryBtnBg,
+                    color: tk.primaryBtnText,
+                    border: "none",
+                    cursor: "pointer",
+                    fontWeight: 600,
+                    opacity: saving ? 0.7 : 1,
+                  }}
                 >
                   {saving ? (
                     <>
-                      <Loader2 className="mr-2 animate-spin" size={16} />
+                      <Loader2 className="animate-spin" size={16} />{" "}
                       {t("hotels.hotelDetails.buttons.saving")}
                     </>
                   ) : (
                     <>
-                      <Save className="mr-2" size={16} />
+                      <Save size={16} />{" "}
                       {t("hotels.hotelDetails.buttons.saveChanges")}
                     </>
                   )}
-                </Button>
+                </button>
               </>
             ) : (
-              <Button
+              <button
                 onClick={handleEdit}
-                className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 6,
+                  padding: "10px 18px",
+                  borderRadius: 8,
+                  background: tk.primaryBtnBg,
+                  color: tk.primaryBtnText,
+                  border: "none",
+                  cursor: "pointer",
+                  fontWeight: 600,
+                }}
               >
-                <Edit className="mr-2" size={16} />
-                {t("hotels.hotelDetails.buttons.editHotel")}
-              </Button>
+                <Edit size={16} /> {t("hotels.hotelDetails.buttons.editHotel")}
+              </button>
             )}
           </div>
         </div>
 
         {/* Main Content */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Left Column - Image and Basic Info */}
-          <div className="lg:col-span-1">
-            {/* Hotel Image */}
-            {/* Hotel Image / Gallery */}
-            <div className="bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100 mb-6">
+        <div
+          style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: 32 }}
+        >
+          {/* Left Column */}
+          <div>
+            {/* Image */}
+            <div
+              style={{
+                background: tk.cardBg,
+                border: `1px solid ${tk.cardBorder}`,
+                borderRadius: 12,
+                overflow: "hidden",
+                marginBottom: 24,
+              }}
+            >
               {isEditing ? (
-                <div className="p-4">
+                <div style={{ padding: 16 }}>
                   <ImageUpload
                     propertyType="Hotel"
                     disableUpload={true}
-                    onImagesSelected={(files) => {
-                      setNewImageFiles((prev) => [...prev, ...files]);
-                    }}
+                    onImagesSelected={(files) =>
+                      setNewImageFiles((prev) => [...prev, ...files])
+                    }
                     selectedFiles={newImageFiles}
-                    onRemoveFile={(index) => {
+                    onRemoveFile={(index) =>
                       setNewImageFiles((prev) =>
                         prev.filter((_, i) => i !== index),
-                      );
-                    }}
+                      )
+                    }
                     existingImages={formData.imageUrls}
-                    onRemoveExisting={(url) => {
+                    onRemoveExisting={(url) =>
                       setFormData((prev) => ({
                         ...prev,
                         imageUrls: prev.imageUrls?.filter((img) => img !== url),
-                      }));
-                    }}
+                      }))
+                    }
                     maxImages={10}
                     isLoading={saving}
                   />
                 </div>
               ) : (
-                <div className="relative">
-                  {/* Main Image */}
+                <div style={{ position: "relative" }}>
                   {hotel.imageUrls && hotel.imageUrls.length > 0 ? (
-                    <div className="grid grid-cols-4 grid-rows-2 gap-1 h-[300px]">
-                      {/* First large image */}
+                    <div
+                      style={{
+                        display: "grid",
+                        gridTemplateColumns: "repeat(4, 1fr)",
+                        gridTemplateRows: "repeat(2, 1fr)",
+                        gap: 4,
+                        height: 300,
+                      }}
+                    >
                       <div
-                        className={`bg-cover bg-center cursor-pointer relative group ${
-                          hotel.imageUrls.length === 1
-                            ? "col-span-4 row-span-2"
-                            : "col-span-2 row-span-2"
-                        }`}
                         style={{
                           backgroundImage: `url(${hotel.imageUrls[0]})`,
+                          backgroundSize: "cover",
+                          backgroundPosition: "center",
+                          gridColumn:
+                            hotel.imageUrls.length === 1
+                              ? "1 / span 4"
+                              : "1 / span 2",
+                          gridRow: "1 / span 2",
                         }}
-                      >
-                        <div className="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors" />
-                      </div>
-
-                      {/* Other images grid */}
+                      />
                       {hotel.imageUrls.slice(1, 5).map((url, idx) => (
                         <div
                           key={idx}
-                          className="bg-cover bg-center col-span-1 row-span-1 relative group"
                           style={{
                             backgroundImage: `url(${url})`,
+                            backgroundSize: "cover",
+                            backgroundPosition: "center",
+                          }}
+                        />
+                      ))}
+                      {hotel.imageUrls.length > 5 && (
+                        <div
+                          style={{
+                            position: "absolute",
+                            bottom: 16,
+                            right: 16,
+                            background: "rgba(255,255,255,0.9)",
+                            backdropFilter: "blur(4px)",
+                            padding: "4px 12px",
+                            borderRadius: 20,
+                            fontSize: 13,
+                            fontWeight: 500,
                           }}
                         >
-                          <div className="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors" />
-                        </div>
-                      ))}
-
-                      {/* "See all" overlay if more than 5 images */}
-                      {hotel.imageUrls.length > 5 && (
-                        <div className="absolute bottom-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-medium shadow-sm">
                           +{hotel.imageUrls.length - 5}{" "}
                           {t("hotels.hotelDetails.images.photos", {
                             count: hotel.imageUrls.length - 5,
@@ -340,9 +405,25 @@ const HotelDetails = () => {
                       )}
                     </div>
                   ) : (
-                    <div className="h-64 bg-gray-100 flex items-center justify-center text-gray-400">
-                      <div className="text-center">
-                        <ImageIcon className="w-12 h-12 mx-auto mb-2 opacity-50" />
+                    <div
+                      style={{
+                        height: 256,
+                        background: tk.cardBg,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        color: tk.mutedText,
+                      }}
+                    >
+                      <div style={{ textAlign: "center" }}>
+                        <ImageIcon
+                          style={{
+                            width: 48,
+                            height: 48,
+                            margin: "0 auto 8px",
+                            opacity: 0.5,
+                          }}
+                        />
                         <p>
                           {t("hotels.hotelDetails.images.noImagesAvailable")}
                         </p>
@@ -353,32 +434,56 @@ const HotelDetails = () => {
               )}
             </div>
 
-            {/* Status Badge */}
-            <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-              <Label className="text-sm font-medium mb-2 block">
+            {/* Status */}
+            <div
+              style={{
+                background: tk.cardBg,
+                border: `1px solid ${tk.cardBorder}`,
+                borderRadius: 12,
+                padding: 24,
+              }}
+            >
+              <p
+                style={{
+                  fontSize: 13,
+                  fontWeight: 500,
+                  color: tk.labelText,
+                  marginBottom: 8,
+                }}
+              >
                 {t("hotels.hotelDetails.sections.status")}
-              </Label>
+              </p>
               {isEditing ? (
                 <select
                   name="status"
                   value={formData.status || "active"}
                   onChange={handleChange}
-                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  style={selectStyle}
                 >
-                  <option value="active">
+                  <option value="active" style={{ background: tk.optionBg }}>
                     {t("hotels.hotelDetails.statusOptions.active")}
                   </option>
-                  <option value="maintenance">
+                  <option
+                    value="maintenance"
+                    style={{ background: tk.optionBg }}
+                  >
                     {t("hotels.hotelDetails.statusOptions.maintenance")}
                   </option>
                 </select>
               ) : (
                 <span
-                  className={`inline-block px-4 py-2 rounded-full text-sm font-bold uppercase tracking-wider ${
-                    hotel.status === "active"
-                      ? "bg-emerald-500 text-white"
-                      : "bg-amber-500 text-white"
-                  }`}
+                  style={{
+                    display: "inline-block",
+                    padding: "6px 16px",
+                    borderRadius: 20,
+                    fontSize: 13,
+                    fontWeight: 700,
+                    textTransform: "uppercase",
+                    letterSpacing: "0.05em",
+                    background:
+                      hotel.status === "active" ? "#10b981" : "#f59e0b",
+                    color: "#ffffff",
+                  }}
                 >
                   {hotel.status}
                 </span>
@@ -386,64 +491,112 @@ const HotelDetails = () => {
             </div>
           </div>
 
-          {/* Right Column - Details */}
-          <div className="lg:col-span-2 space-y-6">
+          {/* Right Column */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
             {/* Basic Information */}
-            <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-              <h2 className="text-xl font-bold text-gray-900 mb-6">
+            <div
+              style={{
+                background: tk.cardBg,
+                border: `1px solid ${tk.cardBorder}`,
+                borderRadius: 12,
+                padding: 24,
+              }}
+            >
+              <h2
+                style={{
+                  fontSize: 20,
+                  fontWeight: 700,
+                  marginBottom: 24,
+                  color: tk.pageText,
+                }}
+              >
                 {t("hotels.hotelDetails.sections.basicInformation")}
               </h2>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr 1fr",
+                  gap: 24,
+                }}
+              >
                 {/* Name */}
-                <div className="space-y-2">
-                  <Label
-                    htmlFor="name"
-                    className="text-sm font-medium flex items-center gap-2"
+                <div>
+                  <p
+                    style={{
+                      fontSize: 13,
+                      color: tk.labelText,
+                      marginBottom: 6,
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 6,
+                    }}
                   >
-                    <Home size={16} className="text-blue-500" />
+                    <Home size={14} style={{ color: "#E8192C" }} />{" "}
                     {t("hotels.hotelDetails.fields.hotelName")}
-                  </Label>
+                  </p>
                   {isEditing ? (
-                    <Input
+                    <input
                       id="name"
                       name="name"
                       value={formData.name || ""}
                       onChange={handleChange}
-                      className="text-lg font-semibold"
+                      style={{ ...inputStyle, fontSize: 16, fontWeight: 600 }}
                     />
                   ) : (
-                    <p className="text-lg font-semibold text-gray-900">
+                    <p
+                      style={{
+                        fontSize: 16,
+                        fontWeight: 600,
+                        color: tk.pageText,
+                      }}
+                    >
                       {hotel.name}
                     </p>
                   )}
                 </div>
-
                 {/* Location */}
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium flex items-center gap-2">
-                    <MapPin size={16} className="text-blue-500" />
+                <div>
+                  <p
+                    style={{
+                      fontSize: 13,
+                      color: tk.labelText,
+                      marginBottom: 6,
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 6,
+                    }}
+                  >
+                    <MapPin size={14} style={{ color: "#E8192C" }} />{" "}
                     {t("hotels.hotelDetails.fields.location")}
-                  </Label>
+                  </p>
                   {isEditing ? (
-                    <Input
+                    <input
                       name="location"
                       value={formData.location || ""}
                       onChange={handleChange}
+                      style={inputStyle}
                     />
                   ) : (
-                    <p className="text-gray-700">{hotel.location}</p>
+                    <p style={{ color: tk.dimText }}>{hotel.location}</p>
                   )}
                 </div>
-
                 {/* Rating */}
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium flex items-center gap-2">
-                    <Star size={16} className="text-amber-400 fill-amber-400" />
+                <div>
+                  <p
+                    style={{
+                      fontSize: 13,
+                      color: tk.labelText,
+                      marginBottom: 6,
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 6,
+                    }}
+                  >
+                    <Star size={14} style={{ color: "#f59e0b" }} />{" "}
                     {t("hotels.hotelDetails.fields.rating")}
-                  </Label>
+                  </p>
                   {isEditing ? (
-                    <Input
+                    <input
                       name="rating"
                       type="number"
                       step="0.1"
@@ -451,148 +604,238 @@ const HotelDetails = () => {
                       max="5"
                       value={formData.rating || 0}
                       onChange={handleChange}
+                      style={inputStyle}
                     />
                   ) : (
-                    <p className="text-lg font-semibold text-gray-900">
+                    <p
+                      style={{
+                        fontSize: 18,
+                        fontWeight: 700,
+                        color: tk.pageText,
+                      }}
+                    >
                       {hotel.rating} / 5.0
                     </p>
                   )}
                 </div>
-
                 {/* Price */}
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium flex items-center gap-2">
-                    <DollarSign size={16} className="text-emerald-500" />
+                <div>
+                  <p
+                    style={{
+                      fontSize: 13,
+                      color: tk.labelText,
+                      marginBottom: 6,
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 6,
+                    }}
+                  >
+                    <DollarSign size={14} style={{ color: "#10b981" }} />{" "}
                     {t("hotels.hotelDetails.fields.pricePerNight")}
-                  </Label>
+                  </p>
                   {isEditing ? (
-                    <Input
+                    <input
                       name="price"
                       type="number"
                       min="0"
                       value={formData.price || 0}
                       onChange={handleChange}
+                      style={inputStyle}
                     />
                   ) : (
-                    <p className="text-lg font-semibold text-gray-900">
+                    <p
+                      style={{
+                        fontSize: 18,
+                        fontWeight: 700,
+                        color: tk.pageText,
+                      }}
+                    >
                       ${hotel.price}
                     </p>
                   )}
                 </div>
-
                 {/* Rooms */}
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium flex items-center gap-2">
-                    <Bed size={16} className="text-gray-500" />
+                <div>
+                  <p
+                    style={{
+                      fontSize: 13,
+                      color: tk.labelText,
+                      marginBottom: 6,
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 6,
+                    }}
+                  >
+                    <Bed size={14} style={{ color: tk.mutedText }} />{" "}
                     {t("hotels.hotelDetails.fields.totalRooms")}
-                  </Label>
+                  </p>
                   {isEditing ? (
-                    <Input
+                    <input
                       name="rooms"
                       type="number"
                       min="0"
                       value={formData.rooms || 0}
                       onChange={handleChange}
+                      style={inputStyle}
                     />
                   ) : (
-                    <p className="text-gray-700">
+                    <p style={{ color: tk.dimText }}>
                       {hotel.rooms} {t("hotels.hotelDetails.display.rooms")}
                     </p>
                   )}
                 </div>
-
                 {/* Occupancy */}
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium flex items-center gap-2">
-                    <Users size={16} className="text-gray-500" />
+                <div>
+                  <p
+                    style={{
+                      fontSize: 13,
+                      color: tk.labelText,
+                      marginBottom: 6,
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 6,
+                    }}
+                  >
+                    <Users size={14} style={{ color: tk.mutedText }} />{" "}
                     {t("hotels.hotelDetails.fields.occupancyRate")}
-                  </Label>
+                  </p>
                   {isEditing ? (
-                    <Input
+                    <input
                       name="occupancy"
                       type="number"
                       min="0"
                       max="100"
                       value={formData.occupancy || 0}
                       onChange={handleChange}
+                      style={inputStyle}
                     />
                   ) : (
-                    <p className="text-gray-700">{hotel.occupancy}%</p>
+                    <p style={{ color: tk.dimText }}>{hotel.occupancy}%</p>
                   )}
                 </div>
               </div>
             </div>
 
             {/* Contact Information */}
-            <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-              <h2 className="text-xl font-bold text-gray-900 mb-6">
+            <div
+              style={{
+                background: tk.cardBg,
+                border: `1px solid ${tk.cardBorder}`,
+                borderRadius: 12,
+                padding: 24,
+              }}
+            >
+              <h2
+                style={{
+                  fontSize: 20,
+                  fontWeight: 700,
+                  marginBottom: 24,
+                  color: tk.pageText,
+                }}
+              >
                 {t("hotels.hotelDetails.sections.contactInformation")}
               </h2>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr 1fr",
+                  gap: 24,
+                }}
+              >
                 {/* Email */}
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium flex items-center gap-2">
-                    <Mail size={16} className="text-blue-500" />
+                <div>
+                  <p
+                    style={{
+                      fontSize: 13,
+                      color: tk.labelText,
+                      marginBottom: 6,
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 6,
+                    }}
+                  >
+                    <Mail size={14} style={{ color: "#E8192C" }} />{" "}
                     {t("hotels.hotelDetails.fields.email")}
-                  </Label>
+                  </p>
                   {isEditing ? (
-                    <Input
+                    <input
                       name="contactEmail"
                       type="email"
                       value={formData.contactEmail || ""}
                       onChange={handleChange}
+                      style={inputStyle}
                     />
                   ) : (
-                    <p className="text-gray-700">
+                    <p style={{ color: tk.dimText }}>
                       {hotel.contactEmail || "N/A"}
                     </p>
                   )}
                 </div>
-
                 {/* Phone */}
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium flex items-center gap-2">
-                    <Phone size={16} className="text-blue-500" />
+                <div>
+                  <p
+                    style={{
+                      fontSize: 13,
+                      color: tk.labelText,
+                      marginBottom: 6,
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 6,
+                    }}
+                  >
+                    <Phone size={14} style={{ color: "#E8192C" }} />{" "}
                     {t("hotels.hotelDetails.fields.phone")}
-                  </Label>
+                  </p>
                   {isEditing ? (
-                    <Input
+                    <input
                       name="contactPhone"
                       value={formData.contactPhone || ""}
                       onChange={handleChange}
+                      style={inputStyle}
                     />
                   ) : (
-                    <p className="text-gray-700">
+                    <p style={{ color: tk.dimText }}>
                       {hotel.contactPhone || "N/A"}
                     </p>
                   )}
                 </div>
-
-                {/* Address - Full Width */}
-                <div className="space-y-2 md:col-span-2">
-                  <Label className="text-sm font-medium flex items-center gap-2">
-                    <MapPin size={16} className="text-blue-500" />
+                {/* Address */}
+                <div style={{ gridColumn: "1 / span 2" }}>
+                  <p
+                    style={{
+                      fontSize: 13,
+                      color: tk.labelText,
+                      marginBottom: 6,
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 6,
+                    }}
+                  >
+                    <MapPin size={14} style={{ color: "#E8192C" }} />{" "}
                     {t("hotels.hotelDetails.fields.fullAddress")}
-                  </Label>
+                  </p>
                   {isEditing ? (
-                    <Input
+                    <input
                       name="address"
                       value={formData.address || ""}
                       onChange={handleChange}
+                      style={inputStyle}
                     />
                   ) : (
-                    <p className="text-gray-700">{hotel.address || "N/A"}</p>
+                    <p style={{ color: tk.dimText }}>
+                      {hotel.address || "N/A"}
+                    </p>
                   )}
                 </div>
               </div>
             </div>
 
-            {/* Map Location */}
+            {/* Map */}
             {isEditing ? (
               <MapPicker
                 lat={formData.lat}
                 lng={formData.lng}
+                canEdit={false}
                 onLocationSelect={handleLocationSelect}
                 label={t("hotels.hotelDetails.fields.hotelLocationOnMap")}
                 defaultCenter={[hotel.lat || 40.7831, hotel.lng || -73.9712]}
@@ -602,13 +845,28 @@ const HotelDetails = () => {
             ) : (
               hotel.lat !== undefined &&
               hotel.lng !== undefined && (
-                <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-                  <h2 className="text-xl font-bold text-gray-900 mb-4">
+                <div
+                  style={{
+                    background: tk.cardBg,
+                    border: `1px solid ${tk.cardBorder}`,
+                    borderRadius: 12,
+                    padding: 24,
+                  }}
+                >
+                  <h2
+                    style={{
+                      fontSize: 20,
+                      fontWeight: 700,
+                      marginBottom: 16,
+                      color: tk.pageText,
+                    }}
+                  >
                     {t("hotels.hotelDetails.sections.location")}
                   </h2>
                   <MapPicker
                     lat={hotel.lat}
                     lng={hotel.lng}
+                    canEdit={false}
                     onLocationSelect={() => {}}
                     label=""
                     defaultCenter={[hotel.lat, hotel.lng]}
@@ -620,8 +878,22 @@ const HotelDetails = () => {
             )}
 
             {/* Description */}
-            <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-              <h2 className="text-xl font-bold text-gray-900 mb-4">
+            <div
+              style={{
+                background: tk.cardBg,
+                border: `1px solid ${tk.cardBorder}`,
+                borderRadius: 12,
+                padding: 24,
+              }}
+            >
+              <h2
+                style={{
+                  fontSize: 20,
+                  fontWeight: 700,
+                  marginBottom: 16,
+                  color: tk.pageText,
+                }}
+              >
                 {t("hotels.hotelDetails.sections.description")}
               </h2>
               {isEditing ? (
@@ -630,10 +902,14 @@ const HotelDetails = () => {
                   value={formData.description || ""}
                   onChange={handleChange}
                   rows={4}
-                  className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring resize-none"
+                  style={{
+                    ...inputStyle,
+                    resize: "none",
+                    fontFamily: "inherit",
+                  }}
                 />
               ) : (
-                <p className="text-gray-700 leading-relaxed">
+                <p style={{ color: tk.dimText, lineHeight: 1.6 }}>
                   {hotel.description ||
                     t("hotels.hotelDetails.display.noDescription")}
                 </p>
@@ -642,7 +918,7 @@ const HotelDetails = () => {
           </div>
         </div>
       </div>
-    </Hsidebar>
+    </div>
   );
 };
 

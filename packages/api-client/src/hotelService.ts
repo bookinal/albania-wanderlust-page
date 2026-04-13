@@ -11,7 +11,7 @@ import {
   deleteHotelImages,
   deleteImagesByUrls,
 } from "./storageService";
-import { getBookingsByPropertyIdAndType } from "./bookingService";
+import { getBookingsByPropertyIdAndType, getUnavailablePropertyIds } from "./bookingService";
 
 // In-memory cache for hotels with TTL
 let hotelsCache: { data: Hotel[]; timestamp: number } | null = null;
@@ -290,73 +290,169 @@ export const deleteHotel = async (id: number): Promise<void> => {
 };
 
 /**
- * Search hotels with filters (client-side filtering)
+ * Fetch hotels for dashboard with server-side filtering and pagination
+ */
+export const getDashboardHotels = async (
+  page: number = 1,
+  limit: number = 6,
+  filters: {
+    searchTerm?: string;
+    status?: string;
+    rating?: string;
+    providerId?: string;
+  } = {}
+): Promise<{ data: Hotel[]; total: number }> => {
+  const from = (page - 1) * limit;
+  const to = from + limit - 1;
+
+  let query = apiClient.from("hotel").select("*", { count: "exact" });
+
+  if (filters.providerId) {
+    query = query.eq("providerId", filters.providerId);
+  }
+
+  if (filters.status && filters.status !== "all") {
+    query = query.eq("status", filters.status);
+  }
+
+  if (filters.searchTerm && filters.searchTerm.trim()) {
+    const term = `%${filters.searchTerm}%`;
+    query = query.or(`name.ilike.${term},location.ilike.${term},address.ilike.${term}`);
+  }
+
+  if (filters.rating && filters.rating !== "all") {
+    const minRating = parseFloat(filters.rating.replace("+", ""));
+    if (!isNaN(minRating)) {
+      query = query.gte("rating", minRating);
+    }
+  }
+
+  // Ensure latest created are first (optional but good for dashboard)
+  query = query.order("created_at", { ascending: false });
+  query = query.range(from, to);
+
+  const { data, error, count } = await query;
+
+  if (error) {
+    console.error("[Hotel Service] Error fetching dashboard hotels:", error);
+    throw error;
+  }
+
+  return {
+    data: data as Hotel[],
+    total: count || 0,
+  };
+};
+
+/**
+ * Get basic hotel stats for the dashboard (lightweight query)
+ */
+export const getHotelDashboardStats = async (providerId?: string) => {
+  let query = apiClient.from("hotel").select("rooms, occupancy, rating");
+  if (providerId) {
+    query = query.eq("providerId", providerId);
+  }
+
+  const { data, error } = await query;
+  if (error || !data) {
+    return { totalHotels: 0, totalRooms: 0, avgOccupancy: 0, avgRating: 0 };
+  }
+
+  let totalRooms = 0, sumOccupancy = 0, sumRating = 0;
+  data.forEach((h) => {
+    totalRooms += h.rooms || 0;
+    sumOccupancy += h.occupancy || 0;
+    sumRating += h.rating || 0;
+  });
+
+  return {
+    totalHotels: data.length,
+    totalRooms,
+    avgOccupancy: data.length > 0 ? sumOccupancy / data.length : 0,
+    avgRating: data.length > 0 ? sumRating / data.length : 0,
+  };
+};
+
+/**
+ * Search hotels with DB-level filtering and pagination
  */
 export const searchHotels = async (
-  filters?: HotelFilters,
-): Promise<Hotel[]> => {
-  try {
-    const hotels = await getAllHotels();
+  filters: any,
+  page: number = 1,
+  limit: number = 10
+): Promise<{ data: Hotel[]; total: number }> => {
+  const from = (page - 1) * limit;
+  const to = from + limit - 1;
 
-    if (!filters) {
-      return hotels;
-    }
+  let query = apiClient.from("hotel").select("*", { count: "exact" });
 
-    return hotels.filter((hotel) => {
-      // Search term filter
-      if (filters.searchTerm) {
-        const term = filters.searchTerm.toLowerCase();
-        const matchesSearch =
-          hotel.name.toLowerCase().includes(term) ||
-          hotel.location?.toLowerCase().includes(term) ||
-          hotel.address?.toLowerCase().includes(term);
-        if (!matchesSearch) return false;
-      }
+  const f = filters.hotelFilters || {};
 
-      // Price range filter
-      if (filters.priceRange) {
-        if (
-          hotel.price < filters.priceRange.min ||
-          hotel.price > filters.priceRange.max
-        ) {
-          return false;
-        }
-      }
-
-      // Rating filter
-      if (filters.rating && filters.rating !== "all") {
-        const threshold = parseFloat(filters.rating);
-        if (hotel.rating < threshold) return false;
-      }
-
-      // Status filter
-      if (filters.status && filters.status !== "all") {
-        if (hotel.status !== filters.status) return false;
-      }
-
-      // Rooms filter
-      if (filters.rooms) {
-        if (filters.rooms.min && hotel.rooms < filters.rooms.min) return false;
-        if (filters.rooms.max && hotel.rooms > filters.rooms.max) return false;
-      }
-
-      // Amenities filter
-      if (filters.amenities) {
-        if (filters.amenities.wifi && !hotel.wifi) return false;
-        if (filters.amenities.parking && !hotel.parking) return false;
-        if (filters.amenities.pool && !hotel.pool) return false;
-        if (filters.amenities.gym && !hotel.gym) return false;
-        if (filters.amenities.spa && !hotel.spa) return false;
-        if (filters.amenities.restaurant && !hotel.restaurant) return false;
-        if (filters.amenities.bar && !hotel.bar) return false;
-      }
-
-      return true;
-    });
-  } catch (err) {
-    console.error("[Hotel Service] Error searching hotels:", err);
-    throw err;
+  // Status filter
+  if (f.status && f.status !== "all") {
+    query = query.eq("status", f.status);
+  } else {
+    query = query.not("status", "in", '("maintenance","review")');
   }
+
+  // Search term
+  const searchTerm = f.searchTerm || filters.destination || "";
+  if (searchTerm && searchTerm.trim()) {
+    const term = `%${searchTerm}%`;
+    query = query.or(`name.ilike.${term},location.ilike.${term},address.ilike.${term}`);
+  }
+
+  // Rooms
+  if (f.rooms?.min) query = query.gte("rooms", f.rooms.min);
+  if (f.rooms?.max) query = query.lte("rooms", f.rooms.max);
+
+  // Price Range
+  if (f.priceRange) {
+    query = query.gte("price", f.priceRange.min).lte("price", f.priceRange.max);
+  }
+
+  // Rating
+  if (f.rating && f.rating !== "all") {
+    query = query.gte("rating", parseFloat(f.rating));
+  }
+
+  // Amenities filter - Boolean fields in Hotel
+  if (f.amenities) {
+    if (f.amenities.wifi) query = query.eq("wifi", true);
+    if (f.amenities.parking) query = query.eq("parking", true);
+    if (f.amenities.pool) query = query.eq("pool", true);
+    if (f.amenities.gym) query = query.eq("gym", true);
+    if (f.amenities.spa) query = query.eq("spa", true);
+    if (f.amenities.restaurant) query = query.eq("restaurant", true);
+    if (f.amenities.bar) query = query.eq("bar", true);
+  }
+
+  // Date Availability
+  if (filters.checkInDate && filters.checkOutDate) {
+    const unavailableIds = await getUnavailablePropertyIds(
+      "hotel",
+      new Date(filters.checkInDate),
+      new Date(filters.checkOutDate)
+    );
+    if (unavailableIds.length > 0) {
+      query = query.not("id", "in", `(${unavailableIds.join(",")})`);
+    }
+  }
+
+  // Pagination
+  query = query.range(from, to);
+
+  const { data, error, count } = await query;
+
+  if (error) {
+    console.error("[Hotel Service] Error searching hotels:", error);
+    throw error;
+  }
+
+  return {
+    data: data as Hotel[],
+    total: count || 0,
+  };
 };
 
 // Export all services as a single object for easier imports

@@ -15,7 +15,7 @@ export interface Apartment {
   bathrooms?: number;
   livingRooms?: number;
   price: number;
-  status: "available" | "rented" | "maintenance";
+  status: "available" | "rented" | "maintenance" | "review";
   imageUrls?: string[];
   description?: string;
   amenities?: string[];
@@ -35,7 +35,7 @@ export interface CreateApartmentDto {
   livingRooms?: number;
   price: number;
   providerId?: string;
-  status: "available" | "rented" | "maintenance";
+  status: "available" | "rented" | "maintenance" | "review";
   imageUrls?: string[];
   description?: string;
   amenities?: string[];
@@ -54,7 +54,7 @@ export interface UpdateApartmentDto {
   bathrooms?: number;
   livingRooms?: number;
   price?: number;
-  status?: "available" | "rented" | "maintenance";
+  status?: "available" | "rented" | "maintenance" | "review";
   imageUrls?: string[];
   description?: string;
   amenities?: string[];
@@ -71,7 +71,7 @@ export interface ApartmentFilters {
     max: number;
   };
   rating?: "all" | "3+" | "3.5+" | "4+" | "4.5+";
-  status?: "all" | "available" | "rented" | "maintenance";
+  status?: "all" | "available" | "rented" | "maintenance" | "review";
   rooms?: {
     min?: number;
     max?: number;

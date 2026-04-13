@@ -2,9 +2,28 @@ import { apiClient } from "./apiClient";
 import { Car, CreateCarDto, UpdateCarDto } from "@albania/shared-types";
 import { authService } from "./authService";
 import { uploadCarImages, deleteImagesByUrls } from "./storageService";
-import { getBookingsByPropertyIdAndType } from "./bookingService";
-import { getMonthlyPrices, setMonthlyPrices } from "./monthlyPriceService";
-import { MonthlyPriceInput } from "@albania/shared-types";
+import { getBookingsByPropertyIdAndType, getUnavailablePropertyIds } from "./bookingService";
+import { getMonthlyPrices, setMonthlyPrices, getPricesForPropertiesByMonth } from "./monthlyPriceService";
+import { MonthlyPriceInput, Month, MONTHS } from "@albania/shared-types";
+
+export interface SearchCarFilters {
+  searchTerm?: string;
+  status?: string;
+  type?: string;
+  transmission?: string;
+  fuelType?: string;
+  priceRange?: { min: number; max: number };
+  features?: string[];
+  seats?: number;
+  pickupDate?: Date | null;
+  returnDate?: Date | null;
+}
+
+export interface SearchCarsResponse {
+  data: Car[];
+  total: number;
+  monthlyPrices: Record<number, number>; // Mapping of Car ID to its price this month
+}
 
 // In-memory cache for cars with TTL
 let carsCache: { data: Car[]; timestamp: number } | null = null;
@@ -41,6 +60,191 @@ const saveCacheToStorage = (data: Car[], timestamp: number): void => {
   } catch (err) {
     console.warn("[Car Service] Error saving cache to localStorage:", err);
   }
+};
+
+/**
+ * Search cars with pagination and filtering on the database level
+ */
+export const searchCars = async (
+  filters: SearchCarFilters,
+  page: number = 1,
+  limit: number = 10
+): Promise<SearchCarsResponse> => {
+  const from = (page - 1) * limit;
+  const to = from + limit - 1;
+
+  let query = apiClient.from("car").select("*", { count: "exact" });
+
+  // Exclude cars with status maintenance or review by default unless specified
+  if (filters.status && filters.status !== "all") {
+    query = query.eq("status", filters.status);
+  } else {
+    query = query.neq("status", "maintenance").neq("status", "review");
+  }
+
+  // Type
+  if (filters.type && filters.type !== "all") {
+    query = query.eq("type", filters.type);
+  }
+
+  // Transmission
+  if (filters.transmission && filters.transmission !== "all") {
+    query = query.eq("transmission", filters.transmission);
+  }
+
+  // Fuel Type
+  if (filters.fuelType && filters.fuelType !== "all") {
+    query = query.eq("fuelType", filters.fuelType);
+  }
+
+  // Seats
+  if (filters.seats) {
+    query = query.gte("seats", filters.seats);
+  }
+
+  // Features (contains all selected features)
+  if (filters.features && filters.features.length > 0) {
+    query = query.contains("features", filters.features);
+  }
+
+  // SearchTerm
+  if (filters.searchTerm) {
+    // Supabase or allows searching multiple columns
+    const term = `%${filters.searchTerm}%`;
+    query = query.or(`name.ilike.${term},brand.ilike.${term},pickUpLocation.ilike.${term}`);
+  }
+
+  // Date Availability
+  if (filters.pickupDate && filters.returnDate) {
+    const unavailableIds = await getUnavailablePropertyIds("car", filters.pickupDate, filters.returnDate);
+    if (unavailableIds.length > 0) {
+      query = query.not("id", "in", `(${unavailableIds.join(",")})`);
+    }
+  }
+
+  // NOTE: Price filtering is difficult because actual price depends on monthly_prices.
+  // The base price is stored in `car.pricePerDay`. We will filter by base price here as an approximation.
+  if (filters.priceRange) {
+    query = query.gte("pricePerDay", filters.priceRange.min).lte("pricePerDay", filters.priceRange.max);
+  }
+
+  // Pagination
+  query = query.range(from, to);
+
+  const { data, error, count } = await query;
+
+  if (error) {
+    console.error("[Car Service] Error searching cars:", error);
+    throw error;
+  }
+
+  const cars = data as Car[];
+
+  // Fetch monthly prices for the returned cars in a single query
+  const currentMonthIndex = new Date().getMonth();
+  const currentMonth = MONTHS[currentMonthIndex];
+  let monthlyPrices: Record<number, number> = {};
+
+  if (cars.length > 0) {
+    const carIds = cars.map(c => c.id);
+    try {
+      monthlyPrices = await getPricesForPropertiesByMonth(carIds, "car", currentMonth);
+    } catch (err) {
+      console.warn("[Car Service] Could not fetch batch monthly prices", err);
+    }
+  }
+
+  return {
+    data: cars,
+    total: count || 0,
+    monthlyPrices,
+  };
+};
+
+/**
+ * Fetch cars for dashboard with server-side filtering and pagination
+ */
+export const getDashboardCars = async (
+  page: number = 1,
+  limit: number = 6,
+  filters: {
+    searchTerm?: string;
+    status?: string;
+    type?: string;
+    transmission?: string;
+    providerId?: string;
+  } = {}
+): Promise<{ data: Car[]; total: number }> => {
+  const from = (page - 1) * limit;
+  const to = from + limit - 1;
+
+  let query = apiClient.from("car").select("*", { count: "exact" });
+
+  if (filters.providerId) {
+    query = query.eq("providerId", filters.providerId);
+  }
+
+  if (filters.status && filters.status !== "all") {
+    query = query.eq("status", filters.status);
+  }
+
+  if (filters.type && filters.type !== "all") {
+    query = query.eq("type", filters.type);
+  }
+
+  if (filters.transmission && filters.transmission !== "all") {
+    query = query.eq("transmission", filters.transmission);
+  }
+
+  if (filters.searchTerm && filters.searchTerm.trim()) {
+    const term = `%${filters.searchTerm}%`;
+    query = query.or(`name.ilike.${term},brand.ilike.${term},plateNumber.ilike.${term}`);
+  }
+
+  query = query.order("created_at", { ascending: false });
+  query = query.range(from, to);
+
+  const { data, error, count } = await query;
+
+  if (error) {
+    console.error("[Car Service] Error fetching dashboard cars:", error);
+    throw error;
+  }
+
+  return {
+    data: data as Car[],
+    total: count || 0,
+  };
+};
+
+/**
+ * Get basic car stats for the dashboard (lightweight query)
+ */
+export const getCarDashboardStats = async (providerId?: string) => {
+  let query = apiClient.from("car").select("status, pricePerDay");
+  if (providerId) {
+    query = query.eq("providerId", providerId);
+  }
+  
+  const { data, error } = await query;
+  if (error || !data) {
+    return { available: 0, rented: 0, maintenance: 0, avgPrice: 0 };
+  }
+
+  let available = 0, rented = 0, maintenance = 0, sum = 0;
+  data.forEach((c) => {
+    if (c.status === "available") available++;
+    else if (c.status === "rented") rented++;
+    else if (c.status === "maintenance") maintenance++;
+    sum += c.pricePerDay || 0;
+  });
+
+  return {
+    available,
+    rented,
+    maintenance,
+    avgPrice: data.length > 0 ? sum / data.length : 0,
+  };
 };
 
 /**

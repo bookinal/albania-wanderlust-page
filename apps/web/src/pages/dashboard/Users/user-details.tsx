@@ -1,6 +1,5 @@
 import { useParams, Link } from "react-router-dom";
-import { useEffect, useState, useMemo } from "react";
-import Hsidebar from "@/components/dashboard/hsidebar";
+import { useEffect, useState } from "react";
 import {
   ArrowLeft,
   Edit,
@@ -8,63 +7,34 @@ import {
   Mail,
   Calendar,
   X,
-  Contact,
-  Badge,
   Phone,
   MapPin,
   Clock,
+  CheckCircle,
+  XCircle,
+  ShieldCheck,
+  Loader2,
+  AlertCircle,
   User as UserIcon,
 } from "lucide-react";
 import { userService } from "@/services/api/userService";
-import { User, UpdateUserProfileData, UpdateUser } from "@/types/user.types";
+import { User, UpdateUser } from "@/types/user.types";
 import { useTranslation } from "react-i18next";
+import { useTheme } from "@/context/ThemeContext";
 
-// --- Components ---
+// ----- helpers -----
 
-const StatusBadge = ({ status }: { status: string }) => {
-  const { t } = useTranslation();
-  let colorClass = "";
-  let dotColor = "";
+const AVATAR_COLORS = [
+  "from-rose-600 to-red-800",
+  "from-amber-500 to-orange-700",
+  "from-emerald-500 to-teal-700",
+  "from-sky-500 to-blue-700",
+  "from-violet-500 to-purple-700",
+  "from-pink-500 to-rose-700",
+];
+const avatarColor = (id: string) =>
+  AVATAR_COLORS[id.charCodeAt(0) % AVATAR_COLORS.length];
 
-  switch (status) {
-    case "active":
-      colorClass = "bg-green-50 text-green-700 ring-green-600/20";
-      dotColor = "bg-green-500";
-      break;
-    case "suspended":
-      colorClass = "bg-red-50 text-red-700 ring-red-600/20";
-      dotColor = "bg-red-500";
-      break;
-    case "pending":
-      colorClass = "bg-yellow-50 text-yellow-700 ring-yellow-600/20";
-      dotColor = "bg-yellow-500";
-      break;
-    default:
-      colorClass = "bg-gray-50 text-gray-700 ring-gray-600/20";
-      dotColor = "bg-gray-500";
-  }
-
-  return (
-    <span
-      className={`inline-flex items-center rounded-md px-2.5 py-1 text-xs font-medium ring-1 ring-inset ${colorClass}`}
-    >
-      <span className={`h-1.5 w-1.5 rounded-full mr-1.5 ${dotColor}`}></span>
-      {t(`userDetails.status.${status}`)}
-    </span>
-  );
-};
-
-const RoleTag = ({ role }: { role: string }) => {
-  const { t } = useTranslation();
-  return (
-    <span className="px-3 py-1 text-sm font-semibold rounded-full bg-indigo-100 text-indigo-800 shadow-sm capitalize">
-      <Contact className="inline-block w-4 h-4 mr-1" />
-      {t(`userDetails.roles.${role}`)}
-    </span>
-  );
-};
-
-/** Generates initials from a name or email */
 function getInitials(name?: string | null, email?: string): string {
   if (name) {
     const parts = name.trim().split(/\s+/);
@@ -75,36 +45,152 @@ function getInitials(name?: string | null, email?: string): string {
   return (email?.substring(0, 2) || "??").toUpperCase();
 }
 
-const AvatarFallback = ({
-  name,
-  email,
-  size = "lg",
+const STATUS_CFG: Record<
+  string,
+  { light: string; dark: string; dot: string; icon: React.ReactNode }
+> = {
+  active: {
+    dark: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
+    light: "bg-emerald-50 text-emerald-700 border-emerald-200",
+    dot: "bg-emerald-400",
+    icon: <CheckCircle className="h-3 w-3" />,
+  },
+  suspended: {
+    dark: "bg-red-500/10 text-red-400 border-red-500/20",
+    light: "bg-red-50 text-red-700 border-red-200",
+    dot: "bg-red-400",
+    icon: <XCircle className="h-3 w-3" />,
+  },
+  pending: {
+    dark: "bg-amber-500/10 text-amber-400 border-amber-500/20",
+    light: "bg-amber-50 text-amber-700 border-amber-200",
+    dot: "bg-amber-400",
+    icon: <Clock className="h-3 w-3" />,
+  },
+};
+
+const ROLE_CFG: Record<string, { dark: string; light: string }> = {
+  admin: {
+    dark: "bg-[#e41e20]/10 text-[#e41e20] border-[#e41e20]/20",
+    light: "bg-red-50 text-[#e41e20] border-red-200",
+  },
+  provider: {
+    dark: "bg-violet-500/10 text-violet-400 border-violet-500/20",
+    light: "bg-violet-50 text-violet-700 border-violet-200",
+  },
+  user: {
+    dark: "bg-sky-500/10 text-sky-400 border-sky-500/20",
+    light: "bg-sky-50 text-sky-700 border-sky-200",
+  },
+};
+
+const StatusBadge = ({
+  status,
+  isDark,
 }: {
-  name?: string | null;
-  email?: string;
-  size?: "sm" | "lg";
+  status: string;
+  isDark: boolean;
 }) => {
-  const initials = getInitials(name, email);
-  const sizeClass =
-    size === "lg" ? "w-24 h-24 text-2xl" : "w-12 h-12 text-base";
+  const { t } = useTranslation();
+  const cfg = STATUS_CFG[status] ?? STATUS_CFG.pending;
+  const cls = isDark ? cfg.dark : cfg.light;
   return (
-    <div
-      className={`${sizeClass} rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold shadow-md ring-4 ring-indigo-500/30 select-none`}
+    <span
+      className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium ${cls}`}
     >
-      {initials}
-    </div>
+      <span className={`h-1.5 w-1.5 rounded-full ${cfg.dot}`} />
+      {t(`userDetails.status.${status}`, status)}
+    </span>
   );
 };
+
+const RoleTag = ({ role, isDark }: { role: string; isDark: boolean }) => {
+  const { t } = useTranslation();
+  const cfg = ROLE_CFG[role] ?? ROLE_CFG.user;
+  const cls = isDark ? cfg.dark : cfg.light;
+  return (
+    <span
+      className={`inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold capitalize ${cls}`}
+    >
+      {t(`userDetails.roles.${role}`, role)}
+    </span>
+  );
+};
+
+// ----- field row -----
+const Field = ({
+  icon,
+  label,
+  value,
+  isDark,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: React.ReactNode;
+  isDark: boolean;
+}) => (
+  <div className="flex items-start gap-3">
+    <div
+      className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg"
+      style={{
+        background: isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.04)",
+      }}
+    >
+      {icon}
+    </div>
+    <div className="min-w-0">
+      <dt
+        className="text-[10px] font-medium uppercase tracking-widest"
+        style={{ color: isDark ? "rgba(255,255,255,0.35)" : "#9e9994" }}
+      >
+        {label}
+      </dt>
+      <dd
+        className="mt-0.5 break-all text-sm"
+        style={{ color: isDark ? "rgba(255,255,255,0.80)" : "#111115" }}
+      >
+        {value || "-"}
+      </dd>
+    </div>
+  </div>
+);
+
+// ===== Main component =====
 
 function UserDetails() {
   const { t } = useTranslation();
   const { userId } = useParams();
+  const { isDark } = useTheme();
+
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [editOpen, setEditOpen] = useState(false);
   const [editData, setEditData] = useState<UpdateUser>({});
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const tk = {
+    pageBg: isDark ? "#0d0d0d" : "#f5f4f1",
+    pageText: isDark ? "#ffffff" : "#111115",
+    headerBg: isDark ? "#111111" : "#ffffff",
+    headerBorder: isDark ? "rgba(255,255,255,0.05)" : "#e5e2de",
+    cardBg: isDark ? "rgba(255,255,255,0.025)" : "#ffffff",
+    cardBorder: isDark ? "rgba(255,255,255,0.07)" : "#ede9e5",
+    inputBg: isDark ? "rgba(255,255,255,0.06)" : "#ffffff",
+    inputBorder: isDark ? "rgba(255,255,255,0.10)" : "#ddd9d5",
+    inputText: isDark ? "#ffffff" : "#111115",
+    mutedText: isDark ? "rgba(255,255,255,0.40)" : "#6b6663",
+    dimText: isDark ? "rgba(255,255,255,0.70)" : "#44403c",
+    labelText: isDark ? "rgba(255,255,255,0.50)" : "#6b6663",
+    divider: isDark ? "rgba(255,255,255,0.05)" : "#e5e2de",
+    modalBg: isDark ? "#1a1a1a" : "#ffffff",
+    modalBorder: isDark ? "rgba(255,255,255,0.10)" : "#ede9e5",
+    btnBg: isDark ? "rgba(255,255,255,0.04)" : "#f5f2ee",
+    btnBorder: isDark ? "rgba(255,255,255,0.10)" : "#ddd9d5",
+    btnText: isDark ? "rgba(255,255,255,0.70)" : "#44403c",
+    selectBg: isDark ? "#1a1a1a" : "#ffffff",
+    iconColor: isDark ? "rgba(255,255,255,0.40)" : "#9e9994",
+  };
 
   useEffect(() => {
     async function fetchUser() {
@@ -113,7 +199,7 @@ function UserDetails() {
         if (!userId) return;
         const data = await userService.getUserById(userId);
         setUser(data);
-      } catch (err: any) {
+      } catch {
         setError(t("userDetails.errors.fetchUser"));
       } finally {
         setLoading(false);
@@ -125,13 +211,13 @@ function UserDetails() {
   const handleEditOpen = () => {
     if (!user) return;
     setEditData({
-      full_name: user.full_name,
-      avatar_url: user.avatar_url,
-      phone: user.phone,
-      bio: user.bio,
-      location: user.location,
-      role: user.role,
-      status: user.status,
+      full_name: user.full_name || "",
+      avatar_url: user.avatar_url || "",
+      phone: user.phone || "",
+      bio: user.bio || "",
+      location: user.location || "",
+      role: user.role || "user",
+      status: user.status || "active",
     });
     setEditOpen(true);
   };
@@ -145,7 +231,7 @@ function UserDetails() {
         status: "suspended",
       });
       setUser(updated);
-    } catch (err: any) {
+    } catch {
       setError(t("userDetails.errors.suspendUser"));
     } finally {
       setSaving(false);
@@ -161,7 +247,7 @@ function UserDetails() {
         status: "active",
       });
       setUser(updated);
-    } catch (err: any) {
+    } catch {
       setError(t("userDetails.errors.activateUser"));
     } finally {
       setSaving(false);
@@ -185,243 +271,334 @@ function UserDetails() {
       const updated = await userService.updateProfile(user.id, editData);
       setUser(updated);
       setEditOpen(false);
-    } catch (err: any) {
+    } catch {
       setError(t("userDetails.errors.updateProfile"));
     } finally {
       setSaving(false);
     }
   };
 
+  const inputStyle: React.CSSProperties = {
+    width: "100%",
+    borderRadius: 12,
+    border: `1px solid ${tk.inputBorder}`,
+    background: tk.inputBg,
+    padding: "8px 12px",
+    fontSize: 14,
+    color: tk.inputText,
+    outline: "none",
+  };
+
+  // --- Loading ---
   if (loading) {
     return (
-      <Hsidebar>
-        <div className="p-8 bg-gray-50 min-h-screen flex items-center justify-center">
-          <p className="text-lg text-gray-600">{t("userDetails.loading")}</p>
-        </div>
-      </Hsidebar>
+      <div
+        style={{ background: tk.pageBg }}
+        className="-m-8 flex min-h-[calc(100vh)] items-center justify-center"
+      >
+        <Loader2 className="h-8 w-8 animate-spin text-[#e41e20]" />
+      </div>
     );
   }
+
+  // --- Not found ---
   if (!user) {
     return (
-      <Hsidebar>
-        <div className="p-8 bg-gray-50 min-h-screen">
-          <p className="text-red-600 text-lg">
-            {error || t("userDetails.errors.userNotFound")}
-          </p>
-          <Link
-            to="/dashboard/userManagement"
-            className="mt-4 inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 transition-colors"
-          >
-            <ArrowLeft size={16} /> {t("userDetails.backToUsers")}
-          </Link>
-        </div>
-      </Hsidebar>
+      <div
+        style={{ background: tk.pageBg, color: tk.pageText }}
+        className="-m-8 flex min-h-[calc(100vh)] flex-col items-center justify-center gap-4"
+      >
+        <AlertCircle className="h-10 w-10 text-red-400" />
+        <p className="text-sm" style={{ color: tk.mutedText }}>
+          {error || t("userDetails.errors.userNotFound")}
+        </p>
+        <Link
+          to="/dashboard/userManagement"
+          className="flex items-center gap-1 text-sm text-[#e41e20]/80 hover:text-[#e41e20]"
+        >
+          <ArrowLeft size={16} /> {t("userDetails.backToUsers")}
+        </Link>
+      </div>
     );
   }
 
+  const initials = getInitials(user.full_name, user.email);
+  const gradCls = avatarColor(user.id);
+
   return (
-    <Hsidebar>
-      {/* Main Container - Responsive Padding and Background */}
-      <div className="p-4 sm:p-6 lg:p-8 bg-gray-50 min-h-screen">
-        {/* Header Section */}
-        <div className="flex items-center justify-between mb-8">
-          <Link
-            to="/dashboard/userManagement"
-            className="flex items-center gap-1 text-gray-500 hover:text-indigo-600 transition-colors text-sm font-medium"
-          >
-            <ArrowLeft size={18} /> {t("userDetails.backToUserList")}
-          </Link>
-          <h1 className="text-3xl font-extrabold text-gray-900 hidden sm:block">
-            {t("userDetails.userProfile")}
-          </h1>
+    <>
+      <div
+        style={{ background: tk.pageBg, color: tk.pageText }}
+        className="-m-8 min-h-[calc(100vh)]"
+      >
+        {/* ── Header ── */}
+        <div
+          style={{
+            background: tk.headerBg,
+            borderBottom: `1px solid ${tk.headerBorder}`,
+          }}
+          className="relative overflow-hidden px-6 py-6 md:px-10"
+        >
+          <div className="pointer-events-none absolute -top-20 left-10 h-56 w-56 rounded-full bg-[#e41e20]/10 blur-3xl" />
+          <div className="relative flex items-center justify-between">
+            <Link
+              to="/dashboard/userManagement"
+              style={{ color: tk.mutedText }}
+              className="flex items-center gap-2 text-sm transition hover:opacity-80"
+            >
+              <ArrowLeft size={16} />
+              {t("userDetails.backToUserList")}
+            </Link>
+            <span
+              className="hidden text-sm font-medium sm:block"
+              style={{ color: tk.labelText }}
+            >
+              {t("userDetails.userProfile")}
+            </span>
+          </div>
         </div>
 
-        {/* --- Profile Overview Card --- */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 bg-white rounded-xl shadow-lg p-6 sm:p-8">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 border-b pb-6 mb-6">
-              {/* Avatar */}
-              {user.avatar_url ? (
-                <img
-                  className="w-24 h-24 rounded-full object-cover shadow-md ring-4 ring-indigo-500/30"
-                  src={user.avatar_url}
-                  alt={user.full_name || user.email}
-                />
-              ) : (
-                <AvatarFallback
-                  name={user.full_name}
-                  email={user.email}
-                  size="lg"
-                />
-              )}
-              {/* Basic Info */}
-              <div className="min-w-0">
-                <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 truncate">
-                  {user.full_name || user.email.split("@")[0]}
-                </h2>
-                <p className="text-sm text-gray-500 mt-0.5 truncate">
-                  {user.email}
-                </p>
-                <div className="mt-3 flex flex-wrap items-center gap-2">
-                  <RoleTag role={user.role || "user"} />
-                  <StatusBadge status={user.status} />
-                </div>
-              </div>
+        <div className="px-6 py-8 md:px-10">
+          {/* global error banner */}
+          {error && (
+            <div className="mb-6 flex items-center gap-3 rounded-xl border border-red-500/20 bg-red-500/10 px-5 py-4 text-sm text-red-400">
+              <AlertCircle className="h-5 w-5 shrink-0" /> {error}
             </div>
+          )}
 
-            {/* Contact and Registration Details */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-y-5 gap-x-12">
-              {/* Email */}
-              <div className="flex items-start space-x-3">
-                <div className="w-9 h-9 rounded-lg bg-indigo-50 flex items-center justify-center flex-shrink-0">
-                  <Mail className="w-4.5 h-4.5 text-indigo-500" />
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+            {/* ── Profile card ── */}
+            <div
+              style={{
+                background: tk.cardBg,
+                border: `1px solid ${tk.cardBorder}`,
+              }}
+              className="lg:col-span-2 rounded-2xl p-6 sm:p-8"
+            >
+              {/* Avatar + name */}
+              <div
+                style={{ borderBottom: `1px solid ${tk.divider}` }}
+                className="flex flex-col gap-5 pb-6 sm:flex-row sm:items-center"
+              >
+                <div
+                  className={`flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br text-xl font-bold text-white shadow-lg ${gradCls}`}
+                >
+                  {user.avatar_url ? (
+                    <img
+                      src={user.avatar_url}
+                      alt={user.full_name || user.email}
+                      className="h-full w-full rounded-2xl object-cover"
+                    />
+                  ) : (
+                    initials
+                  )}
                 </div>
                 <div className="min-w-0">
-                  <dt className="text-xs font-medium text-gray-500 uppercase tracking-wide">
-                    {t("userDetails.labels.email")}
-                  </dt>
-                  <dd className="text-sm text-gray-900 break-all mt-0.5">
+                  <h2
+                    className="truncate text-2xl font-bold"
+                    style={{ color: tk.pageText }}
+                  >
+                    {user.full_name || user.email.split("@")[0]}
+                  </h2>
+                  <p
+                    className="mt-0.5 truncate text-sm"
+                    style={{ color: tk.mutedText }}
+                  >
                     {user.email}
-                  </dd>
+                  </p>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    <RoleTag role={user.role || "user"} isDark={isDark} />
+                    <StatusBadge status={user.status} isDark={isDark} />
+                  </div>
                 </div>
               </div>
 
-              {/* Phone */}
-              <div className="flex items-start space-x-3">
-                <div className="w-9 h-9 rounded-lg bg-indigo-50 flex items-center justify-center flex-shrink-0">
-                  <Phone className="w-4.5 h-4.5 text-indigo-500" />
-                </div>
-                <div>
-                  <dt className="text-xs font-medium text-gray-500 uppercase tracking-wide">
-                    {t("userDetails.labels.phone")}
-                  </dt>
-                  <dd className="text-sm text-gray-900 mt-0.5">
-                    {user.phone || "-"}
-                  </dd>
-                </div>
-              </div>
-
-              {/* Registration Date */}
-              <div className="flex items-start space-x-3">
-                <div className="w-9 h-9 rounded-lg bg-indigo-50 flex items-center justify-center flex-shrink-0">
-                  <Calendar className="w-4.5 h-4.5 text-indigo-500" />
-                </div>
-                <div>
-                  <dt className="text-xs font-medium text-gray-500 uppercase tracking-wide">
-                    {t("userDetails.labels.registrationDate")}
-                  </dt>
-                  <dd className="text-sm text-gray-900 mt-0.5">
-                    {user.created_at
+              {/* Fields grid */}
+              <div className="mt-6 grid grid-cols-1 gap-5 md:grid-cols-2">
+                <Field
+                  isDark={isDark}
+                  icon={
+                    <Mail className="h-4 w-4" style={{ color: tk.iconColor }} />
+                  }
+                  label={t("userDetails.labels.email")}
+                  value={user.email}
+                />
+                <Field
+                  isDark={isDark}
+                  icon={
+                    <Phone
+                      className="h-4 w-4"
+                      style={{ color: tk.iconColor }}
+                    />
+                  }
+                  label={t("userDetails.labels.phone")}
+                  value={user.phone}
+                />
+                <Field
+                  isDark={isDark}
+                  icon={
+                    <Calendar
+                      className="h-4 w-4"
+                      style={{ color: tk.iconColor }}
+                    />
+                  }
+                  label={t("userDetails.labels.registrationDate")}
+                  value={
+                    user.created_at
                       ? new Date(user.created_at).toLocaleDateString()
-                      : "-"}
-                  </dd>
-                </div>
-              </div>
-
-              {/* Last Login */}
-              <div className="flex items-start space-x-3">
-                <div className="w-9 h-9 rounded-lg bg-indigo-50 flex items-center justify-center flex-shrink-0">
-                  <Clock className="w-4.5 h-4.5 text-indigo-500" />
-                </div>
-                <div>
-                  <dt className="text-xs font-medium text-gray-500 uppercase tracking-wide">
-                    {t("userDetails.labels.lastLogin")}
-                  </dt>
-                  <dd className="text-sm text-gray-900 mt-0.5">
-                    {user.updated_at
+                      : undefined
+                  }
+                />
+                <Field
+                  isDark={isDark}
+                  icon={
+                    <Clock
+                      className="h-4 w-4"
+                      style={{ color: tk.iconColor }}
+                    />
+                  }
+                  label={t("userDetails.labels.lastLogin")}
+                  value={
+                    user.updated_at
                       ? new Date(user.updated_at).toLocaleString()
-                      : "-"}
-                  </dd>
-                </div>
+                      : undefined
+                  }
+                />
               </div>
+
+              {user.location && (
+                <div
+                  style={{ borderTop: `1px solid ${tk.divider}` }}
+                  className="mt-5 pt-5"
+                >
+                  <Field
+                    isDark={isDark}
+                    icon={
+                      <MapPin
+                        className="h-4 w-4"
+                        style={{ color: tk.iconColor }}
+                      />
+                    }
+                    label={t("userDetails.labels.address")}
+                    value={user.location}
+                  />
+                </div>
+              )}
             </div>
 
-            {/* Address */}
-            <div className="mt-6 pt-6 border-t">
-              <div className="flex items-start space-x-3">
-                <div className="w-9 h-9 rounded-lg bg-indigo-50 flex items-center justify-center flex-shrink-0">
-                  <MapPin className="w-4.5 h-4.5 text-indigo-500" />
-                </div>
-                <div>
-                  <dt className="text-xs font-medium text-gray-500 uppercase tracking-wide">
-                    {t("userDetails.labels.address")}
-                  </dt>
-                  <dd className="text-sm text-gray-900 mt-0.5">
-                    {user.location || "-"}
-                  </dd>
+            {/* ── Sidebar ── */}
+            <div className="space-y-5">
+              {/* Actions */}
+              <div
+                style={{
+                  background: tk.cardBg,
+                  border: `1px solid ${tk.cardBorder}`,
+                }}
+                className="rounded-2xl p-6"
+              >
+                <h3
+                  style={{
+                    borderBottom: `1px solid ${tk.divider}`,
+                    color: tk.mutedText,
+                  }}
+                  className="mb-4 pb-3 text-sm font-semibold uppercase tracking-wider"
+                >
+                  {t("userDetails.managementActions")}
+                </h3>
+                <div className="flex flex-col gap-2.5">
+                  <button
+                    onClick={handleEditOpen}
+                    disabled={saving}
+                    style={{
+                      background: tk.btnBg,
+                      border: `1px solid ${tk.btnBorder}`,
+                      color: tk.btnText,
+                    }}
+                    className="flex w-full items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium transition hover:opacity-80 disabled:opacity-40"
+                  >
+                    <Edit className="h-4 w-4" />
+                    {t("userDetails.buttons.editProfile")}
+                  </button>
+                  <button
+                    onClick={handelSuspendUser}
+                    disabled={saving || user.status === "suspended"}
+                    className="flex w-full items-center justify-center gap-2 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-2.5 text-sm font-medium text-red-400 transition hover:bg-red-500/20 disabled:opacity-40"
+                  >
+                    <Ban className="h-4 w-4" />
+                    {t("userDetails.buttons.suspendUser")}
+                  </button>
+                  <button
+                    onClick={handelActivateUser}
+                    disabled={saving || user.status === "active"}
+                    className="flex w-full items-center justify-center gap-2 rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-4 py-2.5 text-sm font-medium text-emerald-400 transition hover:bg-emerald-500/20 disabled:opacity-40"
+                  >
+                    <ShieldCheck className="h-4 w-4" />
+                    {t("userDetails.buttons.activateUser")}
+                  </button>
                 </div>
               </div>
-            </div>
-          </div>
 
-          {/* --- Actions Sidebar --- */}
-          <div className="space-y-6">
-            {/* Actions Card */}
-            <div className="bg-white rounded-xl shadow-lg p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4 border-b pb-3">
-                {t("userDetails.managementActions")}
-              </h3>
-              <div className="flex flex-col gap-3">
-                <button
-                  className="flex items-center justify-center w-full px-4 py-2.5 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 transition duration-150 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                  onClick={handleEditOpen}
-                  disabled={saving}
+              {/* Activity placeholder */}
+              <div
+                style={{
+                  background: tk.cardBg,
+                  border: `1px solid ${tk.cardBorder}`,
+                }}
+                className="rounded-2xl p-6"
+              >
+                <h3
+                  style={{
+                    borderBottom: `1px solid ${tk.divider}`,
+                    color: tk.mutedText,
+                  }}
+                  className="mb-3 pb-3 text-sm font-semibold uppercase tracking-wider"
                 >
-                  <Edit className="w-4 h-4 mr-2" />
-                  {t("userDetails.buttons.editProfile")}
-                </button>
-                <button
-                  className="flex items-center justify-center w-full px-4 py-2.5 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 transition duration-150 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                  onClick={handelSuspendUser}
-                  disabled={saving || user.status === "suspended"}
+                  {t("userDetails.recentActivity")}
+                </h3>
+                <p
+                  className="text-sm"
+                  style={{
+                    color: isDark ? "rgba(255,255,255,0.30)" : "#b8b4b0",
+                  }}
                 >
-                  <Ban className="w-4 h-4 mr-2" />
-                  {t("userDetails.buttons.suspendUser")}
-                </button>
-                <button
-                  className="flex items-center justify-center w-full px-4 py-2.5 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition duration-150 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                  onClick={handelActivateUser}
-                  disabled={saving || user.status === "active"}
-                >
-                  <Badge className="w-4 h-4 mr-2" />
-                  {t("userDetails.buttons.activateUser")}
-                </button>
+                  {t("userDetails.noActivityData")}
+                </p>
               </div>
-            </div>
-
-            {/* Quick Info Card */}
-            <div className="bg-white rounded-xl shadow-lg p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4 border-b pb-3">
-                {t("userDetails.recentActivity")}
-              </h3>
-              <p className="text-sm text-gray-500">
-                {t("userDetails.noActivityData")}
-              </p>
             </div>
           </div>
         </div>
       </div>
-      {/* Edit Modal */}
+
+      {/* ── Edit Modal ── */}
       {editOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 p-4">
-          <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md max-h-screen overflow-y-auto">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-bold">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
+          <div
+            style={{
+              background: tk.modalBg,
+              border: `1px solid ${tk.modalBorder}`,
+            }}
+            className="w-full max-w-md overflow-y-auto rounded-2xl p-6 shadow-2xl"
+          >
+            <div className="mb-5 flex items-center justify-between">
+              <h2 className="text-lg font-bold" style={{ color: tk.pageText }}>
                 {t("userDetails.modal.editUserProfile")}
               </h2>
               <button
                 onClick={() => setEditOpen(false)}
                 disabled={saving}
-                className="text-gray-400 hover:text-gray-600"
+                style={{ color: tk.mutedText }}
+                className="transition hover:opacity-80 disabled:opacity-40"
               >
-                <X size={24} />
+                <X size={22} />
               </button>
             </div>
+
             {error && (
-              <p className="text-red-600 mb-4 text-sm bg-red-50 p-3 rounded">
-                {error}
-              </p>
+              <div className="mb-4 flex items-center gap-2 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-400">
+                <AlertCircle className="h-4 w-4 shrink-0" /> {error}
+              </div>
             )}
+
             <form
               onSubmit={(e) => {
                 e.preventDefault();
@@ -429,74 +606,76 @@ function UserDetails() {
               }}
               className="space-y-4"
             >
+              {[
+                {
+                  name: "full_name",
+                  label: t("userDetails.form.fullName"),
+                  type: "text",
+                },
+                {
+                  name: "avatar_url",
+                  label: t("userDetails.form.avatarUrl"),
+                  type: "text",
+                },
+                {
+                  name: "phone",
+                  label: t("userDetails.form.phone"),
+                  type: "text",
+                },
+                {
+                  name: "location",
+                  label: t("userDetails.form.location"),
+                  type: "text",
+                },
+              ].map(({ name, label, type }) => (
+                <div key={name}>
+                  <label
+                    className="mb-1 block text-xs font-medium"
+                    style={{ color: tk.labelText }}
+                  >
+                    {label}
+                  </label>
+                  <input
+                    type={type}
+                    name={name}
+                    value={(editData as any)[name] || ""}
+                    onChange={handleEditChange}
+                    style={inputStyle}
+                  />
+                </div>
+              ))}
+
               <div>
-                <label className="block text-sm font-medium mb-1">
-                  {t("userDetails.form.fullName")}
-                </label>
-                <input
-                  type="text"
-                  name="full_name"
-                  value={editData.full_name || ""}
-                  onChange={handleEditChange}
-                  className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1">
-                  {t("userDetails.form.avatarUrl")}
-                </label>
-                <input
-                  type="text"
-                  name="avatar_url"
-                  value={editData.avatar_url || ""}
-                  onChange={handleEditChange}
-                  className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1">
-                  {t("userDetails.form.phone")}
-                </label>
-                <input
-                  type="text"
-                  name="phone"
-                  value={editData.phone || ""}
-                  onChange={handleEditChange}
-                  className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1">
+                <label
+                  className="mb-1 block text-xs font-medium"
+                  style={{ color: tk.labelText }}
+                >
                   {t("userDetails.form.bio")}
                 </label>
                 <textarea
                   name="bio"
                   value={editData.bio || ""}
                   onChange={handleEditChange}
-                  className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  rows={3}
+                  style={{
+                    ...inputStyle,
+                    resize: "vertical",
+                  }}
                 />
               </div>
+
               <div>
-                <label className="block text-sm font-medium mb-1">
-                  {t("userDetails.form.location")}
-                </label>
-                <input
-                  type="text"
-                  name="location"
-                  value={editData.location || ""}
-                  onChange={handleEditChange}
-                  className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1">
+                <label
+                  className="mb-1 block text-xs font-medium"
+                  style={{ color: tk.labelText }}
+                >
                   {t("userDetails.form.role")}
                 </label>
                 <select
                   name="role"
                   value={editData.role || "user"}
                   onChange={handleEditChange}
-                  className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  style={{ ...inputStyle, background: tk.selectBg }}
                 >
                   <option value="user">{t("userDetails.form.user")}</option>
                   <option value="provider">
@@ -505,21 +684,56 @@ function UserDetails() {
                   <option value="admin">{t("userDetails.form.admin")}</option>
                 </select>
               </div>
-              <div className="flex gap-2 mt-6 pt-4 border-t">
+
+              <div>
+                <label
+                  className="mb-1 block text-xs font-medium"
+                  style={{ color: tk.labelText }}
+                >
+                  {t("userManagement.filters.allStatus")}
+                </label>
+                <select
+                  name="status"
+                  value={editData.status || "active"}
+                  onChange={handleEditChange}
+                  style={{ ...inputStyle, background: tk.selectBg }}
+                >
+                  <option value="active">
+                    {t("userManagement.filters.active")}
+                  </option>
+                  <option value="suspended">
+                    {t("userManagement.filters.suspended")}
+                  </option>
+                  <option value="pending">
+                    {t("userManagement.filters.pending")}
+                  </option>
+                </select>
+              </div>
+
+              <div
+                className="flex gap-2 pt-4"
+                style={{ borderTop: `1px solid ${tk.divider}` }}
+              >
                 <button
                   type="submit"
-                  className="flex-1 px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 disabled:bg-gray-400"
                   disabled={saving}
+                  className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-[#e41e20] px-4 py-2.5 text-sm font-medium text-white transition hover:bg-[#c91a1c] disabled:opacity-50"
                 >
+                  {saving && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
                   {saving
                     ? t("userDetails.form.saving")
                     : t("userDetails.form.save")}
                 </button>
                 <button
                   type="button"
-                  className="flex-1 px-4 py-2 bg-gray-300 rounded hover:bg-gray-400 disabled:bg-gray-400"
                   onClick={() => setEditOpen(false)}
                   disabled={saving}
+                  style={{
+                    background: tk.btnBg,
+                    border: `1px solid ${tk.btnBorder}`,
+                    color: tk.btnText,
+                  }}
+                  className="flex-1 rounded-xl px-4 py-2.5 text-sm font-medium transition hover:opacity-80 disabled:opacity-50"
                 >
                   {t("userDetails.form.cancel")}
                 </button>
@@ -528,7 +742,7 @@ function UserDetails() {
           </div>
         </div>
       )}
-    </Hsidebar>
+    </>
   );
 }
 

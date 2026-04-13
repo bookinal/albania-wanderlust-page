@@ -1,3 +1,4 @@
+import { useTheme } from "@/context/ThemeContext";
 import { useMemo, CSSProperties } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getAllApartments } from "@/services/api/apartmentService";
@@ -20,6 +21,7 @@ const override: CSSProperties = {
 const ApartmentsPreview = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { isDark } = useTheme();
 
   const [sliderRef] = useKeenSlider({
     loop: true,
@@ -72,11 +74,11 @@ const ApartmentsPreview = () => {
           <div className="w-10 h-10 rounded-xl bg-red-100 flex items-center justify-center">
             <Home className="w-5 h-5 text-red-600" />
           </div>
-          <h3 className="text-2xl md:text-3xl font-bold text-slate-900">
+          <h3 className="text-2xl md:text-3xl font-bold" style={{ color: isDark ? '#ffffff' : '#0f172a' }}>
             {t("home.apartmentsPreview.title")}
           </h3>
         </div>
-        <p className="text-muted-foreground leading-relaxed text-sm">
+        <p className="leading-relaxed text-sm" style={{ color: isDark ? 'rgba(255,255,255,0.7)' : 'hsl(var(--muted-foreground))' }}>
           {t("home.apartmentsPreview.description")}
         </p>
       </div>
@@ -91,9 +93,9 @@ const ApartmentsPreview = () => {
           />
         </div>
       ) : availableTopApartments.length === 0 ? (
-        <div className="flex-grow flex flex-col items-center justify-center p-10 bg-slate-50 rounded-2xl border border-dashed border-slate-200">
-          <Home className="w-10 h-10 text-slate-300 mb-3" />
-          <p className="text-muted-foreground">
+<div className="flex-grow flex flex-col items-center justify-center p-10 rounded-2xl border border-dashed" style={{ background: isDark ? 'rgba(255,255,255,0.03)' : '#f8fafc', borderColor: isDark ? 'rgba(255,255,255,0.1)' : '#e2e8f0' }}>
+          <Home className="w-10 h-10 mb-3" style={{ color: isDark ? 'rgba(255,255,255,0.2)' : '#cbd5e1' }} />
+          <p style={{ color: isDark ? 'rgba(255,255,255,0.5)' : 'hsl(var(--muted-foreground))' }}>
             {t("home.apartmentsPreview.noApartments")}
           </p>
         </div>

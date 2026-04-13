@@ -82,6 +82,9 @@ export default defineConfig(({ mode }) => {
       "import.meta.env.VITE_FRONTEND_URL": JSON.stringify(
         env.VITE_FRONTEND_URL,
       ),
+      "import.meta.env.VITE_GEOCODE_MAPS_API_KEY": JSON.stringify(
+        env.VITE_GEOCODE_MAPS_API_KEY,
+      ),
       "import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY": JSON.stringify(
         env.VITE_STRIPE_PUBLISHABLE_KEY,
       ),

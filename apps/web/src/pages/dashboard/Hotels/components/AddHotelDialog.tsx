@@ -9,14 +9,13 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Plus, Loader2 } from "lucide-react";
 import { CreateHotelDto } from "@/types/hotel.types";
 import { createHotel } from "@/services/api/hotelService";
 import { MapPicker } from "@/components/dashboard/mapPicker";
 import { ImageUpload } from "@/components/dashboard/ImageUpload";
+import { useTheme } from "@/context/ThemeContext";
+import { ALBANIAN_CITIES } from "@/lib/albanianCities";
 
 interface AddHotelDialogProps {
   onHotelAdded: (hotel: any) => void;
@@ -26,6 +25,7 @@ export const AddHotelDialog: React.FC<AddHotelDialogProps> = ({
   onHotelAdded,
 }) => {
   const { t } = useTranslation();
+  const { isDark } = useTheme();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [selectedImageFiles, setSelectedImageFiles] = useState<File[]>([]);
@@ -47,6 +47,43 @@ export const AddHotelDialog: React.FC<AddHotelDialogProps> = ({
     lng: undefined,
   });
 
+  const tk = {
+    dialogBg: isDark ? "#111115" : "#ffffff",
+    dialogText: isDark ? "#ffffff" : "#111115",
+    labelText: isDark ? "rgba(255,255,255,0.55)" : "#44403c",
+    inputBg: isDark ? "rgba(255,255,255,0.04)" : "#faf8f5",
+    inputBorder: isDark ? "rgba(255,255,255,0.10)" : "#ddd9d5",
+    inputText: isDark ? "#ffffff" : "#111115",
+    mutedText: isDark ? "rgba(255,255,255,0.40)" : "#6b6663",
+    optionBg: isDark ? "#1a1a1a" : "#ffffff",
+    ghostBtnBorder: isDark ? "rgba(255,255,255,0.10)" : "#ddd9d5",
+    ghostBtnText: isDark ? "rgba(255,255,255,0.70)" : "#44403c",
+  };
+
+  const inputStyle: React.CSSProperties = {
+    width: "100%",
+    padding: "8px 12px",
+    borderRadius: 6,
+    border: `1px solid ${tk.inputBorder}`,
+    background: tk.inputBg,
+    color: tk.inputText,
+    fontSize: 14,
+    outline: "none",
+    boxSizing: "border-box",
+  };
+
+  const selectStyle: React.CSSProperties = {
+    width: "100%",
+    height: 40,
+    padding: "0 12px",
+    borderRadius: 6,
+    border: `1px solid ${tk.inputBorder}`,
+    background: tk.inputBg,
+    color: tk.inputText,
+    fontSize: 14,
+    outline: "none",
+  };
+
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
@@ -66,34 +103,28 @@ export const AddHotelDialog: React.FC<AddHotelDialogProps> = ({
   };
 
   const handleLocationSelect = (lat: number, lng: number) => {
-    setFormData((prev) => ({
-      ...prev,
-      lat,
-      lng,
-    }));
+    setFormData((prev) => ({ ...prev, lat, lng }));
+  };
+
+  const handleAddressSelect = (address: string) => {
+    setFormData((prev) => ({ ...prev, address }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    // Basic validation
     if (!formData.name || !formData.location || formData.price <= 0) {
       alert(t("hotels.addHotelDialog.validation.requiredFields"));
       return;
     }
-
     if (selectedImageFiles.length === 0) {
       alert(t("hotels.addHotelDialog.validation.imageRequired"));
       return;
     }
-
     setLoading(true);
     try {
       const newHotel = await createHotel(formData, selectedImageFiles);
       onHotelAdded(newHotel);
       setOpen(false);
-
-      // Reset form
       setFormData({
         name: "",
         location: "",
@@ -125,30 +156,70 @@ export const AddHotelDialog: React.FC<AddHotelDialogProps> = ({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg">
-          <Plus className="mr-2" size={20} />
-          {t("hotels.addHotelDialog.buttons.addHotel")}
-        </Button>
+        <button
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 8,
+            padding: "10px 20px",
+            borderRadius: 8,
+            background: "#E8192C",
+            color: "#ffffff",
+            border: "none",
+            cursor: "pointer",
+            fontWeight: 600,
+            fontSize: 14,
+          }}
+        >
+          <Plus size={18} /> {t("hotels.addHotelDialog.buttons.addHotel")}
+        </button>
       </DialogTrigger>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent
+        style={{
+          background: tk.dialogBg,
+          color: tk.dialogText,
+          maxWidth: 640,
+          maxHeight: "90vh",
+          overflowY: "auto",
+        }}
+      >
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+          <DialogTitle
+            style={{ fontSize: 22, fontWeight: 700, color: "#E8192C" }}
+          >
             {t("hotels.addHotelDialog.title")}
           </DialogTitle>
-          <DialogDescription>
+          <DialogDescription style={{ color: tk.mutedText }}>
             {t("hotels.addHotelDialog.subtitle")}
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <form
+          onSubmit={handleSubmit}
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: 24,
+            marginTop: 16,
+          }}
+        >
+          <div
+            style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}
+          >
             {/* Name */}
-            <div className="space-y-2">
-              <Label htmlFor="name" className="text-sm font-medium">
+            <div>
+              <p
+                style={{
+                  fontSize: 13,
+                  fontWeight: 500,
+                  color: tk.labelText,
+                  marginBottom: 6,
+                }}
+              >
                 {t("hotels.addHotelDialog.form.hotelName")}{" "}
-                <span className="text-red-500">*</span>
-              </Label>
-              <Input
+                <span style={{ color: "#E8192C" }}>*</span>
+              </p>
+              <input
                 id="name"
                 name="name"
                 value={formData.name}
@@ -157,35 +228,57 @@ export const AddHotelDialog: React.FC<AddHotelDialogProps> = ({
                   "hotels.addHotelDialog.form.hotelNamePlaceholder",
                 )}
                 required
-                className="w-full"
+                style={inputStyle}
               />
             </div>
-
             {/* Location */}
-            <div className="space-y-2">
-              <Label htmlFor="location" className="text-sm font-medium">
+            <div>
+              <p
+                style={{
+                  fontSize: 13,
+                  fontWeight: 500,
+                  color: tk.labelText,
+                  marginBottom: 6,
+                }}
+              >
                 {t("hotels.addHotelDialog.form.location")}{" "}
-                <span className="text-red-500">*</span>
-              </Label>
-              <Input
+                <span style={{ color: "#E8192C" }}>*</span>
+              </p>
+              <select
                 id="location"
                 name="location"
                 value={formData.location}
                 onChange={handleChange}
-                placeholder={t(
-                  "hotels.addHotelDialog.form.locationPlaceholder",
-                )}
                 required
-                className="w-full"
-              />
+                style={selectStyle}
+              >
+                <option value="" disabled style={{ background: tk.optionBg }}>
+                  Select city in Albania
+                </option>
+                {ALBANIAN_CITIES.map((city) => (
+                  <option
+                    key={city}
+                    value={city}
+                    style={{ background: tk.optionBg }}
+                  >
+                    {city}
+                  </option>
+                ))}
+              </select>
             </div>
-
             {/* Rating */}
-            <div className="space-y-2">
-              <Label htmlFor="rating" className="text-sm font-medium">
+            <div>
+              <p
+                style={{
+                  fontSize: 13,
+                  fontWeight: 500,
+                  color: tk.labelText,
+                  marginBottom: 6,
+                }}
+              >
                 {t("hotels.addHotelDialog.form.rating")}
-              </Label>
-              <Input
+              </p>
+              <input
                 id="rating"
                 name="rating"
                 type="number"
@@ -195,17 +288,23 @@ export const AddHotelDialog: React.FC<AddHotelDialogProps> = ({
                 value={formData.rating}
                 onChange={handleChange}
                 placeholder={t("hotels.addHotelDialog.form.ratingPlaceholder")}
-                className="w-full"
+                style={inputStyle}
               />
             </div>
-
             {/* Price */}
-            <div className="space-y-2">
-              <Label htmlFor="price" className="text-sm font-medium">
+            <div>
+              <p
+                style={{
+                  fontSize: 13,
+                  fontWeight: 500,
+                  color: tk.labelText,
+                  marginBottom: 6,
+                }}
+              >
                 {t("hotels.addHotelDialog.form.price")}{" "}
-                <span className="text-red-500">*</span>
-              </Label>
-              <Input
+                <span style={{ color: "#E8192C" }}>*</span>
+              </p>
+              <input
                 id="price"
                 name="price"
                 type="number"
@@ -214,16 +313,22 @@ export const AddHotelDialog: React.FC<AddHotelDialogProps> = ({
                 onChange={handleChange}
                 placeholder={t("hotels.addHotelDialog.form.pricePlaceholder")}
                 required
-                className="w-full"
+                style={inputStyle}
               />
             </div>
-
             {/* Rooms */}
-            <div className="space-y-2">
-              <Label htmlFor="rooms" className="text-sm font-medium">
+            <div>
+              <p
+                style={{
+                  fontSize: 13,
+                  fontWeight: 500,
+                  color: tk.labelText,
+                  marginBottom: 6,
+                }}
+              >
                 {t("hotels.addHotelDialog.form.rooms")}
-              </Label>
-              <Input
+              </p>
+              <input
                 id="rooms"
                 name="rooms"
                 type="number"
@@ -231,16 +336,22 @@ export const AddHotelDialog: React.FC<AddHotelDialogProps> = ({
                 value={formData.rooms}
                 onChange={handleChange}
                 placeholder={t("hotels.addHotelDialog.form.roomsPlaceholder")}
-                className="w-full"
+                style={inputStyle}
               />
             </div>
-
             {/* Occupancy */}
-            <div className="space-y-2">
-              <Label htmlFor="occupancy" className="text-sm font-medium">
+            <div>
+              <p
+                style={{
+                  fontSize: 13,
+                  fontWeight: 500,
+                  color: tk.labelText,
+                  marginBottom: 6,
+                }}
+              >
                 {t("hotels.addHotelDialog.form.occupancy")}
-              </Label>
-              <Input
+              </p>
+              <input
                 id="occupancy"
                 name="occupancy"
                 type="number"
@@ -251,37 +362,49 @@ export const AddHotelDialog: React.FC<AddHotelDialogProps> = ({
                 placeholder={t(
                   "hotels.addHotelDialog.form.occupancyPlaceholder",
                 )}
-                className="w-full"
+                style={inputStyle}
               />
             </div>
-
             {/* Status */}
-            <div className="space-y-2">
-              <Label htmlFor="status" className="text-sm font-medium">
+            <div>
+              <p
+                style={{
+                  fontSize: 13,
+                  fontWeight: 500,
+                  color: tk.labelText,
+                  marginBottom: 6,
+                }}
+              >
                 {t("hotels.addHotelDialog.form.status")}
-              </Label>
+              </p>
               <select
                 id="status"
                 name="status"
                 value={formData.status}
                 onChange={handleChange}
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                style={selectStyle}
               >
-                <option value="active">
+                <option value="active" style={{ background: tk.optionBg }}>
                   {t("hotels.addHotelDialog.form.statusActive")}
                 </option>
-                <option value="maintenance">
+                <option value="maintenance" style={{ background: tk.optionBg }}>
                   {t("hotels.addHotelDialog.form.statusMaintenance")}
                 </option>
               </select>
             </div>
-
             {/* Contact Email */}
-            <div className="space-y-2">
-              <Label htmlFor="contactEmail" className="text-sm font-medium">
+            <div>
+              <p
+                style={{
+                  fontSize: 13,
+                  fontWeight: 500,
+                  color: tk.labelText,
+                  marginBottom: 6,
+                }}
+              >
                 {t("hotels.addHotelDialog.form.contactEmail")}
-              </Label>
-              <Input
+              </p>
+              <input
                 id="contactEmail"
                 name="contactEmail"
                 type="email"
@@ -290,16 +413,22 @@ export const AddHotelDialog: React.FC<AddHotelDialogProps> = ({
                 placeholder={t(
                   "hotels.addHotelDialog.form.contactEmailPlaceholder",
                 )}
-                className="w-full"
+                style={inputStyle}
               />
             </div>
-
             {/* Contact Phone */}
-            <div className="space-y-2">
-              <Label htmlFor="contactPhone" className="text-sm font-medium">
+            <div style={{ gridColumn: "1 / span 2" }}>
+              <p
+                style={{
+                  fontSize: 13,
+                  fontWeight: 500,
+                  color: tk.labelText,
+                  marginBottom: 6,
+                }}
+              >
                 {t("hotels.addHotelDialog.form.contactPhone")}
-              </Label>
-              <Input
+              </p>
+              <input
                 id="contactPhone"
                 name="contactPhone"
                 value={formData.contactPhone}
@@ -307,47 +436,53 @@ export const AddHotelDialog: React.FC<AddHotelDialogProps> = ({
                 placeholder={t(
                   "hotels.addHotelDialog.form.contactPhonePlaceholder",
                 )}
-                className="w-full"
+                style={inputStyle}
               />
             </div>
           </div>
 
-          {/* Image Upload Component */}
+          {/* Image Upload */}
           <ImageUpload
             propertyType="Hotel"
-            onImagesSelected={(files) => {
-              setSelectedImageFiles(files);
-            }}
+            onImagesSelected={(files) => setSelectedImageFiles(files)}
             selectedFiles={selectedImageFiles}
-            onRemoveFile={(index) => {
+            onRemoveFile={(index) =>
               setSelectedImageFiles((prev) =>
                 prev.filter((_, i) => i !== index),
-              );
-            }}
+              )
+            }
             maxImages={10}
             isLoading={loading}
           />
 
           {/* Address */}
-          <div className="space-y-2">
-            <Label htmlFor="address" className="text-sm font-medium">
+          <div>
+            <p
+              style={{
+                fontSize: 13,
+                fontWeight: 500,
+                color: tk.labelText,
+                marginBottom: 6,
+              }}
+            >
               {t("hotels.addHotelDialog.form.address")}
-            </Label>
-            <Input
+            </p>
+            <input
               id="address"
               name="address"
               value={formData.address}
-              onChange={handleChange}
               placeholder={t("hotels.addHotelDialog.form.addressPlaceholder")}
-              className="w-full"
+              readOnly
+              style={inputStyle}
             />
           </div>
 
-          {/* Map Picker Component */}
+          {/* Map */}
           <MapPicker
             lat={formData.lat}
             lng={formData.lng}
             onLocationSelect={handleLocationSelect}
+            onAddressSelect={handleAddressSelect}
             label={t("hotels.addHotelDialog.form.mapLabel")}
             defaultCenter={[41.327953, 19.819025]}
             defaultZoom={8}
@@ -355,10 +490,17 @@ export const AddHotelDialog: React.FC<AddHotelDialogProps> = ({
           />
 
           {/* Description */}
-          <div className="space-y-2">
-            <Label htmlFor="description" className="text-sm font-medium">
+          <div>
+            <p
+              style={{
+                fontSize: 13,
+                fontWeight: 500,
+                color: tk.labelText,
+                marginBottom: 6,
+              }}
+            >
               {t("hotels.addHotelDialog.form.description")}
-            </Label>
+            </p>
             <textarea
               id="description"
               name="description"
@@ -368,36 +510,56 @@ export const AddHotelDialog: React.FC<AddHotelDialogProps> = ({
                 "hotels.addHotelDialog.form.descriptionPlaceholder",
               )}
               rows={3}
-              className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 resize-none"
+              style={{ ...inputStyle, resize: "none", fontFamily: "inherit" }}
             />
           </div>
 
           <DialogFooter>
-            <Button
+            <button
               type="button"
-              variant="outline"
               onClick={() => setOpen(false)}
               disabled={loading}
+              style={{
+                padding: "10px 18px",
+                borderRadius: 8,
+                background: "transparent",
+                border: `1px solid ${tk.ghostBtnBorder}`,
+                color: tk.ghostBtnText,
+                cursor: "pointer",
+                fontWeight: 500,
+              }}
             >
               {t("hotels.addHotelDialog.buttons.cancel")}
-            </Button>
-            <Button
+            </button>
+            <button
               type="submit"
               disabled={loading}
-              className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 6,
+                padding: "10px 20px",
+                borderRadius: 8,
+                background: "#E8192C",
+                color: "#fff",
+                border: "none",
+                cursor: "pointer",
+                fontWeight: 600,
+                opacity: loading ? 0.7 : 1,
+              }}
             >
               {loading ? (
                 <>
-                  <Loader2 className="mr-2 animate-spin" size={16} />
+                  <Loader2 className="animate-spin" size={15} />{" "}
                   {t("hotels.addHotelDialog.adding")}
                 </>
               ) : (
                 <>
-                  <Plus className="mr-2" size={16} />
+                  <Plus size={15} />{" "}
                   {t("hotels.addHotelDialog.buttons.addHotel")}
                 </>
               )}
-            </Button>
+            </button>
           </DialogFooter>
         </form>
       </DialogContent>

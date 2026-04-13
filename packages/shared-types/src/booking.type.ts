@@ -30,6 +30,7 @@ export interface Booking {
   paypal_order_id?: string;
   stripe_payment_intent_id?: string;
   paid_at?: string;
+  cancellation_reason?: string;
   createdAt: string;
   updatedAt: string;
   propertyData?: Car | Apartment | Hotel | null;

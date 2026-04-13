@@ -7,6 +7,7 @@ const PAYPAL_BASE_URL =
   Deno.env.get("PAYPAL_BASE_URL") || "https://api-m.sandbox.paypal.com";
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY")!;
 
 interface CaptureOrderRequest {
   orderId: string;
@@ -128,8 +129,20 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    // Initialize Supabase client with service role
-    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
+    // Initialize Supabase admin client for database operations
+    const supabaseAdmin = createClient(
+      SUPABASE_URL,
+      SUPABASE_SERVICE_ROLE_KEY,
+      {
+        auth: {
+          autoRefreshToken: false,
+          persistSession: false,
+        },
+      },
+    );
+
+    // Create client with anon key for JWT verification
+    const supabaseUser = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
       auth: {
         autoRefreshToken: false,
         persistSession: false,
@@ -141,7 +154,7 @@ Deno.serve(async (req: Request) => {
     const {
       data: { user },
       error: authError,
-    } = await supabase.auth.getUser(token);
+    } = await supabaseUser.auth.getUser(token);
 
     if (authError || !user) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
@@ -162,7 +175,7 @@ Deno.serve(async (req: Request) => {
     }
 
     // Fetch booking from database
-    const { data: booking, error: bookingError } = await supabase
+    const { data: booking, error: bookingError } = await supabaseAdmin
       .from("booking")
       .select("*")
       .eq("id", bookingId)
@@ -199,7 +212,7 @@ Deno.serve(async (req: Request) => {
     // Check if already paid (idempotency check)
     if (booking.payment_status === "paid") {
       // Check if this order was already captured
-      const { data: existingTransaction } = await supabase
+      const { data: existingTransaction } = await supabaseAdmin
         .from("payment_transactions")
         .select("*")
         .eq("paypal_order_id", orderId)
@@ -274,7 +287,7 @@ Deno.serve(async (req: Request) => {
       );
 
       // Update transaction status
-      await supabase
+      await supabaseAdmin
         .from("payment_transactions")
         .update({ status: "denied" })
         .eq("paypal_order_id", orderId);
@@ -319,7 +332,7 @@ Deno.serve(async (req: Request) => {
     // we'll use a database function or update sequentially with checks
 
     // First, check for idempotency using unique constraint on paypal_capture_id
-    const { data: existingCapture } = await supabase
+    const { data: existingCapture } = await supabaseAdmin
       .from("payment_transactions")
       .select("*")
       .eq("paypal_capture_id", captureId)
@@ -338,7 +351,7 @@ Deno.serve(async (req: Request) => {
     }
 
     // Update payment transaction
-    const { error: transactionError } = await supabase
+    const { error: transactionError } = await supabaseAdmin
       .from("payment_transactions")
       .update({
         paypal_capture_id: captureId,
@@ -367,7 +380,7 @@ Deno.serve(async (req: Request) => {
     }
 
     // Update booking atomically
-    const { error: bookingUpdateError } = await supabase
+    const { error: bookingUpdateError } = await supabaseAdmin
       .from("booking")
       .update({
         payment_status: "paid",

@@ -117,22 +117,6 @@ export const getProviderBookingNotificationTemplate = (data: {
             </div>
           </div>
 
-          <div class="booking-details">
-            <div class="section-title">👤 Guest Information</div>
-            <div class="detail-row">
-              <span class="detail-label">Name:</span>
-              <span class="detail-value">${data.guestName}</span>
-            </div>
-            <div class="detail-row">
-              <span class="detail-label">Email:</span>
-              <span class="detail-value"><a href="mailto:${data.guestEmail}">${data.guestEmail}</a></span>
-            </div>
-            <div class="detail-row">
-              <span class="detail-label">Phone:</span>
-              <span class="detail-value"><a href="tel:${data.guestPhone}">${data.guestPhone}</a></span>
-            </div>
-          </div>
-
           <center>
             <a href="${data.dashboardUrl}" class="button">View & Manage Booking</a>
           </center>

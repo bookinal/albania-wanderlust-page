@@ -56,13 +56,19 @@ export interface ApartmentFiltersInput {
   amenities?: string[];
 }
 
+export interface DestinationFiltersInput {
+  searchTerm?: string;
+  categories?: string[];
+}
+
 /**
  * Unified search filter state
  */
 export interface SearchFiltersState {
-  propertyType: "hotel" | "apartment" | "both";
+  propertyType: "hotel" | "apartment" | "destination";
   hotelFilters: HotelFiltersInput;
   apartmentFilters: ApartmentFiltersInput;
+  destinationFilters: DestinationFiltersInput;
   // Date and guest filters from navigation state
   destination?: string;
   checkInDate?: string | null;
@@ -76,7 +82,7 @@ export interface SearchFiltersState {
  * Default filter values
  */
 export const defaultSearchFilters: SearchFiltersState = {
-  propertyType: "both",
+  propertyType: "hotel",
   hotelFilters: {
     searchTerm: "",
     priceRange: { min: 0, max: 500 },
@@ -102,6 +108,10 @@ export const defaultSearchFilters: SearchFiltersState = {
     beds: { min: undefined, max: undefined },
     bathrooms: { min: undefined, max: undefined },
     amenities: [],
+  },
+  destinationFilters: {
+    searchTerm: "",
+    categories: ["Adventure", "Historic", "Beach"],
   },
   destination: "",
   checkInDate: null,

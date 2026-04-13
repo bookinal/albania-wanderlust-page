@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
 import {
   ArrowLeft,
   MapPin,
@@ -36,11 +34,29 @@ import "yet-another-react-lightbox/styles.css";
 import Zoom from "yet-another-react-lightbox/plugins/zoom";
 import Fullscreen from "yet-another-react-lightbox/plugins/fullscreen";
 import { useTranslation } from "react-i18next";
+import { useTheme } from "@/context/ThemeContext";
 
 const HotelReservation = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { isDark } = useTheme();
+
+  const tk = {
+    pageBg: isDark ? "#0d0d0d" : "#f5f4f1",
+    pageText: isDark ? "#ffffff" : "#111115",
+    cardBg: isDark ? "#111115" : "#ffffff",
+    cardBorder: isDark ? "rgba(255,255,255,0.07)" : "#ede9e5",
+    cardShadow: isDark ? "0 8px 32px rgba(0,0,0,0.5)" : "0 8px 32px rgba(15,23,42,0.08)",
+    mutedText: isDark ? "rgba(255,255,255,0.40)" : "#6b6663",
+    dimText: isDark ? "rgba(255,255,255,0.70)" : "#44403c",
+    statBg: isDark ? "rgba(255,255,255,0.04)" : "#f5f2ee",
+    statBorder: isDark ? "rgba(255,255,255,0.07)" : "#e5e2de",
+    thumbBg: isDark ? "#0a0a0a" : "#f0ece8",
+    amenityBg: isDark ? "rgba(255,255,255,0.04)" : "#f5f2ee",
+    backBg: isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.06)",
+    iconCircle: isDark ? "rgba(232,25,44,0.12)" : "#fef2f2",
+  };
 
   const [hotel, setHotel] = useState<Hotel | null>(null);
   const [loading, setLoading] = useState(true);
@@ -48,11 +64,9 @@ const HotelReservation = () => {
   const [photoIndex, setPhotoIndex] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
 
-  // Fetch hotel data
   useEffect(() => {
     const fetchHotel = async () => {
       if (!id) return;
-
       setLoading(true);
       try {
         const data = await getHotelById(parseInt(id));
@@ -68,7 +82,6 @@ const HotelReservation = () => {
         setLoading(false);
       }
     };
-
     fetchHotel();
   }, [id]);
 
@@ -82,13 +95,17 @@ const HotelReservation = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-screen bg-gradient-to-br from-blue-50 to-indigo-50">
+      <div
+        className="flex items-center justify-center h-screen"
+        style={{ background: tk.pageBg }}
+      >
         <div className="text-center">
           <Loader2
-            className="animate-spin text-blue-600 mx-auto mb-4"
+            className="animate-spin mx-auto mb-4"
             size={48}
+            style={{ color: "#E8192C" }}
           />
-          <p className="text-gray-600 font-medium">
+          <p style={{ color: tk.mutedText, fontWeight: 500 }}>
             {t("hotel.loadingHotelDetails")}
           </p>
         </div>
@@ -98,24 +115,38 @@ const HotelReservation = () => {
 
   if (!hotel) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center p-4">
-        <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 text-center">
-          <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Home className="text-red-600" size={40} />
+      <div
+        className="min-h-screen flex items-center justify-center p-4"
+        style={{ background: tk.pageBg }}
+      >
+        <div
+          className="max-w-md w-full rounded-2xl p-8 text-center border"
+          style={{
+            background: tk.cardBg,
+            borderColor: tk.cardBorder,
+            boxShadow: tk.cardShadow,
+          }}
+        >
+          <div
+            className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4"
+            style={{ background: tk.iconCircle }}
+          >
+            <Home size={40} style={{ color: "#E8192C" }} />
           </div>
-          <h3 className="text-2xl font-bold text-gray-900 mb-2">
+          <h3 className="text-2xl font-bold mb-2" style={{ color: tk.pageText }}>
             {t("hotel.hotelNotFound")}
           </h3>
-          <p className="text-gray-500 mb-6">
+          <p className="mb-6" style={{ color: tk.mutedText }}>
             {t("hotel.hotelNotFoundDescription")}
           </p>
-          <Button
+          <button
             onClick={() => navigate("/searchResults")}
-            className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
+            className="w-full py-3 px-6 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all hover:opacity-90"
+            style={{ background: "#E8192C", color: "#ffffff" }}
           >
-            <ArrowLeft className="mr-2" size={16} />
+            <ArrowLeft size={16} />
             {t("hotel.backToHotels")}
-          </Button>
+          </button>
         </div>
       </div>
     );
@@ -123,48 +154,39 @@ const HotelReservation = () => {
 
   const amenities = [
     { icon: Wifi, label: t("hotel.amenities.freeWifi"), available: hotel.wifi },
-    {
-      icon: Car,
-      label: t("hotel.amenities.parking"),
-      available: hotel.parking,
-    },
-    {
-      icon: Dumbbell,
-      label: t("hotel.amenities.fitnessCenter"),
-      available: hotel.gym,
-    },
-    {
-      icon: UtensilsCrossed,
-      label: t("hotel.amenities.restaurant"),
-      available: hotel.restaurant,
-    },
+    { icon: Car, label: t("hotel.amenities.parking"), available: hotel.parking },
+    { icon: Dumbbell, label: t("hotel.amenities.fitnessCenter"), available: hotel.gym },
+    { icon: UtensilsCrossed, label: t("hotel.amenities.restaurant"), available: hotel.restaurant },
     { icon: Wine, label: t("hotel.amenities.bar"), available: hotel.bar },
     { icon: Spa, label: t("hotel.amenities.spa"), available: hotel.spa },
-    {
-      icon: Pool,
-      label: t("hotel.amenities.swimmingPool"),
-      available: hotel.pool,
-    },
+    { icon: Pool, label: t("hotel.amenities.swimmingPool"), available: hotel.pool },
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+    <div style={{ background: tk.pageBg, minHeight: "100vh", color: tk.pageText }}>
       <PrimarySearchAppBar />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Back Button */}
-        <Button
-          variant="ghost"
-          onClick={() => navigate("/searchResults")}
-          className="mb-6 hover:bg-white/50"
-        >
-          <ArrowLeft className="mr-2" size={16} />
-          Back to Hotels
-        </Button>
 
-        {/* Hero Section with Image Gallery */}
-        <div className="bg-white rounded-3xl shadow-2xl overflow-hidden mb-8">
+        {/* Back Button */}
+        <button
+          onClick={() => navigate("/searchResults")}
+          className="mb-6 flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all"
+          style={{ background: tk.backBg, color: tk.dimText }}
+        >
+          <ArrowLeft size={16} />
+          Back to Hotels
+        </button>
+
+        {/* Hero Gallery */}
+        <div
+          className="rounded-3xl overflow-hidden mb-8 border"
+          style={{
+            background: tk.cardBg,
+            borderColor: tk.cardBorder,
+            boxShadow: tk.cardShadow,
+          }}
+        >
           <div className="relative">
-            {/* Main Image Display */}
             {images.length > 0 ? (
               <div className="relative h-96 sm:h-[500px]">
                 <img
@@ -175,23 +197,16 @@ const HotelReservation = () => {
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
 
-                {/* Image Navigation */}
                 {images.length > 1 && (
                   <>
                     <button
-                      onClick={() =>
-                        setPhotoIndex(
-                          (photoIndex + images.length - 1) % images.length,
-                        )
-                      }
+                      onClick={() => setPhotoIndex((photoIndex + images.length - 1) % images.length)}
                       className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/90 hover:bg-white rounded-full flex items-center justify-center shadow-lg transition-all hover:scale-110"
                     >
                       <ChevronLeft size={24} className="text-gray-900" />
                     </button>
                     <button
-                      onClick={() =>
-                        setPhotoIndex((photoIndex + 1) % images.length)
-                      }
+                      onClick={() => setPhotoIndex((photoIndex + 1) % images.length)}
                       className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/90 hover:bg-white rounded-full flex items-center justify-center shadow-lg transition-all hover:scale-110"
                     >
                       <ChevronRight size={24} className="text-gray-900" />
@@ -199,7 +214,6 @@ const HotelReservation = () => {
                   </>
                 )}
 
-                {/* View All Photos Button */}
                 <button
                   onClick={() => setIsOpen(true)}
                   className="absolute bottom-6 right-6 px-6 py-3 bg-white hover:bg-gray-50 rounded-xl shadow-lg flex items-center gap-2 font-semibold text-gray-900 transition-all hover:scale-105"
@@ -208,18 +222,14 @@ const HotelReservation = () => {
                   {t("hotel.viewAllPhotos", { count: images.length })}
                 </button>
 
-                {/* Image Counter */}
                 <div className="absolute bottom-6 left-6 px-4 py-2 bg-black/60 backdrop-blur-sm rounded-full text-white text-sm font-medium">
                   {photoIndex + 1} / {images.length}
                 </div>
 
-                {/* Floating Status Badge */}
                 <div className="absolute top-6 right-6">
                   <span
                     className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-bold uppercase tracking-wider shadow-lg backdrop-blur-sm ${
-                      hotel.status === "active"
-                        ? "bg-emerald-500/90 text-white"
-                        : "bg-amber-500/90 text-white"
+                      hotel.status === "active" ? "bg-emerald-500/90 text-white" : "bg-amber-500/90 text-white"
                     }`}
                   >
                     <CheckCircle2 size={16} className="mr-2" />
@@ -227,64 +237,46 @@ const HotelReservation = () => {
                   </span>
                 </div>
 
-                {/* Hotel Info Overlay */}
                 <div className="absolute bottom-0 left-0 right-0 p-8 text-white">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <h1 className="text-4xl sm:text-5xl font-bold mb-3 drop-shadow-lg">
-                        {hotel.name}
-                      </h1>
-                      <div className="flex items-center gap-2 text-lg mb-4">
-                        <MapPin size={20} />
-                        <span className="drop-shadow">{hotel.location}</span>
-                      </div>
-                      <div className="flex items-center gap-6">
-                        <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full">
-                          <Star
-                            size={20}
-                            className="text-amber-400 fill-amber-400"
-                          />
-                          <span className="font-bold text-lg">
-                            {hotel.rating}
-                          </span>
-                          <span className="text-sm opacity-90">/ 5.0</span>
-                        </div>
-                        <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full">
-                          <Users size={20} />
-                          <span className="font-medium">
-                            {hotel.occupancy}% occupied
-                          </span>
-                        </div>
-                      </div>
+                  <h1 className="text-4xl sm:text-5xl font-bold mb-3 drop-shadow-lg">{hotel.name}</h1>
+                  <div className="flex items-center gap-2 text-lg mb-4">
+                    <MapPin size={20} />
+                    <span className="drop-shadow">{hotel.location}</span>
+                  </div>
+                  <div className="flex items-center gap-6">
+                    <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full">
+                      <Star size={20} className="text-amber-400 fill-amber-400" />
+                      <span className="font-bold text-lg">{hotel.rating}</span>
+                      <span className="text-sm opacity-90">/ 5.0</span>
+                    </div>
+                    <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full">
+                      <Users size={20} />
+                      <span className="font-medium">{hotel.occupancy}% occupied</span>
                     </div>
                   </div>
                 </div>
               </div>
             ) : (
-              <div className="h-96 sm:h-[500px] bg-gray-200 flex items-center justify-center">
-                <p className="text-gray-500">{t("hotel.noImagesAvailable")}</p>
+              <div className="h-96 sm:h-[500px] flex items-center justify-center" style={{ background: tk.statBg }}>
+                <p style={{ color: tk.mutedText }}>{t("hotel.noImagesAvailable")}</p>
               </div>
             )}
 
-            {/* Thumbnail Strip */}
             {images.length > 1 && (
-              <div className="p-4 bg-gray-50 overflow-x-auto">
+              <div className="p-4 overflow-x-auto" style={{ background: tk.thumbBg }}>
                 <div className="flex gap-3">
                   {images.map((img, index) => (
                     <button
                       key={index}
                       onClick={() => setPhotoIndex(index)}
-                      className={`flex-shrink-0 w-24 h-24 rounded-lg overflow-hidden transition-all ${
-                        index === photoIndex
-                          ? "ring-4 ring-blue-600 scale-105"
-                          : "ring-2 ring-gray-300 hover:ring-blue-400 opacity-70 hover:opacity-100"
-                      }`}
+                      className="flex-shrink-0 w-24 h-24 rounded-lg overflow-hidden transition-all"
+                      style={{
+                        outline: index === photoIndex ? "3px solid #E8192C" : `2px solid ${tk.statBorder}`,
+                        opacity: index === photoIndex ? 1 : 0.6,
+                        transform: index === photoIndex ? "scale(1.05)" : "scale(1)",
+                      }}
                     >
-                      <img
-                        src={img}
-                        alt={`Thumbnail ${index + 1}`}
-                        className="w-full h-full object-cover"
-                      />
+                      <img src={img} alt={`Thumbnail ${index + 1}`} className="w-full h-full object-cover" />
                     </button>
                   ))}
                 </div>
@@ -293,7 +285,6 @@ const HotelReservation = () => {
           </div>
         </div>
 
-        {/* Lightbox */}
         {isOpen && images.length > 0 && (
           <Lightbox
             open={isOpen}
@@ -301,171 +292,144 @@ const HotelReservation = () => {
             index={photoIndex}
             slides={images.map((src) => ({ src }))}
             plugins={[Zoom, Fullscreen]}
-            on={{
-              view: ({ index }) => setPhotoIndex(index),
-            }}
+            on={{ view: ({ index }) => setPhotoIndex(index) }}
           />
         )}
 
         {/* Main Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Left Column - Reservation Card */}
+
+          {/* Reservation Card */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-2xl shadow-xl p-6 sticky top-8 border border-gray-100">
+            <div
+              className="rounded-2xl p-6 sticky top-8 border"
+              style={{ background: tk.cardBg, borderColor: tk.cardBorder, boxShadow: tk.cardShadow }}
+            >
               <div className="text-center mb-6">
-                <p className="text-gray-600 text-sm mb-2">
-                  {t("hotel.pricePerNight")}
-                </p>
+                <p className="text-sm mb-2" style={{ color: tk.mutedText }}>{t("hotel.pricePerNight")}</p>
                 <div className="flex items-center justify-center gap-2">
-                  <DollarSign size={32} className="text-emerald-600" />
-                  <span className="text-5xl font-bold text-gray-900">
-                    {hotel.price}
-                  </span>
+                  <DollarSign size={32} className="text-emerald-500" />
+                  <span className="text-5xl font-bold" style={{ color: tk.pageText }}>{hotel.price}</span>
                 </div>
-                <p className="text-gray-500 text-sm mt-2">
-                  {t("hotel.taxesAndFees")}
-                </p>
+                <p className="text-sm mt-2" style={{ color: tk.mutedText }}>{t("hotel.taxesAndFees")}</p>
               </div>
 
-              <div className="space-y-4 mb-6">
-                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
-                  <div className="flex items-center gap-3">
-                    <Bed size={20} className="text-blue-600" />
-                    <span className="font-medium text-gray-700">
-                      {t("hotel.roomsAvailable")}
-                    </span>
+              <div className="space-y-3 mb-6">
+                {[
+                  { icon: Bed, label: t("hotel.roomsAvailable"), value: String(hotel.rooms) },
+                  { icon: Clock, label: t("hotel.checkIn"), value: "2:00 PM" },
+                  { icon: Clock, label: t("hotel.checkOut"), value: "12:00 PM" },
+                ].map((item, i) => (
+                  <div
+                    key={i}
+                    className="flex items-center justify-between p-4 rounded-xl"
+                    style={{ background: tk.statBg, border: `1px solid ${tk.statBorder}` }}
+                  >
+                    <div className="flex items-center gap-3">
+                      <item.icon size={20} style={{ color: "#E8192C" }} />
+                      <span className="font-medium text-sm" style={{ color: tk.dimText }}>{item.label}</span>
+                    </div>
+                    <span className="font-bold text-sm" style={{ color: tk.pageText }}>{item.value}</span>
                   </div>
-                  <span className="font-bold text-gray-900">{hotel.rooms}</span>
-                </div>
-
-                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
-                  <div className="flex items-center gap-3">
-                    <Clock size={20} className="text-blue-600" />
-                    <span className="font-medium text-gray-700">
-                      {t("hotel.checkIn")}
-                    </span>
-                  </div>
-                  <span className="font-bold text-gray-900">2:00 PM</span>
-                </div>
-
-                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
-                  <div className="flex items-center gap-3">
-                    <Clock size={20} className="text-blue-600" />
-                    <span className="font-medium text-gray-700">
-                      {t("hotel.checkOut")}
-                    </span>
-                  </div>
-                  <span className="font-bold text-gray-900">12:00 PM</span>
-                </div>
+                ))}
               </div>
 
-              <Button
+              <button
                 onClick={handleReservation}
-                className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-6 text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
+                className="w-full py-4 rounded-xl font-bold text-lg shadow-lg transition-all hover:opacity-90 flex items-center justify-center gap-2"
+                style={{ background: "#E8192C", color: "#ffffff" }}
               >
-                <Calendar className="mr-2" size={20} />
+                <Calendar size={20} />
                 {t("hotel.bookNow")}
-              </Button>
-
-              <p className="text-center text-xs text-gray-500 mt-4">
-                {t("hotel.freeCancellation")}
-              </p>
+              </button>
+              <p className="text-center text-xs mt-4" style={{ color: tk.mutedText }}>{t("hotel.freeCancellation")}</p>
             </div>
           </div>
 
-          {/* Right Column - Details */}
+          {/* Details */}
           <div className="lg:col-span-2 space-y-6">
+
             {/* Description */}
-            <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-                <Home className="text-blue-600" size={24} />
+            <div
+              className="rounded-2xl p-8 border"
+              style={{ background: tk.cardBg, borderColor: tk.cardBorder, boxShadow: tk.cardShadow }}
+            >
+              <h2 className="text-2xl font-bold mb-4 flex items-center gap-2" style={{ color: tk.pageText }}>
+                <Home size={24} style={{ color: "#E8192C" }} />
                 {t("hotel.aboutThisHotel")}
               </h2>
-              <p className="text-gray-700 leading-relaxed text-lg">
-                {hotel.description ||
-                  "Experience luxury and comfort at this exceptional hotel. Our dedicated staff ensures your stay is memorable with top-notch service and modern amenities."}
+              <p className="leading-relaxed text-lg" style={{ color: tk.dimText }}>
+                {hotel.description || "Experience luxury and comfort at this exceptional hotel. Our dedicated staff ensures your stay is memorable with top-notch service and modern amenities."}
               </p>
             </div>
 
             {/* Amenities */}
             {amenities.filter((a) => a.available).length > 0 && (
-              <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100">
-                <h2 className="text-2xl font-bold text-gray-900 mb-6">
+              <div
+                className="rounded-2xl p-8 border"
+                style={{ background: tk.cardBg, borderColor: tk.cardBorder, boxShadow: tk.cardShadow }}
+              >
+                <h2 className="text-2xl font-bold mb-6" style={{ color: tk.pageText }}>
                   {t("hotel.amenitiesAndServices")}
                 </h2>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                  {amenities
-                    .filter((amenity) => amenity.available)
-                    .map((amenity, index) => (
-                      <div
-                        key={index}
-                        className="flex items-center gap-3 p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl hover:shadow-md transition-shadow"
-                      >
-                        <amenity.icon size={24} className="text-blue-600" />
-                        <span className="font-medium text-gray-700">
-                          {amenity.label}
-                        </span>
-                      </div>
-                    ))}
+                  {amenities.filter((a) => a.available).map((amenity, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center gap-3 p-4 rounded-xl"
+                      style={{ background: tk.amenityBg, border: `1px solid ${tk.statBorder}` }}
+                    >
+                      <amenity.icon size={24} style={{ color: "#E8192C" }} />
+                      <span className="font-medium text-sm" style={{ color: tk.dimText }}>{amenity.label}</span>
+                    </div>
+                  ))}
                 </div>
               </div>
             )}
 
-            {/* Contact Information */}
-            <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">
+            {/* Contact */}
+            <div
+              className="rounded-2xl p-8 border"
+              style={{ background: tk.cardBg, borderColor: tk.cardBorder, boxShadow: tk.cardShadow }}
+            >
+              <h2 className="text-2xl font-bold mb-6" style={{ color: tk.pageText }}>
                 {t("hotel.contactInformation")}
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="flex items-start gap-4 p-4 bg-gray-50 rounded-xl">
-                  <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
-                    <Mail size={20} className="text-blue-600" />
+                {[
+                  { icon: Mail, label: t("hotel.emailAddress"), value: hotel.contactEmail || "contact@hotel.com" },
+                  { icon: Phone, label: t("hotel.phoneNumber"), value: hotel.contactPhone || "+1 (555) 123-4567" },
+                ].map((item, i) => (
+                  <div key={i} className="flex items-start gap-4 p-4 rounded-xl" style={{ background: tk.statBg, border: `1px solid ${tk.statBorder}` }}>
+                    <div className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: tk.iconCircle }}>
+                      <item.icon size={20} style={{ color: "#E8192C" }} />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium mb-1" style={{ color: tk.mutedText }}>{item.label}</p>
+                      <p className="font-medium break-all" style={{ color: tk.pageText }}>{item.value}</p>
+                    </div>
+                  </div>
+                ))}
+                <div className="flex items-start gap-4 p-4 rounded-xl md:col-span-2" style={{ background: tk.statBg, border: `1px solid ${tk.statBorder}` }}>
+                  <div className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: tk.iconCircle }}>
+                    <MapPin size={20} style={{ color: "#E8192C" }} />
                   </div>
                   <div>
-                    <Label className="text-sm font-medium text-gray-600 mb-1 block">
-                      {t("hotel.emailAddress")}
-                    </Label>
-                    <p className="text-gray-900 font-medium break-all">
-                      {hotel.contactEmail || "contact@hotel.com"}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-4 p-4 bg-gray-50 rounded-xl">
-                  <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
-                    <Phone size={20} className="text-blue-600" />
-                  </div>
-                  <div>
-                    <Label className="text-sm font-medium text-gray-600 mb-1 block">
-                      {t("hotel.phoneNumber")}
-                    </Label>
-                    <p className="text-gray-900 font-medium">
-                      {hotel.contactPhone || "+1 (555) 123-4567"}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-4 p-4 bg-gray-50 rounded-xl md:col-span-2">
-                  <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
-                    <MapPin size={20} className="text-blue-600" />
-                  </div>
-                  <div>
-                    <Label className="text-sm font-medium text-gray-600 mb-1 block">
-                      {t("hotel.address")}
-                    </Label>
-                    <p className="text-gray-900 font-medium">
-                      {hotel.address || `${hotel.location}, Complete Address`}
-                    </p>
+                    <p className="text-sm font-medium mb-1" style={{ color: tk.mutedText }}>{t("hotel.address")}</p>
+                    <p className="font-medium" style={{ color: tk.pageText }}>{hotel.address || `${hotel.location}, Complete Address`}</p>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Map Location */}
+            {/* Map */}
             {hotel.lat !== undefined && hotel.lng !== undefined && (
-              <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100">
-                <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-                  <MapPin className="text-blue-600" size={24} />
+              <div
+                className="rounded-2xl p-8 border"
+                style={{ background: tk.cardBg, borderColor: tk.cardBorder, boxShadow: tk.cardShadow }}
+              >
+                <h2 className="text-2xl font-bold mb-6 flex items-center gap-2" style={{ color: tk.pageText }}>
+                  <MapPin size={24} style={{ color: "#E8192C" }} />
                   {t("hotel.location")}
                 </h2>
                 <div className="rounded-xl overflow-hidden shadow-md">

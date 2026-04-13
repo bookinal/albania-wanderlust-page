@@ -10,8 +10,10 @@
   ],
   "scripts": {
     "dev": "concurrently \"npm run dev:packages\" \"npm run dev:web\" --names \"packages,web\" --prefix-colors \"blue,green\"",
+    "dev:prod": "concurrently \"npm run dev:packages\" \"npm run dev:web:prod\" --names \"packages,web\" --prefix-colors \"blue,green\"",
     "dev:packages": "tsc --build --watch",
     "dev:web": "npm run dev --workspace=@albania/web",
+    "dev:web:prod": "npm run dev:prod --workspace=@albania/web",
     "dev:mobile": "cd apps/mobile/BookinAl && npm run start",
     "build": "npm run build --workspace=@albania/web",
     "build:web": "npm run build --workspace=@albania/web",

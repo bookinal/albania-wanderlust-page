@@ -1,8 +1,5 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Loader2, MapPin, Trash2, Star, ArrowRight, Heart } from "lucide-react";
 import { Wishlist } from "@/types/destination.types";
 import {
@@ -12,14 +9,34 @@ import {
 import PrimarySearchAppBar from "@/components/home/AppBar";
 import { useTranslation } from "react-i18next";
 import { useLocalized } from "@/hooks/useLocalized";
+import { useTheme } from "@/context/ThemeContext";
 
 const WishlistPage = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { localize } = useLocalized();
+  const { isDark } = useTheme();
   const [wishlist, setWishlist] = useState<Wishlist | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const tk = {
+    pageBg: isDark ? '#0d0d0d' : '#f5f4f1',
+    pageText: isDark ? '#ffffff' : '#111115',
+    cardBg: isDark ? 'rgba(255,255,255,0.03)' : '#ffffff',
+    cardBorder: isDark ? 'rgba(255,255,255,0.07)' : '#ede9e5',
+    cardShadow: isDark ? '0 8px 32px rgba(0,0,0,0.45)' : '0 8px 32px rgba(15,23,42,0.08)',
+    mutedText: isDark ? 'rgba(255,255,255,0.40)' : '#6b6663',
+    dimText: isDark ? 'rgba(255,255,255,0.70)' : '#44403c',
+    emptyBg: isDark ? 'rgba(255,255,255,0.03)' : '#f5f2ee',
+    emptyBorder: isDark ? 'rgba(255,255,255,0.10)' : '#ddd9d5',
+    iconCircle: isDark ? 'rgba(255,255,255,0.06)' : '#e5e2de',
+    ratingBg: isDark ? 'rgba(251,191,36,0.12)' : '#fef9ee',
+    ratingText: isDark ? '#fbbf24' : '#92400e',
+    divider: isDark ? 'rgba(255,255,255,0.06)' : '#e5e2de',
+    trashBg: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)',
+    badgeBg: isDark ? 'rgba(255,255,255,0.85)' : 'rgba(255,255,255,0.92)',
+  };
 
   useEffect(() => {
     const loadWishlist = async () => {
@@ -39,7 +56,6 @@ const WishlistPage = () => {
   const handleRemoveFromWishlist = async (destinationId: string) => {
     if (!wishlist) return;
 
-    // Optimistic UI Update: Remove locally immediately
     const previousWishlist = { ...wishlist };
     setWishlist({
       ...wishlist,
@@ -49,7 +65,6 @@ const WishlistPage = () => {
     try {
       await removeDestinationFromCurrentUserWishlist(destinationId);
     } catch (err) {
-      // Rollback if API fails
       setWishlist(previousWishlist);
       alert(t("wishlist.removeError"));
     }
@@ -57,9 +72,9 @@ const WishlistPage = () => {
 
   if (isLoading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
-        <Loader2 className="w-10 h-10 animate-spin text-primary" />
-        <p className="text-muted-foreground animate-pulse">
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '60vh', gap: '1rem', background: tk.pageBg }}>
+        <Loader2 className="w-10 h-10 animate-spin" style={{ color: '#E8192C' }} />
+        <p style={{ color: tk.mutedText }} className="animate-pulse">
           {t("wishlist.findingFavorites")}
         </p>
       </div>
@@ -67,16 +82,16 @@ const WishlistPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50/50">
+    <div style={{ minHeight: '100vh', background: tk.pageBg, color: tk.pageText }}>
       <PrimarySearchAppBar />
 
-      <main className="container mx-auto px-4 py-12">
-        <header className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
+      <main style={{ maxWidth: '1280px', margin: '0 auto', padding: '3rem 1rem' }}>
+        <header style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '2.5rem' }}>
           <div>
-            <h1 className="text-4xl font-extrabold tracking-tight text-slate-900">
+            <h1 style={{ fontSize: '2.25rem', fontWeight: 800, letterSpacing: '-0.02em', color: tk.pageText }}>
               {t("wishlist.savedForLater")}
             </h1>
-            <p className="text-muted-foreground mt-2">
+            <p style={{ color: tk.mutedText, marginTop: '0.5rem' }}>
               {t("wishlist.destinationsCount", {
                 count: wishlist?.destinations.length || 0,
               })}
@@ -85,82 +100,82 @@ const WishlistPage = () => {
         </header>
 
         {!wishlist || wishlist.destinations.length === 0 ? (
-          <div className="text-center py-24 bg-white rounded-2xl border-2 border-dashed border-slate-200">
-            <div className="bg-slate-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
-              <Heart className="w-10 h-10 text-slate-400" />
+          <div style={{ textAlign: 'center', padding: '6rem 1rem', background: tk.emptyBg, borderRadius: '1rem', border: `2px dashed ${tk.emptyBorder}` }}>
+            <div style={{ width: '5rem', height: '5rem', borderRadius: '9999px', background: tk.iconCircle, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem' }}>
+              <Heart className="w-10 h-10" style={{ color: tk.mutedText }} />
             </div>
-            <h3 className="text-xl font-semibold mb-2">
+            <h3 style={{ fontSize: '1.125rem', fontWeight: 600, marginBottom: '0.5rem', color: tk.pageText }}>
               {t("wishlist.emptyTitle")}
             </h3>
-            <p className="text-muted-foreground mb-8 max-w-xs mx-auto">
+            <p style={{ color: tk.mutedText, marginBottom: '2rem', maxWidth: '18rem', margin: '0 auto 2rem' }}>
               {t("wishlist.emptyDescription")}
             </p>
-            <Button size="lg" className="rounded-full px-8">
+            <button
+              onClick={() => navigate('/')}
+              style={{ padding: '0.75rem 2rem', background: '#E8192C', color: '#fff', border: 'none', borderRadius: '9999px', fontWeight: 600, cursor: 'pointer', fontSize: '0.95rem' }}
+            >
               {t("wishlist.exploreDestinations")}
-            </Button>
+            </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '2rem' }}>
             {wishlist.destinations.map((destination) => (
-              <Card
+              <div
                 key={destination.id}
-                className="group overflow-hidden border-none shadow-lg hover:shadow-xl transition-all duration-300 rounded-2xl bg-white"
+                style={{ background: tk.cardBg, border: `1px solid ${tk.cardBorder}`, borderRadius: '1rem', overflow: 'hidden', boxShadow: tk.cardShadow, transition: 'box-shadow 0.2s' }}
               >
                 {/* Image Container */}
-                <div className="relative aspect-[4/3] overflow-hidden">
+                <div style={{ position: 'relative', aspectRatio: '4/3', overflow: 'hidden' }}>
                   <img
                     src={destination.imageUrls[0]}
                     alt={localize(destination.name)}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.5s' }}
                   />
                   {/* Overlay Actions */}
-                  <div className="absolute top-3 right-3 flex flex-col gap-2">
-                    <Button
-                      size="icon"
-                      variant="secondary"
-                      className="rounded-full shadow-md bg-white/90 hover:bg-red-50 hover:text-red-600 transition-colors"
+                  <div style={{ position: 'absolute', top: '0.75rem', right: '0.75rem' }}>
+                    <button
                       onClick={() => handleRemoveFromWishlist(destination.id)}
+                      style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '2.25rem', height: '2.25rem', borderRadius: '9999px', background: tk.trashBg, backdropFilter: 'blur(8px)', border: 'none', cursor: 'pointer', color: '#E8192C' }}
                     >
                       <Trash2 className="w-4 h-4" />
-                    </Button>
+                    </button>
                   </div>
-                  <Badge className="absolute bottom-3 left-3 bg-white/90 text-slate-900 hover:bg-white backdrop-blur-sm border-none">
+                  <div style={{ position: 'absolute', bottom: '0.75rem', left: '0.75rem', background: tk.badgeBg, color: '#111115', padding: '0.25rem 0.75rem', borderRadius: '9999px', fontSize: '0.75rem', fontWeight: 600, backdropFilter: 'blur(8px)' }}>
                     {t("wishlist.topRated")}
-                  </Badge>
+                  </div>
                 </div>
 
-                <CardContent className="p-5">
-                  <div className="flex justify-between items-start mb-2">
-                    <div className="flex items-center text-primary font-medium text-sm">
+                <div style={{ padding: '1.25rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', color: '#E8192C', fontWeight: 500, fontSize: '0.875rem' }}>
                       <MapPin className="w-3.5 h-3.5 mr-1" />
-                      {localize(destination.name) ||
-                        t("wishlist.international")}
+                      {localize(destination.name) || t("wishlist.international")}
                     </div>
-                    <div className="flex items-center text-sm font-bold bg-yellow-50 text-yellow-700 px-2 py-0.5 rounded">
-                      <Star className="w-3 h-3 mr-1 fill-yellow-700" />
+                    <div style={{ display: 'flex', alignItems: 'center', fontSize: '0.875rem', fontWeight: 700, background: tk.ratingBg, color: tk.ratingText, padding: '0.25rem 0.5rem', borderRadius: '0.25rem' }}>
+                      <Star className="w-3 h-3 mr-1" style={{ fill: 'currentColor' }} />
                       4.8
                     </div>
                   </div>
 
-                  <h3 className="text-xl font-bold text-slate-900 mb-2 group-hover:text-primary transition-colors line-clamp-1">
+                  <h3 style={{ fontSize: '1.125rem', fontWeight: 700, color: tk.pageText, marginBottom: '0.5rem', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 1, WebkitBoxOrient: 'vertical' }}>
                     {localize(destination.name)}
                   </h3>
 
-                  <p className="text-slate-500 text-sm mb-5 line-clamp-2 leading-relaxed">
+                  <p style={{ color: tk.mutedText, fontSize: '0.875rem', marginBottom: '1.25rem', lineHeight: 1.6, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
                     {localize(destination.description)}
                   </p>
 
-                  <div className="flex items-center justify-between pt-4 border-t border-slate-100">
-                    <Button
-                      className="rounded-xl shadow-sm hover:shadow-md transition-shadow"
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '1rem', borderTop: `1px solid ${tk.divider}` }}>
+                    <button
                       onClick={() => navigate(`/destination/${destination.id}`)}
+                      style={{ display: 'inline-flex', alignItems: 'center', gap: '0.375rem', padding: '0.5rem 1rem', background: '#E8192C', color: '#fff', border: 'none', borderRadius: '0.625rem', fontWeight: 600, cursor: 'pointer', fontSize: '0.875rem' }}
                     >
                       {t("wishlist.seeMore")}
-                      <ArrowRight className="w-4 h-4 ml-2" />
-                    </Button>
+                      <ArrowRight className="w-4 h-4" />
+                    </button>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             ))}
           </div>
         )}

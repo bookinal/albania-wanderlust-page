@@ -1,8 +1,7 @@
 import React from "react";
 import { ChatMessage } from "@albania/shared-types";
-import { cn } from "@/lib/utils";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { format } from "date-fns";
+import { useTheme } from "@/context/ThemeContext";
 
 interface MessageBubbleProps {
   message: ChatMessage;
@@ -15,47 +14,74 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
   isOwnMessage,
   showAvatar = true,
 }) => {
+  const { isDark } = useTheme();
   const isAdmin = message.role === "admin";
   const formattedTime = format(new Date(message.created_at), "p");
 
+  const tk = {
+    ownBubbleBg: "#E8192C",
+    ownBubbleText: "#ffffff",
+    otherBubbleBg: isDark ? "rgba(255,255,255,0.08)" : "#f0ece8",
+    otherBubbleText: isDark ? "#ffffff" : "#111115",
+    timeText: isDark ? "rgba(255,255,255,0.35)" : "#9e9994",
+    adminAvatarBg: "#E8192C",
+    userAvatarBg: isDark ? "rgba(255,255,255,0.12)" : "#d1cdc9",
+    avatarText: "#ffffff",
+  };
+
   return (
     <div
-      className={cn(
-        "flex gap-2 mb-4",
-        isOwnMessage ? "flex-row-reverse" : "flex-row",
-      )}
+      style={{
+        display: "flex",
+        gap: "8px",
+        marginBottom: "16px",
+        flexDirection: isOwnMessage ? "row-reverse" : "row",
+      }}
     >
       {showAvatar && (
-        <Avatar className="h-8 w-8 flex-shrink-0">
-          <AvatarFallback
-            className={cn(isAdmin ? "bg-blue-500" : "bg-gray-500")}
-          >
-            {isAdmin ? "A" : "U"}
-          </AvatarFallback>
-        </Avatar>
+        <div
+          style={{
+            width: "32px",
+            height: "32px",
+            borderRadius: "50%",
+            background: isAdmin ? tk.adminAvatarBg : tk.userAvatarBg,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontSize: "12px",
+            fontWeight: 700,
+            color: tk.avatarText,
+            flexShrink: 0,
+          }}
+        >
+          {isAdmin ? "A" : "U"}
+        </div>
       )}
       <div
-        className={cn(
-          "flex flex-col max-w-[70%]",
-          isOwnMessage ? "items-end" : "items-start",
-        )}
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          maxWidth: "70%",
+          alignItems: isOwnMessage ? "flex-end" : "flex-start",
+        }}
       >
         <div
-          className={cn(
-            "rounded-lg px-4 py-2 break-words",
-            isOwnMessage
-              ? "bg-blue-600 text-white"
-              : "bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100",
-          )}
+          style={{
+            borderRadius: "12px",
+            padding: "8px 16px",
+            wordBreak: "break-word",
+            background: isOwnMessage ? tk.ownBubbleBg : tk.otherBubbleBg,
+            color: isOwnMessage ? tk.ownBubbleText : tk.otherBubbleText,
+          }}
         >
-          <p className="text-sm whitespace-pre-wrap">{message.message}</p>
+          <p style={{ fontSize: "14px", whiteSpace: "pre-wrap", margin: 0 }}>
+            {message.message}
+          </p>
         </div>
-        <div className="flex items-center gap-2 mt-1 px-2">
-          <span className="text-xs text-gray-500 dark:text-gray-400">
-            {formattedTime}
-          </span>
+        <div style={{ display: "flex", alignItems: "center", gap: "8px", marginTop: "4px", padding: "0 8px" }}>
+          <span style={{ fontSize: "11px", color: tk.timeText }}>{formattedTime}</span>
           {isOwnMessage && (
-            <span className="text-xs text-gray-500 dark:text-gray-400">
+            <span style={{ fontSize: "11px", color: tk.timeText }}>
               {message.is_read ? "Read" : "Sent"}
             </span>
           )}

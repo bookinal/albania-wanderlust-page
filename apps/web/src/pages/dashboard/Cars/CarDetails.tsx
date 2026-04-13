@@ -1,10 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
-import Hsidebar from "../../../components/dashboard/hsidebar";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   ArrowLeft,
   Edit,
@@ -31,6 +27,7 @@ import { AvailabilityCalendar } from "@/components/dashboard/AvailabilityCalenda
 import { MonthlyPricingEditor } from "@/components/dashboard/MonthlyPricingEditor";
 import Swal from "sweetalert2";
 import { getCarById, updateCar } from "@/services/api/carService";
+import { useTheme } from "@/context/ThemeContext";
 
 const CarDetails = () => {
   const { t } = useTranslation();
@@ -38,6 +35,58 @@ const CarDetails = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const editMode = searchParams.get("edit") === "true";
+  const { isDark } = useTheme();
+
+  const tk = {
+    pageBg: isDark ? '#0d0d0d' : '#f5f4f1',
+    pageText: isDark ? '#ffffff' : '#111115',
+    cardBg: isDark ? 'rgba(255,255,255,0.025)' : '#ffffff',
+    cardBorder: isDark ? 'rgba(255,255,255,0.07)' : '#ede9e5',
+    inputBg: isDark ? 'rgba(255,255,255,0.04)' : '#faf8f5',
+    inputBorder: isDark ? 'rgba(255,255,255,0.10)' : '#ddd9d5',
+    inputText: isDark ? '#ffffff' : '#111115',
+    mutedText: isDark ? 'rgba(255,255,255,0.40)' : '#6b6663',
+    dimText: isDark ? 'rgba(255,255,255,0.70)' : '#44403c',
+    labelText: isDark ? 'rgba(255,255,255,0.55)' : '#6b6663',
+    optionBg: isDark ? '#1a1a1a' : '#ffffff',
+    seasonCellBg: isDark ? 'rgba(232,25,44,0.10)' : '#eff6ff',
+    seasonCellBorder: isDark ? 'rgba(232,25,44,0.30)' : '#bfdbfe',
+    seasonCellText: isDark ? '#E8192C' : '#1d4ed8',
+    baseCellBg: isDark ? 'rgba(255,255,255,0.04)' : '#f9fafb',
+    baseCellBorder: isDark ? 'rgba(255,255,255,0.08)' : '#e5e7eb',
+    baseCellText: isDark ? 'rgba(255,255,255,0.70)' : '#374151',
+    featureChipBg: isDark ? 'rgba(232,25,44,0.12)' : '#eff6ff',
+    featureChipText: isDark ? '#E8192C' : '#1d4ed8',
+    addBtnBg: isDark ? '#E8192C' : '#1d4ed8',
+    addBtnText: '#ffffff',
+    ghostBtnText: isDark ? 'rgba(255,255,255,0.70)' : '#44403c',
+    ghostBtnBorder: isDark ? 'rgba(255,255,255,0.10)' : '#ddd9d5',
+    primaryBtnBg: '#E8192C',
+    primaryBtnText: '#ffffff',
+  };
+
+  const inputStyle: React.CSSProperties = {
+    width: '100%',
+    padding: '8px 12px',
+    borderRadius: 6,
+    border: `1px solid ${tk.inputBorder}`,
+    background: tk.inputBg,
+    color: tk.inputText,
+    fontSize: 14,
+    outline: 'none',
+  };
+
+  const selectStyle: React.CSSProperties = {
+    width: '100%',
+    height: 40,
+    padding: '0 12px',
+    borderRadius: 6,
+    border: `1px solid ${tk.inputBorder}`,
+    background: tk.inputBg,
+    color: tk.inputText,
+    fontSize: 14,
+    outline: 'none',
+  };
 
   const [car, setCar] = useState<Car | null>(null);
   const [loading, setLoading] = useState(true);
@@ -51,56 +100,39 @@ const CarDetails = () => {
   useEffect(() => {
     const fetchCar = async () => {
       if (!id) return;
-
       setLoading(true);
       try {
         const data = await getCarById(parseInt(id));
         setCar(data);
         setFormData(data || {});
-        // Initialize monthly prices from car data
-        if (data?.monthlyPrices) {
-          setMonthlyPrices(data.monthlyPrices);
-        }
+        if (data?.monthlyPrices) setMonthlyPrices(data.monthlyPrices);
       } catch (error) {
         console.error("Error fetching car:", error);
       } finally {
         setLoading(false);
       }
     };
-
     fetchCar();
   }, [id]);
 
   const handleChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >,
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>,
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]:
-        name === "year" ||
-        name === "seats" ||
-        name === "pricePerDay" ||
-        name === "lat" ||
-        name === "lng"
+        name === "year" || name === "seats" || name === "pricePerDay" || name === "lat" || name === "lng"
           ? parseFloat(value) || 0
           : value,
     }));
   };
 
   const handleLocationSelect = (lat: number, lng: number) => {
-    setFormData((prev) => ({
-      ...prev,
-      lat,
-      lng,
-    }));
+    setFormData((prev) => ({ ...prev, lat, lng }));
   };
 
-  const handleEdit = () => {
-    setIsEditing(true);
-  };
+  const handleEdit = () => setIsEditing(true);
 
   const handleCancel = () => {
     setIsEditing(false);
@@ -113,35 +145,22 @@ const CarDetails = () => {
 
   const handleSave = async () => {
     if (!id) return;
-
     setSaving(true);
     try {
       const updatePayload: UpdateCarDto = {
         ...formData,
         monthlyPrices: monthlyPrices.length > 0 ? monthlyPrices : undefined,
       };
-      const updatedCar = await updateCar(
-        parseInt(id),
-        updatePayload,
-        newImageFiles,
-      );
+      const updatedCar = await updateCar(parseInt(id), updatePayload, newImageFiles);
       setCar(updatedCar);
       setFormData(updatedCar);
       setMonthlyPrices(updatedCar.monthlyPrices || []);
       setIsEditing(false);
       setNewImageFiles([]);
-      Swal.fire({
-        icon: "success",
-        title: t("cars.carDetails.success.title"),
-        text: t("cars.carDetails.success.message"),
-      });
+      Swal.fire({ icon: "success", title: t("cars.carDetails.success.title"), text: t("cars.carDetails.success.message") });
     } catch (error) {
       console.error("Error updating car:", error);
-      Swal.fire({
-        icon: "error",
-        title: t("cars.carDetails.error.title"),
-        text: t("cars.carDetails.error.message"),
-      });
+      Swal.fire({ icon: "error", title: t("cars.carDetails.error.title"), text: t("cars.carDetails.error.message") });
     } finally {
       setSaving(false);
     }
@@ -149,742 +168,386 @@ const CarDetails = () => {
 
   if (loading) {
     return (
-      <Hsidebar>
-        <div className="flex items-center justify-center h-screen">
-          <Loader2 className="animate-spin text-blue-600" size={48} />
-          <span className="ml-2 text-lg">{t("cars.carDetails.loading")}</span>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', background: tk.pageBg, color: tk.pageText }}>
+          <Loader2 className="animate-spin" size={48} style={{ color: '#E8192C' }} />
+          <span style={{ marginLeft: 8, fontSize: 18 }}>{t("cars.carDetails.loading")}</span>
         </div>
-      </Hsidebar>
     );
   }
 
   if (!car) {
     return (
-      <Hsidebar>
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center py-20">
-            <h3 className="text-2xl font-bold text-gray-900 mb-4">
-              {t("cars.carDetails.notFound.title")}
-            </h3>
-            <p className="text-gray-500 mb-8">
-              {t("cars.carDetails.notFound.message")}
-            </p>
-            <Button onClick={() => navigate("/dashboard/carsList")}>
-              <ArrowLeft className="mr-2" size={16} />
-              {t("cars.carDetails.notFound.backButton")}
-            </Button>
+      <div style={{ background: tk.pageBg, minHeight: '100vh', color: tk.pageText }}>
+          <div style={{ maxWidth: 1200, margin: '0 auto', textAlign: 'center', paddingTop: 80 }}>
+            <h3 style={{ fontSize: 24, fontWeight: 700, marginBottom: 16 }}>{t("cars.carDetails.notFound.title")}</h3>
+            <p style={{ color: tk.mutedText, marginBottom: 32 }}>{t("cars.carDetails.notFound.message")}</p>
+            <button
+              onClick={() => navigate("/dashboard/carsList")}
+              style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '10px 20px', borderRadius: 8, background: '#E8192C', color: '#fff', border: 'none', cursor: 'pointer', fontWeight: 600 }}
+            >
+              <ArrowLeft size={16} /> {t("cars.carDetails.notFound.backButton")}
+            </button>
           </div>
         </div>
-      </Hsidebar>
     );
   }
 
   return (
-    <Hsidebar>
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="mb-8 flex items-center justify-between">
-          <div>
-            <Button
-              variant="ghost"
-              onClick={() => navigate("/dashboard/carsList")}
-              className="mb-4 -ml-4"
-            >
-              <ArrowLeft className="mr-2" size={16} />
-              Back to Cars
-            </Button>
-            <h1 className="text-3xl font-bold text-gray-900">
-              {isEditing
-                ? t("cars.carDetails.headers.edit")
-                : t("cars.carDetails.headers.details")}
-            </h1>
-            <p className="text-gray-500 text-lg mt-1">
-              {isEditing
-                ? t("cars.carDetails.headers.editSubtitle")
-                : t("cars.carDetails.headers.detailsSubtitle")}
-            </p>
-          </div>
-
-          <div className="flex gap-3">
-            {isEditing ? (
-              <>
-                <Button
-                  variant="outline"
-                  onClick={handleCancel}
-                  disabled={saving}
-                >
-                  <X className="mr-2" size={16} />
-                  {t("cars.carDetails.buttons.cancel")}
-                </Button>
-                <Button
-                  onClick={handleSave}
-                  disabled={saving}
-                  className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
-                >
-                  {saving ? (
-                    <>
-                      <Loader2 className="mr-2 animate-spin" size={16} />
-                      {t("cars.carDetails.buttons.saving")}
-                    </>
-                  ) : (
-                    <>
-                      <Save className="mr-2" size={16} />
-                      {t("cars.carDetails.buttons.saveChanges")}
-                    </>
-                  )}
-                </Button>
-              </>
-            ) : (
-              <Button
-                onClick={handleEdit}
-                className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
+    <div style={{ background: tk.pageBg, minHeight: '100vh', color: tk.pageText, padding: '24px' }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+          {/* Header */}
+          <div style={{ marginBottom: 32, display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+            <div>
+              <button
+                onClick={() => navigate("/dashboard/carsList")}
+                style={{ display: 'inline-flex', alignItems: 'center', gap: 6, marginBottom: 16, background: 'transparent', border: 'none', cursor: 'pointer', color: tk.dimText, fontSize: 14 }}
               >
-                <Edit className="mr-2" size={16} />
-                {t("cars.carDetails.buttons.editCar")}
-              </Button>
-            )}
-          </div>
-        </div>
+                <ArrowLeft size={16} /> Back to Cars
+              </button>
+              <h1 style={{ fontSize: 30, fontWeight: 700, margin: 0 }}>
+                {isEditing ? t("cars.carDetails.headers.edit") : t("cars.carDetails.headers.details")}
+              </h1>
+              <p style={{ color: tk.mutedText, fontSize: 16, marginTop: 4 }}>
+                {isEditing ? t("cars.carDetails.headers.editSubtitle") : t("cars.carDetails.headers.detailsSubtitle")}
+              </p>
+            </div>
 
-        {/* Main Content */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Left Column - Image and Status */}
-          <div className="lg:col-span-1">
-            {/* Car Image / Gallery */}
-            <div className="bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100 mb-6">
+            <div style={{ display: 'flex', gap: 12 }}>
               {isEditing ? (
-                <div className="p-4">
-                  <ImageUpload
-                    propertyType="Car"
-                    disableUpload={true}
-                    onImagesSelected={(files) => {
-                      setNewImageFiles(files);
-                    }}
-                    selectedFiles={newImageFiles}
-                    onRemoveFile={(index) => {
-                      setNewImageFiles((prev) =>
-                        prev.filter((_, i) => i !== index),
-                      );
-                    }}
-                    existingImages={formData.imageUrls}
-                    onRemoveExisting={(url) => {
-                      setFormData((prev) => ({
-                        ...prev,
-                        imageUrls: prev.imageUrls?.filter((img) => img !== url),
-                      }));
-                    }}
-                    maxImages={10}
-                    isLoading={saving}
-                  />
-                </div>
+                <>
+                  <button
+                    onClick={handleCancel}
+                    disabled={saving}
+                    style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '10px 18px', borderRadius: 8, background: 'transparent', border: `1px solid ${tk.ghostBtnBorder}`, color: tk.ghostBtnText, cursor: 'pointer', fontWeight: 500 }}
+                  >
+                    <X size={16} /> {t("cars.carDetails.buttons.cancel")}
+                  </button>
+                  <button
+                    onClick={handleSave}
+                    disabled={saving}
+                    style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '10px 18px', borderRadius: 8, background: tk.primaryBtnBg, color: tk.primaryBtnText, border: 'none', cursor: 'pointer', fontWeight: 600, opacity: saving ? 0.7 : 1 }}
+                  >
+                    {saving ? <><Loader2 className="animate-spin" size={16} /> {t("cars.carDetails.buttons.saving")}</> : <><Save size={16} /> {t("cars.carDetails.buttons.saveChanges")}</>}
+                  </button>
+                </>
               ) : (
-                <div className="relative">
-                  {car.imageUrls && car.imageUrls.length > 0 ? (
-                    <div className="grid grid-cols-4 grid-rows-2 gap-1 h-[300px]">
-                      {/* First large image */}
-                      <div
-                        className={`bg-cover bg-center cursor-pointer relative group ${
-                          car.imageUrls.length === 1
-                            ? "col-span-4 row-span-2"
-                            : "col-span-2 row-span-2"
-                        }`}
-                        style={{
-                          backgroundImage: `url(${car.imageUrls[0]})`,
-                        }}
-                      >
-                        <div className="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors" />
-                      </div>
+                <button
+                  onClick={handleEdit}
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '10px 18px', borderRadius: 8, background: tk.primaryBtnBg, color: tk.primaryBtnText, border: 'none', cursor: 'pointer', fontWeight: 600 }}
+                >
+                  <Edit size={16} /> {t("cars.carDetails.buttons.editCar")}
+                </button>
+              )}
+            </div>
+          </div>
 
-                      {/* Other images grid */}
-                      {car.imageUrls.slice(1, 5).map((url, idx) => (
+          {/* Main Content */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: 32 }}>
+            {/* Left Column */}
+            <div>
+              {/* Image / Gallery */}
+              <div style={{ background: tk.cardBg, border: `1px solid ${tk.cardBorder}`, borderRadius: 12, overflow: 'hidden', marginBottom: 24 }}>
+                {isEditing ? (
+                  <div style={{ padding: 16 }}>
+                    <ImageUpload
+                      propertyType="Car"
+                      disableUpload={true}
+                      onImagesSelected={(files) => setNewImageFiles(files)}
+                      selectedFiles={newImageFiles}
+                      onRemoveFile={(index) => setNewImageFiles((prev) => prev.filter((_, i) => i !== index))}
+                      existingImages={formData.imageUrls}
+                      onRemoveExisting={(url) => setFormData((prev) => ({ ...prev, imageUrls: prev.imageUrls?.filter((img) => img !== url) }))}
+                      maxImages={10}
+                      isLoading={saving}
+                    />
+                  </div>
+                ) : (
+                  <div style={{ position: 'relative' }}>
+                    {car.imageUrls && car.imageUrls.length > 0 ? (
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gridTemplateRows: 'repeat(2, 1fr)', gap: 4, height: 300 }}>
                         <div
-                          key={idx}
-                          className="bg-cover bg-center col-span-1 row-span-1 relative group"
                           style={{
-                            backgroundImage: `url(${url})`,
+                            backgroundImage: `url(${car.imageUrls[0]})`,
+                            backgroundSize: 'cover',
+                            backgroundPosition: 'center',
+                            gridColumn: car.imageUrls.length === 1 ? '1 / span 4' : '1 / span 2',
+                            gridRow: '1 / span 2',
                           }}
-                        >
-                          <div className="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors" />
+                        />
+                        {car.imageUrls.slice(1, 5).map((url, idx) => (
+                          <div key={idx} style={{ backgroundImage: `url(${url})`, backgroundSize: 'cover', backgroundPosition: 'center' }} />
+                        ))}
+                        {car.imageUrls.length > 5 && (
+                          <div style={{ position: 'absolute', bottom: 16, right: 16, background: 'rgba(255,255,255,0.9)', backdropFilter: 'blur(4px)', padding: '4px 12px', borderRadius: 20, fontSize: 13, fontWeight: 500 }}>
+                            +{car.imageUrls.length - 5} photos
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <div style={{ height: 256, background: tk.cardBg, display: 'flex', alignItems: 'center', justifyContent: 'center', color: tk.mutedText }}>
+                        <div style={{ textAlign: 'center' }}>
+                          <ImageIcon style={{ width: 48, height: 48, margin: '0 auto 8px', opacity: 0.5 }} />
+                          <p>No images available</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* Status */}
+              <div style={{ background: tk.cardBg, border: `1px solid ${tk.cardBorder}`, borderRadius: 12, padding: 24, marginBottom: 24 }}>
+                <p style={{ fontSize: 13, fontWeight: 500, color: tk.labelText, marginBottom: 8 }}>{t("cars.carDetails.sections.status")}</p>
+                {isEditing ? (
+                  <select name="status" value={formData.status || "available"} onChange={handleChange} style={selectStyle}>
+                    <option value="available" style={{ background: tk.optionBg }}>Available</option>
+                    <option value="rented" style={{ background: tk.optionBg }}>Rented</option>
+                    <option value="maintenance" style={{ background: tk.optionBg }}>Maintenance</option>
+                  </select>
+                ) : (
+                  <span style={{
+                    display: 'inline-block', padding: '6px 16px', borderRadius: 20, fontSize: 13, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em',
+                    background: car.status === 'available' ? '#10b981' : car.status === 'rented' ? '#3b82f6' : '#f59e0b',
+                    color: '#ffffff',
+                  }}>
+                    {car.status}
+                  </span>
+                )}
+              </div>
+
+              {/* Availability Calendar */}
+              <div style={{ background: tk.cardBg, border: `1px solid ${tk.cardBorder}`, borderRadius: 12, padding: 24 }}>
+                <AvailabilityCalendar propertyId={parseInt(id!)} propertyType="car" />
+              </div>
+            </div>
+
+            {/* Right Column */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+              {/* Basic Information */}
+              <div style={{ background: tk.cardBg, border: `1px solid ${tk.cardBorder}`, borderRadius: 12, padding: 24 }}>
+                <h2 style={{ fontSize: 20, fontWeight: 700, marginBottom: 24, color: tk.pageText }}>{t("cars.carDetails.sections.basicInfo")}</h2>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
+                  {/* Name */}
+                  <div>
+                    <p style={{ fontSize: 13, color: tk.labelText, marginBottom: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <CarIcon size={14} style={{ color: '#E8192C' }} /> {t("cars.carDetails.fields.carName")}
+                    </p>
+                    {isEditing ? <input id="name" name="name" value={formData.name || ""} onChange={handleChange} style={{ ...inputStyle, fontSize: 16, fontWeight: 600 }} /> : <p style={{ fontSize: 16, fontWeight: 600, color: tk.pageText }}>{car.name}</p>}
+                  </div>
+                  {/* Brand */}
+                  <div>
+                    <p style={{ fontSize: 13, color: tk.labelText, marginBottom: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <Star size={14} style={{ color: '#f59e0b' }} /> {t("cars.carDetails.fields.brand")}
+                    </p>
+                    {isEditing ? (
+                      <select name="brand" value={formData.brand || ""} onChange={handleChange} style={selectStyle}>
+                        <option value="" disabled style={{ background: tk.optionBg }}>{t("cars.carDetails.fields.selectBrand")}</option>
+                        {["Acura","Alfa Romeo","Aston Martin","Audi","Bentley","BMW","Buick","Cadillac","Chevrolet","Chrysler","Citroën","Dodge","Ferrari","Fiat","Ford","Genesis","GMC","Honda","Hyundai","Infiniti","Jaguar","Jeep","Kia","Lamborghini","Land Rover","Lexus","Lincoln","Lotus","Maserati","Mazda","McLaren","Mercedes-Benz","Mini","Mitsubishi","Nissan","Peugeot","Porsche","Ram","Renault","Rolls-Royce","Saab","Seat","Skoda","Smart","Subaru","Suzuki","Tesla","Toyota","Volkswagen","Volvo","Other"].map(b => (
+                          <option key={b} value={b} style={{ background: tk.optionBg }}>{b}</option>
+                        ))}
+                      </select>
+                    ) : <p style={{ color: tk.dimText }}>{car.brand}</p>}
+                  </div>
+                  {/* Type */}
+                  <div>
+                    <p style={{ fontSize: 13, color: tk.labelText, marginBottom: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <Settings size={14} style={{ color: tk.mutedText }} /> {t("cars.carDetails.fields.type")}
+                    </p>
+                    {isEditing ? (
+                      <select name="type" value={formData.type || ""} onChange={handleChange} style={selectStyle}>
+                        {["Sedan","SUV","Sports"].map(t => <option key={t} value={t} style={{ background: tk.optionBg }}>{t}</option>)}
+                      </select>
+                    ) : <p style={{ color: tk.dimText }}>{car.type}</p>}
+                  </div>
+                  {/* Year */}
+                  <div>
+                    <p style={{ fontSize: 13, color: tk.labelText, marginBottom: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <Calendar size={14} style={{ color: tk.mutedText }} /> {t("cars.carDetails.fields.year")}
+                    </p>
+                    {isEditing ? <input name="year" type="number" min="1900" max="2100" value={formData.year || 0} onChange={handleChange} style={inputStyle} /> : <p style={{ color: tk.dimText }}>{car.year}</p>}
+                  </div>
+                  {/* Transmission */}
+                  <div>
+                    <p style={{ fontSize: 13, color: tk.labelText, marginBottom: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <Settings size={14} style={{ color: tk.mutedText }} /> {t("cars.carDetails.fields.transmission")}
+                    </p>
+                    {isEditing ? (
+                      <select name="transmission" value={formData.transmission || ""} onChange={handleChange} style={selectStyle}>
+                        <option value="Manual" style={{ background: tk.optionBg }}>Manual</option>
+                        <option value="Automatic" style={{ background: tk.optionBg }}>Automatic</option>
+                      </select>
+                    ) : <p style={{ color: tk.dimText }}>{car.transmission}</p>}
+                  </div>
+                  {/* Fuel Type */}
+                  <div>
+                    <p style={{ fontSize: 13, color: tk.labelText, marginBottom: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <Fuel size={14} style={{ color: tk.mutedText }} /> {t("cars.carDetails.fields.fuelType")}
+                    </p>
+                    {isEditing ? (
+                      <select name="fuelType" value={formData.fuelType || ""} onChange={handleChange} style={selectStyle}>
+                        {["Petrol","Diesel","Hybrid","Electric"].map(f => <option key={f} value={f} style={{ background: tk.optionBg }}>{f}</option>)}
+                      </select>
+                    ) : <p style={{ color: tk.dimText }}>{car.fuelType}</p>}
+                  </div>
+                  {/* Seats */}
+                  <div>
+                    <p style={{ fontSize: 13, color: tk.labelText, marginBottom: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <Users size={14} style={{ color: tk.mutedText }} /> {t("cars.carDetails.fields.seats")}
+                    </p>
+                    {isEditing ? <input name="seats" type="number" min="1" max="20" value={formData.seats || 0} onChange={handleChange} style={inputStyle} /> : <p style={{ color: tk.dimText }}>{t("cars.carDetails.card.seats", { count: car.seats })}</p>}
+                  </div>
+                  {/* Base Price */}
+                  <div>
+                    <p style={{ fontSize: 13, color: tk.labelText, marginBottom: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <DollarSign size={14} style={{ color: '#10b981' }} /> {t("cars.carDetails.fields.basePrice")}
+                    </p>
+                    {isEditing ? (
+                      <>
+                        <input name="pricePerDay" type="number" min="0" value={formData.pricePerDay || 0} onChange={handleChange} style={inputStyle} />
+                        <p style={{ fontSize: 12, color: tk.mutedText, marginTop: 4 }}>{t("cars.carDetails.fields.priceHelp")}</p>
+                      </>
+                    ) : <p style={{ fontSize: 18, fontWeight: 700, color: tk.pageText }}>${car.pricePerDay}</p>}
+                  </div>
+                </div>
+              </div>
+
+              {/* Monthly Pricing */}
+              <div style={{ background: tk.cardBg, border: `1px solid ${tk.cardBorder}`, borderRadius: 12, padding: 24 }}>
+                <h2 style={{ fontSize: 20, fontWeight: 700, marginBottom: 24, color: tk.pageText }}>{t("cars.carDetails.sections.monthlyPricing")}</h2>
+                {isEditing ? (
+                  <MonthlyPricingEditor prices={monthlyPrices} onChange={setMonthlyPrices} basePrice={formData.pricePerDay || 0} disabled={saving} />
+                ) : (
+                  <div>
+                    {monthlyPrices && monthlyPrices.length > 0 ? (
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 12 }}>
+                        {MONTHS.map((month) => {
+                          const monthPrice = monthlyPrices.find((p) => p.month === month);
+                          const price = monthPrice?.pricePerDay ?? car.pricePerDay;
+                          const isDifferent = monthPrice && monthPrice.pricePerDay !== car.pricePerDay;
+                          return (
+                            <div key={month} style={{ padding: 12, borderRadius: 8, border: `1px solid ${isDifferent ? tk.seasonCellBorder : tk.baseCellBorder}`, background: isDifferent ? tk.seasonCellBg : tk.baseCellBg, textAlign: 'center' }}>
+                              <div style={{ fontSize: 11, fontWeight: 500, color: tk.mutedText, marginBottom: 4 }}>{MONTH_NAMES[month]}</div>
+                              <div style={{ fontSize: 18, fontWeight: 700, color: isDifferent ? tk.seasonCellText : tk.baseCellText }}>${price}</div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      <p style={{ color: tk.mutedText }}>{t("cars.carDetails.pricing.noSeasonal", { price: car.pricePerDay })}</p>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* Vehicle Details */}
+              <div style={{ background: tk.cardBg, border: `1px solid ${tk.cardBorder}`, borderRadius: 12, padding: 24 }}>
+                <h2 style={{ fontSize: 20, fontWeight: 700, marginBottom: 24, color: tk.pageText }}>{t("cars.carDetails.sections.vehicleDetails")}</h2>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
+                  {/* Color */}
+                  <div>
+                    <p style={{ fontSize: 13, color: tk.labelText, marginBottom: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <Palette size={14} style={{ color: '#E8192C' }} /> {t("cars.carDetails.fields.color")}
+                    </p>
+                    {isEditing ? <input name="color" value={formData.color || ""} onChange={handleChange} style={inputStyle} /> : <p style={{ color: tk.dimText }}>{car.color}</p>}
+                  </div>
+                  {/* Plate Number */}
+                  <div>
+                    <p style={{ fontSize: 13, color: tk.labelText, marginBottom: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <CarIcon size={14} style={{ color: '#E8192C' }} /> {t("cars.carDetails.fields.plateNumber")}
+                    </p>
+                    {isEditing ? <input name="plateNumber" value={formData.plateNumber || ""} onChange={handleChange} style={inputStyle} /> : <p style={{ color: tk.dimText }}>{car.plateNumber}</p>}
+                  </div>
+                  {/* Mileage */}
+                  <div>
+                    <p style={{ fontSize: 13, color: tk.labelText, marginBottom: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <Gauge size={14} style={{ color: '#E8192C' }} /> {t("cars.carDetails.fields.mileage")}
+                    </p>
+                    {isEditing ? <input name="mileage" type="number" min="0" max="999999" value={formData.mileage || ""} onChange={handleChange} style={inputStyle} /> : <p style={{ color: tk.dimText }}>{car.mileage}</p>}
+                  </div>
+                  {/* Pick Up Location */}
+                  <div>
+                    <p style={{ fontSize: 13, color: tk.labelText, marginBottom: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <MapPin size={14} style={{ color: '#E8192C' }} /> {t("cars.carDetails.fields.pickupLocation")}
+                    </p>
+                    {isEditing ? <input name="pickUpLocation" value={formData.pickUpLocation || ""} onChange={handleChange} style={inputStyle} /> : <p style={{ color: tk.dimText }}>{car.pickUpLocation}</p>}
+                  </div>
+                </div>
+              </div>
+
+              {/* Features */}
+              <div style={{ background: tk.cardBg, border: `1px solid ${tk.cardBorder}`, borderRadius: 12, padding: 24 }}>
+                <h2 style={{ fontSize: 20, fontWeight: 700, marginBottom: 16, color: tk.pageText }}>{t("cars.carDetails.sections.features")}</h2>
+                {isEditing ? (
+                  <div>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 12 }}>
+                      {(formData.features || []).map((feature, index) => (
+                        <div key={index} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '4px 12px', background: tk.featureChipBg, color: tk.featureChipText, borderRadius: 20, fontSize: 13, fontWeight: 500 }}>
+                          <span>{feature}</span>
+                          <button type="button" onClick={() => setFormData((prev) => ({ ...prev, features: prev.features.filter((_, i) => i !== index) }))} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'inherit', padding: 2, display: 'flex' }}>
+                            <X size={13} />
+                          </button>
                         </div>
                       ))}
-
-                      {/* "See all" overlay if more than 5 images */}
-                      {car.imageUrls.length > 5 && (
-                        <div className="absolute bottom-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-medium shadow-sm">
-                          +{car.imageUrls.length - 5} photos
-                        </div>
-                      )}
                     </div>
-                  ) : (
-                    <div className="h-64 bg-gray-100 flex items-center justify-center text-gray-400">
-                      <div className="text-center">
-                        <ImageIcon className="w-12 h-12 mx-auto mb-2 opacity-50" />
-                        <p>No images available</p>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-
-            {/* Status Badge */}
-            <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-              <Label className="text-sm font-medium mb-2 block">
-                {t("cars.carDetails.sections.status")}
-              </Label>
-              {isEditing ? (
-                <select
-                  name="status"
-                  value={formData.status || "available"}
-                  onChange={handleChange}
-                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                >
-                  <option value="available">Available</option>
-                  <option value="rented">Rented</option>
-                  <option value="maintenance">Maintenance</option>
-                </select>
-              ) : (
-                <span
-                  className={`inline-block px-4 py-2 rounded-full text-sm font-bold uppercase tracking-wider ${
-                    car.status === "available"
-                      ? "bg-emerald-500 text-white"
-                      : car.status === "rented"
-                        ? "bg-blue-500 text-white"
-                        : "bg-amber-500 text-white"
-                  }`}
-                >
-                  {car.status}
-                </span>
-              )}
-            </div>
-
-            {/* Availability Calendar */}
-            <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-              <AvailabilityCalendar
-                propertyId={parseInt(id!)}
-                propertyType="car"
-              />
-            </div>
-          </div>
-
-          {/* Right Column - Details */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Basic Information */}
-            <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-              <h2 className="text-xl font-bold text-gray-900 mb-6">
-                {t("cars.carDetails.sections.basicInfo")}
-              </h2>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Name */}
-                <div className="space-y-2">
-                  <Label
-                    htmlFor="name"
-                    className="text-sm font-medium flex items-center gap-2"
-                  >
-                    <CarIcon size={16} className="text-blue-500" />
-                    {t("cars.carDetails.fields.carName")}
-                  </Label>
-                  {isEditing ? (
-                    <Input
-                      id="name"
-                      name="name"
-                      value={formData.name || ""}
-                      onChange={handleChange}
-                      className="text-lg font-semibold"
-                    />
-                  ) : (
-                    <p className="text-lg font-semibold text-gray-900">
-                      {car.name}
-                    </p>
-                  )}
-                </div>
-
-                {/* Brand */}
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium flex items-center gap-2">
-                    <Star size={16} className="text-amber-400 fill-amber-400" />
-                    {t("cars.carDetails.fields.brand")}
-                  </Label>
-                  {isEditing ? (
-                    <select
-                      name="brand"
-                      value={formData.brand || ""}
-                      onChange={handleChange}
-                      className="border border-gray-300 rounded-md p-2"
-                    >
-                      <option value="" disabled selected>
-                        {t("cars.carDetails.fields.selectBrand")}
-                      </option>
-                      <option value="Acura">Acura</option>
-                      <option value="Alfa Romeo">Alfa Romeo</option>
-                      <option value="Aston Martin">Aston Martin</option>
-                      <option value="Audi">Audi</option>
-                      <option value="Bentley">Bentley</option>
-                      <option value="BMW">BMW</option>
-                      <option value="Buick">Buick</option>
-                      <option value="Cadillac">Cadillac</option>
-                      <option value="Chevrolet">Chevrolet</option>
-                      <option value="Chrysler">Chrysler</option>
-                      <option value="Citroën">Citroën</option>
-                      <option value="Dodge">Dodge</option>
-                      <option value="Ferrari">Ferrari</option>
-                      <option value="Fiat">Fiat</option>
-                      <option value="Ford">Ford</option>
-                      <option value="Genesis">Genesis</option>
-                      <option value="GMC">GMC</option>
-                      <option value="Honda">Honda</option>
-                      <option value="Hyundai">Hyundai</option>
-                      <option value="Infiniti">Infiniti</option>
-                      <option value="Jaguar">Jaguar</option>
-                      <option value="Jeep">Jeep</option>
-                      <option value="Kia">Kia</option>
-                      <option value="Lamborghini">Lamborghini</option>
-                      <option value="Land Rover">Land Rover</option>
-                      <option value="Lexus">Lexus</option>
-                      <option value="Lincoln">Lincoln</option>
-                      <option value="Lotus">Lotus</option>
-                      <option value="Maserati">Maserati</option>
-                      <option value="Mazda">Mazda</option>
-                      <option value="McLaren">McLaren</option>
-                      <option value="Mercedes-Benz">Mercedes-Benz</option>
-                      <option value="Mini">Mini</option>
-                      <option value="Mitsubishi">Mitsubishi</option>
-                      <option value="Nissan">Nissan</option>
-                      <option value="Peugeot">Peugeot</option>
-                      <option value="Porsche">Porsche</option>
-                      <option value="Ram">Ram</option>
-                      <option value="Renault">Renault</option>
-                      <option value="Rolls-Royce">Rolls-Royce</option>
-                      <option value="Saab">Saab</option>
-                      <option value="Seat">Seat</option>
-                      <option value="Skoda">Skoda</option>
-                      <option value="Smart">Smart</option>
-                      <option value="Subaru">Subaru</option>
-                      <option value="Suzuki">Suzuki</option>
-                      <option value="Tesla">Tesla</option>
-                      <option value="Toyota">Toyota</option>
-                      <option value="Volkswagen">Volkswagen</option>
-                      <option value="Volvo">Volvo</option>
-                      <option value="Other">Other</option>
-                    </select>
-                  ) : (
-                    <p className="text-gray-700">{car.brand}</p>
-                  )}
-                </div>
-
-                {/* Type */}
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium flex items-center gap-2">
-                    <Settings size={16} className="text-gray-500" />
-                    {t("cars.carDetails.fields.type")}
-                  </Label>
-                  {isEditing ? (
-                    <select
-                      name="type"
-                      value={formData.type || ""}
-                      onChange={handleChange}
-                      className="border border-gray-300 rounded-md p-2"
-                    >
-                      <option value="Sedan">Sedan</option>
-                      <option value="SUV">SUV</option>
-                      <option value="Sports">Sports</option>
-                    </select>
-                  ) : (
-                    <p className="text-gray-700">{car.type}</p>
-                  )}
-                </div>
-
-                {/* Year */}
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium flex items-center gap-2">
-                    <Calendar size={16} className="text-gray-500" />
-                    {t("cars.carDetails.fields.year")}
-                  </Label>
-                  {isEditing ? (
-                    <Input
-                      name="year"
-                      type="number"
-                      min="1900"
-                      max="2100"
-                      value={formData.year || 0}
-                      onChange={handleChange}
-                    />
-                  ) : (
-                    <p className="text-gray-700">{car.year}</p>
-                  )}
-                </div>
-
-                {/* Transmission */}
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium flex items-center gap-2">
-                    <Settings size={16} className="text-gray-500" />
-                    {t("cars.carDetails.fields.transmission")}
-                  </Label>
-                  {isEditing ? (
-                    <select
-                      name="transmission"
-                      value={formData.transmission || ""}
-                      onChange={handleChange}
-                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                    >
-                      <option value="Manual">Manual</option>
-                      <option value="Automatic">Automatic</option>
-                    </select>
-                  ) : (
-                    <p className="text-gray-700">{car.transmission}</p>
-                  )}
-                </div>
-
-                {/* Fuel Type */}
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium flex items-center gap-2">
-                    <Fuel size={16} className="text-gray-500" />
-                    {t("cars.carDetails.fields.fuelType")}
-                  </Label>
-                  {isEditing ? (
-                    <select
-                      name="fuelType"
-                      value={formData.fuelType || ""}
-                      onChange={handleChange}
-                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                    >
-                      <option value="Petrol">Petrol</option>
-                      <option value="Diesel">Diesel</option>
-                      <option value="Hybrid">Hybrid</option>
-                      <option value="Electric">Electric</option>
-                    </select>
-                  ) : (
-                    <p className="text-gray-700">{car.fuelType}</p>
-                  )}
-                </div>
-
-                {/* Seats */}
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium flex items-center gap-2">
-                    <Users size={16} className="text-gray-500" />
-                    {t("cars.carDetails.fields.seats")}
-                  </Label>
-                  {isEditing ? (
-                    <Input
-                      name="seats"
-                      type="number"
-                      min="1"
-                      max="20"
-                      value={formData.seats || 0}
-                      onChange={handleChange}
-                    />
-                  ) : (
-                    <p className="text-gray-700">
-                      {t("cars.carDetails.card.seats", { count: car.seats })}
-                    </p>
-                  )}
-                </div>
-
-                {/* Base Price per Day */}
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium flex items-center gap-2">
-                    <DollarSign size={16} className="text-emerald-500" />
-                    {t("cars.carDetails.fields.basePrice")}
-                  </Label>
-                  {isEditing ? (
-                    <>
-                      <Input
-                        name="pricePerDay"
-                        type="number"
-                        min="0"
-                        value={formData.pricePerDay || 0}
-                        onChange={handleChange}
+                    <div style={{ display: 'flex', gap: 8 }}>
+                      <input
+                        ref={featureInputRef}
+                        placeholder={t("cars.carDetails.fields.addFeature")}
+                        style={{ ...inputStyle, flex: 1 }}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" && e.currentTarget.value.trim()) {
+                            e.preventDefault();
+                            const newFeature = e.currentTarget.value.trim();
+                            setFormData((prev) => ({ ...prev, features: [...(prev.features || []), newFeature] }));
+                            e.currentTarget.value = "";
+                          }
+                        }}
                       />
-                      <p className="text-xs text-gray-500">
-                        {t("cars.carDetails.fields.priceHelp")}
-                      </p>
-                    </>
-                  ) : (
-                    <p className="text-lg font-semibold text-gray-900">
-                      ${car.pricePerDay}
-                    </p>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* Monthly Pricing Section */}
-            <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-              <h2 className="text-xl font-bold text-gray-900 mb-6">
-                {t("cars.carDetails.sections.monthlyPricing")}
-              </h2>
-              {isEditing ? (
-                <MonthlyPricingEditor
-                  prices={monthlyPrices}
-                  onChange={setMonthlyPrices}
-                  basePrice={formData.pricePerDay || 0}
-                  disabled={saving}
-                />
-              ) : (
-                <div className="space-y-4">
-                  {monthlyPrices && monthlyPrices.length > 0 ? (
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
-                      {MONTHS.map((month) => {
-                        const monthPrice = monthlyPrices.find(
-                          (p) => p.month === month,
-                        );
-                        const price =
-                          monthPrice?.pricePerDay ?? car.pricePerDay;
-                        const isDifferent =
-                          monthPrice &&
-                          monthPrice.pricePerDay !== car.pricePerDay;
-
-                        return (
-                          <div
-                            key={month}
-                            className={`p-3 rounded-lg border text-center ${
-                              isDifferent
-                                ? "bg-blue-50 border-blue-200"
-                                : "bg-gray-50 border-gray-200"
-                            }`}
-                          >
-                            <div className="text-xs font-medium text-gray-500 mb-1">
-                              {MONTH_NAMES[month]}
-                            </div>
-                            <div
-                              className={`text-lg font-bold ${
-                                isDifferent ? "text-blue-600" : "text-gray-700"
-                              }`}
-                            >
-                              ${price}
-                            </div>
-                          </div>
-                        );
-                      })}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const inputValue = featureInputRef.current?.value.trim();
+                          if (inputValue) {
+                            setFormData((prev) => ({ ...prev, features: [...(prev.features || []), inputValue] }));
+                            if (featureInputRef.current) featureInputRef.current.value = "";
+                          }
+                        }}
+                        style={{ padding: '8px 16px', background: tk.addBtnBg, color: tk.addBtnText, border: 'none', borderRadius: 8, cursor: 'pointer', fontWeight: 600 }}
+                      >
+                        Add
+                      </button>
                     </div>
-                  ) : (
-                    <p className="text-gray-500">
-                      {t("cars.carDetails.pricing.noSeasonal", {
-                        price: car.pricePerDay,
-                      })}
-                    </p>
-                  )}
-                </div>
-              )}
-            </div>
-
-            {/* Vehicle Details */}
-            <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-              <h2 className="text-xl font-bold text-gray-900 mb-6">
-                {t("cars.carDetails.sections.vehicleDetails")}
-              </h2>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Color */}
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium flex items-center gap-2">
-                    <Palette size={16} className="text-blue-500" />
-                    {t("cars.carDetails.fields.color")}
-                  </Label>
-                  {isEditing ? (
-                    <Input
-                      name="color"
-                      value={formData.color || ""}
-                      onChange={handleChange}
-                    />
-                  ) : (
-                    <p className="text-gray-700">{car.color}</p>
-                  )}
-                </div>
-
-                {/* Plate Number */}
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium flex items-center gap-2">
-                    <CarIcon size={16} className="text-blue-500" />
-                    {t("cars.carDetails.fields.plateNumber")}
-                  </Label>
-                  {isEditing ? (
-                    <Input
-                      name="plateNumber"
-                      value={formData.plateNumber || ""}
-                      onChange={handleChange}
-                    />
-                  ) : (
-                    <p className="text-gray-700">{car.plateNumber}</p>
-                  )}
-                </div>
-
-                {/* Mileage */}
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium flex items-center gap-2">
-                    <Gauge size={16} className="text-blue-500" />
-                    {t("cars.carDetails.fields.mileage")}
-                  </Label>
-                  {isEditing ? (
-                    <Input
-                      name="mileage"
-                      type="number"
-                      min="0"
-                      max="999999"
-                      value={formData.mileage || ""}
-                      onChange={handleChange}
-                    />
-                  ) : (
-                    <p className="text-gray-700">{car.mileage}</p>
-                  )}
-                </div>
-
-                {/* Pick Up Location */}
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium flex items-center gap-2">
-                    <MapPin size={16} className="text-blue-500" />
-                    {t("cars.carDetails.fields.pickupLocation")}
-                  </Label>
-                  {isEditing ? (
-                    <Input
-                      name="pickUpLocation"
-                      value={formData.pickUpLocation || ""}
-                      onChange={handleChange}
-                    />
-                  ) : (
-                    <p className="text-gray-700">{car.pickUpLocation}</p>
-                  )}
-                </div>
+                  </div>
+                ) : (
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                    {car.features && car.features.length > 0 ? (
+                      car.features.map((feature, index) => (
+                        <span key={index} style={{ padding: '4px 12px', background: tk.featureChipBg, color: tk.featureChipText, borderRadius: 20, fontSize: 13, fontWeight: 500 }}>
+                          {feature}
+                        </span>
+                      ))
+                    ) : (
+                      <p style={{ color: tk.mutedText }}>{t("cars.carDetails.fields.noFeatures")}</p>
+                    )}
+                  </div>
+                )}
               </div>
-            </div>
 
-            {/* Features */}
-            <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-              <h2 className="text-xl font-bold text-gray-900 mb-4">
-                {t("cars.carDetails.sections.features")}
-              </h2>
+              {/* Map */}
               {isEditing ? (
-                <div className="space-y-3">
-                  <div className="flex flex-wrap gap-2">
-                    {(formData.features || []).map((feature, index) => (
-                      <div
-                        key={index}
-                        className="flex items-center gap-2 px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm font-medium"
-                      >
-                        <span>{feature}</span>
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setFormData((prev) => ({
-                              ...prev,
-                              features: prev.features.filter(
-                                (_, i) => i !== index,
-                              ),
-                            }))
-                          }
-                          className="hover:bg-blue-100 rounded-full p-0.5"
-                        >
-                          <svg
-                            className="w-3.5 h-3.5"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M6 18L18 6M6 6l12 12"
-                            />
-                          </svg>
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                  <div className="flex gap-2">
-                    <Input
-                      ref={featureInputRef}
-                      placeholder={t("cars.carDetails.fields.addFeature")}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter" && e.currentTarget.value.trim()) {
-                          e.preventDefault();
-                          const newFeature = e.currentTarget.value.trim();
-                          setFormData((prev) => ({
-                            ...prev,
-                            features: [...(prev.features || []), newFeature],
-                          }));
-                          e.currentTarget.value = "";
-                        }
-                      }}
-                      className="flex-1"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const inputValue =
-                          featureInputRef.current?.value.trim();
-                        if (inputValue) {
-                          setFormData((prev) => ({
-                            ...prev,
-                            features: [...(prev.features || []), inputValue],
-                          }));
-                          if (featureInputRef.current) {
-                            featureInputRef.current.value = "";
-                          }
-                        }
-                      }}
-                      className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                    >
-                      Add
-                    </button>
-                  </div>
-                </div>
+                <MapPicker lat={formData.lat} lng={formData.lng} onLocationSelect={handleLocationSelect} label={t("cars.carDetails.fields.mapLabel")} defaultCenter={[car.lat || 41.3275, car.lng || 19.8187]} defaultZoom={13} showCoordinates={true} />
               ) : (
-                <div className="flex flex-wrap gap-2">
-                  {car.features && car.features.length > 0 ? (
-                    car.features.map((feature, index) => (
-                      <span
-                        key={index}
-                        className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm font-medium"
-                      >
-                        {feature}
-                      </span>
-                    ))
-                  ) : (
-                    <p className="text-gray-500">
-                      {t("cars.carDetails.fields.noFeatures")}
-                    </p>
-                  )}
-                </div>
+                car.lat !== undefined && car.lng !== undefined && (
+                  <div style={{ background: tk.cardBg, border: `1px solid ${tk.cardBorder}`, borderRadius: 12, padding: 24 }}>
+                    <h2 style={{ fontSize: 20, fontWeight: 700, marginBottom: 16, color: tk.pageText }}>{t("cars.carDetails.sections.location")}</h2>
+                    <MapPicker lat={car.lat} lng={car.lng} onLocationSelect={() => {}} label="" defaultCenter={[car.lat, car.lng]} defaultZoom={15} showCoordinates={true} />
+                  </div>
+                )
               )}
             </div>
-
-            {/* Map Location */}
-            {/* Map Location */}
-            {isEditing ? (
-              <MapPicker
-                lat={formData.lat}
-                lng={formData.lng}
-                onLocationSelect={handleLocationSelect}
-                label={t("cars.carDetails.fields.mapLabel")}
-                defaultCenter={[car.lat || 41.3275, car.lng || 19.8187]}
-                defaultZoom={13}
-                showCoordinates={true}
-              />
-            ) : (
-              car.lat !== undefined &&
-              car.lng !== undefined && (
-                <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-                  <h2 className="text-xl font-bold text-gray-900 mb-4">
-                    {t("cars.carDetails.sections.location")}
-                  </h2>
-                  <MapPicker
-                    lat={car.lat}
-                    lng={car.lng}
-                    onLocationSelect={() => {}}
-                    label=""
-                    defaultCenter={[car.lat, car.lng]}
-                    defaultZoom={15}
-                    showCoordinates={true}
-                  />
-                </div>
-              )
-            )}
           </div>
         </div>
       </div>
-    </Hsidebar>
   );
 };
 

@@ -5,15 +5,12 @@ import { getAllDestinations } from "@/services/api/destinationService";
 import { Apartment } from "@/types/apartment.type";
 import { Hotel } from "@/types/hotel.types";
 import { Destination } from "@/types/destination.types";
+import { SearchFiltersState } from "@/types/search.types";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import { useState, useEffect } from "react";
-import hotelIcon from "@/assets/map/hotel_icon.png";
-import apartmentIcon from "@/assets/map/home.png";
-import { MapFilters } from "./MapFilters";
-import { IconButton } from "@mui/material";
-import FilterListIcon from "@mui/icons-material/FilterList";
-import CloseIcon from "@mui/icons-material/Close";
+import { useLocalized } from "@/hooks/useLocalized";
+import { useTheme } from "@/context/ThemeContext";
 
 type Selected =
   | { type: "hotel"; data: Hotel }
@@ -23,55 +20,97 @@ type Selected =
 
 interface PropertiesMapProps {
   onSelect?: (selected: Selected) => void;
+  filters?: SearchFiltersState;
 }
 
-const HotelIcon = new L.Icon({
-  iconUrl: hotelIcon,
-  iconSize: [30, 30],
-  iconAnchor: [12, 41],
-});
+/**
+ * Creates a speech-bubble DivIcon that combines the type emoji + price/label
+ * into one element — eliminates the overlap caused by L.Icon + Tooltip permanent.
+ * The transform translate(-50%, -100%) anchors the bubble's bottom-center on the
+ * map coordinate regardless of text width, so iconAnchor can stay [0, 0].
+ */
+function createPriceMarker(
+  type: "hotel" | "apartment" | "destination",
+  label: string
+): L.DivIcon {
+  const emoji = type === "hotel" ? "🏨" : type === "apartment" ? "🏠" : "📍";
+  const borderColor = type === "destination" ? "#374151" : "#dc2626";
+  const bgHover = type === "destination" ? "#374151" : "#dc2626";
 
-const ApartmentIcon = new L.Icon({
-  iconUrl: apartmentIcon,
-  iconSize: [30, 30],
-  iconAnchor: [12, 41],
-});
+  const html = `
+    <div style="
+      transform:translate(-50%,-100%);
+      display:inline-flex;
+      flex-direction:column;
+      align-items:center;
+      cursor:pointer;
+    ">
+      <div style="
+        background:white;
+        border:2.5px solid ${borderColor};
+        border-radius:20px;
+        padding:4px 10px;
+        font-size:12px;
+        font-weight:700;
+        white-space:nowrap;
+        color:#111111;
+        display:flex;
+        align-items:center;
+        gap:5px;
+        box-shadow:0 2px 8px rgba(0,0,0,0.28);
+        font-family:system-ui,-apple-system,sans-serif;
+        line-height:1.4;
+        transition:background 0.15s,color 0.15s;
+      "
+        onmouseover="this.style.background='${bgHover}';this.style.color='white';"
+        onmouseout="this.style.background='white';this.style.color='#111111';"
+      >
+        <span>${emoji}</span>
+        <span>${label}</span>
+      </div>
+      <div style="
+        width:0;
+        height:0;
+        border-left:7px solid transparent;
+        border-right:7px solid transparent;
+        border-top:8px solid ${borderColor};
+        margin-top:-1px;
+      "></div>
+    </div>
+  `;
 
-// Destination icon using a colored marker
-const DestinationIcon = new L.Icon({
-  iconUrl:
-    "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-violet.png",
-  shadowUrl:
-    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41],
-});
+  return L.divIcon({
+    html,
+    className: "",
+    iconAnchor: [0, 0],
+  });
+}
 
 // Center of Albania (Tirana)
 const ALBANIA_CENTER: [number, number] = [41.3275, 19.8187];
 
-export default function PropertiesMap({ onSelect }: PropertiesMapProps) {
+export default function PropertiesMap({ onSelect, filters }: PropertiesMapProps) {
+  const { localize } = useLocalized();
+  const { isDark } = useTheme();
   const [hotelsData, setHotelsData] = useState<Hotel[]>([]);
   const [loading, setLoading] = useState(true);
   const [apartmentsData, setApartmentsData] = useState<Apartment[]>([]);
   const [destinationsData, setDestinationsData] = useState<Destination[]>([]);
-  const [isFilterOpen, setIsFilterOpen] = useState(false);
 
-  // Filter states
-  const [selectedTypes, setSelectedTypes] = useState<string[]>([
-    "hotel",
-    "apartment",
-    "destination",
-  ]);
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, 500]);
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([
-    "Adventure",
-    "Historic",
-    "Beach",
-  ]);
+  const tk = {
+    sidebarBg: isDark ? "#111115" : "#ffffff",
+    sidebarBorder: isDark ? "rgba(255,255,255,0.07)" : "#e5e2de",
+    filterBtnBg: isDark ? "#1a1a1e" : "#ffffff",
+    filterBtnText: isDark ? "rgba(255,255,255,0.80)" : "#374151",
+    filterBtnShadow: "0 2px 8px rgba(0,0,0,0.28)",
+    closeBtnHover: isDark ? "rgba(255,255,255,0.08)" : "#f3f4f6",
+    closeIconColor: isDark ? "rgba(255,255,255,0.60)" : "#4b5563",
+    overlayBg: "rgba(0,0,0,0.55)",
+  };
 
+  // Remove the local MapFilters states since we rely on `filters` prop now.
+  // Filter data based on selected types and price range
+  
   useEffect(() => {
     const fetchHotels = async () => {
       try {
@@ -79,12 +118,10 @@ export default function PropertiesMap({ onSelect }: PropertiesMapProps) {
         setHotelsData(data || []);
       } catch (error) {
         console.error("Failed to fetch hotels:", error);
-        setHotelsData([]);
       } finally {
         setLoading(false);
       }
     };
-
     fetchHotels();
   }, []);
 
@@ -95,12 +132,8 @@ export default function PropertiesMap({ onSelect }: PropertiesMapProps) {
         setApartmentsData(data || []);
       } catch (error) {
         console.error("Failed to fetch apartments:", error);
-        setApartmentsData([]);
-      } finally {
-        setLoading(false);
       }
     };
-
     fetchApartments();
   }, []);
 
@@ -111,103 +144,58 @@ export default function PropertiesMap({ onSelect }: PropertiesMapProps) {
         setDestinationsData(data || []);
       } catch (error) {
         console.error("Failed to fetch destinations:", error);
-        setDestinationsData([]);
-      } finally {
-        setLoading(false);
       }
     };
-
     fetchDestinations();
   }, []);
 
-  // Filter data based on selected types and price range
-  const filteredHotels = hotelsData.filter(
-    (hotel) =>
-      selectedTypes.includes("hotel") &&
-      hotel.price >= priceRange[0] &&
-      hotel.price <= priceRange[1],
-  );
+  const propertyType = filters?.propertyType || "hotel";
+  const hotelFilters = filters?.hotelFilters;
+  const apartmentFilters = filters?.apartmentFilters;
+  const destinationFilters = filters?.destinationFilters;
 
-  const filteredApartments = apartmentsData.filter(
-    (apartment) =>
-      selectedTypes.includes("apartment") &&
-      apartment.price >= priceRange[0] &&
-      apartment.price <= priceRange[1],
-  );
+  const filteredHotels = hotelsData.filter((hotel) => {
+    if (propertyType !== "hotel") return false;
+    
+    // Default filter logic for hotels
+    if (hotelFilters) {
+      if (hotelFilters.searchTerm && !hotel.name.toLowerCase().includes(hotelFilters.searchTerm.toLowerCase())) return false;
+      if (hotelFilters.priceRange) {
+        if (hotel.price < hotelFilters.priceRange.min || hotel.price > hotelFilters.priceRange.max) return false;
+      }
+      // Add more local filters if needed (status, rating, etc.)
+    }
+    return true;
+  });
 
-  const filteredDestinations = destinationsData.filter(
-    (destination) =>
-      selectedTypes.includes("destination") &&
-      (selectedCategories.length === 0 ||
-        selectedCategories.includes(destination.category)),
-  );
+  const filteredApartments = apartmentsData.filter((apartment) => {
+    if (propertyType !== "apartment") return false;
+    
+    // Default filter logic for apartments
+    if (apartmentFilters) {
+      if (apartmentFilters.searchTerm && !apartment.name.toLowerCase().includes(apartmentFilters.searchTerm.toLowerCase())) return false;
+      if (apartmentFilters.priceRange) {
+        if (apartment.price < apartmentFilters.priceRange.min || apartment.price > apartmentFilters.priceRange.max) return false;
+      }
+      // Add more local filters if needed
+    }
+    return true;
+  });
 
-  const handleResetFilters = () => {
-    setSelectedTypes(["hotel", "apartment", "destination"]);
-    setPriceRange([0, 500]);
-    setSelectedCategories(["Adventure", "Historic", "Beach"]);
-  };
+  const filteredDestinations = destinationsData.filter((destination) => {
+    if (propertyType !== "destination") return false;
+    
+    if (destinationFilters) {
+      if (destinationFilters.searchTerm && !localize(destination.name).toLowerCase().includes(destinationFilters.searchTerm.toLowerCase())) return false;
+      if (destinationFilters.categories && destinationFilters.categories.length > 0) {
+        if (!destinationFilters.categories.includes(destination.category)) return false;
+      }
+    }
+    return true;
+  });
 
   return (
     <div className="w-full h-full flex relative">
-      {/* Mobile Filter Toggle Button */}
-      <IconButton
-        onClick={() => setIsFilterOpen(!isFilterOpen)}
-        className="lg:hidden"
-        sx={{
-          position: "absolute",
-          top: 16,
-          left: 16,
-          zIndex: 1000,
-          backgroundColor: "white",
-          boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
-          "&:hover": {
-            backgroundColor: "white",
-          },
-        }}
-      >
-        <FilterListIcon />
-      </IconButton>
-
-      {/* Sidebar Filters */}
-      <div
-        className={`
-          ${isFilterOpen ? "translate-x-0" : "-translate-x-full"}
-          lg:translate-x-0
-          fixed lg:relative
-          top-0 left-0
-          w-80 h-full
-          bg-white shadow-lg border-r border-gray-200 p-4 overflow-y-auto
-          transition-transform duration-300 ease-in-out
-          z-[999]
-        `}
-      >
-        {/* Mobile Close Button */}
-        <div className="lg:hidden flex justify-end mb-2">
-          <IconButton onClick={() => setIsFilterOpen(false)} size="small">
-            <CloseIcon />
-          </IconButton>
-        </div>
-
-        <MapFilters
-          selectedTypes={selectedTypes}
-          onTypesChange={setSelectedTypes}
-          priceRange={priceRange}
-          onPriceRangeChange={setPriceRange}
-          onReset={handleResetFilters}
-          selectedCategories={selectedCategories}
-          onCategoriesChange={setSelectedCategories}
-        />
-      </div>
-
-      {/* Overlay for mobile when sidebar is open */}
-      {isFilterOpen && (
-        <div
-          className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-[998]"
-          onClick={() => setIsFilterOpen(false)}
-        />
-      )}
-
       {/* Map Container */}
       <div className="flex-1 relative w-full h-full">
         <MapContainer
@@ -227,23 +215,17 @@ export default function PropertiesMap({ onSelect }: PropertiesMapProps) {
             <Marker
               key={`hotel-${hotel.id}`}
               position={[hotel.lat || 0, hotel.lng || 0]}
-              icon={HotelIcon}
+              icon={createPriceMarker(
+                "hotel",
+                hotel.price ? `$${hotel.price}` : "Hotel"
+              )}
               eventHandlers={{
                 click: () => onSelect?.({ type: "hotel", data: hotel }),
               }}
             >
-              {hotel.price && (
-                <Tooltip
-                  direction="top"
-                  offset={[0, -20]}
-                  opacity={1}
-                  permanent
-                >
-                  {typeof hotel.price === "number"
-                    ? `$${hotel.price}`
-                    : hotel.price}
-                </Tooltip>
-              )}
+              <Tooltip direction="top" offset={[0, -8]} opacity={0.92}>
+                {hotel.name}
+              </Tooltip>
             </Marker>
           ))}
 
@@ -251,23 +233,17 @@ export default function PropertiesMap({ onSelect }: PropertiesMapProps) {
             <Marker
               key={`apartment-${apartment.id}`}
               position={[apartment.lat, apartment.lng]}
-              icon={ApartmentIcon}
+              icon={createPriceMarker(
+                "apartment",
+                apartment.price ? `$${apartment.price}` : "Apartment"
+              )}
               eventHandlers={{
                 click: () => onSelect?.({ type: "apartment", data: apartment }),
               }}
             >
-              {apartment.price && (
-                <Tooltip
-                  direction="top"
-                  offset={[0, -20]}
-                  opacity={1}
-                  permanent
-                >
-                  {typeof apartment.price === "number"
-                    ? `$${apartment.price}`
-                    : apartment.price}
-                </Tooltip>
-              )}
+              <Tooltip direction="top" offset={[0, -8]} opacity={0.92}>
+                {apartment.name}
+              </Tooltip>
             </Marker>
           ))}
 
@@ -275,14 +251,14 @@ export default function PropertiesMap({ onSelect }: PropertiesMapProps) {
             <Marker
               key={`destination-${destination.id}`}
               position={[destination.lat || 0, destination.lng || 0]}
-              icon={DestinationIcon}
+              icon={createPriceMarker("destination", destination.category)}
               eventHandlers={{
                 click: () =>
                   onSelect?.({ type: "destination", data: destination }),
               }}
             >
-              <Tooltip direction="top" offset={[0, -20]} opacity={1} permanent>
-                {destination.category}
+              <Tooltip direction="top" offset={[0, -8]} opacity={0.92}>
+                {localize(destination.name)}
               </Tooltip>
             </Marker>
           ))}

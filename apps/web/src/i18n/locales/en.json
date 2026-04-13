@@ -83,6 +83,11 @@
     "login": "Login",
     "profile": "Profile"
   },
+  "auth": {
+    "loginRequired": "Login Required",
+    "loginToBook": "Please login to make a booking.",
+    "login": "Login"
+  },
   "footer": {
     "description": "Your trusted platform for discovering and booking the best accommodations and car rentals in Albania.",
     "explore": "Explore",
@@ -92,6 +97,7 @@
     "cultureCuisine": "Culture & Cuisine",
     "support": "Support",
     "helpCenter": "Help Center",
+    "rentalTerms": "Rental Terms",
     "cancellationPolicy": "Cancellation Policy",
     "privacyPolicy": "Privacy Policy",
     "termsOfService": "Terms of Service",
@@ -122,12 +128,12 @@
     "subtotal": "Subtotal",
     "pricesVaryByMonth": "Prices vary by month based on seasonal rates.",
     "selectDatesForBreakdown": "Select dates to see price breakdown.",
-    "serviceFee": "Service fee",
+    "serviceFee": "+ Service fee",
     "serviceFeeDescription": "Covers platform operations, customer support, and booking protection.",
     "tax": "Tax (10%)",
     "taxDescription": "Local and government tax applied to your rental.",
     "total": "Total",
-    "totalDescription": "This is the full amount you'll pay if you confirm the booking.",
+    "totalDescription": "This is the full amount you'll pay 7% to confirm the booking.",
     "confirmBooking": "Confirm Booking",
     "processing": "Processing...",
     "paymentNote": "You won't be charged yet. Payment is completed after confirmation.",
@@ -145,7 +151,9 @@
     "emailPlaceholder": "john@example.com",
     "phonePlaceholder": "Enter phone number",
     "phoneRequired": "Phone number required",
-    "invalidPhone": "Invalid phone number"
+    "invalidPhone": "Invalid phone number",
+    "ownPropertyTitle": "Cannot book own property",
+    "ownPropertyMessage": "You cannot book a property that you own. Please choose a different listing."
   },
   "terms": {
     "minimumRentalPeriod": "Minimum Rental Period",
@@ -173,6 +181,7 @@
       "all": "All",
       "hotel": "Hotel",
       "apartment": "Apartment",
+      "destination": "Destination",
       "guests": "Guests",
       "adults": "Adults",
       "children": "Children",
@@ -283,12 +292,34 @@
     "completed": "Booking Completed",
     "paymentStatus": "Payment Status",
     "paymentCompleted": "Payment Completed",
-    "paymentRequired": "Payment Required",
+    "paymentRequired": "Payment Required 7% to confirm booking",
     "paymentPending": "Payment Pending",
     "paymentFailed": "Payment Failed",
     "paymentSuccess": "Payment Successful",
     "refundWillBeProcessed": "Refund will be processed",
-    "downloadInvoice": "Download Invoice"
+    "downloadInvoice": "Download Invoice",
+    "statusLabel": "Booking",
+    "paymentLabel": "Payment",
+    "statusHint": {
+      "pending": "Awaiting confirmation from the provider",
+      "confirmed": "Your booking has been confirmed by the provider",
+      "canceled": "This booking has been cancelled"
+    },
+    "paymentHint": {
+      "pending": "Payment has not been completed yet",
+      "paid": "Payment successfully received",
+      "failed": "Payment attempt failed — please retry"
+    },
+    "combinedStatus": {
+      "pendingPending": "Waiting for provider to confirm your booking",
+      "confirmedPending": "Confirmed by provider · Awaiting your payment",
+      "confirmedPaid": "Confirmed by provider · Payment received",
+      "canceledPaid": "Booking cancelled · Refund will be processed",
+      "canceledPending": "Booking was cancelled",
+      "confirmedFailed": "Confirmed by provider · Payment failed, please retry"
+    },
+    "currentlyRented": "Currently rented — you can still book for another period",
+    "underMaintenance": "Under Maintenance"
   },
   "user": {
     "fullName": "Full Name",
@@ -366,6 +397,8 @@
     "apartment": "Apartment",
     "hotel": "Hotel",
     "stay": "Stay",
+    "culture": "Culture",
+    "map": "Map",
     "explore": "Explore More",
     "learnMore": "Learn More",
     "tryAgain": "Try Again",
@@ -373,6 +406,8 @@
     "yes": "Yes",
     "no": "No",
     "confirm": "Confirm",
+    "cancel": "Cancel",
+    "more": "More",
     "day": "day",
     "days": "days",
     "pageNotFound": "Oops! Page not found",
@@ -570,11 +605,35 @@
     "noImages": "No images available",
     "photos": "photos",
     "updateSuccess": "Apartment updated successfully!",
-    "updateFailed": "Failed to update apartment."
+    "updateFailed": "Failed to update apartment.",
+    "successTitle": "Submission Received!",
+    "successMessage": "Your apartment listing has been submitted for review. Our admin team will review your listing and approve it shortly.",
+    "statusPending": "Pending Admin Review",
+    "statusDescription": "Your listing is currently being reviewed. You will be notified once it's approved and visible to guests.",
+    "close": "Close",
+    "review": "Under Review"
   },
   "bookingManagement": {
     "title": "Bookings Management",
     "subtitle": "View and manage all booking requests for your properties",
+    "cancelBooking": {
+      "title": "Cancel Booking",
+      "subtitle": "Please select a reason for cancellation",
+      "reasonRequired": "Please select or provide a reason for cancellation",
+      "reasons": {
+        "dateConflict": "Date conflict with another booking",
+        "propertyUnavailable": "Property is no longer available",
+        "pricingIssue": "Pricing error or availability issue",
+        "customerRequest": "Customer requested cancellation",
+        "maintenance": "Property under maintenance",
+        "forceMajeure": "Force majeure / Unforeseen circumstances",
+        "other": "Other reason"
+      },
+      "customReasonLabel": "Other reason (please specify)",
+      "customReasonPlaceholder": "Enter your reason...",
+      "confirmCancel": "Confirm Cancellation",
+      "autoCancelled": "Booking automatically cancelled due to date conflict with another booking"
+    },
     "stats": {
       "totalBookings": "Total Bookings",
       "pending": "Pending",
@@ -1187,6 +1246,14 @@
         "placeholder": "Explain why this property is being rejected...",
         "cancel": "Cancel",
         "confirm": "Confirm Rejection"
+      },
+      "approve": {
+        "title": "Approve Property with Rating",
+        "description": "Set the official rating for this apartment before approving. The provider's suggested rating is shown as a reference.",
+        "providerRating": "Provider's suggested rating",
+        "adminRatingLabel": "Set Official Rating *",
+        "cancel": "Cancel",
+        "confirm": "Approve with Rating"
       }
     }
   },
@@ -1271,7 +1338,8 @@
     },
     "bookings": {
       "title": "Bookings",
-      "allBookings": "All Bookings"
+      "allBookings": "All Bookings",
+      "supervision": "Bookings Supervision"
     },
     "destinations": {
       "title": "Destinations",
@@ -1287,6 +1355,69 @@
       "providerRequests": "Provider Requests",
       "propertyRequests": "Property Requests"
     }
+  },
+  "adminProvidersList": {
+    "title": "Bookings Supervision",
+    "subtitle": "Monitor and track all bookings across providers on the platform",
+    "searchPlaceholder": "Search providers by name, email or location...",
+    "totalProviders": "total providers",
+    "noProviders": "No providers found",
+    "noProvidersSearch": "No providers match your search",
+    "viewBookings": "View Bookings",
+    "memberSince": "Member since",
+    "unnamed": "Unnamed Provider",
+    "loading": "Loading providers...",
+    "error": "Failed to load providers"
+  },
+  "adminProviderBookings": {
+    "title": "Provider Bookings",
+    "subtitle": "All bookings managed by this provider",
+    "backToProviders": "Back to Providers",
+    "booked": "Booked on",
+    "stats": {
+      "total": "Total",
+      "pending": "Pending",
+      "confirmed": "Confirmed",
+      "canceled": "Canceled",
+      "completed": "Completed",
+      "revenue": "Revenue"
+    },
+    "filters": {
+      "searchPlaceholder": "Search by guest, property or ID...",
+      "allStatuses": "All Statuses",
+      "allTypes": "All Types"
+    },
+    "table": {
+      "property": "Property",
+      "guest": "Guest",
+      "dates": "Dates",
+      "total": "Total",
+      "status": "Status",
+      "paymentStatus": "Payment",
+      "cancellationReason": "Cancellation Reason"
+    },
+    "status": {
+      "pending": "Pending",
+      "confirmed": "Confirmed",
+      "canceled": "Canceled",
+      "completed": "Completed"
+    },
+    "paymentStatus": {
+      "pending": "Pending",
+      "paid": "Paid",
+      "failed": "Failed",
+      "refunded": "Refunded"
+    },
+    "propertyTypes": {
+      "car": "Car",
+      "apartment": "Apartment",
+      "hotel": "Hotel"
+    },
+    "noBookings": "This provider has no bookings yet",
+    "noBookingsSearch": "No bookings match your filters",
+    "loading": "Loading bookings...",
+    "error": "Failed to load bookings",
+    "noCancellationReason": "No reason provided"
   },
   "availabilityCalendar": {
     "title": "Availability",

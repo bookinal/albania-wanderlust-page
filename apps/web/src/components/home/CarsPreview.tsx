@@ -1,3 +1,4 @@
+import { useTheme } from "@/context/ThemeContext";
 import { useMemo, useState, useEffect, CSSProperties } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getAllCars } from "@/services/api/carService";
@@ -25,6 +26,7 @@ const CarsPreview = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const currentMonth = getCurrentMonth();
+  const { isDark } = useTheme();
   const [carMonthlyPrices, setCarMonthlyPrices] = useState<
     Record<number, number | null>
   >({});
@@ -84,10 +86,10 @@ const CarsPreview = () => {
         <span className="inline-block px-4 py-1.5 bg-red-100 text-red-700 font-semibold tracking-wider uppercase text-xs rounded-full mb-3">
           {t("home.carsPreview.chip")}
         </span>
-        <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-slate-900 mb-3">
+        <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-3" style={{ color: isDark ? '#ffffff' : '#0f172a' }}>
           {t("home.carsPreview.title")}
         </h2>
-        <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+        <p className="text-base md:text-lg max-w-2xl mx-auto leading-relaxed" style={{ color: isDark ? 'rgba(255,255,255,0.7)' : 'hsl(var(--muted-foreground))' }}>
           {t("home.carsPreview.description")}
         </p>
       </div>
@@ -102,9 +104,9 @@ const CarsPreview = () => {
           />
         </div>
       ) : availableTopCars.length === 0 ? (
-        <div className="flex flex-col items-center justify-center p-10 bg-slate-50 rounded-2xl border border-dashed border-slate-200">
-          <Car className="w-10 h-10 text-slate-300 mb-3" />
-          <p className="text-muted-foreground text-base">
+<div className="flex flex-col items-center justify-center p-10 rounded-2xl border border-dashed" style={{ background: isDark ? 'rgba(255,255,255,0.03)' : '#f8fafc', borderColor: isDark ? 'rgba(255,255,255,0.1)' : '#e2e8f0' }}>
+          <Car className="w-10 h-10 mb-3" style={{ color: isDark ? 'rgba(255,255,255,0.2)' : '#cbd5e1' }} />
+          <p className="text-base" style={{ color: isDark ? 'rgba(255,255,255,0.5)' : 'hsl(var(--muted-foreground))' }}>
             {t("home.carsPreview.noCars")}
           </p>
         </div>

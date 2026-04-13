@@ -131,6 +131,7 @@ class PropertyRequestService {
   async approveRequest(
     requestId: string,
     reviewerId: string,
+    adminRating?: number,
   ): Promise<PropertyRequest> {
     // Get the request first to get property details
     const request = await this.getRequestById(requestId);
@@ -152,11 +153,12 @@ class PropertyRequestService {
 
     if (error) throw error;
 
-    // Update the property status to "available"
+    // Update the property status to "available" and rating for apartments
     await this.updatePropertyStatus(
       request.propertyId,
       request.propertyType,
       "available",
+      adminRating,
     );
 
     return this.mapToPropertyRequest(data);
@@ -194,6 +196,7 @@ class PropertyRequestService {
     propertyId: string,
     propertyType: "car" | "apartment" | "hotel",
     status: string,
+    adminRating?: number,
   ): Promise<void> {
     let tableName: string;
 
@@ -202,7 +205,7 @@ class PropertyRequestService {
         tableName = "car";
         break;
       case "apartment":
-        tableName = "apartments";
+        tableName = "apartment";
         break;
       case "hotel":
         tableName = "hotels";
@@ -211,9 +214,17 @@ class PropertyRequestService {
         throw new Error(`Unknown property type: ${propertyType}`);
     }
 
+    // Build update object
+    const updateData: Record<string, any> = { status };
+
+    // Add rating for apartments if provided
+    if (propertyType === "apartment" && adminRating !== undefined) {
+      updateData.rating = adminRating;
+    }
+
     const { error } = await apiClient
       .from(tableName)
-      .update({ status })
+      .update(updateData)
       .eq("id", propertyId);
 
     if (error) throw error;

@@ -1,21 +1,27 @@
-import { useEffect } from "react";
-import { AlertCircle, Loader2 } from "lucide-react";
+import { useEffect, useMemo } from "react";
+import { AlertCircle, Building2, Loader2 } from "lucide-react";
 import PrimarySearchAppBar from "@/components/home/AppBar";
 import FilterBar from "./FilterBar";
 import { PropertyCard } from "@/components/home/PropertyCard";
 import { useSearchFilters } from "@/hooks/useSearchFilters";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Hotel } from "@/types/hotel.types";
-import { Apartment } from "@/types/apartment.type";
 import { useLocation } from "react-router-dom";
 import { defaultSearchFilters } from "@/types/search.types";
 import MapPreviewCard from "./MapPreviewCard";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
+import { useTheme } from "@/context/ThemeContext";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { useInView } from "react-intersection-observer";
+import { searchHotels } from "@/services/api/hotelService";
+import { searchApartments } from "@/services/api/apartmentService";
+
+const PROPERTIES_PER_PAGE = 9;
 
 const SearchPropertyResults = () => {
   const { t } = useTranslation();
+  const { isDark } = useTheme();
   const location = useLocation();
+  const navigate = useNavigate();
   const state = location.state as {
     type: string;
     destination?: string;
@@ -66,27 +72,21 @@ const SearchPropertyResults = () => {
 
   const {
     filters,
-    results,
-    loading,
-    error,
     setFilters,
     setPropertyType,
     setHotelFilters,
     setApartmentFilters,
     resetFilters,
-    applyFilters,
   } = useSearchFilters(initialFilters);
 
   // Set filters from navigation state
   useEffect(() => {
     if (state) {
-      // Set destination as search term
       if (state.destination) {
         setHotelFilters({ searchTerm: state.destination });
         setApartmentFilters({ searchTerm: state.destination });
       }
 
-      // Set dates and guest info
       if (
         state.checkInDate ||
         state.checkOutDate ||
@@ -102,7 +102,6 @@ const SearchPropertyResults = () => {
           rooms: state.rooms,
         });
 
-        // Update derived filters
         if (state.adults !== undefined || state.children !== undefined) {
           const requiredBeds = (state.adults || 0) + (state.children || 0);
           setApartmentFilters({
@@ -129,14 +128,84 @@ const SearchPropertyResults = () => {
         }
       }
     }
-  }, [state, setFilters, setHotelFilters, setApartmentFilters]);
+  }, [
+    state,
+    setFilters,
+    setHotelFilters,
+    setApartmentFilters,
+    filters.hotelFilters.rooms?.max,
+    filters.apartmentFilters.beds?.max,
+    filters.apartmentFilters.rooms?.max,
+  ]);
 
-  // Fetch properties on component mount
+  // Infinite Query
+  const {
+    data,
+    error,
+    fetchNextPage,
+    hasNextPage,
+    isFetching,
+    isFetchingNextPage,
+    status,
+    refetch,
+  } = useInfiniteQuery({
+    queryKey: ["searchProperties", filters],
+    queryFn: async ({ pageParam = 1 }) => {
+      const propertyType = filters.propertyType;
+      const shouldFetchHotels = propertyType === "hotel";
+      const shouldFetchApartments = propertyType === "apartment";
+
+      const [hotelsRes, apartmentsRes] = await Promise.all([
+        shouldFetchHotels
+          ? searchHotels(filters, pageParam, PROPERTIES_PER_PAGE)
+          : Promise.resolve({ data: [], total: 0 }),
+        shouldFetchApartments
+          ? searchApartments(filters, pageParam, PROPERTIES_PER_PAGE)
+          : Promise.resolve({ data: [], total: 0 }),
+      ]);
+
+      const combinedData = [...hotelsRes.data, ...apartmentsRes.data];
+
+      return {
+        combined: combinedData,
+        total: hotelsRes.total + apartmentsRes.total,
+      };
+    },
+    initialPageParam: 1,
+    getNextPageParam: (lastPage, allPages) => {
+      const totalLoaded = allPages.reduce((acc, page) => acc + page.combined.length, 0);
+      if (totalLoaded < lastPage.total) {
+        return allPages.length + 1;
+      }
+      return undefined;
+    },
+  });
+
+  const { ref, inView } = useInView({
+    threshold: 0.1,
+  });
+
   useEffect(() => {
-    applyFilters();
-  }, [applyFilters]);
+    if (inView && hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-  // Handle date changes
+  const combinedResults = useMemo(() => {
+    return data?.pages.flatMap((page) => page.combined) || [];
+  }, [data]);
+
+  const totalResults = useMemo(() => {
+    return data?.pages[0]?.total || 0;
+  }, [data]);
+
+  const applyFilters = () => {
+    // With react-query, queryKey change triggers refetch automatically.
+    // This is just a dummy func to pass down if needed, but the button shouldn't strictly be needed 
+    // since it updates in real time. We'll leave it to force a refetch if desired.
+    refetch();
+  };
+
   const handleDateChange = (dates: {
     checkInDate?: string | null;
     checkOutDate?: string | null;
@@ -145,11 +214,8 @@ const SearchPropertyResults = () => {
       checkInDate: dates.checkInDate ?? filters.checkInDate,
       checkOutDate: dates.checkOutDate ?? filters.checkOutDate,
     });
-    // Re-apply filters when dates change
-    setTimeout(() => applyFilters(), 0);
   };
 
-  // Handle guests changes
   const handleGuestsChange = (guests: {
     adults?: number;
     children?: number;
@@ -160,7 +226,6 @@ const SearchPropertyResults = () => {
       children: guests.children ?? filters.children,
       rooms: guests.rooms ?? filters.rooms,
     });
-    // Update apartment filters
     setApartmentFilters({
       beds: {
         min: (guests.adults || 2) + (guests.children || 0),
@@ -171,7 +236,6 @@ const SearchPropertyResults = () => {
         max: filters.apartmentFilters.rooms?.max,
       },
     });
-    // If property type is hotel, update hotel rooms
     if (filters.propertyType === "hotel") {
       setHotelFilters({
         rooms: {
@@ -180,144 +244,332 @@ const SearchPropertyResults = () => {
         },
       });
     }
-    // Re-apply filters when guests change
-    setTimeout(() => applyFilters(), 0);
   };
 
-  // Handle property click
   const handlePropertyClick = (id: number, isHotel: boolean) => {
-    // Navigate to property details page
     if (isHotel) {
-      window.open(`/hotelReservation/${id}`, "_blank", "noopener,noreferrer");
+      navigate(`/hotelReservation/${id}`);
     } else {
-      window.open(
-        `/apartmentReservation/${id}`,
-        "_blank",
-        "noopener,noreferrer",
-      );
+      navigate(`/apartmentReservation/${id}`);
     }
   };
 
-  // Render skeleton loaders
-  const renderSkeletons = () => {
-    return Array.from({ length: 8 }).map((_, idx) => (
-      <div key={idx} className="space-y-3">
-        <Skeleton className="h-48 w-full rounded-lg" />
-        <Skeleton className="h-6 w-3/4" />
-        <Skeleton className="h-4 w-full" />
-        <Skeleton className="h-4 w-2/3" />
-      </div>
-    ));
+  // Theme tokens
+  const tk = {
+    pageBg: isDark
+      ? 'linear-gradient(160deg, #0a0a0c 0%, #111115 40%, #16080a 100%)'
+      : 'linear-gradient(160deg, #f8f4f1 0%, #fdf9f7 40%, #fff5f5 100%)',
+    heroBg: isDark
+      ? 'linear-gradient(180deg, rgba(232,25,44,0.08) 0%, transparent 100%)'
+      : 'linear-gradient(180deg, rgba(232,25,44,0.06) 0%, transparent 100%)',
+    heroBorder: isDark ? 'rgba(232,25,44,0.12)' : 'rgba(232,25,44,0.15)',
+    headingColor: isDark ? '#f0ece8' : '#1a0a0d',
+    skeletonBg: isDark ? '#141417' : '#ffffff',
+    skeletonBorder: isDark ? 'rgba(232,25,44,0.1)' : 'rgba(232,25,44,0.12)',
+    skeletonPulseFrom: isDark ? '#1c1c21' : '#f0e8e8',
+    skeletonPulseMid: isDark ? '#252528' : '#fde8e8',
+    errorText: isDark ? '#f0ece8' : '#1a0a0d',
+    emptyStateBg: isDark ? '#141417' : '#ffffff',
+    emptyStateBorder: isDark ? 'rgba(232,25,44,0.2)' : 'rgba(232,25,44,0.25)',
+    clearBtnColor: isDark ? 'rgba(240,236,232,0.7)' : 'rgba(26,10,13,0.6)',
+    clearBtnBorder: isDark ? 'rgba(240,236,232,0.2)' : 'rgba(26,10,13,0.2)',
+    textureBg: isDark
+      ? "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E\")"
+      : "none",
   };
 
-  // Render empty state
-  const renderEmptyState = () => (
-    <div className="col-span-full flex flex-col items-center justify-center py-16">
-      <div className="text-center space-y-3">
-        <h3 className="text-xl font-semibold text-gray-900">
-          {t("searchResults.properties.emptyTitle")}
-        </h3>
-        <p className="text-gray-600 max-w-sm">
-          {t("searchResults.properties.emptyDescription")}
-        </p>
-        <button
-          onClick={resetFilters}
-          className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-        >
-          {t("searchResults.properties.resetFilters")}
-        </button>
+  const renderSkeletons = (count: number = 6) =>
+    Array.from({ length: count }).map((_, idx) => (
+      <div
+        key={`skeleton-${idx}`}
+        style={{
+          background: tk.skeletonBg,
+          border: `1px solid ${tk.skeletonBorder}`,
+          borderRadius: 6,
+          overflow: 'hidden',
+          display: 'flex',
+          flexDirection: 'column',
+          animationDelay: `${idx * 0.07}s`,
+          animation: 'fadeUpGrid 0.5s ease both',
+        }}
+      >
+        <div className="alb-skeleton-pulse" style={{ height: 192, width: '100%' }} />
+        <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <div className="alb-skeleton-pulse" style={{ height: 10, width: '30%', borderRadius: 2 }} />
+          <div className="alb-skeleton-pulse" style={{ height: 20, width: '70%', borderRadius: 2 }} />
+          <div className="alb-skeleton-pulse" style={{ height: 14, width: '50%', borderRadius: 2 }} />
+          <div className="alb-skeleton-pulse" style={{ height: 14, width: '40%', borderRadius: 2 }} />
+          <div style={{ marginTop: 8, paddingTop: 12, borderTop: `1px solid ${tk.skeletonBorder}`, display: 'flex', justifyContent: 'space-between' }}>
+            <div className="alb-skeleton-pulse" style={{ height: 14, width: '25%', borderRadius: 2 }} />
+            <div className="alb-skeleton-pulse" style={{ height: 22, width: '30%', borderRadius: 2 }} />
+          </div>
+        </div>
       </div>
-    </div>
-  );
+    ));
+
+  const isLoading = status === "pending";
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <PrimarySearchAppBar />
+    <div className="min-h-screen" style={{ background: tk.pageBg, transition: 'background 0.3s' }}>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300&display=swap');
 
-      <main className="container mx-auto px-4 py-8">
-        <div className="flex flex-col lg:flex-row gap-6">
-          {/* Filter Sidebar & Map Preview */}
-          <div className="w-full lg:max-w-xs space-y-6">
-            <MapPreviewCard />
-            <FilterBar
-              filters={filters}
-              onPropertyTypeChange={setPropertyType}
-              onHotelFiltersChange={setHotelFilters}
-              onApartmentFiltersChange={setApartmentFilters}
-              onDateChange={handleDateChange}
-              onGuestsChange={handleGuestsChange}
-              onResetFilters={resetFilters}
-              onApplyFilters={applyFilters}
-              loading={loading}
-            />
+        .alb-title {
+          font-family: 'Bebas Neue', 'Impact', sans-serif;
+          letter-spacing: 0.04em;
+        }
+
+        .alb-body {
+          font-family: 'Crimson Pro', 'Georgia', serif;
+        }
+
+        .alb-card-grid {
+          animation: fadeUpGrid 0.6s ease both;
+        }
+
+        @keyframes fadeUpGrid {
+          from { opacity: 0; transform: translateY(24px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+
+        .alb-skeleton-pulse {
+          background: linear-gradient(90deg, ${tk.skeletonPulseFrom} 25%, ${tk.skeletonPulseMid} 50%, ${tk.skeletonPulseFrom} 75%);
+          background-size: 200% 100%;
+          animation: shimmer 1.4s ease infinite;
+        }
+
+        @keyframes shimmer {
+          0% { background-position: 200% 0; }
+          100% { background-position: -200% 0; }
+        }
+
+        .alb-red-line {
+          height: 3px;
+          background: linear-gradient(90deg, #E8192C, #b01020 60%, transparent);
+        }
+
+        .alb-count-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          background: rgba(232, 25, 44, 0.08);
+          border: 1px solid rgba(232, 25, 44, 0.22);
+          color: #E8192C;
+          font-family: 'Crimson Pro', serif;
+          font-size: 0.95rem;
+          letter-spacing: 0.03em;
+          padding: 3px 12px;
+          border-radius: 2px;
+        }
+
+        .alb-retry-btn {
+          margin-left: auto;
+          background: transparent;
+          border: 1px solid rgba(232, 25, 44, 0.5);
+          color: #E8192C;
+          font-family: 'Crimson Pro', serif;
+          font-size: 0.9rem;
+          letter-spacing: 0.05em;
+          text-transform: uppercase;
+          padding: 6px 16px;
+          border-radius: 2px;
+          cursor: pointer;
+          transition: background 0.2s, color 0.2s;
+          white-space: nowrap;
+        }
+        .alb-retry-btn:hover {
+          background: rgba(232, 25, 44, 0.12);
+        }
+
+        .alb-clear-btn:hover {
+          border-color: #E8192C !important;
+          color: #E8192C !important;
+        }
+
+        .alb-bg-texture {
+          position: fixed;
+          inset: 0;
+          pointer-events: none;
+          z-index: 0;
+          background-image: ${tk.textureBg};
+          opacity: 0.025;
+        }
+      `}</style>
+
+      <div style={{ position: 'relative', zIndex: 1, transition: 'all 0.3s' }}>
+        <div className="alb-bg-texture" />
+        <PrimarySearchAppBar />
+
+        {/* Hero band */}
+        <div style={{
+          background: tk.heroBg,
+          borderBottom: `1px solid ${tk.heroBorder}`,
+          padding: '32px 0 0',
+          transition: 'background 0.3s, border-color 0.3s',
+        }}>
+          <div className="container mx-auto px-4 pb-6">
+            <p className="alb-body" style={{ color: 'rgba(232,25,44,0.7)', fontSize: '0.8rem', letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: 8 }}>
+              Albania — Properties
+            </p>
+            <h1 className="alb-title" style={{ fontSize: 'clamp(2.8rem, 6vw, 4.5rem)', color: tk.headingColor, lineHeight: 0.95, marginBottom: 0, transition: 'color 0.3s' }}>
+              {t("searchResults.properties.title")}
+            </h1>
+            <div className="alb-red-line" style={{ marginTop: 16, width: 'min(200px, 40%)' }} />
           </div>
+        </div>
 
-          {/* Results Section */}
-          <div className="flex-1 w-full">
-            {/* Header */}
-            <div className="mb-6">
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                {t("searchResults.properties.title")}
-              </h1>
-              {!loading && results.combined.length > 0 && (
-                <p className="text-gray-600">
-                  {t("searchResults.properties.found", {
-                    count: results.combined.length,
-                  })}
+        <main className="container mx-auto px-4 py-8" style={{ position: 'relative', zIndex: 1 }}>
+          <div className="flex flex-col lg:flex-row gap-8">
+            {/* Filter Sidebar & Map Preview */}
+            <div className="w-full lg:w-[280px]" style={{ display: 'flex', flexDirection: 'column', gap: 16, flexShrink: 0 }}>
+              <MapPreviewCard />
+              <FilterBar
+                filters={filters}
+                onPropertyTypeChange={setPropertyType}
+                onHotelFiltersChange={setHotelFilters}
+                onApartmentFiltersChange={setApartmentFilters}
+                onDateChange={handleDateChange}
+                onGuestsChange={handleGuestsChange}
+                onResetFilters={resetFilters}
+                onApplyFilters={applyFilters}
+                loading={isFetching}
+              />
+            </div>
+
+            {/* Main Content */}
+            <div className="flex-1 w-full">
+              {/* Result count */}
+              {!isLoading && status !== "error" && (
+                <div style={{ marginBottom: 28 }}>
+                  <span className="alb-count-badge alb-body">
+                    <span style={{ display: 'inline-block', width: 6, height: 6, borderRadius: '50%', background: '#E8192C', flexShrink: 0 }} />
+                    {t("searchResults.properties.found", { count: totalResults })}
+                  </span>
+                </div>
+              )}
+
+              {/* Error State */}
+              {status === "error" && (
+                <div style={{
+                  background: isDark ? 'rgba(232,25,44,0.07)' : 'rgba(232,25,44,0.05)',
+                  border: '1px solid rgba(232,25,44,0.3)',
+                  borderLeft: '4px solid #E8192C',
+                  borderRadius: 4,
+                  padding: '16px 20px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 14,
+                  color: tk.errorText,
+                  marginBottom: 24,
+                  transition: 'background 0.3s',
+                }}>
+                  <AlertCircle style={{ color: '#E8192C', width: 20, height: 20, flexShrink: 0 }} />
+                  <span className="alb-body" style={{ flex: 1, fontSize: '1rem' }}>
+                    {error instanceof Error ? error.message : "Failed to fetch properties"}
+                  </span>
+                  <button className="alb-retry-btn" onClick={() => fetchNextPage()}>
+                    {t("searchResults.cars.tryAgain", "Try Again")}
+                  </button>
+                </div>
+              )}
+
+              {/* Empty State */}
+              {!isLoading && status !== "error" && combinedResults.length === 0 && (
+                <div style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: '80px 24px',
+                  textAlign: 'center',
+                  background: tk.emptyStateBg,
+                  border: `1px dashed ${tk.emptyStateBorder}`,
+                  borderRadius: 6,
+                  transition: 'background 0.3s',
+                }}>
+                  <div style={{
+                    width: 72, height: 72,
+                    border: '1px solid rgba(232,25,44,0.25)',
+                    borderRadius: '50%',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    marginBottom: 20,
+                    background: 'rgba(232,25,44,0.06)',
+                  }}>
+                    <Building2 style={{ width: 32, height: 32, color: '#E8192C', opacity: 0.7 }} />
+                  </div>
+                  <h3 className="alb-title" style={{ fontSize: '1.8rem', color: tk.headingColor, marginBottom: 10, transition: 'color 0.3s' }}>
+                    {t("searchResults.properties.emptyTitle")}
+                  </h3>
+                  <p className="alb-body" style={{ color: isDark ? 'rgba(240,236,232,0.5)' : 'rgba(26,10,13,0.55)', fontSize: '1.1rem', maxWidth: 360 }}>
+                    {t("searchResults.properties.emptyDescription")}
+                  </p>
+                  <button
+                    className="alb-clear-btn"
+                    onClick={resetFilters}
+                    style={{
+                      marginTop: 24,
+                      background: 'transparent',
+                      border: `1px solid ${tk.clearBtnBorder}`,
+                      color: tk.clearBtnColor,
+                      fontFamily: 'Crimson Pro, Georgia, serif',
+                      fontSize: '1rem',
+                      letterSpacing: '0.06em',
+                      textTransform: 'uppercase',
+                      padding: '10px 28px',
+                      borderRadius: 2,
+                      cursor: 'pointer',
+                      transition: 'border-color 0.2s, color 0.2s',
+                    }}
+                  >
+                    {t("searchResults.properties.resetFilters")}
+                  </button>
+                </div>
+              )}
+
+              {/* Results Grid */}
+              <div className="alb-card-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {combinedResults.map((property, index) => {
+                  const isHotel = "occupancy" in property;
+                  const propertyType = isHotel ? "hotel" : "apartment";
+                  const uniqueKey = `${propertyType}-${property.id}-${index}`;
+                  return (
+                    <div key={uniqueKey} style={{ animationDelay: `${(index % PROPERTIES_PER_PAGE) * 0.05}s`, animation: 'fadeUpGrid 0.5s ease both' }}>
+                      <PropertyCard
+                        id={property.id}
+                        name={property.name}
+                        image={property.imageUrls?.[0]}
+                        rating={property.rating}
+                        price={'pricePerNight' in property ? property.pricePerNight : property.price}
+                        location={property.location}
+                        address={property.address}
+                        rooms={property.rooms}
+                        amenities={property.amenities || []}
+                        status={property.status}
+                        propertyType={propertyType}
+                        onClick={() => handlePropertyClick(property.id, isHotel)}
+                      />
+                    </div>
+                  );
+                })}
+                
+                {/* Initial Loading or Fetching Next Page State */}
+                {(isLoading || isFetchingNextPage) && renderSkeletons(isLoading ? 6 : 3)}
+              </div>
+
+              {/* Intersection Observer target for infinite scrolling */}
+              <div ref={ref} style={{ height: '40px', marginTop: '20px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                {isFetchingNextPage && <Loader2 className="animate-spin text-red-600" size={24} />}
+              </div>
+              
+              {!hasNextPage && combinedResults.length > 0 && (
+                <p className="text-center text-sm alb-body opacity-60 mt-8">
+                  {t("searchResults.properties.noMoreResults", "No more properties to load")}
                 </p>
               )}
             </div>
-
-            {/* Error State */}
-            {error && (
-              <Alert variant="destructive" className="mb-6">
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
-            )}
-
-            {/* Loading State */}
-            {loading && (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {renderSkeletons()}
-              </div>
-            )}
-
-            {/* Empty State */}
-            {!loading && results.combined.length === 0 && renderEmptyState()}
-
-            {/* Results Grid */}
-            {!loading && results.combined.length > 0 && (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {results.combined.map((property, index) => {
-                  const isHotel = "occupancy" in property;
-                  const propertyType = isHotel ? "hotel" : "apartment";
-                  // Use a truly unique key combining type, id, and index
-                  const uniqueKey = `${propertyType}-${property.id}-${index}`;
-
-                  return (
-                    <PropertyCard
-                      key={uniqueKey}
-                      id={property.id}
-                      name={property.name}
-                      image={property.imageUrls?.[0]}
-                      rating={property.rating}
-                      price={property.price}
-                      location={property.location}
-                      address={property.address}
-                      rooms={property.rooms}
-                      amenities={property.amenities || []}
-                      status={property.status}
-                      propertyType={propertyType}
-                      onClick={() => handlePropertyClick(property.id, isHotel)}
-                    />
-                  );
-                })}
-              </div>
-            )}
           </div>
-        </div>
-      </main>
+        </main>
+      </div>
     </div>
   );
 };

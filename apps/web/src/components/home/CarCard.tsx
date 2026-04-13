@@ -7,9 +7,8 @@ import {
   TrendingUp,
   TrendingDown,
 } from "lucide-react";
-import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { useTranslation } from "react-i18next";
+import { useTheme } from "@/context/ThemeContext";
 
 interface CarCardProps {
   id: number;
@@ -22,7 +21,7 @@ interface CarCardProps {
   seats: number;
   mileage: number;
   pricePerDay: number;
-  currentMonthPrice?: number; // Dynamic price based on current month
+  currentMonthPrice?: number;
   status: "available" | "rented" | "maintenance" | "review";
   color: string;
   plateNumber: string;
@@ -33,7 +32,7 @@ interface CarCardProps {
 }
 
 /**
- * Reusable car card component for car rentals
+ * Reusable car card component for car rentals — Albanian dark luxury theme
  */
 export const CarCard = ({
   id,
@@ -48,172 +47,300 @@ export const CarCard = ({
   pricePerDay,
   currentMonthPrice,
   status,
-  color,
   features = [],
   imageUrls,
   pickUpLocation,
   onClick,
 }: CarCardProps) => {
   const { t } = useTranslation();
-  // Use current month price if available, otherwise fall back to base price
+  const { isDark } = useTheme();
 
   const displayPrice = currentMonthPrice ?? pricePerDay;
   const hasSeasonalPrice =
     currentMonthPrice !== undefined && currentMonthPrice !== pricePerDay;
-  const isPriceHigher = hasSeasonalPrice && currentMonthPrice > pricePerDay;
-  const isPriceLower = hasSeasonalPrice && currentMonthPrice < pricePerDay;
+  const isPriceHigher = hasSeasonalPrice && currentMonthPrice! > pricePerDay;
+  const isPriceLower = hasSeasonalPrice && currentMonthPrice! < pricePerDay;
   const isAvailable = status.toLowerCase() === "available";
 
-  const getStatusVariant = () => {
-    switch (status.toLowerCase()) {
-      case "available":
-        return "default";
-      case "rented":
-        return "secondary";
-      case "maintenance":
-        return "destructive";
-      default:
-        return "outline";
-    }
-  };
+  const displayFeatures = features && features.length > 0 ? features.slice(0, 3) : [];
 
-  const getStatusLabel = () => {
-    switch (status.toLowerCase()) {
-      case "available":
-        return "Available";
-      case "rented":
-        return "Rented";
-      case "maintenance":
-        return "Maintenance";
-      default:
-        return status;
-    }
-  };
+  const statusColor = isAvailable
+    ? { bg: 'rgba(34,197,94,0.12)', border: 'rgba(34,197,94,0.3)', text: '#4ade80' }
+    : { bg: 'rgba(232,25,44,0.1)', border: 'rgba(232,25,44,0.3)', text: '#E8192C' };
 
-  // Get first 3 features for preview
-  const displayFeatures =
-    features && features.length > 0 ? features.slice(0, 3) : [];
+  const statusLabel = (() => {
+    switch (status.toLowerCase()) {
+      case "available": return "Available";
+      case "rented": return "Rented";
+      case "maintenance": return "Maintenance";
+      default: return status;
+    }
+  })();
+
+  // Theme tokens
+  const tk = {
+    cardBg: isDark ? '#141417' : '#ffffff',
+    cardBorder: isDark ? 'rgba(232,25,44,0.12)' : 'rgba(232,25,44,0.14)',
+    imageFallbackBg: isDark
+      ? 'linear-gradient(135deg, #0f0f12, #1a1a1f)'
+      : 'linear-gradient(135deg, #f4f1ee, #e8e4e0)',
+    imageFallbackText: isDark ? 'rgba(232,25,44,0.15)' : 'rgba(232,25,44,0.2)',
+    nameText: isDark ? '#f0ece8' : '#111115',
+    locationText: isDark ? 'rgba(240,236,232,0.45)' : 'rgba(17,17,21,0.45)',
+    specText: isDark ? 'rgba(240,236,232,0.55)' : 'rgba(17,17,21,0.55)',
+    featureText: isDark ? 'rgba(240,236,232,0.45)' : 'rgba(17,17,21,0.5)',
+    featureBg: isDark ? 'rgba(240,236,232,0.05)' : 'rgba(17,17,21,0.04)',
+    featureBorder: isDark ? 'rgba(240,236,232,0.1)' : 'rgba(17,17,21,0.1)',
+    priceDivider: isDark ? 'rgba(232,25,44,0.1)' : 'rgba(232,25,44,0.12)',
+    priceLabel: isDark ? 'rgba(240,236,232,0.35)' : 'rgba(17,17,21,0.4)',
+    strikeText: isDark ? 'rgba(240,236,232,0.25)' : 'rgba(17,17,21,0.3)',
+  };
 
   return (
-    <Card
+    <div
       onClick={() => onClick(id)}
-      className="cursor-pointer overflow-hidden group hover:shadow-lg transition-shadow duration-300 flex flex-col h-full"
+      style={{
+        background: tk.cardBg,
+        border: `1px solid ${tk.cardBorder}`,
+        borderRadius: 6,
+        overflow: 'hidden',
+        cursor: 'pointer',
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
+        transition: 'border-color 0.25s, box-shadow 0.25s, transform 0.25s, background 0.3s',
+        position: 'relative',
+      }}
+      onMouseEnter={e => {
+        const el = e.currentTarget as HTMLDivElement;
+        el.style.borderColor = 'rgba(232,25,44,0.45)';
+        el.style.boxShadow = isDark
+          ? '0 12px 40px rgba(232,25,44,0.12), 0 2px 8px rgba(0,0,0,0.5)'
+          : '0 12px 40px rgba(232,25,44,0.1), 0 2px 8px rgba(0,0,0,0.08)';
+        el.style.transform = 'translateY(-3px)';
+      }}
+      onMouseLeave={e => {
+        const el = e.currentTarget as HTMLDivElement;
+        el.style.borderColor = tk.cardBorder;
+        el.style.boxShadow = 'none';
+        el.style.transform = 'translateY(0)';
+      }}
     >
-      {/* Image Container */}
-      <div className="relative overflow-hidden bg-gray-200 h-48 w-full">
-        <img
-          src={imageUrls[0]}
-          alt={`${brand} ${name}`}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-        />
+      {/* Image */}
+      <div style={{ position: 'relative', overflow: 'hidden', height: 192, background: isDark ? '#0f0f12' : '#e8e4e0' }}>
+        {imageUrls && imageUrls[0] ? (
+          <img
+            src={imageUrls[0]}
+            alt={`${brand} ${name}`}
+            style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.4s ease', display: 'block' }}
+            onMouseEnter={e => (e.currentTarget.style.transform = 'scale(1.06)')}
+            onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')}
+          />
+        ) : (
+          <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: tk.imageFallbackBg }}>
+            <span style={{ fontFamily: 'Bebas Neue, Impact, sans-serif', fontSize: '3rem', color: tk.imageFallbackText, letterSpacing: '0.1em' }}>{brand}</span>
+          </div>
+        )}
 
-        {/* Status Badge */}
-        <div className="absolute top-3 right-3">
-          <Badge variant={getStatusVariant()} className="capitalize">
-            {getStatusLabel()}
-          </Badge>
+        {/* Gradient overlay bottom */}
+        <div style={{
+          position: 'absolute', bottom: 0, left: 0, right: 0, height: 80,
+          background: isDark
+            ? 'linear-gradient(transparent, rgba(10,10,12,0.85))'
+            : 'transparent',
+        }} />
+
+        {/* Status badge */}
+        <div style={{
+          position: 'absolute', top: 12, right: 12,
+          background: statusColor.bg,
+          border: `1px solid ${statusColor.border}`,
+          color: statusColor.text,
+          fontFamily: 'Crimson Pro, Georgia, serif',
+          fontSize: '0.75rem',
+          letterSpacing: '0.1em',
+          textTransform: 'uppercase',
+          padding: '3px 10px',
+          borderRadius: 2,
+        }}>
+          {statusLabel}
         </div>
 
-        {/* Car Type Badge */}
-        <div className="absolute top-3 left-3">
-          <Badge variant="outline" className="bg-white/90">
-            {type}
-          </Badge>
+        {/* Type badge */}
+        <div style={{
+          position: 'absolute', top: 12, left: 12,
+          background: isDark ? 'rgba(10,10,12,0.7)' : 'rgba(240,236,232,0.85)',
+          border: isDark ? '1px solid rgba(240,236,232,0.15)' : '1px solid rgba(17,17,21,0.15)',
+          color: isDark ? 'rgba(240,236,232,0.75)' : 'rgba(17,17,21,0.7)',
+          fontFamily: 'Crimson Pro, Georgia, serif',
+          fontSize: '0.75rem',
+          letterSpacing: '0.08em',
+          padding: '3px 10px',
+          borderRadius: 2,
+        }}>
+          {type}
         </div>
 
-        {/* Year Badge */}
-        <div className="absolute bottom-3 left-3">
-          <Badge variant="outline" className="bg-white/90">
-            {year}
-          </Badge>
+        {/* Year bottom left */}
+        <div style={{
+          position: 'absolute', bottom: 12, left: 12,
+          fontFamily: 'Bebas Neue, Impact, sans-serif',
+          fontSize: '1rem',
+          color: isDark ? 'rgba(240,236,232,0.6)' : 'rgba(17,17,21,0.5)',
+          letterSpacing: '0.05em',
+        }}>
+          {year}
         </div>
       </div>
 
-      {/* Content Container */}
-      <div className="p-4 flex flex-col flex-grow">
-        {/* Brand and Name */}
-        <div className="mb-2">
-          <p className="text-xs text-gray-500 uppercase tracking-wide">
+      {/* Content */}
+      <div style={{ padding: '16px 18px', display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
+        {/* Brand + Name */}
+        <div style={{ marginBottom: 10 }}>
+          <p style={{
+            fontFamily: 'Crimson Pro, Georgia, serif',
+            fontSize: '0.7rem',
+            letterSpacing: '0.2em',
+            textTransform: 'uppercase',
+            color: '#E8192C',
+            marginBottom: 3,
+          }}>
             {brand}
           </p>
-          <h3 className="font-semibold text-lg line-clamp-1">{name}</h3>
+          <h3 style={{
+            fontFamily: 'Crimson Pro, Georgia, serif',
+            fontSize: '1.15rem',
+            fontWeight: 600,
+            letterSpacing: '0.01em',
+            color: tk.nameText,
+            lineHeight: 1.25,
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+          }}>
+            {name}
+          </h3>
         </div>
 
-        {/* Pickup Location */}
+        {/* Location */}
         {pickUpLocation && (
-          <p className="text-sm text-gray-600 flex items-start gap-1 mb-3 line-clamp-1">
-            <MapPin className="w-4 h-4 flex-shrink-0 mt-0.5" />
-            <span>{pickUpLocation}</span>
-          </p>
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 5, marginBottom: 14 }}>
+            <MapPin style={{ width: 13, height: 13, color: 'rgba(232,25,44,0.6)', flexShrink: 0, marginTop: 2 }} />
+            <span style={{
+              fontFamily: 'Crimson Pro, Georgia, serif',
+              fontSize: '0.88rem',
+              color: tk.locationText,
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+            }}>
+              {pickUpLocation}
+            </span>
+          </div>
         )}
 
-        {/* Car Specs */}
-        <div className="grid grid-cols-2 gap-2 mb-3 text-sm text-gray-700">
-          <div className="flex items-center gap-1">
-            <Users className="w-4 h-4 text-gray-500" />
-            <span>{seats} {t("home.carsPreview.seats")}</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <Settings className="w-4 h-4 text-gray-500" />
-            <span>{transmission}</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <Fuel className="w-4 h-4 text-gray-500" />
-            <span>{fuelType}</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <Gauge className="w-4 h-4 text-gray-500" />
-            <span>{mileage.toLocaleString()} km</span>
-          </div>
+        {/* Specs grid */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px 12px', marginBottom: 14 }}>
+          {[
+            { icon: <Users style={{ width: 13, height: 13 }} />, label: `${seats} ${t("home.carsPreview.seats")}` },
+            { icon: <Settings style={{ width: 13, height: 13 }} />, label: transmission },
+            { icon: <Fuel style={{ width: 13, height: 13 }} />, label: fuelType },
+            { icon: <Gauge style={{ width: 13, height: 13 }} />, label: `${mileage.toLocaleString()} km` },
+          ].map((spec, i) => (
+            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <span style={{ color: 'rgba(232,25,44,0.55)' }}>{spec.icon}</span>
+              <span style={{
+                fontFamily: 'Crimson Pro, Georgia, serif',
+                fontSize: '0.88rem',
+                color: tk.specText,
+              }}>
+                {spec.label}
+              </span>
+            </div>
+          ))}
         </div>
 
-        {/* Features Preview */}
+        {/* Features */}
         {displayFeatures.length > 0 && (
-          <div className="flex flex-wrap gap-1 mb-3">
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, marginBottom: 14 }}>
             {displayFeatures.map((feature, idx) => (
-              <Badge key={idx} variant="secondary" className="text-xs">
+              <span key={idx} style={{
+                fontFamily: 'Crimson Pro, Georgia, serif',
+                fontSize: '0.72rem',
+                letterSpacing: '0.07em',
+                textTransform: 'uppercase',
+                color: tk.featureText,
+                background: tk.featureBg,
+                border: `1px solid ${tk.featureBorder}`,
+                padding: '2px 8px',
+                borderRadius: 2,
+              }}>
                 {feature}
-              </Badge>
+              </span>
             ))}
             {features.length > 3 && (
-              <Badge variant="secondary" className="text-xs">
-                +{features.length - 3} {t("home.carsPreview.more")}
-              </Badge>
+              <span style={{
+                fontFamily: 'Crimson Pro, Georgia, serif',
+                fontSize: '0.72rem',
+                letterSpacing: '0.07em',
+                color: 'rgba(232,25,44,0.6)',
+                background: 'rgba(232,25,44,0.06)',
+                border: '1px solid rgba(232,25,44,0.15)',
+                padding: '2px 8px',
+                borderRadius: 2,
+              }}>
+                +{features.length - 3} {t("common.more")}
+              </span>
             )}
           </div>
         )}
 
         {/* Price */}
-        <div className="mt-auto pt-3 border-t">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center gap-1">
-              <span className="text-xs text-gray-600">{t("billing.pricePerDay")}</span>
-              {isPriceHigher && (
-                <div title="Peak season pricing">
-                  <TrendingUp className="w-3 h-3 text-amber-500" />
-                </div>
-              )}
-              {isPriceLower && (
-                <div title="Off-season discount">
-                  <TrendingDown className="w-3 h-3 text-green-500" />
-                </div>
-              )}
-            </div>
-            <div className="text-right">
-              <span
-                className={`text-lg font-bold ${isPriceLower ? "text-green-600" : "text-red-600"}`}
-              >
-                €{displayPrice}
+        <div style={{
+          marginTop: 'auto',
+          paddingTop: 14,
+          borderTop: `1px solid ${tk.priceDivider}`,
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <span style={{
+              fontFamily: 'Crimson Pro, Georgia, serif',
+              fontSize: '0.8rem',
+              letterSpacing: '0.08em',
+              textTransform: 'uppercase',
+              color: tk.priceLabel,
+            }}>
+              {t("billing.pricePerDay")}
+            </span>
+            {isPriceHigher && <span title="Peak season"><TrendingUp style={{ width: 13, height: 13, color: '#f59e0b' }} /></span>}
+            {isPriceLower && <span title="Off-season"><TrendingDown style={{ width: 13, height: 13, color: '#4ade80' }} /></span>}
+          </div>
+          <div style={{ textAlign: 'right' }}>
+            <span style={{
+              fontFamily: 'Bebas Neue, Impact, sans-serif',
+              fontSize: '1.55rem',
+              letterSpacing: '0.02em',
+              color: isPriceLower ? '#4ade80' : '#E8192C',
+              lineHeight: 1,
+            }}>
+              €{displayPrice}
+            </span>
+            {hasSeasonalPrice && (
+              <span style={{
+                fontFamily: 'Crimson Pro, Georgia, serif',
+                fontSize: '0.78rem',
+                color: tk.strikeText,
+                textDecoration: 'line-through',
+                marginLeft: 6,
+              }}>
+                €{pricePerDay}
               </span>
-              {hasSeasonalPrice && (
-                <span className="text-xs text-gray-400 line-through ml-1">
-                  €{pricePerDay}
-                </span>
-              )}
-            </div>
+            )}
           </div>
         </div>
       </div>
-    </Card>
+    </div>
   );
 };

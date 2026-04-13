@@ -1,9 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import Hsidebar from "../../../components/dashboard/hsidebar";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Search,
   Filter,
@@ -32,7 +28,6 @@ import {
   DestinationDto,
   TranslatedField,
 } from "@/types/destination.types";
-// Import destination service functions with string ID parameters
 import {
   getAllDestinations,
   createDestination,
@@ -52,6 +47,7 @@ import {
   LOCALE_LABELS,
   type SupportedLocale,
 } from "@/hooks/useLocalized";
+import { useTheme } from "@/context/ThemeContext";
 
 /* ============================== Types ============================== */
 
@@ -82,32 +78,56 @@ const CATEGORIES = [
 
 const ITEMS_PER_PAGE = 12;
 
+/* ============================== Token Map Type ============================== */
+
+interface TkMap {
+  pageBg: string;
+  pageText: string;
+  cardBg: string;
+  cardBorder: string;
+  mutedText: string;
+  dimText: string;
+  inputBg: string;
+  inputBorder: string;
+  inputText: string;
+  filterBtnBg: string;
+  filterBtnText: string;
+  iconMuted: string;
+  labelText: string;
+  dialogBg: string;
+  dialogText: string;
+  statCardBg: string;
+  statCardBorder: string;
+  divider: string;
+  tabBg: string;
+  tabActiveBg: string;
+  tabActiveText: string;
+  tabInactiveText: string;
+  paginationBg: string;
+  paginationBorder: string;
+  paginationText: string;
+}
+
 /* ============================== Main Component ============================== */
 
 export default function DestinationsManagement() {
   const { t } = useTranslation();
   const { localize } = useLocalized();
+  const { isDark } = useTheme();
+
   const [destinations, setDestinations] = useState<Destination[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Search and filter
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
-
-  // Pagination
   const [currentPage, setCurrentPage] = useState(1);
 
-  // Dialog states
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [dialogMode, setDialogMode] = useState<"create" | "edit" | "view">(
-    "create",
-  );
-  const [selectedDestination, setSelectedDestination] =
-    useState<Destination | null>(null);
+  const [dialogMode, setDialogMode] = useState<"create" | "edit" | "view">("create");
+  const [selectedDestination, setSelectedDestination] = useState<Destination | null>(null);
   const [activeLocaleTab, setActiveLocaleTab] = useState<SupportedLocale>("en");
 
-  // Form states
   const [formData, setFormData] = useState<DestinationFormData>({
     name: emptyTranslatedField(),
     description: emptyTranslatedField(),
@@ -119,11 +139,48 @@ export default function DestinationsManagement() {
   const [selectedImageFiles, setSelectedImageFiles] = useState<File[]>([]);
   const [saving, setSaving] = useState(false);
 
+  const tk: TkMap = {
+    pageBg: isDark ? '#0d0d0d' : '#f5f4f1',
+    pageText: isDark ? '#ffffff' : '#111115',
+    cardBg: isDark ? 'rgba(255,255,255,0.025)' : '#ffffff',
+    cardBorder: isDark ? 'rgba(255,255,255,0.07)' : '#e5e2de',
+    mutedText: isDark ? 'rgba(255,255,255,0.40)' : '#6b6663',
+    dimText: isDark ? 'rgba(255,255,255,0.70)' : '#44403c',
+    inputBg: isDark ? 'rgba(255,255,255,0.06)' : '#ffffff',
+    inputBorder: isDark ? 'rgba(255,255,255,0.10)' : '#ddd9d5',
+    inputText: isDark ? '#ffffff' : '#111115',
+    filterBtnBg: isDark ? 'rgba(255,255,255,0.04)' : '#edeae6',
+    filterBtnText: isDark ? 'rgba(255,255,255,0.60)' : '#44403c',
+    iconMuted: isDark ? 'rgba(255,255,255,0.40)' : '#9e9994',
+    labelText: isDark ? 'rgba(255,255,255,0.50)' : '#6b6663',
+    dialogBg: isDark ? '#1a1a1a' : '#ffffff',
+    dialogText: isDark ? '#ffffff' : '#111115',
+    statCardBg: isDark ? 'rgba(255,255,255,0.03)' : '#ffffff',
+    statCardBorder: isDark ? 'rgba(255,255,255,0.05)' : '#e5e2de',
+    divider: isDark ? 'rgba(255,255,255,0.05)' : '#e5e2de',
+    tabBg: isDark ? 'rgba(255,255,255,0.06)' : '#f0ece8',
+    tabActiveBg: isDark ? '#2a2a2a' : '#ffffff',
+    tabActiveText: isDark ? '#E8192C' : '#E8192C',
+    tabInactiveText: isDark ? 'rgba(255,255,255,0.50)' : '#6b6663',
+    paginationBg: isDark ? 'rgba(255,255,255,0.04)' : '#f5f2ee',
+    paginationBorder: isDark ? 'rgba(255,255,255,0.10)' : '#ddd9d5',
+    paginationText: isDark ? 'rgba(255,255,255,0.50)' : '#6b6663',
+  };
+
+  const inputStyle: React.CSSProperties = {
+    width: '100%',
+    borderRadius: 10,
+    border: `1px solid ${tk.inputBorder}`,
+    background: tk.inputBg,
+    padding: '8px 12px',
+    fontSize: 14,
+    color: tk.inputText,
+    outline: 'none',
+  };
+
   /* ============================== Effects ============================== */
 
-  useEffect(() => {
-    fetchDestinations();
-  }, []);
+  useEffect(() => { fetchDestinations(); }, []);
 
   /* ============================== Handlers ============================== */
 
@@ -144,14 +201,7 @@ export default function DestinationsManagement() {
   const handleCreate = () => {
     setDialogMode("create");
     setSelectedDestination(null);
-    setFormData({
-      name: emptyTranslatedField(),
-      description: emptyTranslatedField(),
-      category: "",
-      lat: undefined,
-      lng: undefined,
-      imageUrls: [],
-    });
+    setFormData({ name: emptyTranslatedField(), description: emptyTranslatedField(), category: "", lat: undefined, lng: undefined, imageUrls: [] });
     setSelectedImageFiles([]);
     setActiveLocaleTab("en");
     setDialogOpen(true);
@@ -161,18 +211,8 @@ export default function DestinationsManagement() {
     setDialogMode("edit");
     setSelectedDestination(destination);
     setFormData({
-      name: {
-        ...emptyTranslatedField(),
-        ...(typeof destination.name === "object"
-          ? destination.name
-          : { en: destination.name }),
-      },
-      description: {
-        ...emptyTranslatedField(),
-        ...(typeof destination.description === "object"
-          ? destination.description
-          : { en: destination.description }),
-      },
+      name: { ...emptyTranslatedField(), ...(typeof destination.name === "object" ? destination.name : { en: destination.name }) },
+      description: { ...emptyTranslatedField(), ...(typeof destination.description === "object" ? destination.description : { en: destination.description }) },
       category: destination.category,
       lat: destination.lat,
       lng: destination.lng,
@@ -187,18 +227,8 @@ export default function DestinationsManagement() {
     setDialogMode("view");
     setSelectedDestination(destination);
     setFormData({
-      name: {
-        ...emptyTranslatedField(),
-        ...(typeof destination.name === "object"
-          ? destination.name
-          : { en: destination.name }),
-      },
-      description: {
-        ...emptyTranslatedField(),
-        ...(typeof destination.description === "object"
-          ? destination.description
-          : { en: destination.description }),
-      },
+      name: { ...emptyTranslatedField(), ...(typeof destination.name === "object" ? destination.name : { en: destination.name }) },
+      description: { ...emptyTranslatedField(), ...(typeof destination.description === "object" ? destination.description : { en: destination.description }) },
       category: destination.category,
       lat: destination.lat,
       lng: destination.lng,
@@ -211,9 +241,7 @@ export default function DestinationsManagement() {
   const handleDelete = async (destination: Destination) => {
     const result = await Swal.fire({
       title: t("destinationsManagement.delete.confirmTitle"),
-      text: t("destinationsManagement.delete.confirmMessage", {
-        name: localize(destination.name),
-      }),
+      text: t("destinationsManagement.delete.confirmMessage", { name: localize(destination.name) }),
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#d33",
@@ -225,18 +253,10 @@ export default function DestinationsManagement() {
       try {
         await deleteDestination(destination.id);
         setDestinations((prev) => prev.filter((d) => d.id !== destination.id));
-        Swal.fire(
-          t("destinationsManagement.delete.successTitle"),
-          t("destinationsManagement.delete.successMessage"),
-          "success",
-        );
+        Swal.fire(t("destinationsManagement.delete.successTitle"), t("destinationsManagement.delete.successMessage"), "success");
       } catch (err) {
         console.error("Error deleting destination:", err);
-        Swal.fire(
-          t("destinationsManagement.errorMessages.deleteFailed"),
-          t("destinationsManagement.errorMessages.deleteFailedMessage"),
-          "error",
-        );
+        Swal.fire(t("destinationsManagement.errorMessages.deleteFailed"), t("destinationsManagement.errorMessages.deleteFailedMessage"), "error");
       }
     }
   };
@@ -245,66 +265,34 @@ export default function DestinationsManagement() {
     setFormData((prev) => ({ ...prev, lat, lng }));
   };
 
-  const handleInputChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >,
-  ) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  /** Update a translated field for a specific locale */
-  const handleTranslatedChange = (
-    field: "name" | "description",
-    locale: SupportedLocale,
-    value: string,
-  ) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: { ...prev[field], [locale]: value },
-    }));
+  const handleTranslatedChange = (field: "name" | "description", locale: SupportedLocale, value: string) => {
+    setFormData((prev) => ({ ...prev, [field]: { ...prev[field], [locale]: value } }));
   };
 
   const handleSave = async () => {
-    // Validation
     if (!formData.name.en || !formData.category) {
-      Swal.fire(
-        t("destinationsManagement.errorMessages.createFailed"),
-        t("destinationsManagement.validation.requiredFields"),
-        "error",
-      );
+      Swal.fire(t("destinationsManagement.errorMessages.createFailed"), t("destinationsManagement.validation.requiredFields"), "error");
       return;
     }
-
     if (dialogMode === "create" && selectedImageFiles.length === 0) {
-      Swal.fire(
-        t("destinationsManagement.errorMessages.createFailed"),
-        t("destinationsManagement.validation.imageRequired"),
-        "error",
-      );
+      Swal.fire(t("destinationsManagement.errorMessages.createFailed"), t("destinationsManagement.validation.imageRequired"), "error");
       return;
     }
-
     if (!formData.lat || !formData.lng) {
-      Swal.fire(
-        t("destinationsManagement.errorMessages.createFailed"),
-        t("destinationsManagement.validation.locationRequired"),
-        "error",
-      );
+      Swal.fire(t("destinationsManagement.errorMessages.createFailed"), t("destinationsManagement.validation.locationRequired"), "error");
       return;
     }
 
     setSaving(true);
     try {
       let { imageUrls } = formData;
-
-      // Upload new images if any
       if (selectedImageFiles.length > 0) {
-        const uploadResults = await uploadImages(
-          selectedImageFiles,
-          "destination" as StorageEntityType,
-        );
+        const uploadResults = await uploadImages(selectedImageFiles, "destination" as StorageEntityType);
         const newImageUrls = uploadResults.map((result) => result.publicUrl);
         imageUrls = [...imageUrls, ...newImageUrls];
       }
@@ -321,35 +309,18 @@ export default function DestinationsManagement() {
       if (dialogMode === "create") {
         const newDestination = await createDestination(destinationData);
         setDestinations((prev) => [newDestination, ...prev]);
-        Swal.fire(
-          t("destinationsManagement.success.created"),
-          t("destinationsManagement.success.createdMessage"),
-          "success",
-        );
+        Swal.fire(t("destinationsManagement.success.created"), t("destinationsManagement.success.createdMessage"), "success");
       } else if (dialogMode === "edit" && selectedDestination) {
-        const updated = await updateDestination(
-          selectedDestination.id,
-          destinationData,
-        );
-        setDestinations((prev) =>
-          prev.map((d) => (d.id === selectedDestination.id ? updated : d)),
-        );
-        Swal.fire(
-          t("destinationsManagement.success.updated"),
-          t("destinationsManagement.success.updatedMessage"),
-          "success",
-        );
+        const updated = await updateDestination(selectedDestination.id, destinationData);
+        setDestinations((prev) => prev.map((d) => (d.id === selectedDestination.id ? updated : d)));
+        Swal.fire(t("destinationsManagement.success.updated"), t("destinationsManagement.success.updatedMessage"), "success");
       }
 
       setDialogOpen(false);
       setSelectedImageFiles([]);
     } catch (err) {
       console.error("Error saving destination:", err);
-      Swal.fire(
-        t("destinationsManagement.errorMessages.createFailed"),
-        t("destinationsManagement.errorMessages.createFailedMessage"),
-        "error",
-      );
+      Swal.fire(t("destinationsManagement.errorMessages.createFailed"), t("destinationsManagement.errorMessages.createFailedMessage"), "error");
     } finally {
       setSaving(false);
     }
@@ -363,10 +334,7 @@ export default function DestinationsManagement() {
     const matchesSearch =
       nameStr.toLowerCase().includes(searchTerm.toLowerCase()) ||
       descStr.toLowerCase().includes(searchTerm.toLowerCase());
-
-    const matchesCategory =
-      categoryFilter === "all" || destination.category === categoryFilter;
-
+    const matchesCategory = categoryFilter === "all" || destination.category === categoryFilter;
     return matchesSearch && matchesCategory;
   });
 
@@ -380,106 +348,79 @@ export default function DestinationsManagement() {
 
   if (loading) {
     return (
-      <Hsidebar>
-        <div className="flex justify-center items-center h-96">
-          <Loader2 size={48} className="animate-spin text-blue-600" />
+      <div className="flex justify-center items-center h-96 -m-8" style={{ background: tk.pageBg }}>
+          <Loader2 size={48} className="animate-spin text-[#e41e20]" />
         </div>
-      </Hsidebar>
     );
   }
 
   return (
-    <Hsidebar>
-      <div className="p-6 space-y-6">
+    <div style={{ background: tk.pageBg, color: tk.pageText }} className="-m-8 min-h-screen p-8 space-y-6">
         {/* Header */}
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">
+            <h1 className="text-3xl font-bold" style={{ color: tk.pageText }}>
               {t("destinationsManagement.title")}
             </h1>
-            <p className="text-gray-600 mt-1">
+            <p className="mt-1" style={{ color: tk.mutedText }}>
               {t("destinationsManagement.subtitle")}
             </p>
           </div>
-          <Button
+          <button
             onClick={handleCreate}
-            className="bg-blue-600 hover:bg-blue-700 text-white"
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-colors"
+            style={{ background: '#E8192C', color: '#ffffff' }}
           >
-            <Plus size={20} className="mr-2" />
+            <Plus size={18} />
             {t("destinationsManagement.addDestination")}
-          </Button>
+          </button>
         </div>
 
         {/* Error Alert */}
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg flex items-start">
-            <AlertCircle className="w-5 h-5 mr-3 mt-0.5 flex-shrink-0" />
+          <div className="px-4 py-3 rounded-xl flex items-start gap-3 border" style={{ background: isDark ? 'rgba(239,68,68,0.10)' : '#fef2f2', borderColor: isDark ? 'rgba(239,68,68,0.25)' : '#fecaca', color: isDark ? '#f87171' : '#991b1b' }}>
+            <AlertCircle className="w-5 h-5 mt-0.5 flex-shrink-0" />
             <span>{error}</span>
           </div>
         )}
 
         {/* Stats */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="p-4 bg-white rounded-xl shadow">
-            <span className="text-sm text-gray-500">
-              {t("destinationsManagement.stats.total")}
-            </span>
-            <span className="text-2xl font-bold text-blue-600 block">
-              {destinations.length}
-            </span>
-          </div>
-          <div className="p-4 bg-white rounded-xl shadow">
-            <span className="text-sm text-gray-500">
-              {t("destinationsManagement.stats.adventure")}
-            </span>
-            <span className="text-2xl font-bold text-green-600 block">
-              {destinations.filter((d) => d.category === "Adventure").length}
-            </span>
-          </div>
-          <div className="p-4 bg-white rounded-xl shadow">
-            <span className="text-sm text-gray-500">
-              {t("destinationsManagement.stats.historic")}
-            </span>
-            <span className="text-2xl font-bold text-purple-600 block">
-              {destinations.filter((d) => d.category === "Historic").length}
-            </span>
-          </div>
-          <div className="p-4 bg-white rounded-xl shadow">
-            <span className="text-sm text-gray-500">
-              {t("destinationsManagement.stats.beach")}
-            </span>
-            <span className="text-2xl font-bold text-orange-600 block">
-              {destinations.filter((d) => d.category === "Beach").length}
-            </span>
-          </div>
+          {[
+            { label: t("destinationsManagement.stats.total"), value: destinations.length, color: '#E8192C' },
+            { label: t("destinationsManagement.stats.adventure"), value: destinations.filter(d => d.category === "Adventure").length, color: '#16a34a' },
+            { label: t("destinationsManagement.stats.historic"), value: destinations.filter(d => d.category === "Historic").length, color: '#7c3aed' },
+            { label: t("destinationsManagement.stats.beach"), value: destinations.filter(d => d.category === "Beach").length, color: '#ea580c' },
+          ].map(({ label, value, color }) => (
+            <div key={label} className="p-4 rounded-xl border" style={{ background: tk.statCardBg, borderColor: tk.statCardBorder }}>
+              <span className="text-sm" style={{ color: tk.mutedText }}>{label}</span>
+              <span className="text-2xl font-bold block" style={{ color }}>{value}</span>
+            </div>
+          ))}
         </div>
 
         {/* Filters */}
-        <div className="p-4 bg-white rounded-lg shadow flex flex-wrap gap-4 items-center">
+        <div className="p-4 rounded-xl border flex flex-wrap gap-4 items-center" style={{ background: tk.cardBg, borderColor: tk.cardBorder }}>
           <div className="relative flex-1 min-w-[250px]">
-            <Search className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
-            <Input
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: tk.iconMuted }} />
+            <input
               type="text"
               placeholder={t("destinationsManagement.filters.search")}
-              className="pl-10"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
+              style={{ ...inputStyle, paddingLeft: 36 }}
             />
           </div>
           <div className="flex items-center gap-2">
-            <Filter size={20} className="text-gray-500" />
+            <Filter size={18} style={{ color: tk.iconMuted }} />
             <select
-              className="px-3 py-2 border rounded-lg"
               value={categoryFilter}
               onChange={(e) => setCategoryFilter(e.target.value)}
+              style={{ ...inputStyle, width: 'auto' }}
             >
-              <option value="all">
-                {t("destinationsManagement.filters.allCategories")}
-              </option>
+              <option value="all">{t("destinationsManagement.filters.allCategories")}</option>
               {CATEGORIES.map((cat) => (
-                <option key={cat.id} value={cat.id}>
-                  {cat.label}
-                </option>
+                <option key={cat.id} value={cat.id}>{cat.label}</option>
               ))}
             </select>
           </div>
@@ -487,10 +428,8 @@ export default function DestinationsManagement() {
 
         {/* Grid */}
         {filteredDestinations.length === 0 ? (
-          <div className="text-center py-20 bg-white rounded-xl">
-            <p className="text-gray-500">
-              {t("destinationsManagement.empty.message")}
-            </p>
+          <div className="text-center py-20 rounded-xl border" style={{ background: tk.cardBg, borderColor: tk.cardBorder }}>
+            <p style={{ color: tk.mutedText }}>{t("destinationsManagement.empty.message")}</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
@@ -501,6 +440,8 @@ export default function DestinationsManagement() {
                 onView={handleView}
                 onEdit={handleEdit}
                 onDelete={handleDelete}
+                tk={tk}
+                isDark={isDark}
               />
             ))}
           </div>
@@ -512,7 +453,8 @@ export default function DestinationsManagement() {
             <button
               disabled={currentPage === 1}
               onClick={() => setCurrentPage((p) => p - 1)}
-              className="px-4 py-2 border rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+              className="px-4 py-2 rounded-lg border disabled:opacity-50 disabled:cursor-not-allowed"
+              style={{ background: tk.paginationBg, borderColor: tk.paginationBorder, color: tk.paginationText }}
             >
               <ChevronLeft size={16} />
             </button>
@@ -520,11 +462,11 @@ export default function DestinationsManagement() {
               <button
                 key={page}
                 onClick={() => setCurrentPage(page)}
-                className={`px-4 py-2 rounded-lg ${
-                  page === currentPage
-                    ? "bg-blue-600 text-white"
-                    : "border hover:bg-gray-50"
-                }`}
+                className="px-4 py-2 rounded-lg"
+                style={page === currentPage
+                  ? { background: '#E8192C', color: '#ffffff' }
+                  : { background: tk.paginationBg, border: `1px solid ${tk.paginationBorder}`, color: tk.paginationText }
+                }
               >
                 {page}
               </button>
@@ -532,133 +474,103 @@ export default function DestinationsManagement() {
             <button
               disabled={currentPage === totalPages}
               onClick={() => setCurrentPage((p) => p + 1)}
-              className="px-4 py-2 border rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+              className="px-4 py-2 rounded-lg border disabled:opacity-50 disabled:cursor-not-allowed"
+              style={{ background: tk.paginationBg, borderColor: tk.paginationBorder, color: tk.paginationText }}
             >
               <ChevronRight size={16} />
             </button>
           </div>
         )}
-      </div>
 
-      {/* Dialog for Create/Edit/View */}
-      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+        {/* Dialog for Create/Edit/View */}
+        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent style={{ background: tk.dialogBg, color: tk.dialogText, maxWidth: 800, maxHeight: '90vh', overflowY: 'auto' }}>
           <DialogHeader>
-            <DialogTitle>
-              {dialogMode === "create" &&
-                t("destinationsManagement.dialog.addTitle")}
-              {dialogMode === "edit" &&
-                t("destinationsManagement.dialog.editTitle")}
-              {dialogMode === "view" &&
-                t("destinationsManagement.dialog.viewTitle")}
+            <DialogTitle style={{ color: tk.dialogText }}>
+              {dialogMode === "create" && t("destinationsManagement.dialog.addTitle")}
+              {dialogMode === "edit" && t("destinationsManagement.dialog.editTitle")}
+              {dialogMode === "view" && t("destinationsManagement.dialog.viewTitle")}
             </DialogTitle>
-            <DialogDescription>
-              {dialogMode === "create" &&
-                t("destinationsManagement.dialog.addDescription")}
-              {dialogMode === "edit" &&
-                t("destinationsManagement.dialog.editDescription")}
-              {dialogMode === "view" &&
-                t("destinationsManagement.dialog.viewDescription")}
+            <DialogDescription style={{ color: tk.mutedText }}>
+              {dialogMode === "create" && t("destinationsManagement.dialog.addDescription")}
+              {dialogMode === "edit" && t("destinationsManagement.dialog.editDescription")}
+              {dialogMode === "view" && t("destinationsManagement.dialog.viewDescription")}
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-6 py-4">
-            {/* Name (single, same for all languages) */}
+            {/* Name */}
             <div className="space-y-2">
-              <Label htmlFor="name">
-                {t("destinationsManagement.form.name")}{" "}
-                <span className="text-red-500">*</span>
-              </Label>
-              <Input
-                id="name"
+              <label className="text-sm font-medium" style={{ color: tk.labelText }}>
+                {t("destinationsManagement.form.name")} <span className="text-red-500">*</span>
+              </label>
+              <input
                 value={formData.name.en || ""}
-                onChange={(e) =>
-                  handleTranslatedChange("name", "en", e.target.value)
-                }
+                onChange={(e) => handleTranslatedChange("name", "en", e.target.value)}
                 placeholder={t("destinationsManagement.form.namePlaceholder")}
                 disabled={dialogMode === "view"}
+                style={inputStyle}
               />
             </div>
 
             {/* Category */}
             <div className="space-y-2">
-              <Label htmlFor="category">
-                {t("destinationsManagement.form.category")}{" "}
-                <span className="text-red-500">*</span>
-              </Label>
+              <label className="text-sm font-medium" style={{ color: tk.labelText }}>
+                {t("destinationsManagement.form.category")} <span className="text-red-500">*</span>
+              </label>
               <select
-                id="category"
                 name="category"
                 value={formData.category}
                 onChange={handleInputChange}
                 disabled={dialogMode === "view"}
-                className="w-full px-3 py-2 border rounded-lg"
+                style={inputStyle}
               >
-                <option value="">
-                  {t("destinationsManagement.form.categoryPlaceholder")}
-                </option>
+                <option value="">{t("destinationsManagement.form.categoryPlaceholder")}</option>
                 {CATEGORIES.map((cat) => (
-                  <option key={cat.id} value={cat.id}>
-                    {cat.label}
-                  </option>
+                  <option key={cat.id} value={cat.id}>{cat.label}</option>
                 ))}
               </select>
             </div>
 
-            {/* Language Tabs (for description only) */}
+            {/* Language Tabs */}
             <div className="space-y-4">
               <div className="flex items-center gap-2 mb-1">
-                <Globe size={16} className="text-indigo-500" />
-                <span className="text-sm font-medium text-gray-700">
-                  {t(
-                    "destinationsManagement.form.descriptionLanguage",
-                    "Description Language",
-                  )}
+                <Globe size={16} className="text-[#E8192C]" />
+                <span className="text-sm font-medium" style={{ color: tk.dimText }}>
+                  {t("destinationsManagement.form.descriptionLanguage", "Description Language")}
                 </span>
               </div>
-              <div className="flex gap-1 p-1 bg-gray-100 rounded-lg">
+              <div className="flex gap-1 p-1 rounded-lg" style={{ background: tk.tabBg }}>
                 {SUPPORTED_LOCALES.map((locale) => (
                   <button
                     key={locale}
                     type="button"
                     onClick={() => setActiveLocaleTab(locale)}
-                    className={`flex-1 px-3 py-2 text-sm font-medium rounded-md transition-colors ${
-                      activeLocaleTab === locale
-                        ? "bg-white text-indigo-700 shadow-sm"
-                        : "text-gray-500 hover:text-gray-700"
-                    }`}
+                    className="flex-1 px-3 py-2 text-sm font-medium rounded-md transition-colors"
+                    style={activeLocaleTab === locale
+                      ? { background: tk.tabActiveBg, color: tk.tabActiveText, boxShadow: '0 1px 3px rgba(0,0,0,0.12)' }
+                      : { color: tk.tabInactiveText }
+                    }
                   >
                     {LOCALE_LABELS[locale]}
-                    {locale === "en" && (
-                      <span className="text-red-500 ml-1">*</span>
-                    )}
+                    {locale === "en" && <span className="text-red-500 ml-1">*</span>}
                   </button>
                 ))}
               </div>
             </div>
 
-            {/* Description (per locale) */}
+            {/* Description */}
             <div className="space-y-2">
-              <Label htmlFor="description">
-                {t("destinationsManagement.form.description")} (
-                {LOCALE_LABELS[activeLocaleTab]})
-              </Label>
+              <label className="text-sm font-medium" style={{ color: tk.labelText }}>
+                {t("destinationsManagement.form.description")} ({LOCALE_LABELS[activeLocaleTab]})
+              </label>
               <textarea
-                id="description"
                 value={formData.description[activeLocaleTab] || ""}
-                onChange={(e) =>
-                  handleTranslatedChange(
-                    "description",
-                    activeLocaleTab,
-                    e.target.value,
-                  )
-                }
+                onChange={(e) => handleTranslatedChange("description", activeLocaleTab, e.target.value)}
                 rows={4}
-                placeholder={t(
-                  "destinationsManagement.form.descriptionPlaceholder",
-                )}
+                placeholder={t("destinationsManagement.form.descriptionPlaceholder")}
                 disabled={dialogMode === "view"}
-                className="w-full px-3 py-2 border rounded-lg"
+                style={{ ...inputStyle, resize: 'vertical' }}
               />
             </div>
 
@@ -666,22 +578,11 @@ export default function DestinationsManagement() {
             {dialogMode !== "view" && (
               <ImageUpload
                 propertyType="Destination"
-                onImagesSelected={(files) => {
-                  setSelectedImageFiles(files);
-                }}
+                onImagesSelected={(files) => setSelectedImageFiles(files)}
                 selectedFiles={selectedImageFiles}
-                onRemoveFile={(index) => {
-                  setSelectedImageFiles((prev) =>
-                    prev.filter((_, i) => i !== index),
-                  );
-                }}
+                onRemoveFile={(index) => setSelectedImageFiles((prev) => prev.filter((_, i) => i !== index))}
                 existingImages={formData.imageUrls}
-                onRemoveExisting={(url) => {
-                  setFormData((prev) => ({
-                    ...prev,
-                    imageUrls: prev.imageUrls.filter((img) => img !== url),
-                  }));
-                }}
+                onRemoveExisting={(url) => setFormData((prev) => ({ ...prev, imageUrls: prev.imageUrls.filter((img) => img !== url) }))}
                 maxImages={10}
                 isLoading={saving}
               />
@@ -690,15 +591,12 @@ export default function DestinationsManagement() {
             {/* Image Preview for View Mode */}
             {dialogMode === "view" && formData.imageUrls.length > 0 && (
               <div className="space-y-2">
-                <Label>{t("destinationsManagement.form.images")}</Label>
+                <label className="text-sm font-medium" style={{ color: tk.labelText }}>
+                  {t("destinationsManagement.form.images")}
+                </label>
                 <div className="grid grid-cols-3 gap-3">
                   {formData.imageUrls.map((url, index) => (
-                    <img
-                      key={index}
-                      src={url}
-                      alt={`Destination ${index + 1}`}
-                      className="w-full h-32 object-cover rounded-lg"
-                    />
+                    <img key={index} src={url} alt={`Destination ${index + 1}`} className="w-full h-32 object-cover rounded-lg" />
                   ))}
                 </div>
               </div>
@@ -706,19 +604,14 @@ export default function DestinationsManagement() {
 
             {/* Map Picker */}
             <div className="space-y-2">
-              <Label>
-                {t("destinationsManagement.form.location")}{" "}
-                <span className="text-red-500">*</span>
-              </Label>
+              <label className="text-sm font-medium" style={{ color: tk.labelText }}>
+                {t("destinationsManagement.form.location")} <span className="text-red-500">*</span>
+              </label>
               <MapPicker
                 lat={formData.lat}
                 lng={formData.lng}
                 onLocationSelect={handleLocationSelect}
-                label={
-                  dialogMode === "view"
-                    ? t("destinationsManagement.form.location")
-                    : t("destinationsManagement.form.locationLabel")
-                }
+                label={dialogMode === "view" ? t("destinationsManagement.form.location") : t("destinationsManagement.form.locationLabel")}
                 defaultCenter={[41.3275, 19.8187]}
                 defaultZoom={8}
                 showCoordinates={true}
@@ -729,38 +622,42 @@ export default function DestinationsManagement() {
           <DialogFooter>
             {dialogMode !== "view" && (
               <>
-                <Button
-                  variant="outline"
+                <button
                   onClick={() => setDialogOpen(false)}
                   disabled={saving}
+                  className="px-4 py-2 rounded-lg text-sm font-medium border disabled:opacity-50 transition-colors"
+                  style={{ background: tk.filterBtnBg, color: tk.filterBtnText, borderColor: tk.cardBorder }}
                 >
                   {t("destinationsManagement.dialog.cancel")}
-                </Button>
-                <Button onClick={handleSave} disabled={saving}>
-                  {saving ? (
-                    <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      {t("destinationsManagement.dialog.saving")}
-                    </>
-                  ) : (
-                    <>
-                      {dialogMode === "create"
-                        ? t("destinationsManagement.dialog.create")
-                        : t("destinationsManagement.dialog.update")}
-                    </>
-                  )}
-                </Button>
+                </button>
+                <button
+                  onClick={handleSave}
+                  disabled={saving}
+                  className="px-4 py-2 rounded-lg text-sm font-medium disabled:opacity-50 transition-colors flex items-center gap-2"
+                  style={{ background: '#E8192C', color: '#ffffff' }}
+                >
+                  {saving && <Loader2 className="w-4 h-4 animate-spin" />}
+                  {saving
+                    ? t("destinationsManagement.dialog.saving")
+                    : dialogMode === "create"
+                      ? t("destinationsManagement.dialog.create")
+                      : t("destinationsManagement.dialog.update")}
+                </button>
               </>
             )}
             {dialogMode === "view" && (
-              <Button onClick={() => setDialogOpen(false)}>
+              <button
+                onClick={() => setDialogOpen(false)}
+                className="px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                style={{ background: tk.filterBtnBg, color: tk.filterBtnText, border: `1px solid ${tk.cardBorder}` }}
+              >
                 {t("destinationsManagement.dialog.close")}
-              </Button>
+              </button>
             )}
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </Hsidebar>
+    </div>
   );
 }
 
@@ -771,32 +668,37 @@ interface DestinationCardProps {
   onView: (destination: Destination) => void;
   onEdit: (destination: Destination) => void;
   onDelete: (destination: Destination) => void;
+  tk: TkMap;
+  isDark: boolean;
 }
 
-function DestinationCard({
-  destination,
-  onView,
-  onEdit,
-  onDelete,
-}: DestinationCardProps) {
+function DestinationCard({ destination, onView, onEdit, onDelete, tk, isDark }: DestinationCardProps) {
   const { t } = useTranslation();
   const { localize } = useLocalized();
-  const getCategoryColor = (category: string) => {
-    const colors: Record<string, string> = {
-      Adventure: "bg-green-100 text-green-800",
-      Historic: "bg-purple-100 text-purple-800",
-      Beach: "bg-blue-100 text-blue-800",
-      Cultural: "bg-pink-100 text-pink-800",
-      Nature: "bg-emerald-100 text-emerald-800",
-      City: "bg-orange-100 text-orange-800",
+
+  const getCategoryStyle = (category: string): { bg: string; text: string } => {
+    const styles: Record<string, { dark: { bg: string; text: string }; light: { bg: string; text: string } }> = {
+      Adventure: { dark: { bg: 'rgba(34,197,94,0.15)', text: '#4ade80' }, light: { bg: '#dcfce7', text: '#166534' } },
+      Historic: { dark: { bg: 'rgba(139,92,246,0.15)', text: '#c4b5fd' }, light: { bg: '#f5f3ff', text: '#6d28d9' } },
+      Beach: { dark: { bg: 'rgba(59,130,246,0.15)', text: '#93c5fd' }, light: { bg: '#eff6ff', text: '#1d4ed8' } },
+      Cultural: { dark: { bg: 'rgba(236,72,153,0.15)', text: '#f9a8d4' }, light: { bg: '#fdf2f8', text: '#be185d' } },
+      Nature: { dark: { bg: 'rgba(16,185,129,0.15)', text: '#6ee7b7' }, light: { bg: '#ecfdf5', text: '#065f46' } },
+      City: { dark: { bg: 'rgba(249,115,22,0.15)', text: '#fdba74' }, light: { bg: '#fff7ed', text: '#c2410c' } },
     };
-    return colors[category] || "bg-gray-100 text-gray-800";
+    const s = styles[category];
+    if (!s) return isDark ? { bg: 'rgba(255,255,255,0.08)', text: 'rgba(255,255,255,0.60)' } : { bg: '#f5f2ee', text: '#44403c' };
+    return isDark ? s.dark : s.light;
   };
 
+  const catStyle = getCategoryStyle(destination.category);
+
   return (
-    <div className="bg-white rounded-xl shadow-md hover:shadow-xl transition-shadow border border-gray-100 overflow-hidden">
+    <div
+      className="rounded-xl border overflow-hidden transition-shadow hover:shadow-xl"
+      style={{ background: tk.cardBg, borderColor: tk.cardBorder }}
+    >
       {/* Image */}
-      <div className="h-48 bg-gray-200 relative overflow-hidden">
+      <div className="h-48 relative overflow-hidden" style={{ background: tk.filterBtnBg }}>
         {destination.imageUrls && destination.imageUrls.length > 0 ? (
           <img
             src={destination.imageUrls[0]}
@@ -804,14 +706,13 @@ function DestinationCard({
             className="w-full h-full object-cover"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-300 to-gray-400">
-            <MapPin size={48} className="text-gray-500" />
+          <div className="w-full h-full flex items-center justify-center" style={{ background: isDark ? 'rgba(255,255,255,0.04)' : '#e5e2de' }}>
+            <MapPin size={48} style={{ color: tk.iconMuted }} />
           </div>
         )}
         <div
-          className={`absolute top-2 right-2 px-3 py-1 rounded-full text-xs font-medium ${getCategoryColor(
-            destination.category,
-          )}`}
+          className="absolute top-2 right-2 px-3 py-1 rounded-full text-xs font-medium"
+          style={{ background: catStyle.bg, color: catStyle.text }}
         >
           {destination.category}
         </div>
@@ -819,51 +720,48 @@ function DestinationCard({
 
       {/* Content */}
       <div className="p-4">
-        <h3 className="font-bold text-lg text-gray-900 mb-2 line-clamp-1">
+        <h3 className="font-bold text-lg mb-2 line-clamp-1" style={{ color: tk.pageText }}>
           {localize(destination.name)}
         </h3>
-        <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+        <p className="text-sm mb-3 line-clamp-2" style={{ color: tk.mutedText }}>
           {localize(destination.description)}
         </p>
 
         {destination.lat && destination.lng && (
-          <div className="flex items-center text-xs text-gray-500 mb-3">
-            <MapPin size={14} className="mr-1" />
-            <span>
-              {destination.lat.toFixed(4)}, {destination.lng.toFixed(4)}
-            </span>
+          <div className="flex items-center text-xs mb-3" style={{ color: tk.iconMuted }}>
+            <MapPin size={13} className="mr-1" />
+            <span>{destination.lat.toFixed(4)}, {destination.lng.toFixed(4)}</span>
           </div>
         )}
 
         {/* Actions */}
         <div className="flex gap-2">
-          <Button
-            size="sm"
-            variant="outline"
+          <button
             onClick={() => onView(destination)}
-            className="flex-1"
+            className="flex-1 flex items-center justify-center gap-1 px-3 py-1.5 rounded-lg text-sm font-medium border transition-colors"
+            style={{ background: tk.filterBtnBg, color: tk.filterBtnText, borderColor: tk.cardBorder }}
           >
-            <Eye size={16} className="mr-1" />
+            <Eye size={15} />
             {t("destinationsManagement.card.view")}
-          </Button>
-          <Button
-            size="sm"
-            variant="outline"
+          </button>
+          <button
             onClick={() => onEdit(destination)}
-            className="flex-1"
+            className="flex-1 flex items-center justify-center gap-1 px-3 py-1.5 rounded-lg text-sm font-medium border transition-colors"
+            style={{ background: tk.filterBtnBg, color: tk.filterBtnText, borderColor: tk.cardBorder }}
           >
-            <Edit size={16} className="mr-1" />
+            <Edit size={15} />
             {t("destinationsManagement.card.edit")}
-          </Button>
-          <Button
-            size="sm"
-            variant="destructive"
+          </button>
+          <button
             onClick={() => onDelete(destination)}
+            className="px-3 py-1.5 rounded-lg text-sm font-medium transition-colors"
+            style={{ background: isDark ? 'rgba(239,68,68,0.10)' : '#fef2f2', color: isDark ? '#f87171' : '#991b1b', border: `1px solid ${isDark ? 'rgba(239,68,68,0.20)' : '#fecaca'}` }}
           >
-            <Trash2 size={16} />
-          </Button>
+            <Trash2 size={15} />
+          </button>
         </div>
       </div>
     </div>
+
   );
 }

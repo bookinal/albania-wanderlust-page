@@ -1,5 +1,6 @@
 // Rewritten full component/module
 import React, { useState } from "react";
+import { useTheme } from "@/context/ThemeContext";
 import {
   Sidebar,
   Menu,
@@ -26,8 +27,7 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
-import { User } from "@/types/user.types";
-import { userService } from "@/services/api/userService";
+import { useAuth } from "@/context/AuthContext";
 
 // ====================
 // CONFIGURATION ARRAYS
@@ -79,39 +79,21 @@ const ROUTES = {
   home: "/",
   apartments: {
     list: "/dashboard/ApartmentsList",
-    owners: "/apartments/rooms",
-    bookings: "/apartments/bookings",
-    availability: "/apartments/availability",
   },
   hotels: {
     list: "/dashboard/HotelsList",
-    rooms: "/hotels/rooms",
-    bookings: "/hotels/bookings",
-    availability: "/hotels/availability",
   },
   cars: {
     fleet: "/dashboard/carsList",
-    rentals: "/dashboard/carsList",
-    maintenance: "/cars/maintenance",
   },
   users: {
     management: "/dashboard/userManagement",
     roles: "/dashboard/requestsManagement",
     propertyRequests: "/dashboard/propertyRequestsManagement",
   },
-  calendar: "/calendar",
-  finance: {
-    revenue: "/finance/revenue",
-    invoices: "/finance/invoices",
-    reports: "/finance/reports",
-  },
-  analytics: {
-    overview: "/analytics/overview",
-    performance: "/analytics/performance",
-    trends: "/analytics/trends",
-  },
   bookings: {
     list: "/dashboard/bookings",
+    supervision: "/dashboard/bookings/providers",
   },
   destinations: {
     management: "/dashboard/destinations",
@@ -119,11 +101,6 @@ const ROUTES = {
   support: {
     chat: "/dashboard/support",
   },
-  reviews: "/reviews",
-  inventory: "/inventory",
-  notifications: "/notifications",
-  documentation: "/documentation",
-  settings: "/settings",
 };
 
 // Menu items configuration with role-based access
@@ -164,26 +141,9 @@ const hasAccess = (roles: string[], userRole: string | undefined): boolean => {
 // ====================
 const Hsidebar = ({ children }) => {
   const { t } = useTranslation();
-  const [user, setUser] = React.useState<User | null>(null);
+  const { isDark } = useTheme();
+  const { user } = useAuth();
   const [collapsed, setCollapsed] = useState(true);
-
-  // Fetch current user on mount
-  React.useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const currentUser = await userService.getCurrentUser();
-        if (!currentUser) {
-          console.log("user not found");
-          setUser(null);
-          return;
-        }
-        setUser(currentUser);
-      } catch {
-        setUser(null);
-      }
-    };
-    fetchUser();
-  }, []);
 
   // Get user role
   const userRole = user?.role?.toLowerCase();
@@ -209,21 +169,6 @@ const Hsidebar = ({ children }) => {
             route: ROUTES.apartments.list,
             roles: ["admin", "provider"],
           },
-          {
-            label: t("sidebar.apartments.ownersManagement"),
-            route: ROUTES.apartments.owners,
-            roles: ["admin"], // Only admin can see this
-          },
-          {
-            label: t("sidebar.apartments.bookings"),
-            route: ROUTES.apartments.bookings,
-            roles: ["admin", "provider"],
-          },
-          {
-            label: t("sidebar.apartments.availability"),
-            route: ROUTES.apartments.availability,
-            roles: ["admin", "provider"],
-          },
         ],
       },
       {
@@ -234,21 +179,6 @@ const Hsidebar = ({ children }) => {
           {
             label: t("sidebar.hotels.allHotels"),
             route: ROUTES.hotels.list,
-            roles: ["admin", "provider"],
-          },
-          {
-            label: t("sidebar.hotels.roomsManagement"),
-            route: ROUTES.hotels.rooms,
-            roles: ["admin", "provider"],
-          },
-          {
-            label: t("sidebar.hotels.bookings"),
-            route: ROUTES.hotels.bookings,
-            roles: ["admin", "provider"],
-          },
-          {
-            label: t("sidebar.hotels.availability"),
-            route: ROUTES.hotels.availability,
             roles: ["admin", "provider"],
           },
         ],
@@ -263,16 +193,6 @@ const Hsidebar = ({ children }) => {
             route: ROUTES.cars.fleet,
             roles: ["admin", "provider"],
           },
-          {
-            label: t("sidebar.cars.activeRentals"),
-            route: ROUTES.cars.rentals,
-            roles: ["admin", "provider"],
-          },
-          {
-            label: t("sidebar.cars.maintenance"),
-            route: ROUTES.cars.maintenance,
-            roles: ["admin", "provider"],
-          },
         ],
       },
       {
@@ -284,6 +204,11 @@ const Hsidebar = ({ children }) => {
             label: t("sidebar.bookings.allBookings"),
             route: ROUTES.bookings.list,
             roles: ["admin", "provider"],
+          },
+          {
+            label: t("sidebar.bookings.supervision"),
+            route: ROUTES.bookings.supervision,
+            roles: ["admin"],
           },
         ],
       },
@@ -333,50 +258,6 @@ const Hsidebar = ({ children }) => {
           },
         ],
       },
-      // {
-      //   label: "Finance",
-      //   icon: ICONS.finance,
-      //   roles: ["admin"], // Only admin can see finance
-      //   items: [
-      //     {
-      //       label: "Revenue",
-      //       route: ROUTES.finance.revenue,
-      //       roles: ["admin"],
-      //     },
-      //     {
-      //       label: "Invoices",
-      //       route: ROUTES.finance.invoices,
-      //       roles: ["admin"],
-      //     },
-      //     {
-      //       label: "Financial Reports",
-      //       route: ROUTES.finance.reports,
-      //       roles: ["admin"],
-      //     },
-      //   ],
-      // },
-      // {
-      //   label: "Analytics",
-      //   icon: ICONS.analytics,
-      //   roles: ["admin"], // Only admin can see analytics
-      //   items: [
-      //     {
-      //       label: "Overview",
-      //       route: ROUTES.analytics.overview,
-      //       roles: ["admin"],
-      //     },
-      //     {
-      //       label: "Performance",
-      //       route: ROUTES.analytics.performance,
-      //       roles: ["admin"],
-      //     },
-      //     {
-      //       label: "Trends",
-      //       route: ROUTES.analytics.trends,
-      //       roles: ["admin"],
-      //     },
-      //   ],
-      // },
     ],
   };
 
@@ -496,7 +377,7 @@ const Hsidebar = ({ children }) => {
       </Sidebar>
 
       {/* Main Content Area */}
-      <main className="flex-1 p-8 bg-gray-50 overflow-y-auto">{children}</main>
+      <main className="flex-1 p-8 overflow-y-auto" style={{ background: isDark ? "#0d0d0d" : "#f5f4f1" }}>{children}</main>
     </div>
   );
 };

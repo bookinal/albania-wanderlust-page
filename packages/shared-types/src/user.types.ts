@@ -1,8 +1,8 @@
-// table auth.users
+﻿// table auth.users
 export interface UserProfile {
   id: string;
   email: string;
-  role?: "user" | "admin";
+  role?: "user" | "admin" | "provider";
   phone?: string;
   created_at: string;
   updated_at: string;
@@ -11,7 +11,7 @@ export interface UserProfile {
     avatar_url?: string;
     bio?: string;
     location?: string;
-    role?: "user" | "admin";
+    role?: "user" | "admin" | "provider";
   };
 }
 
@@ -21,7 +21,7 @@ export interface UpdateUserProfileData {
   phone?: string;
   bio?: string;
   location?: string;
-  role?: "user" | "admin";
+  role?: "user" | "admin" | "provider";
 }
 
 // table public.users
@@ -33,7 +33,7 @@ export interface User {
   phone?: string;
   bio?: string;
   location?: string;
-  role?: "user" | "admin";
+  role?: "user" | "admin" | "provider";
   status: "active" | "suspended";
   created_at: string;
   updated_at: string;
@@ -45,6 +45,6 @@ export interface UpdateUser {
   phone?: string;
   bio?: string;
   location?: string;
-  role?: "user" | "admin";
+  role?: "user" | "admin" | "provider";
   status?: "active" | "suspended";
 }

@@ -7,6 +7,7 @@ const PAYPAL_BASE_URL =
   Deno.env.get("PAYPAL_BASE_URL") || "https://api-m.sandbox.paypal.com";
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY");
 
 // Validate required environment variables
 if (!PAYPAL_CLIENT_ID || !PAYPAL_CLIENT_SECRET) {
@@ -15,9 +16,9 @@ if (!PAYPAL_CLIENT_ID || !PAYPAL_CLIENT_SECRET) {
   );
 }
 
-if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
+if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY || !SUPABASE_ANON_KEY) {
   console.error(
-    "[Create PayPal Order] Missing Supabase credentials. SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY should be auto-set.",
+    "[Create PayPal Order] Missing Supabase credentials. SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, and SUPABASE_ANON_KEY should be auto-set.",
   );
 }
 
@@ -213,8 +214,20 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    // Initialize Supabase client with service role for server-side operations
-    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
+    // Initialize Supabase admin client for server-side operations
+    const supabaseAdmin = createClient(
+      SUPABASE_URL,
+      SUPABASE_SERVICE_ROLE_KEY,
+      {
+        auth: {
+          autoRefreshToken: false,
+          persistSession: false,
+        },
+      },
+    );
+
+    // Create client with anon key for JWT verification
+    const supabaseUser = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
       auth: {
         autoRefreshToken: false,
         persistSession: false,
@@ -226,7 +239,7 @@ Deno.serve(async (req: Request) => {
     const {
       data: { user },
       error: authError,
-    } = await supabase.auth.getUser(token);
+    } = await supabaseUser.auth.getUser(token);
 
     if (authError || !user) {
       console.error("[Create PayPal Order] Auth error:", authError);
@@ -254,7 +267,7 @@ Deno.serve(async (req: Request) => {
     }
 
     // Fetch booking from database
-    const { data: booking, error: bookingError } = await supabase
+    const { data: booking, error: bookingError } = await supabaseAdmin
       .from("booking")
       .select("*")
       .eq("id", bookingId)
@@ -382,7 +395,7 @@ Deno.serve(async (req: Request) => {
     }
 
     // Store PayPal order ID in booking (for tracking)
-    const { error: updateError } = await supabase
+    const { error: updateError } = await supabaseAdmin
       .from("booking")
       .update({ paypal_order_id: paypalOrder.id })
       .eq("id", bookingId);
@@ -396,7 +409,7 @@ Deno.serve(async (req: Request) => {
     }
 
     // Create payment transaction record for audit trail
-    const { error: transactionError } = await supabase
+    const { error: transactionError } = await supabaseAdmin
       .from("payment_transactions")
       .insert({
         booking_id: bookingId,

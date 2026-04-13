@@ -5,6 +5,7 @@ import Stripe from "npm:stripe@17";
 const STRIPE_SECRET_KEY = Deno.env.get("STRIPE_SECRET_KEY");
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY");
 
 // Validate required environment variables
 if (!STRIPE_SECRET_KEY) {
@@ -13,9 +14,9 @@ if (!STRIPE_SECRET_KEY) {
   );
 }
 
-if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
+if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY || !SUPABASE_ANON_KEY) {
   console.error(
-    "[Create Stripe PaymentIntent] Missing Supabase credentials. SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY should be auto-set.",
+    "[Create Stripe PaymentIntent] Missing Supabase credentials. SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, and SUPABASE_ANON_KEY should be auto-set.",
   );
 }
 
@@ -111,10 +112,10 @@ Deno.serve(async (req) => {
       SUPABASE_SERVICE_ROLE_KEY!,
     );
 
-    // Create Supabase client with user's token to verify authentication
+    // Create Supabase client with anon key to verify user's JWT token
     const supabaseUser = createClient(
       SUPABASE_URL!,
-      SUPABASE_SERVICE_ROLE_KEY!,
+      SUPABASE_ANON_KEY!, // Use anon key for JWT verification
     );
     const token = authHeader.replace("Bearer ", "");
 

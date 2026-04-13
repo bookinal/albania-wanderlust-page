@@ -1,10 +1,10 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import Hsidebar from "../../../components/dashboard/hsidebar";
+import { useTheme } from "@/context/ThemeContext";
 import {
-  getAllCars,
   deleteCar,
-  getCarsByOwnerId,
+  getDashboardCars,
+  getCarDashboardStats,
 } from "@/services/api/carService";
 import { Car } from "@/types/car.types";
 import { useNavigate } from "react-router-dom";
@@ -32,7 +32,48 @@ import { User } from "@/types/user.types";
 
 const AllCars = () => {
   const { t } = useTranslation();
+  const { isDark } = useTheme();
   const navigate = useNavigate();
+
+  const tk = {
+    pageBg:        isDark ? '#0a0a0c'        : '#f5f4f1',
+    cardBg:        isDark ? '#111115'        : '#ffffff',
+    cardBorder:    isDark ? '#2a2a30'        : '#e5e2de',
+    headerText:    isDark ? '#f0ece8'        : '#111115',
+    subText:       isDark ? '#9a9490'        : '#6b6560',
+    bodyText:      isDark ? '#c8c4c0'        : '#3a3530',
+    mutedText:     isDark ? '#6a6460'        : '#9a9490',
+    inputBg:       isDark ? '#1a1a1f'        : '#ffffff',
+    inputBorder:   isDark ? '#2a2a30'        : '#d5d2ce',
+    inputFocusBorder: '#E8192C',
+    filterBg:      isDark ? '#111115'        : '#ffffff',
+    filterBorder:  isDark ? '#2a2a30'        : '#e5e2de',
+    typeBadgeBg:   isDark ? '#2a2a30'        : '#f0ece8',
+    typeBadgeText: isDark ? '#c8c4c0'        : '#3a3530',
+    featureBg:     isDark ? 'rgba(232,25,44,0.12)' : 'rgba(232,25,44,0.08)',
+    featureText:   '#E8192C',
+    featureMoreBg: isDark ? '#2a2a30'        : '#f0ece8',
+    featureMoreText: isDark ? '#9a9490'      : '#6b6560',
+    priceBorder:   isDark ? '#2a2a30'        : '#e5e2de',
+    priceLabel:    isDark ? '#6a6460'        : '#9a9490',
+    priceText:     isDark ? '#f0ece8'        : '#111115',
+    viewBtnBg:     isDark ? 'rgba(232,25,44,0.12)' : 'rgba(232,25,44,0.08)',
+    viewBtnText:   '#E8192C',
+    viewBtnHover:  isDark ? 'rgba(232,25,44,0.22)' : 'rgba(232,25,44,0.15)',
+    editBtnBg:     isDark ? '#1e1e24'        : '#f5f4f1',
+    editBtnText:   isDark ? '#c8c4c0'        : '#3a3530',
+    deleteBtnBg:   isDark ? 'rgba(239,68,68,0.1)' : 'rgba(239,68,68,0.08)',
+    deleteBtnText: '#ef4444',
+    pagDisabledBg: isDark ? '#1e1e24'        : '#f0ece8',
+    pagDisabledText: isDark ? '#4a4a50'      : '#b0ada8',
+    pagActiveBg:   '#E8192C',
+    pagActiveText: '#ffffff',
+    pagInactiveBg: isDark ? '#1a1a1f'        : '#ffffff',
+    pagInactiveText: isDark ? '#c8c4c0'      : '#3a3530',
+    pagInactiveBorder: isDark ? '#2a2a30'    : '#e5e2de',
+    shadow:        isDark ? '0 4px 16px rgba(0,0,0,0.5)' : '0 2px 8px rgba(0,0,0,0.08)',
+    shadowHover:   isDark ? '0 8px 32px rgba(0,0,0,0.7)' : '0 8px 24px rgba(0,0,0,0.14)',
+  };
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [typeFilter, setTypeFilter] = useState("all");
@@ -41,7 +82,20 @@ const AllCars = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [carsData, setCarsData] = useState<Car[]>([]);
+  const [totalCars, setTotalCars] = useState(0);
+  const [stats, setStats] = useState({ available: 0, rented: 0, maintenance: 0, avgPrice: 0 });
   const [currentUser, setUser] = useState<User | null>(null);
+  
+  // Debounced search term
+  const [debouncedSearch, setDebouncedSearch] = useState(searchTerm);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchTerm);
+      setCurrentPage(1);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
   const itemsPerPage = 6;
 
   React.useEffect(() => {
@@ -66,13 +120,24 @@ const AllCars = () => {
       setLoading(true);
       setError(null);
 
-      if (user.role === "admin") {
-        const data = await getAllCars();
-        setCarsData(data || []);
-      } else {
-        const data = await getCarsByOwnerId(user.id);
-        setCarsData(data || []);
-      }
+      const filters = {
+        searchTerm: debouncedSearch,
+        status: statusFilter,
+        type: typeFilter,
+        transmission: transmissionFilter,
+        providerId: user.role === "admin" ? undefined : user.id,
+      };
+
+      const [carsResponse, statsResponse] = await Promise.all([
+        getDashboardCars(currentPage, itemsPerPage, filters),
+        // Only need to fetch stats when filters change? No, stats don't need filters except providerId
+        // Wait, stats usually shouldn't depend on the search filters, they should be global.
+        getCarDashboardStats(user.role === "admin" ? undefined : user.id)
+      ]);
+
+      setCarsData(carsResponse.data);
+      setTotalCars(carsResponse.total);
+      setStats(statsResponse);
     } catch (err) {
       console.error("Error fetching cars:", err);
       setError(t("cars.allCars.error"));
@@ -81,65 +146,20 @@ const AllCars = () => {
     }
   };
 
-  // Fetch cars on component mount
+  // Fetch cars on component mount or when filters change
   useEffect(() => {
     if (!currentUser) return;
     fetchCars(currentUser);
-  }, [currentUser]);
+  }, [currentUser, currentPage, debouncedSearch, statusFilter, typeFilter, transmissionFilter]);
 
-  // Filter and search cars
-  const filteredCars = useMemo(() => {
-    return carsData.filter((car) => {
-      // 1. Search Term Check
-      const lowerSearchTerm = searchTerm.toLowerCase();
-      const matchesSearch =
-        car.name.toLowerCase().includes(lowerSearchTerm) ||
-        car.brand.toLowerCase().includes(lowerSearchTerm) ||
-        car.plateNumber.toLowerCase().includes(lowerSearchTerm);
+  // Pagination is based on the server total
+  const totalPages = Math.max(1, Math.ceil(totalCars / itemsPerPage));
 
-      // 2. Status Filter Check
-      const matchesStatus =
-        statusFilter === "all" || car.status === statusFilter;
-
-      // 3. Type Filter Check
-      const matchesType = typeFilter === "all" || car.type === typeFilter;
-
-      // 4. Transmission Filter Check
-      const matchesTransmission =
-        transmissionFilter === "all" || car.transmission === transmissionFilter;
-
-      return (
-        matchesSearch && matchesStatus && matchesType && matchesTransmission
-      );
-    });
-  }, [carsData, searchTerm, statusFilter, typeFilter, transmissionFilter]);
-
-  // Reset page when filters change
   useEffect(() => {
-    setCurrentPage(1);
-  }, [searchTerm, statusFilter, typeFilter, transmissionFilter]);
-
-  // Calculate stats based on ALL cars, not just filtered ones
-  const availableCars = carsData.filter(
-    (car) => car.status === "available",
-  ).length;
-  const rentedCars = carsData.filter((car) => car.status === "rented").length;
-  const maintenanceCars = carsData.filter(
-    (car) => car.status === "maintenance",
-  ).length;
-  const avgPrice =
-    carsData.length > 0
-      ? carsData.reduce((sum, car) => sum + car.pricePerDay, 0) /
-        carsData.length
-      : 0;
-
-  // Pagination is based on the filtered results
-  const totalPages = Math.ceil(filteredCars.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const paginatedCars = filteredCars.slice(
-    startIndex,
-    startIndex + itemsPerPage,
-  );
+    if (currentPage > totalPages && totalPages > 0) {
+      setCurrentPage(totalPages);
+    }
+  }, [totalPages, currentPage]);
 
   // Handler functions - moved outside of map
   const handleViewCar = (id: number) => {
@@ -221,34 +241,39 @@ const AllCars = () => {
   // Show loading state
   if (loading) {
     return (
-      <Hsidebar>
-        <div className="p-4 sm:p-6 lg:p-8 flex items-center justify-center min-h-screen">
+      <div style={{ background: tk.pageBg, minHeight: '100vh' }} className="p-4 sm:p-6 lg:p-8 flex items-center justify-center">
           <div className="text-center">
-            <div className="text-xl font-semibold text-gray-700">
+            <div style={{ fontSize: '1.2rem', fontWeight: 600, color: tk.subText }}>
               {t("cars.allCars.loading")}
             </div>
           </div>
         </div>
-      </Hsidebar>
     );
   }
 
   // Show error state
   if (error) {
     return (
-      <Hsidebar>
-        <div className="p-4 sm:p-6 lg:p-8 flex items-center justify-center min-h-screen">
+      <div style={{ background: tk.pageBg, minHeight: '100vh' }} className="p-4 sm:p-6 lg:p-8 flex items-center justify-center">
           <div className="text-center">
-            <div className="text-xl font-semibold text-red-600">{error}</div>
+            <div style={{ fontSize: '1.2rem', fontWeight: 600, color: '#ef4444' }}>{error}</div>
             <button
               onClick={() => currentUser && fetchCars(currentUser)}
-              className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+              style={{
+                marginTop: '1rem',
+                padding: '0.5rem 1.25rem',
+                background: '#E8192C',
+                color: '#ffffff',
+                borderRadius: '8px',
+                border: 'none',
+                cursor: 'pointer',
+                fontWeight: 600,
+              }}
             >
               {t("cars.allCars.retry")}
             </button>
           </div>
         </div>
-      </Hsidebar>
     );
   }
 
@@ -257,15 +282,14 @@ const AllCars = () => {
   }
 
   return (
-    <Hsidebar>
-      <div className="p-4 sm:p-6 lg:p-8 font-['Inter'] min-h-screen bg-gray-50">
+    <div style={{ background: tk.pageBg, minHeight: '100vh', fontFamily: "'Inter', sans-serif" }} className="p-4 sm:p-6 lg:p-8">
         {/* Header */}
         <div className="mb-6 sm:mb-8 flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
+            <h1 style={{ color: tk.headerText, fontSize: '1.75rem', fontWeight: 700, marginBottom: '0.5rem' }}>
               {t("cars.allCars.title")}
             </h1>
-            <p className="text-gray-500 text-base sm:text-lg">
+            <p style={{ color: tk.subText, fontSize: '1rem' }}>
               {t("cars.allCars.subtitle")}
             </p>
           </div>
@@ -290,7 +314,7 @@ const AllCars = () => {
               {t("cars.allCars.stats.available")}
             </div>
             <div style={{ fontSize: "28px", fontWeight: 700 }}>
-              {availableCars}
+              {stats.available}
             </div>
             <div style={{ fontSize: "12px", opacity: 0.8, marginTop: "4px" }}>
               {t("cars.allCars.stats.availableDesc")}
@@ -312,7 +336,7 @@ const AllCars = () => {
               {t("cars.allCars.stats.rented")}
             </div>
             <div style={{ fontSize: "28px", fontWeight: 700 }}>
-              {rentedCars}
+              {stats.rented}
             </div>
             <div style={{ fontSize: "12px", opacity: 0.8, marginTop: "4px" }}>
               {t("cars.allCars.stats.rentedDesc")}
@@ -334,7 +358,7 @@ const AllCars = () => {
               {t("cars.allCars.stats.maintenance")}
             </div>
             <div style={{ fontSize: "28px", fontWeight: 700 }}>
-              {maintenanceCars}
+              {stats.maintenance}
             </div>
             <div style={{ fontSize: "12px", opacity: 0.8, marginTop: "4px" }}>
               {t("cars.allCars.stats.maintenanceDesc")}
@@ -356,7 +380,7 @@ const AllCars = () => {
               {t("cars.allCars.stats.avgRate")}
             </div>
             <div style={{ fontSize: "28px", fontWeight: 700 }}>
-              ${avgPrice.toFixed(0)}
+              ${stats.avgPrice.toFixed(0)}
             </div>
             <div style={{ fontSize: "12px", opacity: 0.8, marginTop: "4px" }}>
               {t("cars.allCars.stats.avgRateDesc")}
@@ -365,20 +389,37 @@ const AllCars = () => {
         </div>
 
         {/* Filters and Search */}
-        <div className="bg-white p-4 sm:p-6 rounded-xl shadow-sm mb-6">
+        <div style={{
+          background: tk.filterBg,
+          border: `1px solid ${tk.filterBorder}`,
+          borderRadius: '12px',
+          padding: '1.25rem 1.5rem',
+          marginBottom: '1.5rem',
+        }}>
           <div className="flex flex-col gap-3 sm:gap-4">
             {/* Search - Full width on mobile */}
             <div className="relative w-full">
               <Search
                 size={18}
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: tk.mutedText }}
               />
               <input
                 type="text"
                 placeholder={t("cars.allCars.filters.search")}
                 value={searchTerm}
                 onChange={handleSearchChange}
-                className="w-full py-2.5 pl-10 pr-4 border border-gray-200 rounded-lg text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                style={{
+                  width: '100%',
+                  padding: '0.625rem 1rem 0.625rem 2.5rem',
+                  background: tk.inputBg,
+                  border: `1px solid ${tk.inputBorder}`,
+                  borderRadius: '8px',
+                  fontSize: '0.875rem',
+                  color: tk.bodyText,
+                  outline: 'none',
+                }}
+                onFocus={e => e.currentTarget.style.borderColor = tk.inputFocusBorder}
+                onBlur={e => e.currentTarget.style.borderColor = tk.inputBorder}
               />
             </div>
 
@@ -388,11 +429,18 @@ const AllCars = () => {
               <select
                 value={statusFilter}
                 onChange={handleStatusChange}
-                className="w-full py-2.5 px-3 border border-gray-200 rounded-lg text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 bg-white"
+                style={{
+                  width: '100%',
+                  padding: '0.625rem 0.75rem',
+                  background: tk.inputBg,
+                  border: `1px solid ${tk.inputBorder}`,
+                  borderRadius: '8px',
+                  fontSize: '0.875rem',
+                  color: tk.bodyText,
+                  outline: 'none',
+                }}
               >
-                <option value="all">
-                  {t("cars.allCars.filters.allStatus")}
-                </option>
+                <option value="all">{t("cars.allCars.filters.allStatus")}</option>
                 <option value="available">Available</option>
                 <option value="rented">Rented</option>
                 <option value="maintenance">Maintenance</option>
@@ -402,11 +450,18 @@ const AllCars = () => {
               <select
                 value={typeFilter}
                 onChange={handleTypeChange}
-                className="w-full py-2.5 px-3 border border-gray-200 rounded-lg text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 bg-white"
+                style={{
+                  width: '100%',
+                  padding: '0.625rem 0.75rem',
+                  background: tk.inputBg,
+                  border: `1px solid ${tk.inputBorder}`,
+                  borderRadius: '8px',
+                  fontSize: '0.875rem',
+                  color: tk.bodyText,
+                  outline: 'none',
+                }}
               >
-                <option value="all">
-                  {t("cars.allCars.filters.allTypes")}
-                </option>
+                <option value="all">{t("cars.allCars.filters.allTypes")}</option>
                 <option value="Sedan">Sedan</option>
                 <option value="SUV">SUV</option>
                 <option value="Sports">Sports</option>
@@ -416,35 +471,55 @@ const AllCars = () => {
               <select
                 value={transmissionFilter}
                 onChange={handleTransmissionChange}
-                className="w-full py-2.5 px-3 border border-gray-200 rounded-lg text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 bg-white"
+                style={{
+                  width: '100%',
+                  padding: '0.625rem 0.75rem',
+                  background: tk.inputBg,
+                  border: `1px solid ${tk.inputBorder}`,
+                  borderRadius: '8px',
+                  fontSize: '0.875rem',
+                  color: tk.bodyText,
+                  outline: 'none',
+                }}
               >
-                <option value="all">
-                  {t("cars.allCars.filters.allTransmission")}
-                </option>
+                <option value="all">{t("cars.allCars.filters.allTransmission")}</option>
                 <option value="Automatic">Automatic</option>
                 <option value="Manual">Manual</option>
               </select>
             </div>
 
             {/* Results count */}
-            <div className="text-sm text-gray-600 text-center sm:text-left">
-              <span className="font-semibold text-gray-800">
-                {filteredCars.length}
-              </span>{" "}
-              {t("cars.allCars.results", { count: filteredCars.length })}
+            <div style={{ fontSize: '0.875rem', color: tk.subText, textAlign: 'left' }}>
+              <span style={{ fontWeight: 600, color: tk.headerText }}>{totalCars}</span>{" "}
+              {t("cars.allCars.results", { count: totalCars })}
             </div>
           </div>
         </div>
 
         {/* Cars Grid - Responsive */}
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6 mb-8">
-          {paginatedCars.map((car) => {
+          {carsData.map((car) => {
             const statusColor = getStatusColor(car.status);
 
             return (
               <div
                 key={car.id}
-                className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+                style={{
+                  background: tk.cardBg,
+                  border: `1px solid ${tk.cardBorder}`,
+                  borderRadius: '12px',
+                  overflow: 'hidden',
+                  boxShadow: tk.shadow,
+                  transition: 'box-shadow 0.3s, transform 0.3s',
+                }}
+                onMouseEnter={e => {
+                  (e.currentTarget as HTMLElement).style.boxShadow = tk.shadowHover;
+                  (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)';
+                }}
+                onMouseLeave={e => {
+                  (e.currentTarget as HTMLElement).style.boxShadow = tk.shadow;
+                  (e.currentTarget as HTMLElement).style.transform = 'translateY(0)';
+                }}
               >
                 {/* Image */}
                 <div
@@ -457,73 +532,95 @@ const AllCars = () => {
                     style={{
                       backgroundColor: statusColor.bg,
                       color: statusColor.text,
+                      position: 'absolute',
+                      top: '12px',
+                      right: '12px',
+                      padding: '4px 12px',
+                      borderRadius: '999px',
+                      fontSize: '0.75rem',
+                      fontWeight: 600,
+                      textTransform: 'capitalize',
                     }}
-                    className="absolute top-3 right-3 px-3 py-1.5 rounded-full text-xs font-semibold capitalize"
                   >
                     {car.status}
                   </div>
-                  <div className="absolute bottom-3 left-3 bg-black/70 text-white px-3 py-1.5 rounded-md text-xs font-semibold">
+                  <div style={{
+                    position: 'absolute',
+                    bottom: '12px',
+                    left: '12px',
+                    background: 'rgba(0,0,0,0.7)',
+                    color: '#ffffff',
+                    padding: '4px 12px',
+                    borderRadius: '6px',
+                    fontSize: '0.75rem',
+                    fontWeight: 600,
+                  }}>
                     {car.plateNumber}
                   </div>
                 </div>
 
                 {/* Content */}
-                <div className="p-4 sm:p-5">
-                  <div className="flex justify-between items-start mb-3">
-                    <div className="flex-1 min-w-0">
-                      <h3 className="text-lg sm:text-xl font-semibold text-gray-900 truncate">
+                <div style={{ padding: '1rem 1.25rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.75rem' }}>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <h3 style={{
+                        fontFamily: "'Crimson Pro', serif",
+                        fontSize: '1.15rem',
+                        fontWeight: 600,
+                        color: tk.headerText,
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                      }}>
                         {car.name}
                       </h3>
-                      <div className="text-sm text-gray-600">
+                      <div style={{ fontSize: '0.875rem', color: tk.subText }}>
                         {car.brand} • {car.year}
                       </div>
                     </div>
-                    <div className="ml-2 bg-gray-100 px-2.5 py-1 rounded-md text-xs font-semibold text-gray-700 whitespace-nowrap">
+                    <div style={{
+                      marginLeft: '8px',
+                      background: tk.typeBadgeBg,
+                      color: tk.typeBadgeText,
+                      padding: '4px 10px',
+                      borderRadius: '6px',
+                      fontSize: '0.75rem',
+                      fontWeight: 600,
+                      whiteSpace: 'nowrap',
+                    }}>
                       {car.type}
                     </div>
                   </div>
 
                   {/* Specs Grid */}
                   <div className="grid grid-cols-2 gap-3 mb-4">
-                    <div className="flex items-center gap-2">
-                      <Settings
-                        size={16}
-                        className="text-gray-500 flex-shrink-0"
-                      />
-                      <span className="text-xs sm:text-sm text-gray-700 truncate">
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <Settings size={16} style={{ color: tk.mutedText, flexShrink: 0 }} />
+                      <span style={{ fontSize: '0.8rem', color: tk.bodyText, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {car.transmission}
                       </span>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Fuel size={16} className="text-gray-500 flex-shrink-0" />
-                      <span className="text-xs sm:text-sm text-gray-700 truncate">
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <Fuel size={16} style={{ color: tk.mutedText, flexShrink: 0 }} />
+                      <span style={{ fontSize: '0.8rem', color: tk.bodyText, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {car.fuelType}
                       </span>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Users
-                        size={16}
-                        className="text-gray-500 flex-shrink-0"
-                      />
-                      <span className="text-xs sm:text-sm text-gray-700">
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <Users size={16} style={{ color: tk.mutedText, flexShrink: 0 }} />
+                      <span style={{ fontSize: '0.8rem', color: tk.bodyText }}>
                         {t("cars.allCars.card.seats", { count: car.seats })}
                       </span>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Gauge
-                        size={16}
-                        className="text-gray-500 flex-shrink-0"
-                      />
-                      <span className="text-xs sm:text-sm text-gray-700 truncate">
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <Gauge size={16} style={{ color: tk.mutedText, flexShrink: 0 }} />
+                      <span style={{ fontSize: '0.8rem', color: tk.bodyText, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {car.mileage}
                       </span>
                     </div>
-                    <div className="flex items-center gap-2 col-span-2">
-                      <MapPin
-                        size={16}
-                        className="text-gray-500 flex-shrink-0"
-                      />
-                      <span className="text-xs sm:text-sm text-gray-700 truncate">
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', gridColumn: 'span 2' }}>
+                      <MapPin size={16} style={{ color: tk.mutedText, flexShrink: 0 }} />
+                      <span style={{ fontSize: '0.8rem', color: tk.bodyText, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {car.pickUpLocation}
                       </span>
                     </div>
@@ -531,17 +628,31 @@ const AllCars = () => {
 
                   {/* Features */}
                   {car.features && car.features.length > 0 && (
-                    <div className="flex flex-wrap gap-1.5 mb-4">
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '1rem' }}>
                       {car.features.slice(0, 3).map((feature, index) => (
                         <span
                           key={index}
-                          className="text-xs bg-blue-50 text-blue-600 px-2 py-1 rounded font-medium"
+                          style={{
+                            fontSize: '0.7rem',
+                            background: tk.featureBg,
+                            color: tk.featureText,
+                            padding: '3px 8px',
+                            borderRadius: '4px',
+                            fontWeight: 500,
+                          }}
                         >
                           {feature}
                         </span>
                       ))}
                       {car.features.length > 3 && (
-                        <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded font-medium">
+                        <span style={{
+                          fontSize: '0.7rem',
+                          background: tk.featureMoreBg,
+                          color: tk.featureMoreText,
+                          padding: '3px 8px',
+                          borderRadius: '4px',
+                          fontWeight: 500,
+                        }}>
                           +{car.features.length - 3}
                         </span>
                       )}
@@ -549,43 +660,73 @@ const AllCars = () => {
                   )}
 
                   {/* Price and Actions */}
-                  <div className="flex justify-between items-center pt-4 border-t border-gray-200">
+                  <div style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    paddingTop: '1rem',
+                    borderTop: `1px solid ${tk.priceBorder}`,
+                  }}>
                     <div>
-                      <div className="text-xs text-gray-500">
+                      <div style={{ fontSize: '0.7rem', color: tk.priceLabel }}>
                         {t("cars.allCars.card.basePrice")}
                       </div>
-                      <div className="text-xl sm:text-2xl font-bold text-gray-900">
+                      <div style={{ fontSize: '1.4rem', fontWeight: 700, color: tk.priceText }}>
                         ${car.pricePerDay}
                       </div>
                     </div>
-                    <div className="flex gap-2">
+                    <div style={{ display: 'flex', gap: '8px' }}>
                       <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleViewCar(car.id);
+                        onClick={(e) => { e.stopPropagation(); handleViewCar(car.id); }}
+                        style={{
+                          padding: '8px 12px',
+                          background: tk.viewBtnBg,
+                          color: tk.viewBtnText,
+                          border: 'none',
+                          borderRadius: '8px',
+                          fontSize: '0.875rem',
+                          fontWeight: 500,
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '6px',
+                          cursor: 'pointer',
+                          transition: 'background 0.2s',
                         }}
-                        className="px-3 py-2 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg text-sm font-medium flex items-center gap-1.5 transition-colors"
+                        onMouseEnter={e => (e.currentTarget.style.background = tk.viewBtnHover)}
+                        onMouseLeave={e => (e.currentTarget.style.background = tk.viewBtnBg)}
                       >
                         <Eye size={16} />
-                        <span className="hidden sm:inline">
-                          {t("cars.allCars.card.view")}
-                        </span>
+                        <span className="hidden sm:inline">{t("cars.allCars.card.view")}</span>
                       </button>
                       <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleEditCar(car.id);
+                        onClick={(e) => { e.stopPropagation(); handleEditCar(car.id); }}
+                        style={{
+                          padding: '8px',
+                          background: tk.editBtnBg,
+                          color: tk.editBtnText,
+                          border: 'none',
+                          borderRadius: '8px',
+                          cursor: 'pointer',
+                          transition: 'opacity 0.2s',
                         }}
-                        className="p-2 bg-gray-50 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                        onMouseEnter={e => (e.currentTarget.style.opacity = '0.7')}
+                        onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
                       >
                         <Edit size={16} />
                       </button>
                       <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDeleteCar(car.id, car.name);
+                        onClick={(e) => { e.stopPropagation(); handleDeleteCar(car.id, car.name); }}
+                        style={{
+                          padding: '8px',
+                          background: tk.deleteBtnBg,
+                          color: tk.deleteBtnText,
+                          border: 'none',
+                          borderRadius: '8px',
+                          cursor: 'pointer',
+                          transition: 'opacity 0.2s',
                         }}
-                        className="p-2 bg-red-50 text-red-500 hover:bg-red-100 rounded-lg transition-colors"
+                        onMouseEnter={e => (e.currentTarget.style.opacity = '0.7')}
+                        onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
                       >
                         <Trash2 size={16} />
                       </button>
@@ -597,72 +738,85 @@ const AllCars = () => {
           })}
 
           {/* Message if no cars found */}
-          {filteredCars.length === 0 && (
-            <div className="col-span-full text-center py-12 text-gray-500">
-              <p className="text-lg sm:text-xl font-semibold mb-2">
+          {carsData.length === 0 && (
+            <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '3rem 0' }}>
+              <p style={{ fontSize: '1.1rem', fontWeight: 600, color: tk.subText, marginBottom: '0.5rem' }}>
                 {t("cars.allCars.empty.title")}
               </p>
-              <p className="text-sm">{t("cars.allCars.empty.message")}</p>
+              <p style={{ fontSize: '0.875rem', color: tk.mutedText }}>{t("cars.allCars.empty.message")}</p>
             </div>
           )}
         </div>
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="flex justify-center items-center gap-2 sm:gap-3 mt-8">
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', marginTop: '2rem' }}>
             <button
               onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
               disabled={currentPage === 1}
-              className={`px-3 sm:px-4 py-2 rounded-lg font-medium flex items-center gap-2 transition-colors ${
-                currentPage === 1
-                  ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                  : "bg-blue-500 text-white hover:bg-blue-600"
-              }`}
+              style={{
+                padding: '8px 16px',
+                borderRadius: '8px',
+                fontWeight: 500,
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                border: 'none',
+                cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
+                background: currentPage === 1 ? tk.pagDisabledBg : tk.pagActiveBg,
+                color: currentPage === 1 ? tk.pagDisabledText : tk.pagActiveText,
+                transition: 'opacity 0.2s',
+              }}
             >
               <ChevronLeft size={18} />
-              <span className="hidden sm:inline">
-                {t("cars.allCars.pagination.previous")}
-              </span>
+              <span className="hidden sm:inline">{t("cars.allCars.pagination.previous")}</span>
             </button>
 
-            <div className="flex gap-2">
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                (page) => (
-                  <button
-                    key={page}
-                    onClick={() => setCurrentPage(page)}
-                    className={`w-10 h-10 rounded-lg font-medium transition-colors ${
-                      currentPage === page
-                        ? "bg-blue-500 text-white"
-                        : "bg-white text-gray-700 border border-gray-200 hover:bg-gray-50"
-                    }`}
-                  >
-                    {page}
-                  </button>
-                ),
-              )}
+            <div style={{ display: 'flex', gap: '8px' }}>
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                <button
+                  key={page}
+                  onClick={() => setCurrentPage(page)}
+                  style={{
+                    width: '40px',
+                    height: '40px',
+                    borderRadius: '8px',
+                    fontWeight: 500,
+                    border: currentPage === page ? 'none' : `1px solid ${tk.pagInactiveBorder}`,
+                    cursor: 'pointer',
+                    background: currentPage === page ? tk.pagActiveBg : tk.pagInactiveBg,
+                    color: currentPage === page ? tk.pagActiveText : tk.pagInactiveText,
+                    transition: 'background 0.2s',
+                  }}
+                >
+                  {page}
+                </button>
+              ))}
             </div>
 
             <button
-              onClick={() =>
-                setCurrentPage((prev) => Math.min(totalPages, prev + 1))
-              }
+              onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
               disabled={currentPage === totalPages}
-              className={`px-3 sm:px-4 py-2 rounded-lg font-medium flex items-center gap-2 transition-colors ${
-                currentPage === totalPages
-                  ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                  : "bg-blue-500 text-white hover:bg-blue-600"
-              }`}
+              style={{
+                padding: '8px 16px',
+                borderRadius: '8px',
+                fontWeight: 500,
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                border: 'none',
+                cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
+                background: currentPage === totalPages ? tk.pagDisabledBg : tk.pagActiveBg,
+                color: currentPage === totalPages ? tk.pagDisabledText : tk.pagActiveText,
+                transition: 'opacity 0.2s',
+              }}
             >
-              <span className="hidden sm:inline">
-                {t("cars.allCars.pagination.next")}
-              </span>
+              <span className="hidden sm:inline">{t("cars.allCars.pagination.next")}</span>
               <ChevronRight size={18} />
             </button>
           </div>
         )}
       </div>
-    </Hsidebar>
   );
 };
 

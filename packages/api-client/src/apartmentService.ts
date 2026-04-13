@@ -7,7 +7,7 @@ import {
 } from "@albania/shared-types";
 import { uploadImages, deleteImagesByUrls } from "./storageService";
 import { authService } from "./authService";
-import { getBookingsByPropertyIdAndType } from "./bookingService";
+import { getBookingsByPropertyIdAndType, getUnavailablePropertyIds } from "./bookingService";
 
 // In-memory cache for apartments with TTL
 let apartmentsCache: { data: Apartment[]; timestamp: number } | null = null;
@@ -57,6 +57,88 @@ const saveCacheToStorage = (data: Apartment[], timestamp: number): void => {
 };
 
 /**
+ * Search apartments with DB-level filtering and pagination
+ */
+export const searchApartments = async (
+  filters: any,
+  page: number = 1,
+  limit: number = 10
+): Promise<{ data: Apartment[]; total: number }> => {
+  const from = (page - 1) * limit;
+  const to = from + limit - 1;
+
+  let query = apiClient.from("apartment").select("*", { count: "exact" });
+
+  const f = filters.apartmentFilters || {};
+
+  // Status filter
+  if (f.status && f.status !== "all") {
+    query = query.eq("status", f.status);
+  } else {
+    query = query.not("status", "in", '("maintenance","review")');
+  }
+
+  // Search term
+  const searchTerm = f.searchTerm || filters.destination || "";
+  if (searchTerm && searchTerm.trim()) {
+    const term = `%${searchTerm}%`;
+    query = query.or(`name.ilike.${term},location.ilike.${term},address.ilike.${term}`);
+  }
+
+  // Rooms and Beds
+  if (f.rooms?.min) query = query.gte("rooms", f.rooms.min);
+  if (f.rooms?.max) query = query.lte("rooms", f.rooms.max);
+  
+  if (f.beds?.min) query = query.gte("beds", f.beds.min);
+  if (f.beds?.max) query = query.lte("beds", f.beds.max);
+
+  if (f.bathrooms?.min) query = query.gte("bathrooms", f.bathrooms.min);
+  if (f.bathrooms?.max) query = query.lte("bathrooms", f.bathrooms.max);
+
+  // Price Range
+  if (f.priceRange) {
+    query = query.gte("price", f.priceRange.min).lte("price", f.priceRange.max);
+  }
+
+  // Rating
+  if (f.rating && f.rating !== "all") {
+    query = query.gte("rating", parseFloat(f.rating));
+  }
+  
+  // Amenities filter
+  if (f.amenities && f.amenities.length > 0) {
+    query = query.contains("amenities", f.amenities);
+  }
+
+  // Date Availability
+  if (filters.checkInDate && filters.checkOutDate) {
+    const unavailableIds = await getUnavailablePropertyIds(
+      "apartment",
+      new Date(filters.checkInDate),
+      new Date(filters.checkOutDate)
+    );
+    if (unavailableIds.length > 0) {
+      query = query.not("id", "in", `(${unavailableIds.join(",")})`);
+    }
+  }
+
+  // Pagination
+  query = query.range(from, to);
+
+  const { data, error, count } = await query;
+
+  if (error) {
+    console.error("[Apartment Service] Error searching apartments:", error);
+    throw error;
+  }
+
+  return {
+    data: data as Apartment[],
+    total: count || 0,
+  };
+};
+
+/**
  * Invalidate the apartments cache (call after creating, updating, or deleting apartments)
  */
 export const invalidateApartmentsCache = (): void => {
@@ -87,7 +169,10 @@ export const getAllApartments = async (): Promise<Apartment[]> => {
     return apartmentsCache.data;
   }
 
-  const { data, error } = await apiClient.from("apartment").select("*");
+  const { data, error } = await apiClient
+    .from("apartment")
+    .select("*")
+    .not("status", "in", '("maintenance","review")');
   if (error) throw error;
 
   // Update cache
@@ -109,6 +194,50 @@ export const getApartmentsByProviderId = async (
     .eq("providerId", providerId);
   if (error) throw error;
   return data;
+};
+
+/**
+ * Get dashboard apartments with server-side pagination and filtering
+ */
+export const getDashboardApartments = async (params: {
+  providerId?: string;
+  page?: number;
+  limit?: number;
+  search?: string;
+  status?: string;
+  rating?: string;
+}): Promise<{ data: Apartment[]; total: number }> => {
+  const { providerId, page = 1, limit = 6, search, status, rating } = params;
+  const from = (page - 1) * limit;
+  const to = from + limit - 1;
+
+  let query = apiClient.from("apartment").select("*", { count: "exact" });
+
+  if (providerId) {
+    query = query.eq("providerId", providerId);
+  }
+
+  if (status && status !== "all") {
+    query = query.eq("status", status);
+  }
+
+  if (search && search.trim()) {
+    const term = `%${search}%`;
+    query = query.or(`name.ilike.${term},location.ilike.${term},address.ilike.${term}`);
+  }
+
+  if (rating && rating !== "all") {
+    const threshold = parseFloat(rating);
+    query = query.gte("rating", threshold);
+  }
+
+  query = query.order("created_at", { ascending: false });
+  query = query.range(from, to);
+
+  const { data, error, count } = await query;
+  if (error) throw error;
+
+  return { data: (data as Apartment[]) || [], total: count || 0 };
 };
 
 /**
@@ -295,89 +424,6 @@ export const getApartmentUnavailabilityDates = async (
   return unavailabilityDates; // Return the accumulated dates
 };
 
-/**
- * Search apartments with filters (client-side filtering)
- */
-export const searchApartments = async (
-  filters?: ApartmentFilters,
-): Promise<Apartment[]> => {
-  try {
-    const apartments = await getAllApartments();
-
-    if (!filters) {
-      return apartments;
-    }
-
-    return apartments.filter((apt) => {
-      // Search term filter
-      if (filters.searchTerm) {
-        const term = filters.searchTerm.toLowerCase();
-        const matchesSearch =
-          apt.name.toLowerCase().includes(term) ||
-          apt.address?.toLowerCase().includes(term);
-        if (!matchesSearch) return false;
-      }
-
-      // Price range filter
-      if (filters.priceRange) {
-        if (
-          apt.price < filters.priceRange.min ||
-          apt.price > filters.priceRange.max
-        ) {
-          return false;
-        }
-      }
-
-      // Rating filter
-      if (filters.rating && filters.rating !== "all") {
-        const threshold = parseFloat(filters.rating);
-        if (apt.rating < threshold) return false;
-      }
-
-      // Status filter
-      if (filters.status && filters.status !== "all") {
-        if (apt.status !== filters.status) return false;
-      }
-
-      // Rooms filter
-      if (filters.rooms) {
-        if (filters.rooms.min && apt.rooms < filters.rooms.min) return false;
-        if (filters.rooms.max && apt.rooms > filters.rooms.max) return false;
-      }
-
-      // Beds filter
-      if (filters.beds && apt.beds) {
-        if (filters.beds.min && apt.beds < filters.beds.min) return false;
-        if (filters.beds.max && apt.beds > filters.beds.max) return false;
-      }
-
-      // Bathrooms filter
-      if (filters.bathrooms && apt.bathrooms) {
-        if (filters.bathrooms.min && apt.bathrooms < filters.bathrooms.min)
-          return false;
-        if (filters.bathrooms.max && apt.bathrooms > filters.bathrooms.max)
-          return false;
-      }
-
-      // Amenities filter
-      if (filters.amenities && filters.amenities.length > 0) {
-        if (!apt.amenities) return false;
-        const hasAllAmenities = filters.amenities.every((amenity) =>
-          apt.amenities?.some((a) =>
-            a.toLowerCase().includes(amenity.toLowerCase()),
-          ),
-        );
-        if (!hasAllAmenities) return false;
-      }
-
-      return true;
-    });
-  } catch (err) {
-    console.error("[Apartment Service] Error searching apartments:", err);
-    throw err;
-  }
-};
-
 const apartmentService = {
   getAllApartments,
   getApartmentById,
@@ -385,6 +431,7 @@ const apartmentService = {
   updateApartment,
   deleteApartment,
   searchApartments,
+  getDashboardApartments,
   getApartmentUnavailabilityDates,
 };
 

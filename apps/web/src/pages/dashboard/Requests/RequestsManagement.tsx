@@ -14,8 +14,8 @@ import {
 import { roleRequestService } from "@/services/api/roleRequestService";
 import { authService } from "@/services/api/authService";
 import { RoleRequest } from "@/types/request.type";
-import Hsidebar from "../../../components/dashboard/hsidebar";
 import { useTranslation } from "react-i18next";
+import { useTheme } from "@/context/ThemeContext";
 
 export default function RequestsManagement() {
   const [loading, setLoading] = useState(true);
@@ -30,6 +30,24 @@ export default function RequestsManagement() {
   const [reviewerId, setReviewerId] = useState<string>("");
 
   const { t } = useTranslation();
+  const { isDark } = useTheme();
+
+  const tk = {
+    pageBg: isDark ? '#0d0d0d' : '#f5f4f1',
+    pageText: isDark ? '#ffffff' : '#111115',
+    headerBg: isDark ? '#111111' : '#ffffff',
+    headerBorder: isDark ? 'rgba(255,255,255,0.05)' : '#e5e2de',
+    cardBg: isDark ? 'rgba(255,255,255,0.025)' : '#ffffff',
+    cardBorder: isDark ? 'rgba(255,255,255,0.07)' : '#e5e2de',
+    mutedText: isDark ? 'rgba(255,255,255,0.40)' : '#6b6663',
+    dimText: isDark ? 'rgba(255,255,255,0.70)' : '#44403c',
+    reasonBg: isDark ? 'rgba(255,255,255,0.03)' : '#f5f2ee',
+    reasonBorder: isDark ? 'rgba(255,255,255,0.05)' : '#e5e2de',
+    filterBtnBg: isDark ? 'rgba(255,255,255,0.04)' : '#edeae6',
+    filterBtnText: isDark ? 'rgba(255,255,255,0.60)' : '#44403c',
+    filterBtnHover: isDark ? 'rgba(255,255,255,0.08)' : '#e0ddd9',
+    iconMuted: isDark ? 'rgba(255,255,255,0.40)' : '#9e9994',
+  };
 
   useEffect(() => {
     initializePage();
@@ -75,7 +93,6 @@ export default function RequestsManagement() {
       await roleRequestService.approveRequest(requestId, reviewerId);
       setSuccess(t("requestsManagement.success.approve"));
 
-      // Refresh requests
       await initializePage();
 
       setTimeout(() => setSuccess(null), 5000);
@@ -99,7 +116,6 @@ export default function RequestsManagement() {
       await roleRequestService.rejectRequest(requestId, reviewerId);
       setSuccess(t("requestsManagement.success.reject"));
 
-      // Refresh requests
       await initializePage();
 
       setTimeout(() => setSuccess(null), 5000);
@@ -115,22 +131,43 @@ export default function RequestsManagement() {
     switch (status) {
       case "pending":
         return (
-          <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">
-            <Clock className="w-4 h-4 mr-1" />
+          <span
+            className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium"
+            style={{
+              background: isDark ? 'rgba(234,179,8,0.10)' : '#fefce8',
+              color: isDark ? '#fbbf24' : '#854d0e',
+              border: `1px solid ${isDark ? 'rgba(234,179,8,0.25)' : '#fde047'}`,
+            }}
+          >
+            <Clock className="w-3.5 h-3.5 mr-1" />
             {t("requestsManagement.status.pending")}
           </span>
         );
       case "approved":
         return (
-          <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
-            <CheckCircle className="w-4 h-4 mr-1" />
+          <span
+            className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium"
+            style={{
+              background: isDark ? 'rgba(34,197,94,0.10)' : '#f0fdf4',
+              color: isDark ? '#4ade80' : '#166534',
+              border: `1px solid ${isDark ? 'rgba(34,197,94,0.25)' : '#bbf7d0'}`,
+            }}
+          >
+            <CheckCircle className="w-3.5 h-3.5 mr-1" />
             {t("requestsManagement.status.approved")}
           </span>
         );
       case "rejected":
         return (
-          <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800">
-            <XCircle className="w-4 h-4 mr-1" />
+          <span
+            className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium"
+            style={{
+              background: isDark ? 'rgba(239,68,68,0.10)' : '#fef2f2',
+              color: isDark ? '#f87171' : '#991b1b',
+              border: `1px solid ${isDark ? 'rgba(239,68,68,0.25)' : '#fecaca'}`,
+            }}
+          >
+            <XCircle className="w-3.5 h-3.5 mr-1" />
             {t("requestsManagement.status.rejected")}
           </span>
         );
@@ -141,90 +178,87 @@ export default function RequestsManagement() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center p-12">
-        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
-      </div>
+      <div
+          className="flex items-center justify-center p-12 min-h-screen -m-8"
+          style={{ background: tk.pageBg }}
+        >
+          <Loader2 className="w-8 h-8 animate-spin text-[#e41e20]" />
+        </div>
     );
   }
 
   return (
-    <Hsidebar>
-      <div className="p-6">
+    <div style={{ background: tk.pageBg, color: tk.pageText }} className="-m-8 min-h-screen p-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          <h1 className="text-3xl font-bold mb-2" style={{ color: tk.pageText }}>
             {t("requestsManagement.title")}
           </h1>
-          <p className="text-gray-600">{t("requestsManagement.subtitle")}</p>
+          <p style={{ color: tk.mutedText }}>{t("requestsManagement.subtitle")}</p>
         </div>
+
         {/* Alert Messages */}
         {error && (
-          <div className="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg flex items-start">
-            <AlertCircle className="w-5 h-5 mr-3 mt-0.5 flex-shrink-0" />
+          <div
+            className="mb-6 px-4 py-3 rounded-xl flex items-start gap-3 border"
+            style={{
+              background: isDark ? 'rgba(239,68,68,0.10)' : '#fef2f2',
+              borderColor: isDark ? 'rgba(239,68,68,0.25)' : '#fecaca',
+              color: isDark ? '#f87171' : '#991b1b',
+            }}
+          >
+            <AlertCircle className="w-5 h-5 mt-0.5 flex-shrink-0" />
             <span>{error}</span>
           </div>
         )}
         {success && (
-          <div className="mb-6 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg flex items-start">
-            <CheckCircle className="w-5 h-5 mr-3 mt-0.5 flex-shrink-0" />
+          <div
+            className="mb-6 px-4 py-3 rounded-xl flex items-start gap-3 border"
+            style={{
+              background: isDark ? 'rgba(34,197,94,0.10)' : '#f0fdf4',
+              borderColor: isDark ? 'rgba(34,197,94,0.25)' : '#bbf7d0',
+              color: isDark ? '#4ade80' : '#166534',
+            }}
+          >
+            <CheckCircle className="w-5 h-5 mt-0.5 flex-shrink-0" />
             <span>{success}</span>
           </div>
         )}
+
         {/* Filter Tabs */}
         <div className="mb-6 flex items-center gap-2 flex-wrap">
-          <Filter className="w-5 h-5 text-gray-600" />
-          <button
-            onClick={() => setFilter("all")}
-            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-              filter === "all"
-                ? "bg-blue-600 text-white"
-                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-            }`}
-          >
-            {t("requestsManagement.filters.status.all")} ({requests.length})
-          </button>
-          <button
-            onClick={() => setFilter("pending")}
-            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-              filter === "pending"
-                ? "bg-yellow-600 text-white"
-                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-            }`}
-          >
-            {t("requestsManagement.filters.status.pending")} (
-            {requests.filter((r) => r.status === "pending").length})
-          </button>
-          <button
-            onClick={() => setFilter("approved")}
-            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-              filter === "approved"
-                ? "bg-green-600 text-white"
-                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-            }`}
-          >
-            {t("requestsManagement.filters.status.approved")} (
-            {requests.filter((r) => r.status === "approved").length})
-          </button>
-          <button
-            onClick={() => setFilter("rejected")}
-            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-              filter === "rejected"
-                ? "bg-red-600 text-white"
-                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-            }`}
-          >
-            {t("requestsManagement.filters.status.rejected")} (
-            {requests.filter((r) => r.status === "rejected").length})
-          </button>
+          <Filter className="w-5 h-5" style={{ color: tk.iconMuted }} />
+          {([
+            { key: "all", label: t("requestsManagement.filters.status.all"), count: requests.length, activeColor: '#E8192C' },
+            { key: "pending", label: t("requestsManagement.filters.status.pending"), count: requests.filter(r => r.status === "pending").length, activeColor: '#d97706' },
+            { key: "approved", label: t("requestsManagement.filters.status.approved"), count: requests.filter(r => r.status === "approved").length, activeColor: '#16a34a' },
+            { key: "rejected", label: t("requestsManagement.filters.status.rejected"), count: requests.filter(r => r.status === "rejected").length, activeColor: '#dc2626' },
+          ] as const).map(({ key, label, count, activeColor }) => (
+            <button
+              key={key}
+              onClick={() => setFilter(key)}
+              style={filter === key
+                ? { background: activeColor, color: '#ffffff' }
+                : { background: tk.filterBtnBg, color: tk.filterBtnText }
+              }
+              className="px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+            >
+              {label} ({count})
+            </button>
+          ))}
         </div>
+
         {/* Requests List */}
         {filteredRequests.length === 0 ? (
-          <div className="bg-white rounded-lg border border-gray-200 p-12 text-center">
-            <FileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
+          <div
+            className="rounded-xl p-12 text-center border"
+            style={{ background: tk.cardBg, borderColor: tk.cardBorder }}
+          >
+            <FileText className="w-12 h-12 mx-auto mb-4" style={{ color: tk.iconMuted }} />
+            <h3 className="text-lg font-medium mb-2" style={{ color: tk.pageText }}>
               {t("requestsManagement.empty.title")}
             </h3>
-            <p className="text-gray-600">
+            <p style={{ color: tk.mutedText }}>
               {filter === "all"
                 ? t("requestsManagement.empty.noRequests")
                 : t("requestsManagement.empty.noFilteredRequests", {
@@ -237,19 +271,19 @@ export default function RequestsManagement() {
             {filteredRequests.map((request) => (
               <div
                 key={request.id}
-                className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow"
+                className="rounded-xl p-6 border transition-shadow hover:shadow-lg"
+                style={{ background: tk.cardBg, borderColor: tk.cardBorder }}
               >
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
-                      <User className="w-5 h-5 text-gray-600" />
-                      <h3 className="text-lg font-semibold text-gray-900">
-                        {request.userName ||
-                          t("requestsManagement.user.unknown")}
+                      <User className="w-5 h-5" style={{ color: tk.iconMuted }} />
+                      <h3 className="text-base font-semibold" style={{ color: tk.pageText }}>
+                        {request.userName || t("requestsManagement.user.unknown")}
                       </h3>
                       {getStatusBadge(request.status)}
                     </div>
-                    <div className="flex items-center gap-4 text-sm text-gray-600 mb-3">
+                    <div className="flex items-center gap-4 text-sm mb-3" style={{ color: tk.mutedText }}>
                       <div className="flex items-center">
                         <Mail className="w-4 h-4 mr-1" />
                         {request.userEmail}
@@ -257,48 +291,45 @@ export default function RequestsManagement() {
                       <div className="flex items-center">
                         <Calendar className="w-4 h-4 mr-1" />
                         {t("requestsManagement.user.submitted")}{" "}
-                        {new Date(request.submittedAt).toLocaleDateString(
-                          "en-US",
-                          {
-                            month: "short",
-                            day: "numeric",
-                            year: "numeric",
-                          },
-                        )}
+                        {new Date(request.submittedAt).toLocaleDateString("en-US", {
+                          month: "short",
+                          day: "numeric",
+                          year: "numeric",
+                        })}
                       </div>
                     </div>
                     {request.reviewedAt && (
-                      <div className="text-sm text-gray-600 mb-3">
+                      <div className="text-sm mb-3" style={{ color: tk.mutedText }}>
                         <Calendar className="w-4 h-4 inline mr-1" />
                         {t("requestsManagement.user.reviewed")}{" "}
-                        {new Date(request.reviewedAt).toLocaleDateString(
-                          "en-US",
-                          {
-                            month: "short",
-                            day: "numeric",
-                            year: "numeric",
-                          },
-                        )}
+                        {new Date(request.reviewedAt).toLocaleDateString("en-US", {
+                          month: "short",
+                          day: "numeric",
+                          year: "numeric",
+                        })}
                       </div>
                     )}
                   </div>
                 </div>
 
-                <div className="bg-gray-50 rounded-lg p-4 mb-4">
-                  <p className="text-sm font-medium text-gray-700 mb-2">
+                <div
+                  className="rounded-lg p-4 mb-4"
+                  style={{ background: tk.reasonBg, border: `1px solid ${tk.reasonBorder}` }}
+                >
+                  <p className="text-sm font-medium mb-2" style={{ color: tk.dimText }}>
                     {t("requestsManagement.user.reasonLabel")}
                   </p>
-                  <p className="text-gray-900 whitespace-pre-wrap">
+                  <p className="whitespace-pre-wrap text-sm" style={{ color: tk.pageText }}>
                     {request.reason}
                   </p>
                 </div>
 
                 {request.status === "pending" && (
-                  <div className="flex gap-3">
+                  <div className="flex flex-col sm:flex-row gap-3 mt-2">
                     <button
                       onClick={() => handleApprove(request.id)}
                       disabled={processing === request.id}
-                      className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                      className="flex-1 px-4 py-2 rounded-lg text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-colors bg-emerald-600 hover:bg-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent text-white shadow-sm hover:shadow-md"
                     >
                       {processing === request.id ? (
                         <>
@@ -315,7 +346,7 @@ export default function RequestsManagement() {
                     <button
                       onClick={() => handleReject(request.id)}
                       disabled={processing === request.id}
-                      className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                      className="flex-1 px-4 py-2 rounded-lg text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-colors bg-red-600 hover:bg-red-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent text-white shadow-sm hover:shadow-md"
                     >
                       {processing === request.id ? (
                         <>
@@ -336,6 +367,5 @@ export default function RequestsManagement() {
           </div>
         )}
       </div>
-    </Hsidebar>
   );
 }

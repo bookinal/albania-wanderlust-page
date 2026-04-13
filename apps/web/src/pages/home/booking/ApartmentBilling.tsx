@@ -25,11 +25,34 @@ import { DateRangePicker } from "@/components/ui/date-range-picker";
 import { userService } from "@/services/api/userService";
 import { User } from "@/types/user.types";
 import { useTranslation } from "react-i18next";
+import { useTheme } from "@/context/ThemeContext";
 
 export default function ApartmentBilling() {
   const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { isDark } = useTheme();
+
+  const tk = {
+    pageBg: isDark ? "#0d0d0d" : "#f5f4f1",
+    pageText: isDark ? "#ffffff" : "#111115",
+    cardBg: isDark ? "rgba(255,255,255,0.03)" : "#ffffff",
+    cardBorder: isDark ? "rgba(255,255,255,0.07)" : "#e2e8f0",
+    inputBg: isDark ? "rgba(255,255,255,0.05)" : "#ffffff",
+    inputBorder: isDark ? "rgba(255,255,255,0.12)" : "#cbd5e1",
+    inputText: isDark ? "#ffffff" : "#111115",
+    labelText: isDark ? "rgba(255,255,255,0.60)" : "#475569",
+    mutedText: isDark ? "rgba(255,255,255,0.40)" : "#64748b",
+    dimText: isDark ? "rgba(255,255,255,0.70)" : "#334155",
+    statBg: isDark ? "rgba(255,255,255,0.04)" : "#f8fafc",
+    featureTag: isDark ? "rgba(255,255,255,0.06)" : "#f1f5f9",
+    featureTagText: isDark ? "rgba(255,255,255,0.60)" : "#475569",
+    infoBg: isDark ? "rgba(232,25,44,0.07)" : "#fff5f5",
+    infoBorder: isDark ? "rgba(232,25,44,0.18)" : "#fecaca",
+    infoText: isDark ? "rgba(255,180,180,0.9)" : "#991b1b",
+    divider: isDark ? "rgba(255,255,255,0.07)" : "#e2e8f0",
+  };
+
   const [loading, setLoading] = useState(true);
   const [apartment, setApartment] = useState<Apartment | null>(null);
   const [unavailabilityDates, setUnavailabilityDates] = useState<string[]>([]);
@@ -38,18 +61,25 @@ export default function ApartmentBilling() {
   useEffect(() => {
     const fetchApartment = async () => {
       if (!id) return;
-
       setLoading(true);
       try {
         const data = await getApartmentById(parseInt(id));
         if (!data) {
           setApartment(null);
+        } else if (data.status === "maintenance" || data.status === "review") {
+          Swal.fire({
+            title: "Not Available",
+            text: "This property is currently unavailable for booking.",
+            icon: "error",
+            confirmButtonText: "Go Back",
+            confirmButtonColor: "#e41e20",
+          }).then(() => navigate(`/apartmentReservation/${id}`));
+          return;
         } else {
           setApartment(data);
           try {
             const dates = await getApartmentUnavailabilityDates(data.id);
             setUnavailabilityDates(dates);
-            console.log(unavailabilityDates);
           } catch (error) {
             console.error("Error fetching unavailability dates:", error);
           }
@@ -60,9 +90,9 @@ export default function ApartmentBilling() {
         setLoading(false);
       }
     };
-
     fetchApartment();
   }, [id]);
+
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -72,9 +102,9 @@ export default function ApartmentBilling() {
         console.error("Error fetching user data:", error);
       }
     };
-
     fetchUser();
   }, []);
+
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
   const [formData, setFormData] = useState({
     fullName: "",
@@ -128,9 +158,7 @@ export default function ApartmentBilling() {
       );
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
       const days = diffDays || 1;
-
       setTotalDays(days);
-      // Calculate price: daily rate * number of days (minimum 1 day)
       setTotalPrice(apartment.price * Math.max(1, days));
     } else {
       setTotalDays(0);
@@ -139,13 +167,9 @@ export default function ApartmentBilling() {
   }, [dateRange, apartment]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // Helper function to format date in local timezone (YYYY-MM-DD)
   const formatDateLocal = (date: Date): string => {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -155,9 +179,15 @@ export default function ApartmentBilling() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
     if (!apartment) return;
-
+    if (user && apartment.providerId && user.id === apartment.providerId) {
+      Swal.fire({
+        icon: "error",
+        title: t("billing.ownPropertyTitle"),
+        text: t("billing.ownPropertyMessage"),
+      });
+      return;
+    }
     if (!formData.phone || !isValidPhoneNumber(formData.phone)) {
       Swal.fire({
         icon: "warning",
@@ -166,7 +196,6 @@ export default function ApartmentBilling() {
       });
       return;
     }
-
     if (!dateRange?.from || !dateRange?.to) {
       Swal.fire({
         icon: "warning",
@@ -175,7 +204,6 @@ export default function ApartmentBilling() {
       });
       return;
     }
-
     bookingMutation.mutate({
       propertyId: String(apartment.id),
       providerId: apartment.providerId,
@@ -186,63 +214,122 @@ export default function ApartmentBilling() {
       dropOffLocation: apartment.address || apartment.location || "",
       pickUpTime: formData.checkInTime,
       dropOffTime: formData.checkOutTime,
-      totalPrice: Math.round(finalTotal),
+      totalPrice: Math.round(totalPrice),
       contactMail: formData.email,
       contactPhone: formData.phone,
       requesterName: formData.fullName,
     });
   };
 
-  const serviceFee = totalPrice * 0.05;
-  const tax = totalPrice * 0.1;
-  const finalTotal = totalPrice + serviceFee + tax;
+  const serviceFee = totalPrice * 0.07;
+  const finalTotal = totalPrice + serviceFee;
 
   function handlePhoneChange(value?: string): void {
-    setFormData((prev) => ({
-      ...prev,
-      phone: value || "",
-    }));
+    setFormData((prev) => ({ ...prev, phone: value || "" }));
   }
+
+  const inputStyle: React.CSSProperties = {
+    width: "100%",
+    padding: "12px 16px",
+    borderRadius: "8px",
+    border: `1px solid ${tk.inputBorder}`,
+    background: tk.inputBg,
+    color: tk.inputText,
+    outline: "none",
+    fontSize: "14px",
+  };
+
+  const inputWithIconStyle: React.CSSProperties = {
+    ...inputStyle,
+    paddingLeft: "40px",
+  };
 
   if (loading) {
     return (
-      <div className="p-8 text-center">
-        <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-        <p className="mt-2 text-slate-600">Loading apartment details…</p>
+      <div
+        style={{ background: tk.pageBg, minHeight: "100vh" }}
+        className="flex items-center justify-center"
+      >
+        <div className="text-center">
+          <div
+            style={{ borderColor: "#E8192C" }}
+            className="inline-block animate-spin rounded-full h-10 w-10 border-b-2 mb-4"
+          ></div>
+          <p style={{ color: tk.mutedText }}>Loading apartment details…</p>
+        </div>
       </div>
     );
   }
 
   if (!apartment) {
-    return <div className="p-8 text-center">Apartment not found</div>;
+    return (
+      <div
+        style={{ background: tk.pageBg, minHeight: "100vh" }}
+        className="flex items-center justify-center"
+      >
+        <p style={{ color: tk.pageText }}>Apartment not found</p>
+      </div>
+    );
   }
 
+  const isDisabled =
+    bookingMutation.isPending ||
+    !formData.fullName ||
+    !formData.email ||
+    !formData.phone ||
+    !dateRange?.from ||
+    !dateRange?.to;
+
   return (
-    <div>
+    <div style={{ background: tk.pageBg, minHeight: "100vh" }}>
       <PrimarySearchAppBar />
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 py-8 px-4">
+      <div
+        style={{
+          paddingTop: "32px",
+          paddingBottom: "32px",
+          paddingLeft: "16px",
+          paddingRight: "16px",
+        }}
+      >
         <div className="max-w-6xl mx-auto">
           {/* Header */}
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-slate-800 mb-2">
+            <h1
+              style={{ color: tk.pageText }}
+              className="text-3xl font-bold mb-2"
+            >
               {t("booking.completeYourBooking")}
             </h1>
-            <p className="text-slate-600">{t("booking.justAFewMoreDetails")}</p>
+            <p style={{ color: tk.mutedText }}>
+              {t("booking.justAFewMoreDetails")}
+            </p>
           </div>
 
           <div className="grid lg:grid-cols-3 gap-6">
-            {/* Main Form Section */}
+            {/* Main Form */}
             <div className="lg:col-span-2 space-y-6">
               {/* Personal Information */}
-              <div className="bg-white rounded-2xl shadow-sm p-6 border border-slate-200">
-                <h2 className="text-xl font-semibold text-slate-800 mb-6 flex items-center gap-2">
-                  <UserIcon className="w-5 h-5 text-blue-600" />
+              <div
+                style={{
+                  background: tk.cardBg,
+                  border: `1px solid ${tk.cardBorder}`,
+                }}
+                className="rounded-2xl p-6"
+              >
+                <h2
+                  style={{ color: tk.pageText }}
+                  className="text-xl font-semibold mb-6 flex items-center gap-2"
+                >
+                  <UserIcon className="w-5 h-5" style={{ color: "#E8192C" }} />
                   {t("booking.personalInformation")}
                 </h2>
 
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                    <label
+                      style={{ color: tk.labelText }}
+                      className="block text-sm font-medium mb-2"
+                    >
                       {t("user.fullName")} *
                     </label>
                     <input
@@ -251,65 +338,83 @@ export default function ApartmentBilling() {
                       value={formData.fullName}
                       onChange={handleInputChange}
                       placeholder="John Doe"
-                      className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+                      style={inputStyle}
                       required
                     />
                   </div>
 
                   <div className="grid md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-2">
+                      <label
+                        style={{ color: tk.labelText }}
+                        className="block text-sm font-medium mb-2"
+                      >
                         {t("user.email")} *
                       </label>
                       <div className="relative">
-                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                        <Mail
+                          className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5"
+                          style={{ color: tk.mutedText }}
+                        />
                         <input
                           type="email"
                           name="email"
                           value={formData.email}
                           onChange={handleInputChange}
                           placeholder="john@example.com"
-                          className="w-full pl-10 pr-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+                          style={inputWithIconStyle}
                           required
                         />
                       </div>
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-2">
+                      <label
+                        style={{ color: tk.labelText }}
+                        className="block text-sm font-medium mb-2"
+                      >
                         {t("user.phone")} *
                       </label>
-                      <div className="relative">
-                        <PhoneInput
-                          international
-                          countryCallingCodeEditable={false}
-                          placeholder="Enter phone number"
-                          value={formData.phone}
-                          onChange={handlePhoneChange}
-                          error={
-                            formData.phone
-                              ? isValidPhoneNumber(formData.phone)
-                                ? undefined
-                                : "Invalid phone number"
-                              : "Phone number required"
-                          }
-                        />
-                      </div>
+                      <PhoneInput
+                        international
+                        countryCallingCodeEditable={false}
+                        placeholder="Enter phone number"
+                        value={formData.phone}
+                        onChange={handlePhoneChange}
+                        error={
+                          formData.phone
+                            ? isValidPhoneNumber(formData.phone)
+                              ? undefined
+                              : "Invalid phone number"
+                            : "Phone number required"
+                        }
+                      />
                     </div>
                   </div>
                 </div>
               </div>
 
               {/* Stay Period */}
-              <div className="bg-white rounded-2xl shadow-sm p-6 border border-slate-200">
-                <h2 className="text-xl font-semibold text-slate-800 mb-6">
+              <div
+                style={{
+                  background: tk.cardBg,
+                  border: `1px solid ${tk.cardBorder}`,
+                }}
+                className="rounded-2xl p-6"
+              >
+                <h2
+                  style={{ color: tk.pageText }}
+                  className="text-xl font-semibold mb-6"
+                >
                   {t("booking.stayPeriod")}
                 </h2>
 
                 <div className="space-y-6">
-                  {/* Date Range Picker */}
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                    <label
+                      style={{ color: tk.labelText }}
+                      className="block text-sm font-medium mb-2"
+                    >
                       Check-in & Check-out Dates *
                     </label>
                     <DateRangePicker
@@ -323,43 +428,60 @@ export default function ApartmentBilling() {
                     />
                   </div>
 
-                  {/* Time Grid */}
                   <div className="grid md:grid-cols-2 gap-6">
                     <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-2">
+                      <label
+                        style={{ color: tk.labelText }}
+                        className="block text-sm font-medium mb-2"
+                      >
                         Check-in Time
                       </label>
                       <div className="relative">
-                        <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                        <Clock
+                          className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5"
+                          style={{ color: tk.mutedText }}
+                        />
                         <input
                           type="time"
                           name="checkInTime"
                           value={formData.checkInTime}
                           onChange={handleInputChange}
-                          className="w-full pl-10 pr-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+                          style={inputWithIconStyle}
                         />
                       </div>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-2">
+                      <label
+                        style={{ color: tk.labelText }}
+                        className="block text-sm font-medium mb-2"
+                      >
                         Check-out Time
                       </label>
                       <div className="relative">
-                        <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                        <Clock
+                          className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5"
+                          style={{ color: tk.mutedText }}
+                        />
                         <input
                           type="time"
                           name="checkOutTime"
                           value={formData.checkOutTime}
                           onChange={handleInputChange}
-                          className="w-full pl-10 pr-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+                          style={inputWithIconStyle}
                         />
                       </div>
                     </div>
                   </div>
 
                   {totalDays > 0 && (
-                    <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
-                      <p className="text-sm text-blue-800">
+                    <div
+                      style={{
+                        background: tk.infoBg,
+                        border: `1px solid ${tk.infoBorder}`,
+                      }}
+                      className="mt-4 p-4 rounded-lg"
+                    >
+                      <p style={{ color: tk.infoText }} className="text-sm">
                         <span className="font-semibold">Stay Duration:</span>{" "}
                         {totalDays} {totalDays === 1 ? "night" : "nights"}
                       </p>
@@ -373,7 +495,13 @@ export default function ApartmentBilling() {
             <div className="lg:col-span-1">
               <div className="sticky top-8 space-y-6">
                 {/* Apartment Summary */}
-                <div className="bg-white rounded-2xl shadow-sm overflow-hidden border border-slate-200">
+                <div
+                  style={{
+                    background: tk.cardBg,
+                    border: `1px solid ${tk.cardBorder}`,
+                  }}
+                  className="rounded-2xl overflow-hidden"
+                >
                   <div className="h-48 overflow-hidden">
                     <img
                       src={apartment.imageUrls?.[0]}
@@ -382,22 +510,30 @@ export default function ApartmentBilling() {
                     />
                   </div>
                   <div className="p-6">
-                    <h3 className="text-xl font-bold text-slate-800 mb-1">
+                    <h3
+                      style={{ color: tk.pageText }}
+                      className="text-xl font-bold mb-1"
+                    >
                       {apartment.name}
                     </h3>
-                    <p className="text-sm text-slate-600 mb-4">
+                    <p style={{ color: tk.mutedText }} className="text-sm mb-4">
                       {apartment.location ||
                         apartment.address ||
                         "Location not specified"}
                     </p>
-
                     <div className="space-y-2 mb-4">
-                      <div className="flex items-center gap-2 text-sm text-slate-600">
+                      <div
+                        className="flex items-center gap-2 text-sm"
+                        style={{ color: tk.dimText }}
+                      >
                         <Home className="w-4 h-4" />
                         <span>{apartment.rooms} Rooms</span>
                       </div>
                       {apartment.beds && (
-                        <div className="flex items-center gap-2 text-sm text-slate-600">
+                        <div
+                          className="flex items-center gap-2 text-sm"
+                          style={{ color: tk.dimText }}
+                        >
                           <span>•</span>
                           <span>{apartment.beds} Beds</span>
                         </div>
@@ -410,7 +546,11 @@ export default function ApartmentBilling() {
                               .map((amenity, idx) => (
                                 <span
                                   key={idx}
-                                  className="text-xs px-2 py-1 bg-slate-100 text-slate-700 rounded-full"
+                                  style={{
+                                    background: tk.featureTag,
+                                    color: tk.featureTagText,
+                                  }}
+                                  className="text-xs px-2 py-1 rounded-full"
                                 >
                                   {amenity}
                                 </span>
@@ -422,14 +562,29 @@ export default function ApartmentBilling() {
                 </div>
 
                 {/* Price Breakdown */}
-                <div className="bg-white rounded-2xl shadow-sm p-6 border border-slate-200">
-                  <h3 className="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
-                    <CreditCard className="w-5 h-5 text-blue-600" />
+                <div
+                  style={{
+                    background: tk.cardBg,
+                    border: `1px solid ${tk.cardBorder}`,
+                  }}
+                  className="rounded-2xl p-6"
+                >
+                  <h3
+                    style={{ color: tk.pageText }}
+                    className="text-lg font-semibold mb-4 flex items-center gap-2"
+                  >
+                    <CreditCard
+                      className="w-5 h-5"
+                      style={{ color: "#E8192C" }}
+                    />
                     Price Summary
                   </h3>
 
                   <div className="space-y-3 mb-4">
-                    <div className="flex justify-between text-slate-600">
+                    <div
+                      className="flex justify-between"
+                      style={{ color: tk.dimText }}
+                    >
                       <span>
                         ${apartment.price}/day × {totalDays || 1}{" "}
                         {totalDays === 1 ? "day" : "days"}
@@ -438,24 +593,38 @@ export default function ApartmentBilling() {
                         ${totalPrice.toFixed(2)}
                       </span>
                     </div>
-                    <div className="flex justify-between text-slate-600">
-                      <span>Service fee</span>
+                    <div
+                      className="flex justify-between"
+                      style={{ color: tk.dimText }}
+                    >
+                      <span>{t("billing.serviceFee")} (7%)</span>
                       <span className="font-medium">
                         ${serviceFee.toFixed(2)}
                       </span>
                     </div>
-                    <div className="flex justify-between text-slate-600">
-                      <span>Tax (10%)</span>
-                      <span className="font-medium">${tax.toFixed(2)}</span>
-                    </div>
+                    <div
+                      className="flex justify-between"
+                      style={{ color: tk.dimText }}
+                    ></div>
                   </div>
 
-                  <div className="pt-4 border-t border-slate-200">
+                  <div
+                    style={{
+                      borderTop: `1px solid ${tk.divider}`,
+                      paddingTop: "16px",
+                    }}
+                  >
                     <div className="flex justify-between items-center">
-                      <span className="text-lg font-semibold text-slate-800">
+                      <span
+                        style={{ color: tk.pageText }}
+                        className="text-lg font-semibold"
+                      >
                         Total
                       </span>
-                      <span className="text-2xl font-bold text-blue-600">
+                      <span
+                        style={{ color: "#E8192C" }}
+                        className="text-2xl font-bold"
+                      >
                         ${finalTotal.toFixed(2)}
                       </span>
                     </div>
@@ -463,15 +632,24 @@ export default function ApartmentBilling() {
 
                   <button
                     onClick={handleSubmit}
-                    disabled={
-                      bookingMutation.isPending ||
-                      !formData.fullName ||
-                      !formData.email ||
-                      !formData.phone ||
-                      !dateRange?.from ||
-                      !dateRange?.to
-                    }
-                    className="w-full mt-6 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-semibold py-3 px-6 rounded-lg transition flex items-center justify-center gap-2 shadow-lg shadow-blue-600/30"
+                    disabled={isDisabled}
+                    style={{
+                      width: "100%",
+                      marginTop: "24px",
+                      background: isDisabled ? tk.statBg : "#E8192C",
+                      color: isDisabled ? tk.mutedText : "#fff",
+                      cursor: isDisabled ? "not-allowed" : "pointer",
+                      padding: "12px 24px",
+                      borderRadius: "8px",
+                      fontWeight: "600",
+                      fontSize: "15px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: "8px",
+                      border: "none",
+                      transition: "opacity 0.15s",
+                    }}
                   >
                     <Check className="w-5 h-5" />
                     {bookingMutation.isPending
@@ -479,7 +657,10 @@ export default function ApartmentBilling() {
                       : "Confirm Booking"}
                   </button>
 
-                  <p className="text-xs text-slate-500 text-center mt-4">
+                  <p
+                    style={{ color: tk.mutedText }}
+                    className="text-xs text-center mt-4"
+                  >
                     You won't be charged yet
                   </p>
                 </div>

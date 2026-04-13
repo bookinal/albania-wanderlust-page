@@ -77,6 +77,39 @@ export const getPriceForMonth = async (
 };
 
 /**
+ * Get prices for multiple properties for a specific month
+ */
+export const getPricesForPropertiesByMonth = async (
+  propertyIds: number[],
+  propertyType: PropertyType,
+  month: Month,
+): Promise<Record<number, number>> => {
+  if (!propertyIds.length) return {};
+
+  const { data, error } = await apiClient
+    .from("monthly_prices")
+    .select("property_id, price_per_day")
+    .in("property_id", propertyIds)
+    .eq("property_type", propertyType)
+    .eq("month", month);
+
+  if (error) {
+    console.error(
+      "[Monthly Price Service] Error fetching batch prices for month:",
+      error,
+    );
+    throw error;
+  }
+
+  const result: Record<number, number> = {};
+  data?.forEach(record => {
+    result[record.property_id] = parseFloat(record.price_per_day);
+  });
+  
+  return result;
+};
+
+/**
  * Set monthly prices for a property (upsert - insert or update)
  */
 export const setMonthlyPrices = async (

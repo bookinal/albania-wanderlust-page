@@ -219,6 +219,73 @@ export const createBooking = async (
 };
 
 /**
+ * Paginated result shape for user bookings
+ */
+export interface BookingPage {
+  data: Booking[];
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+}
+
+/**
+ * Get a single page of bookings for the currently authenticated user.
+ * Uses Supabase .range() for DB-level pagination so only `pageSize` rows
+ * are fetched and enriched instead of the entire table.
+ */
+export const getCurrentUserBookingsPaginated = async (
+  page: number = 1,
+  pageSize: number = 5,
+): Promise<BookingPage> => {
+  const userId = await authService.getCurrentUserId();
+
+  if (!userId) {
+    throw new Error("User not authenticated");
+  }
+
+  const from = (page - 1) * pageSize;
+  const to = from + pageSize - 1;
+
+  const { data, error, count } = await apiClient
+    .from("booking")
+    .select("*", { count: "exact" })
+    .eq("userId", userId)
+    .order("createdAt", { ascending: false })
+    .range(from, to);
+
+  if (error) {
+    console.error("[Booking Service] Error fetching paginated bookings:", error);
+    throw error;
+  }
+
+  // Enrich only the current page's bookings with property data
+  for (const booking of data || []) {
+    try {
+      if (booking.propertyType === "car") {
+        booking.propertyData = await getCarById(booking.propertyId);
+      } else if (booking.propertyType === "apartment") {
+        booking.propertyData = await getApartmentById(booking.propertyId);
+      } else if (booking.propertyType === "hotel") {
+        booking.propertyData = await getHotelById(booking.propertyId);
+      }
+    } catch {
+      booking.propertyData = null;
+    }
+  }
+
+  const total = count ?? 0;
+
+  return {
+    data: data || [],
+    total,
+    page,
+    pageSize,
+    totalPages: Math.ceil(total / pageSize),
+  };
+};
+
+/**
  * Get all bookings for the currently authenticated user (customer bookings)
  */
 export const getCurrentUserBookings = async (): Promise<Booking[]> => {
@@ -252,6 +319,41 @@ export const getCurrentUserBookings = async (): Promise<Booking[]> => {
   return data || [];
 };
 
+/**
+ * Get all bookings for a given provider ID (admin use — no auth restriction)
+ */
+export const getBookingsByProviderIdForAdmin = async (
+  providerId: string,
+): Promise<Booking[]> => {
+  const { data, error } = await apiClient
+    .from("booking")
+    .select("*")
+    .eq("providerId", providerId)
+    .order("createdAt", { ascending: false });
+  if (error) {
+    console.error(
+      "[Booking Service] Error fetching bookings for provider (admin):",
+      error,
+    );
+    throw error;
+  }
+  // Enrich with property data
+  for (const booking of data || []) {
+    try {
+      if (booking.propertyType === "car") {
+        booking.propertyData = await getCarById(booking.propertyId);
+      } else if (booking.propertyType === "apartment") {
+        booking.propertyData = await getApartmentById(booking.propertyId);
+      } else if (booking.propertyType === "hotel") {
+        booking.propertyData = await getHotelById(booking.propertyId);
+      }
+    } catch {
+      booking.propertyData = null;
+    }
+  }
+  return data || [];
+};
+
 /*
  * Get all bookings for a specific provider (provider bookings)
  */
@@ -278,13 +380,20 @@ export const getBookingsByProviderId = async (): Promise<Booking[]> => {
 export const updateBookingStatus = async (
   bookingId: string,
   status: Booking["status"],
+  cancellationReason?: string,
 ): Promise<Booking> => {
+  const updateData: Record<string, unknown> = {
+    status,
+    updatedAt: new Date().toISOString(),
+  };
+
+  if (status === "canceled" && cancellationReason) {
+    updateData.cancellation_reason = cancellationReason;
+  }
+
   const { data, error } = await apiClient
     .from("booking")
-    .update({
-      status,
-      updatedAt: new Date().toISOString(),
-    })
+    .update(updateData)
     .eq("id", bookingId)
     .select("*")
     .single();
@@ -322,9 +431,44 @@ export const getBookingsByPropertyIdAndType = async (
   return data as Booking[] | null;
 };
 
+/**
+ * Get IDs of properties of a specific type that are unavailable for a given date range.
+ * This checks for overlapping 'confirmed' bookings.
+ */
+export const getUnavailablePropertyIds = async (
+  propertyType: Booking["propertyType"],
+  startDate: Date,
+  endDate: Date,
+): Promise<number[]> => {
+  // Convert dates to ISO strings for DB comparison
+  const startStr = startDate.toISOString().split('T')[0];
+  const endStr = endDate.toISOString().split('T')[0];
+
+  // We find any confirmed booking where the booking period overlaps with the requested period:
+  // Overlap condition: booking.startDate <= requested.endDate AND booking.endDate >= requested.startDate
+  const { data, error } = await apiClient
+    .from("booking")
+    .select("propertyId")
+    .eq("propertyType", propertyType)
+    .eq("status", "confirmed")
+    .lte("startDate", endStr)
+    .gte("endDate", startStr);
+
+  if (error) {
+    console.error("[Booking Service] Error fetching unavailable property IDs:", error);
+    return [];
+  }
+
+  // Ensure propertyIds are parsed as numbers since DB might store them as strings sometimes
+  const ids = data?.map((b) => parseInt(b.propertyId, 10)).filter(id => !isNaN(id)) || [];
+  // Return unique IDs
+  return Array.from(new Set(ids));
+};
+
 const bookingService = {
   createBooking,
   getCurrentUserBookings,
+  getCurrentUserBookingsPaginated,
   getBookingsByProviderId,
   updateBookingStatus,
   getBookingsByPropertyIdAndType,

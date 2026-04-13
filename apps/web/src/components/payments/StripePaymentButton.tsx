@@ -163,7 +163,7 @@ function StripeCheckoutForm({
           ) : (
             <>
               <CreditCard className="w-4 h-4 mr-2" />
-              Pay ${booking.totalPrice.toFixed(2)}
+              Pay ${ (booking.totalPrice * 0.07).toFixed(2) }
             </>
           )}
         </Button>
@@ -271,7 +271,7 @@ export default function StripePaymentButton({
             </DialogTitle>
             <DialogDescription>
               Enter your card details below to complete the payment of $
-              {booking.totalPrice.toFixed(2)} for your booking.
+              {(booking.totalPrice * 0.07).toFixed(2)} for your booking.
             </DialogDescription>
           </DialogHeader>
 

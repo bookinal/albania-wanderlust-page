@@ -18,12 +18,15 @@ import {
   DollarSign,
   Image as ImageIcon,
   X,
+  Star,
 } from "lucide-react";
 import { propertyRequestService } from "@/services/api/propertyRequest";
 import { authService } from "@/services/api/authService";
 import { PropertyRequest } from "@/types/request.type";
 import { Car as CarType } from "@/types/car.types";
+import { Apartment as ApartmentType } from "@/types/apartment.type";
 import { getCarById } from "@/services/api/carService";
+import { getApartmentById } from "@/services/api/apartmentService";
 import { useTranslation } from "react-i18next";
 import {
   Dialog,
@@ -33,11 +36,7 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import Hsidebar from "@/components/dashboard/hsidebar";
+import { useTheme } from "@/context/ThemeContext";
 
 // Property type icon mapping
 const PropertyTypeIcon = ({ type }: { type: string }) => {
@@ -56,45 +55,71 @@ const PropertyTypeIcon = ({ type }: { type: string }) => {
 export default function PropertyRequestsManagement() {
   const [loading, setLoading] = useState(true);
   const [requests, setRequests] = useState<PropertyRequest[]>([]);
-  const [filteredRequests, setFilteredRequests] = useState<PropertyRequest[]>(
-    [],
-  );
-  const [filter, setFilter] = useState<
-    "all" | "pending" | "approved" | "rejected"
-  >("pending");
-  const [propertyTypeFilter, setPropertyTypeFilter] = useState<
-    "all" | "car" | "apartment" | "hotel"
-  >("all");
+  const [filteredRequests, setFilteredRequests] = useState<PropertyRequest[]>([]);
+  const [filter, setFilter] = useState<"all" | "pending" | "approved" | "rejected">("pending");
+  const [propertyTypeFilter, setPropertyTypeFilter] = useState<"all" | "car" | "apartment" | "hotel">("all");
   const [processing, setProcessing] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [reviewerId, setReviewerId] = useState<string>("");
 
   // Modal states
-  const [selectedRequest, setSelectedRequest] =
-    useState<PropertyRequest | null>(null);
-  const [propertyDetails, setPropertyDetails] = useState<CarType | null>(null);
+  const [selectedRequest, setSelectedRequest] = useState<PropertyRequest | null>(null);
+  const [propertyDetails, setPropertyDetails] = useState<CarType | ApartmentType | null>(null);
   const [detailsLoading, setDetailsLoading] = useState(false);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [showRejectModal, setShowRejectModal] = useState(false);
+  const [showApproveModal, setShowApproveModal] = useState(false);
   const [rejectionReason, setRejectionReason] = useState("");
+  const [adminRating, setAdminRating] = useState<number>(0);
 
   const { t } = useTranslation();
+  const { isDark } = useTheme();
 
-  useEffect(() => {
-    initializePage();
-  }, []);
+  const tk = {
+    pageBg: isDark ? '#0d0d0d' : '#f5f4f1',
+    pageText: isDark ? '#ffffff' : '#111115',
+    cardBg: isDark ? 'rgba(255,255,255,0.025)' : '#ffffff',
+    cardBorder: isDark ? 'rgba(255,255,255,0.07)' : '#e5e2de',
+    mutedText: isDark ? 'rgba(255,255,255,0.40)' : '#6b6663',
+    dimText: isDark ? 'rgba(255,255,255,0.70)' : '#44403c',
+    filterBtnBg: isDark ? 'rgba(255,255,255,0.04)' : '#edeae6',
+    filterBtnText: isDark ? 'rgba(255,255,255,0.60)' : '#44403c',
+    iconMuted: isDark ? 'rgba(255,255,255,0.40)' : '#9e9994',
+    reasonBg: isDark ? 'rgba(255,255,255,0.03)' : '#f5f2ee',
+    reasonBorder: isDark ? 'rgba(255,255,255,0.05)' : '#e5e2de',
+    providerBg: isDark ? 'rgba(255,255,255,0.03)' : '#f5f2ee',
+    divider: isDark ? 'rgba(255,255,255,0.05)' : '#e5e2de',
+    inputBg: isDark ? 'rgba(255,255,255,0.06)' : '#ffffff',
+    inputBorder: isDark ? 'rgba(255,255,255,0.10)' : '#ddd9d5',
+    inputText: isDark ? '#ffffff' : '#111115',
+    dialogBg: isDark ? '#1a1a1a' : '#ffffff',
+    dialogText: isDark ? '#ffffff' : '#111115',
+    labelText: isDark ? 'rgba(255,255,255,0.50)' : '#6b6663',
+    avatarBg: isDark ? 'rgba(255,255,255,0.08)' : '#e5e2de',
+    hintBg: isDark ? 'rgba(59,130,246,0.10)' : '#eff6ff',
+    hintText: isDark ? '#93c5fd' : '#1d4ed8',
+  };
 
-  useEffect(() => {
-    filterRequests();
-  }, [filter, propertyTypeFilter, requests]);
+  const inputStyle: React.CSSProperties = {
+    width: '100%',
+    borderRadius: 10,
+    border: `1px solid ${tk.inputBorder}`,
+    background: tk.inputBg,
+    padding: '8px 12px',
+    fontSize: 14,
+    color: tk.inputText,
+    outline: 'none',
+  };
+
+  useEffect(() => { initializePage(); }, []);
+  useEffect(() => { filterRequests(); }, [filter, propertyTypeFilter, requests]);
 
   const initializePage = async () => {
     try {
       setLoading(true);
       const id = await authService.getCurrentUserId();
       setReviewerId(id);
-
       const allRequests = await propertyRequestService.getAllRequests();
       setRequests(allRequests);
     } catch (err) {
@@ -107,19 +132,8 @@ export default function PropertyRequestsManagement() {
 
   const filterRequests = () => {
     let filtered = requests;
-
-    // Filter by status
-    if (filter !== "all") {
-      filtered = filtered.filter((req) => req.status === filter);
-    }
-
-    // Filter by property type
-    if (propertyTypeFilter !== "all") {
-      filtered = filtered.filter(
-        (req) => req.propertyType === propertyTypeFilter,
-      );
-    }
-
+    if (filter !== "all") filtered = filtered.filter((req) => req.status === filter);
+    if (propertyTypeFilter !== "all") filtered = filtered.filter((req) => req.propertyType === propertyTypeFilter);
     setFilteredRequests(filtered);
   };
 
@@ -127,14 +141,14 @@ export default function PropertyRequestsManagement() {
     setDetailsLoading(true);
     setSelectedRequest(request);
     setShowDetailsModal(true);
-
     try {
-      // For now, only car details are implemented
       if (request.propertyType === "car") {
         const car = await getCarById(parseInt(request.propertyId));
         setPropertyDetails(car);
+      } else if (request.propertyType === "apartment") {
+        const apartment = await getApartmentById(parseInt(request.propertyId));
+        setPropertyDetails(apartment);
       }
-      // TODO: Add apartment and hotel loading when implemented
     } catch (err) {
       console.error("Error loading property details:", err);
       setError("Failed to load property details");
@@ -143,24 +157,16 @@ export default function PropertyRequestsManagement() {
     }
   };
 
-  const handleApprove = async (requestId: string) => {
-    if (
-      !window.confirm(t("propertyRequestsManagement.confirmations.approve"))
-    ) {
-      return;
-    }
-
+  const handleApprove = async (requestId: string, rating?: number) => {
+    if (!window.confirm(t("propertyRequestsManagement.confirmations.approve"))) return;
     try {
       setProcessing(requestId);
       setError(null);
-
-      await propertyRequestService.approveRequest(requestId, reviewerId);
+      await propertyRequestService.approveRequest(requestId, reviewerId, rating);
       setSuccess(t("propertyRequestsManagement.success.approve"));
-
-      // Refresh requests
       await initializePage();
       setShowDetailsModal(false);
-
+      setShowApproveModal(false);
       setTimeout(() => setSuccess(null), 5000);
     } catch (err: any) {
       setError(err.message || t("propertyRequestsManagement.errors.approve"));
@@ -176,30 +182,30 @@ export default function PropertyRequestsManagement() {
     setShowRejectModal(true);
   };
 
+  const openApproveModal = (request: PropertyRequest) => {
+    setSelectedRequest(request);
+    if (request.propertyType === "apartment" && propertyDetails && "rating" in propertyDetails) {
+      setAdminRating(propertyDetails.rating || 0);
+    } else {
+      setAdminRating(0);
+    }
+    setShowApproveModal(true);
+  };
+
   const handleReject = async () => {
     if (!selectedRequest) return;
-
     if (!rejectionReason.trim()) {
       setError(t("propertyRequestsManagement.errors.rejectionReasonRequired"));
       return;
     }
-
     try {
       setProcessing(selectedRequest.id);
       setError(null);
-
-      await propertyRequestService.rejectRequest(
-        selectedRequest.id,
-        reviewerId,
-        rejectionReason,
-      );
+      await propertyRequestService.rejectRequest(selectedRequest.id, reviewerId, rejectionReason);
       setSuccess(t("propertyRequestsManagement.success.reject"));
-
-      // Refresh requests
       await initializePage();
       setShowRejectModal(false);
       setShowDetailsModal(false);
-
       setTimeout(() => setSuccess(null), 5000);
     } catch (err: any) {
       setError(err.message || t("propertyRequestsManagement.errors.reject"));
@@ -213,23 +219,20 @@ export default function PropertyRequestsManagement() {
     switch (status) {
       case "pending":
         return (
-          <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">
-            <Clock className="w-4 h-4 mr-1" />
-            {t("propertyRequestsManagement.status.pending")}
+          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium" style={{ background: isDark ? 'rgba(234,179,8,0.10)' : '#fefce8', color: isDark ? '#fbbf24' : '#854d0e', border: `1px solid ${isDark ? 'rgba(234,179,8,0.25)' : '#fde047'}` }}>
+            <Clock className="w-3.5 h-3.5 mr-1" />{t("propertyRequestsManagement.status.pending")}
           </span>
         );
       case "approved":
         return (
-          <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
-            <CheckCircle className="w-4 h-4 mr-1" />
-            {t("propertyRequestsManagement.status.approved")}
+          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium" style={{ background: isDark ? 'rgba(34,197,94,0.10)' : '#f0fdf4', color: isDark ? '#4ade80' : '#166534', border: `1px solid ${isDark ? 'rgba(34,197,94,0.25)' : '#bbf7d0'}` }}>
+            <CheckCircle className="w-3.5 h-3.5 mr-1" />{t("propertyRequestsManagement.status.approved")}
           </span>
         );
       case "rejected":
         return (
-          <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800">
-            <XCircle className="w-4 h-4 mr-1" />
-            {t("propertyRequestsManagement.status.rejected")}
+          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium" style={{ background: isDark ? 'rgba(239,68,68,0.10)' : '#fef2f2', color: isDark ? '#f87171' : '#991b1b', border: `1px solid ${isDark ? 'rgba(239,68,68,0.25)' : '#fecaca'}` }}>
+            <XCircle className="w-3.5 h-3.5 mr-1" />{t("propertyRequestsManagement.status.rejected")}
           </span>
         );
       default:
@@ -238,182 +241,112 @@ export default function PropertyRequestsManagement() {
   };
 
   const getPropertyTypeBadge = (type: string) => {
-    const colors = {
-      car: "bg-blue-100 text-blue-800",
-      apartment: "bg-purple-100 text-purple-800",
-      hotel: "bg-orange-100 text-orange-800",
+    const styles: Record<string, { bg: string; text: string; border: string }> = {
+      car: { bg: isDark ? 'rgba(59,130,246,0.10)' : '#eff6ff', text: isDark ? '#93c5fd' : '#1d4ed8', border: isDark ? 'rgba(59,130,246,0.25)' : '#bfdbfe' },
+      apartment: { bg: isDark ? 'rgba(139,92,246,0.10)' : '#f5f3ff', text: isDark ? '#c4b5fd' : '#6d28d9', border: isDark ? 'rgba(139,92,246,0.25)' : '#ddd6fe' },
+      hotel: { bg: isDark ? 'rgba(249,115,22,0.10)' : '#fff7ed', text: isDark ? '#fdba74' : '#c2410c', border: isDark ? 'rgba(249,115,22,0.25)' : '#fed7aa' },
     };
-
+    const s = styles[type] || { bg: tk.filterBtnBg, text: tk.filterBtnText, border: tk.cardBorder };
     return (
-      <span
-        className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${colors[type as keyof typeof colors] || "bg-gray-100 text-gray-800"}`}
-      >
+      <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium gap-1" style={{ background: s.bg, color: s.text, border: `1px solid ${s.border}` }}>
         <PropertyTypeIcon type={type} />
-        <span className="ml-1">
-          {t(`propertyRequestsManagement.propertyTypes.${type}`)}
-        </span>
+        {t(`propertyRequestsManagement.propertyTypes.${type}`)}
       </span>
     );
   };
 
   if (loading) {
     return (
-      <Hsidebar>
-        <div className="flex items-center justify-center p-12">
-          <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+      <div className="flex items-center justify-center p-12 min-h-screen -m-8" style={{ background: tk.pageBg }}>
+          <Loader2 className="w-8 h-8 animate-spin text-[#e41e20]" />
         </div>
-      </Hsidebar>
     );
   }
 
   return (
-    <Hsidebar>
-      <div className="p-6">
+    <div style={{ background: tk.pageBg, color: tk.pageText }} className="-m-8 min-h-screen p-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          <h1 className="text-3xl font-bold mb-2" style={{ color: tk.pageText }}>
             {t("propertyRequestsManagement.title")}
           </h1>
-          <p className="text-gray-600">
-            {t("propertyRequestsManagement.subtitle")}
-          </p>
+          <p style={{ color: tk.mutedText }}>{t("propertyRequestsManagement.subtitle")}</p>
         </div>
 
         {/* Alert Messages */}
         {error && (
-          <div className="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg flex items-start">
-            <AlertCircle className="w-5 h-5 mr-3 mt-0.5 flex-shrink-0" />
-            <span>{error}</span>
-            <button onClick={() => setError(null)} className="ml-auto">
-              <X className="w-4 h-4" />
-            </button>
+          <div className="mb-6 px-4 py-3 rounded-xl flex items-start gap-3 border" style={{ background: isDark ? 'rgba(239,68,68,0.10)' : '#fef2f2', borderColor: isDark ? 'rgba(239,68,68,0.25)' : '#fecaca', color: isDark ? '#f87171' : '#991b1b' }}>
+            <AlertCircle className="w-5 h-5 mt-0.5 flex-shrink-0" />
+            <span className="flex-1">{error}</span>
+            <button onClick={() => setError(null)}><X className="w-4 h-4" /></button>
           </div>
         )}
         {success && (
-          <div className="mb-6 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg flex items-start">
-            <CheckCircle className="w-5 h-5 mr-3 mt-0.5 flex-shrink-0" />
-            <span>{success}</span>
-            <button onClick={() => setSuccess(null)} className="ml-auto">
-              <X className="w-4 h-4" />
-            </button>
+          <div className="mb-6 px-4 py-3 rounded-xl flex items-start gap-3 border" style={{ background: isDark ? 'rgba(34,197,94,0.10)' : '#f0fdf4', borderColor: isDark ? 'rgba(34,197,94,0.25)' : '#bbf7d0', color: isDark ? '#4ade80' : '#166534' }}>
+            <CheckCircle className="w-5 h-5 mt-0.5 flex-shrink-0" />
+            <span className="flex-1">{success}</span>
+            <button onClick={() => setSuccess(null)}><X className="w-4 h-4" /></button>
           </div>
         )}
 
         {/* Filter Tabs */}
-        <div className="mb-6 space-y-4">
+        <div className="mb-6 space-y-3">
           {/* Status Filter */}
           <div className="flex items-center gap-2 flex-wrap">
-            <Filter className="w-5 h-5 text-gray-600" />
-            <span className="text-sm font-medium text-gray-700 mr-2">
+            <Filter className="w-5 h-5" style={{ color: tk.iconMuted }} />
+            <span className="text-sm font-medium mr-2" style={{ color: tk.dimText }}>
               {t("propertyRequestsManagement.filters.status.label")}:
             </span>
-            <button
-              onClick={() => setFilter("all")}
-              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                filter === "all"
-                  ? "bg-blue-600 text-white"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-              }`}
-            >
-              {t("propertyRequestsManagement.filters.status.all")} (
-              {requests.length})
-            </button>
-            <button
-              onClick={() => setFilter("pending")}
-              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                filter === "pending"
-                  ? "bg-yellow-600 text-white"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-              }`}
-            >
-              {t("propertyRequestsManagement.filters.status.pending")} (
-              {requests.filter((r) => r.status === "pending").length})
-            </button>
-            <button
-              onClick={() => setFilter("approved")}
-              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                filter === "approved"
-                  ? "bg-green-600 text-white"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-              }`}
-            >
-              {t("propertyRequestsManagement.filters.status.approved")} (
-              {requests.filter((r) => r.status === "approved").length})
-            </button>
-            <button
-              onClick={() => setFilter("rejected")}
-              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                filter === "rejected"
-                  ? "bg-red-600 text-white"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-              }`}
-            >
-              {t("propertyRequestsManagement.filters.status.rejected")} (
-              {requests.filter((r) => r.status === "rejected").length})
-            </button>
+            {([
+              { key: "all", label: t("propertyRequestsManagement.filters.status.all"), count: requests.length, activeColor: '#E8192C' },
+              { key: "pending", label: t("propertyRequestsManagement.filters.status.pending"), count: requests.filter(r => r.status === "pending").length, activeColor: '#d97706' },
+              { key: "approved", label: t("propertyRequestsManagement.filters.status.approved"), count: requests.filter(r => r.status === "approved").length, activeColor: '#16a34a' },
+              { key: "rejected", label: t("propertyRequestsManagement.filters.status.rejected"), count: requests.filter(r => r.status === "rejected").length, activeColor: '#dc2626' },
+            ] as const).map(({ key, label, count, activeColor }) => (
+              <button
+                key={key}
+                onClick={() => setFilter(key)}
+                style={filter === key ? { background: activeColor, color: '#ffffff' } : { background: tk.filterBtnBg, color: tk.filterBtnText }}
+                className="px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+              >
+                {label} ({count})
+              </button>
+            ))}
           </div>
 
           {/* Property Type Filter */}
-          <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-sm font-medium text-gray-700 mr-2 ml-7">
+          <div className="flex items-center gap-2 flex-wrap ml-7">
+            <span className="text-sm font-medium mr-2" style={{ color: tk.dimText }}>
               {t("propertyRequestsManagement.filters.type.label")}:
             </span>
-            <button
-              onClick={() => setPropertyTypeFilter("all")}
-              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                propertyTypeFilter === "all"
-                  ? "bg-gray-800 text-white"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-              }`}
-            >
-              Cars
-            </button>
-            <button
-              onClick={() => setPropertyTypeFilter("car")}
-              className={`px-4 py-2 rounded-lg font-medium transition-colors inline-flex items-center gap-1 ${
-                propertyTypeFilter === "car"
-                  ? "bg-blue-600 text-white"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-              }`}
-            >
-              <Car className="w-4 h-4" />
-              {t("propertyRequestsManagement.filters.type.car")}
-            </button>
-            <button
-              onClick={() => setPropertyTypeFilter("apartment")}
-              className={`px-4 py-2 rounded-lg font-medium transition-colors inline-flex items-center gap-1 ${
-                propertyTypeFilter === "apartment"
-                  ? "bg-purple-600 text-white"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-              }`}
-            >
-              <Home className="w-4 h-4" />
-              {t("propertyRequestsManagement.filters.type.apartment")}
-            </button>
-            <button
-              onClick={() => setPropertyTypeFilter("hotel")}
-              className={`px-4 py-2 rounded-lg font-medium transition-colors inline-flex items-center gap-1 ${
-                propertyTypeFilter === "hotel"
-                  ? "bg-orange-600 text-white"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-              }`}
-            >
-              <Hotel className="w-4 h-4" />
-              {t("propertyRequestsManagement.filters.type.hotel")}
-            </button>
+            {([
+              { key: "all", label: "All", activeColor: isDark ? '#374151' : '#374151', icon: null },
+              { key: "car", label: t("propertyRequestsManagement.filters.type.car"), activeColor: '#2563eb', icon: <Car className="w-4 h-4" /> },
+              { key: "apartment", label: t("propertyRequestsManagement.filters.type.apartment"), activeColor: '#7c3aed', icon: <Home className="w-4 h-4" /> },
+              { key: "hotel", label: t("propertyRequestsManagement.filters.type.hotel"), activeColor: '#ea580c', icon: <Hotel className="w-4 h-4" /> },
+            ] as const).map(({ key, label, activeColor, icon }) => (
+              <button
+                key={key}
+                onClick={() => setPropertyTypeFilter(key)}
+                style={propertyTypeFilter === key ? { background: activeColor, color: '#ffffff' } : { background: tk.filterBtnBg, color: tk.filterBtnText }}
+                className="px-4 py-2 rounded-lg text-sm font-medium transition-colors inline-flex items-center gap-1"
+              >
+                {icon}{label}
+              </button>
+            ))}
           </div>
         </div>
 
         {/* Requests List */}
         {filteredRequests.length === 0 ? (
-          <div className="bg-white rounded-xl shadow-sm p-12 text-center">
-            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Clock className="w-8 h-8 text-gray-400" />
+          <div className="rounded-xl p-12 text-center border" style={{ background: tk.cardBg, borderColor: tk.cardBorder }}>
+            <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: tk.reasonBg }}>
+              <Clock className="w-8 h-8" style={{ color: tk.iconMuted }} />
             </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
+            <h3 className="text-lg font-medium mb-2" style={{ color: tk.pageText }}>
               {t("propertyRequestsManagement.empty.title")}
             </h3>
-            <p className="text-gray-500">
+            <p style={{ color: tk.mutedText }}>
               {filter === "pending"
                 ? t("propertyRequestsManagement.empty.noPendingRequests")
                 : t("propertyRequestsManagement.empty.noFilteredRequests")}
@@ -424,7 +357,8 @@ export default function PropertyRequestsManagement() {
             {filteredRequests.map((request) => (
               <div
                 key={request.id}
-                className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow"
+                className="rounded-xl p-6 border transition-shadow hover:shadow-lg hover:-translate-y-0.5 transform duration-200"
+                style={{ background: tk.cardBg, borderColor: tk.cardBorder }}
               >
                 <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                   {/* Request Info */}
@@ -436,102 +370,80 @@ export default function PropertyRequestsManagement() {
 
                     {/* Provider Info */}
                     <div className="flex items-center gap-4 mb-3">
-                      <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center overflow-hidden">
+                      <div className="w-10 h-10 rounded-full flex items-center justify-center overflow-hidden" style={{ background: tk.avatarBg }}>
                         {request.provider?.avatar_url ? (
-                          <img
-                            src={request.provider.avatar_url}
-                            alt={request.provider.full_name || "Provider"}
-                            className="w-full h-full object-cover"
-                          />
+                          <img src={request.provider.avatar_url} alt={request.provider.full_name || "Provider"} className="w-full h-full object-cover" />
                         ) : (
-                          <User className="w-5 h-5 text-gray-500" />
+                          <User className="w-5 h-5" style={{ color: tk.iconMuted }} />
                         )}
                       </div>
                       <div>
-                        <p className="font-medium text-gray-900">
-                          {request.provider?.full_name ||
-                            t("propertyRequestsManagement.provider.unknown")}
+                        <p className="font-medium text-sm" style={{ color: tk.pageText }}>
+                          {request.provider?.full_name || t("propertyRequestsManagement.provider.unknown")}
                         </p>
-                        <p className="text-sm text-gray-500 flex items-center gap-1">
+                        <p className="text-xs flex items-center gap-1" style={{ color: tk.mutedText }}>
                           <Mail className="w-3 h-3" />
-                          {request.provider?.email ||
-                            t("propertyRequestsManagement.provider.noEmail")}
+                          {request.provider?.email || t("propertyRequestsManagement.provider.noEmail")}
                         </p>
                       </div>
                     </div>
 
                     {/* Timestamps */}
-                    <div className="flex flex-wrap gap-4 text-sm text-gray-500">
+                    <div className="flex flex-wrap gap-4 text-xs" style={{ color: tk.mutedText }}>
                       <span className="flex items-center gap-1">
-                        <Calendar className="w-4 h-4" />
-                        {t(
-                          "propertyRequestsManagement.provider.submitted",
-                        )}: {request.submittedAt.toLocaleDateString()}
+                        <Calendar className="w-3.5 h-3.5" />
+                        {t("propertyRequestsManagement.provider.submitted")}: {request.submittedAt.toLocaleDateString()}
                       </span>
                       {request.reviewedAt && (
                         <span className="flex items-center gap-1">
-                          <CheckCircle className="w-4 h-4" />
-                          {t(
-                            "propertyRequestsManagement.provider.reviewed",
-                          )}: {request.reviewedAt.toLocaleDateString()}
+                          <CheckCircle className="w-3.5 h-3.5" />
+                          {t("propertyRequestsManagement.provider.reviewed")}: {request.reviewedAt.toLocaleDateString()}
                         </span>
                       )}
                     </div>
 
                     {/* Rejection Reason */}
-                    {request.status === "rejected" &&
-                      request.rejectionReason && (
-                        <div className="mt-3 p-3 bg-red-50 border border-red-100 rounded-lg">
-                          <p className="text-sm text-red-700">
-                            <strong>
-                              {t(
-                                "propertyRequestsManagement.provider.rejectionReason",
-                              )}
-                              :
-                            </strong>{" "}
-                            {request.rejectionReason}
-                          </p>
-                        </div>
-                      )}
+                    {request.status === "rejected" && request.rejectionReason && (
+                      <div className="mt-3 p-3 rounded-lg border" style={{ background: isDark ? 'rgba(239,68,68,0.08)' : '#fef2f2', borderColor: isDark ? 'rgba(239,68,68,0.20)' : '#fecaca' }}>
+                        <p className="text-xs" style={{ color: isDark ? '#f87171' : '#991b1b' }}>
+                          <strong>{t("propertyRequestsManagement.provider.rejectionReason")}:</strong>{" "}
+                          {request.rejectionReason}
+                        </p>
+                      </div>
+                    )}
                   </div>
 
                   {/* Actions */}
                   <div className="flex flex-wrap items-center gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
+                    <button
                       onClick={() => loadPropertyDetails(request)}
-                      className="flex items-center gap-1"
+                      className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-medium border transition-colors"
+                      style={{ background: tk.filterBtnBg, color: tk.filterBtnText, borderColor: tk.cardBorder }}
                     >
                       <Eye className="w-4 h-4" />
                       {t("propertyRequestsManagement.actions.viewDetails")}
-                    </Button>
+                    </button>
 
                     {request.status === "pending" && (
                       <>
-                        <Button
-                          size="sm"
-                          onClick={() => handleApprove(request.id)}
+                        <button
+                          onClick={() => request.propertyType === "apartment" ? openApproveModal(request) : handleApprove(request.id)}
                           disabled={processing === request.id}
-                          className="bg-green-600 hover:bg-green-700 text-white flex items-center gap-1"
+                          className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-medium disabled:opacity-50 transition-colors"
+                          style={{ background: '#16a34a', color: '#ffffff' }}
                         >
-                          {processing === request.id ? (
-                            <Loader2 className="w-4 h-4 animate-spin" />
-                          ) : (
-                            <CheckCircle className="w-4 h-4" />
-                          )}
+                          {processing === request.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle className="w-4 h-4" />}
                           {t("propertyRequestsManagement.actions.approve")}
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="destructive"
+                        </button>
+                        <button
                           onClick={() => openRejectModal(request)}
                           disabled={processing === request.id}
-                          className="flex items-center gap-1"
+                          className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-medium disabled:opacity-50 transition-colors"
+                          style={{ background: '#dc2626', color: '#ffffff' }}
                         >
                           <XCircle className="w-4 h-4" />
                           {t("propertyRequestsManagement.actions.reject")}
-                        </Button>
+                        </button>
                       </>
                     )}
                   </div>
@@ -543,219 +455,238 @@ export default function PropertyRequestsManagement() {
 
         {/* Property Details Modal */}
         <Dialog open={showDetailsModal} onOpenChange={setShowDetailsModal}>
-          <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          <DialogContent style={{ background: tk.dialogBg, color: tk.dialogText, maxWidth: 720, maxHeight: '90vh', overflowY: 'auto' }}>
             <DialogHeader>
-              <DialogTitle className="text-xl font-bold flex items-center gap-2">
+              <DialogTitle className="text-xl font-bold flex items-center gap-2" style={{ color: tk.dialogText }}>
                 <PropertyTypeIcon type={selectedRequest?.propertyType || ""} />
                 {t("propertyRequestsManagement.modal.details.title")}
               </DialogTitle>
-              <DialogDescription>
+              <DialogDescription style={{ color: tk.mutedText }}>
                 {t("propertyRequestsManagement.modal.details.description")}
               </DialogDescription>
             </DialogHeader>
 
             {detailsLoading ? (
               <div className="flex items-center justify-center py-12">
-                <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+                <Loader2 className="w-8 h-8 animate-spin text-[#e41e20]" />
               </div>
-            ) : selectedRequest?.propertyType === "car" && propertyDetails ? (
+            ) : selectedRequest?.propertyType === "car" && propertyDetails && "brand" in propertyDetails ? (
               <div className="space-y-6">
                 {/* Car Images */}
-                {propertyDetails.imageUrls &&
-                  propertyDetails.imageUrls.length > 0 && (
-                    <div>
-                      <h4 className="font-medium text-gray-900 mb-3 flex items-center gap-2">
-                        <ImageIcon className="w-4 h-4" />
-                        Images
-                      </h4>
-                      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                        {propertyDetails.imageUrls.map((url, index) => (
-                          <img
-                            key={index}
-                            src={url}
-                            alt={`Car image ${index + 1}`}
-                            className="w-full h-32 object-cover rounded-lg border"
-                          />
-                        ))}
-                      </div>
+                {propertyDetails.imageUrls && propertyDetails.imageUrls.length > 0 && (
+                  <div>
+                    <h4 className="font-medium mb-3 flex items-center gap-2" style={{ color: tk.pageText }}>
+                      <ImageIcon className="w-4 h-4" /> Images
+                    </h4>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                      {propertyDetails.imageUrls.map((url, index) => (
+                        <img key={index} src={url} alt={`Car image ${index + 1}`} className="w-full h-32 object-cover rounded-lg border" style={{ borderColor: tk.cardBorder }} />
+                      ))}
                     </div>
-                  )}
+                  </div>
+                )}
 
                 {/* Car Details Grid */}
                 <div className="grid grid-cols-2 gap-4">
+                  {[
+                    { label: "Car Name", value: propertyDetails.name },
+                    { label: "Brand", value: propertyDetails.brand },
+                    { label: "Type", value: propertyDetails.type },
+                    { label: "Year", value: propertyDetails.year },
+                    { label: "Transmission", value: propertyDetails.transmission },
+                    { label: "Fuel Type", value: propertyDetails.fuelType },
+                    { label: "Seats", value: propertyDetails.seats },
+                    { label: "Mileage", value: `${propertyDetails.mileage?.toLocaleString()} km` },
+                    { label: "Color", value: propertyDetails.color },
+                    { label: "Plate Number", value: propertyDetails.plateNumber },
+                    { label: "Status", value: propertyDetails.status },
+                  ].map(({ label, value }) => (
+                    <div key={label} className="space-y-1">
+                      <p className="text-xs" style={{ color: tk.labelText }}>{label}</p>
+                      <p className="font-medium text-sm" style={{ color: tk.pageText }}>{value}</p>
+                    </div>
+                  ))}
                   <div className="space-y-1">
-                    <Label className="text-sm text-gray-500">Car Name</Label>
-                    <p className="font-medium">{propertyDetails.name}</p>
-                  </div>
-                  <div className="space-y-1">
-                    <Label className="text-sm text-gray-500">Brand</Label>
-                    <p className="font-medium">{propertyDetails.brand}</p>
-                  </div>
-                  <div className="space-y-1">
-                    <Label className="text-sm text-gray-500">Type</Label>
-                    <p className="font-medium">{propertyDetails.type}</p>
-                  </div>
-                  <div className="space-y-1">
-                    <Label className="text-sm text-gray-500">Year</Label>
-                    <p className="font-medium">{propertyDetails.year}</p>
-                  </div>
-                  <div className="space-y-1">
-                    <Label className="text-sm text-gray-500">
-                      Transmission
-                    </Label>
-                    <p className="font-medium">
-                      {propertyDetails.transmission}
-                    </p>
-                  </div>
-                  <div className="space-y-1">
-                    <Label className="text-sm text-gray-500">Fuel Type</Label>
-                    <p className="font-medium">{propertyDetails.fuelType}</p>
-                  </div>
-                  <div className="space-y-1">
-                    <Label className="text-sm text-gray-500">Seats</Label>
-                    <p className="font-medium">{propertyDetails.seats}</p>
-                  </div>
-                  <div className="space-y-1">
-                    <Label className="text-sm text-gray-500">Mileage</Label>
-                    <p className="font-medium">
-                      {propertyDetails.mileage?.toLocaleString()} km
-                    </p>
-                  </div>
-                  <div className="space-y-1">
-                    <Label className="text-sm text-gray-500">Color</Label>
-                    <p className="font-medium">{propertyDetails.color}</p>
-                  </div>
-                  <div className="space-y-1">
-                    <Label className="text-sm text-gray-500">
-                      Plate Number
-                    </Label>
-                    <p className="font-medium">{propertyDetails.plateNumber}</p>
-                  </div>
-                  <div className="space-y-1">
-                    <Label className="text-sm text-gray-500 flex items-center gap-1">
-                      <DollarSign className="w-3 h-3" />
-                      Price Per Day
-                    </Label>
-                    <p className="font-medium text-green-600">
-                      ${propertyDetails.pricePerDay}
-                    </p>
-                  </div>
-                  <div className="space-y-1">
-                    <Label className="text-sm text-gray-500">Status</Label>
-                    <p className="font-medium capitalize">
-                      {propertyDetails.status}
-                    </p>
+                    <p className="text-xs flex items-center gap-1" style={{ color: tk.labelText }}><DollarSign className="w-3 h-3" /> Price Per Day</p>
+                    <p className="font-medium text-sm text-green-500">${propertyDetails.pricePerDay}</p>
                   </div>
                 </div>
 
                 {/* Location */}
                 <div className="space-y-1">
-                  <Label className="text-sm text-gray-500 flex items-center gap-1">
-                    <MapPin className="w-3 h-3" />
-                    Pick-up Location
-                  </Label>
-                  <p className="font-medium">
-                    {propertyDetails.pickUpLocation || "Not specified"}
-                  </p>
+                  <p className="text-xs flex items-center gap-1" style={{ color: tk.labelText }}><MapPin className="w-3 h-3" /> Pick-up Location</p>
+                  <p className="font-medium text-sm" style={{ color: tk.pageText }}>{propertyDetails.pickUpLocation || "Not specified"}</p>
                   {propertyDetails.lat && propertyDetails.lng && (
-                    <p className="text-sm text-gray-500">
-                      Coordinates: {propertyDetails.lat.toFixed(6)},{" "}
-                      {propertyDetails.lng.toFixed(6)}
+                    <p className="text-xs" style={{ color: tk.mutedText }}>
+                      Coordinates: {propertyDetails.lat.toFixed(6)}, {propertyDetails.lng.toFixed(6)}
                     </p>
                   )}
                 </div>
 
                 {/* Features */}
-                {propertyDetails.features &&
-                  propertyDetails.features.length > 0 && (
-                    <div className="space-y-2">
-                      <Label className="text-sm text-gray-500">Features</Label>
-                      <div className="flex flex-wrap gap-2">
-                        {propertyDetails.features.map((feature, index) => (
-                          <span
-                            key={index}
-                            className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm"
-                          >
-                            {feature}
-                          </span>
-                        ))}
-                      </div>
+                {propertyDetails.features && propertyDetails.features.length > 0 && (
+                  <div className="space-y-2">
+                    <p className="text-xs" style={{ color: tk.labelText }}>Features</p>
+                    <div className="flex flex-wrap gap-2">
+                      {propertyDetails.features.map((feature, index) => (
+                        <span key={index} className="px-3 py-1 rounded-full text-sm" style={{ background: isDark ? 'rgba(59,130,246,0.10)' : '#eff6ff', color: isDark ? '#93c5fd' : '#1d4ed8' }}>
+                          {feature}
+                        </span>
+                      ))}
                     </div>
-                  )}
+                  </div>
+                )}
 
                 {/* Provider Info */}
-                <div className="border-t pt-4">
-                  <h4 className="font-medium text-gray-900 mb-3 flex items-center gap-2">
-                    <User className="w-4 h-4" />
-                    Provider Information
+                <div style={{ borderTop: `1px solid ${tk.divider}` }} className="pt-4">
+                  <h4 className="font-medium mb-3 flex items-center gap-2" style={{ color: tk.pageText }}>
+                    <User className="w-4 h-4" /> Provider Information
                   </h4>
-                  <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
-                    <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center overflow-hidden">
+                  <div className="flex items-center gap-4 p-4 rounded-lg" style={{ background: tk.providerBg }}>
+                    <div className="w-12 h-12 rounded-full flex items-center justify-center overflow-hidden" style={{ background: tk.avatarBg }}>
                       {selectedRequest?.provider?.avatar_url ? (
-                        <img
-                          src={selectedRequest.provider.avatar_url}
-                          alt="Provider"
-                          className="w-full h-full object-cover"
-                        />
+                        <img src={selectedRequest.provider.avatar_url} alt="Provider" className="w-full h-full object-cover" />
                       ) : (
-                        <User className="w-6 h-6 text-gray-500" />
+                        <User className="w-6 h-6" style={{ color: tk.iconMuted }} />
                       )}
                     </div>
                     <div>
-                      <p className="font-medium">
-                        {selectedRequest?.provider?.full_name || "Unknown"}
-                      </p>
-                      <p className="text-sm text-gray-500 flex items-center gap-1">
-                        <Mail className="w-3 h-3" />
-                        {selectedRequest?.provider?.email}
-                      </p>
+                      <p className="font-medium text-sm" style={{ color: tk.pageText }}>{selectedRequest?.provider?.full_name || "Unknown"}</p>
+                      <p className="text-xs flex items-center gap-1" style={{ color: tk.mutedText }}><Mail className="w-3 h-3" />{selectedRequest?.provider?.email}</p>
                       {selectedRequest?.provider?.phone && (
-                        <p className="text-sm text-gray-500 flex items-center gap-1">
-                          <Phone className="w-3 h-3" />
-                          {selectedRequest.provider.phone}
-                        </p>
+                        <p className="text-xs flex items-center gap-1" style={{ color: tk.mutedText }}><Phone className="w-3 h-3" />{selectedRequest.provider.phone}</p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ) : selectedRequest?.propertyType === "apartment" && propertyDetails && "rooms" in propertyDetails ? (
+              <div className="space-y-6">
+                {/* Apartment Images */}
+                {propertyDetails.imageUrls && propertyDetails.imageUrls.length > 0 && (
+                  <div>
+                    <h4 className="font-medium mb-3 flex items-center gap-2" style={{ color: tk.pageText }}>
+                      <ImageIcon className="w-4 h-4" /> Images
+                    </h4>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                      {propertyDetails.imageUrls.map((url, index) => (
+                        <img key={index} src={url} alt={`Apartment image ${index + 1}`} className="w-full h-32 object-cover rounded-lg border" style={{ borderColor: tk.cardBorder }} />
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Apartment Details Grid */}
+                <div className="grid grid-cols-2 gap-4">
+                  {[
+                    { label: "Apartment Name", value: propertyDetails.name },
+                    { label: "Address", value: propertyDetails.address || "Not specified" },
+                    { label: "Location", value: propertyDetails.location || "Not specified" },
+                    { label: "Rating", value: `${propertyDetails.rating} / 5` },
+                    { label: "Rooms", value: propertyDetails.rooms },
+                    { label: "Beds", value: propertyDetails.beds || 0 },
+                    { label: "Bathrooms", value: propertyDetails.bathrooms || 0 },
+                    { label: "Kitchens", value: propertyDetails.kitchens || 0 },
+                    { label: "Living Rooms", value: propertyDetails.livingRooms || 0 },
+                    { label: "Status", value: propertyDetails.status },
+                  ].map(({ label, value }) => (
+                    <div key={label} className="space-y-1">
+                      <p className="text-xs" style={{ color: tk.labelText }}>{label}</p>
+                      <p className="font-medium text-sm capitalize" style={{ color: tk.pageText }}>{value}</p>
+                    </div>
+                  ))}
+                  <div className="space-y-1">
+                    <p className="text-xs flex items-center gap-1" style={{ color: tk.labelText }}><DollarSign className="w-3 h-3" /> Price Per Day</p>
+                    <p className="font-medium text-sm text-green-500">${propertyDetails.price}</p>
+                  </div>
+                </div>
+
+                {/* Coordinates */}
+                {propertyDetails.lat && propertyDetails.lng && (
+                  <div className="space-y-1">
+                    <p className="text-xs flex items-center gap-1" style={{ color: tk.labelText }}><MapPin className="w-3 h-3" /> Location Coordinates</p>
+                    <p className="text-sm" style={{ color: tk.mutedText }}>{propertyDetails.lat.toFixed(6)}, {propertyDetails.lng.toFixed(6)}</p>
+                  </div>
+                )}
+
+                {/* Description */}
+                {propertyDetails.description && (
+                  <div className="space-y-2">
+                    <p className="text-xs" style={{ color: tk.labelText }}>Description</p>
+                    <p className="text-sm" style={{ color: tk.dimText }}>{propertyDetails.description}</p>
+                  </div>
+                )}
+
+                {/* Amenities */}
+                {propertyDetails.amenities && propertyDetails.amenities.length > 0 && (
+                  <div className="space-y-2">
+                    <p className="text-xs" style={{ color: tk.labelText }}>Amenities</p>
+                    <div className="flex flex-wrap gap-2">
+                      {propertyDetails.amenities.map((amenity, index) => (
+                        <span key={index} className="px-3 py-1 rounded-full text-sm" style={{ background: isDark ? 'rgba(139,92,246,0.10)' : '#f5f3ff', color: isDark ? '#c4b5fd' : '#6d28d9' }}>
+                          {amenity}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Provider Info */}
+                <div style={{ borderTop: `1px solid ${tk.divider}` }} className="pt-4">
+                  <h4 className="font-medium mb-3 flex items-center gap-2" style={{ color: tk.pageText }}>
+                    <User className="w-4 h-4" /> Provider Information
+                  </h4>
+                  <div className="flex items-center gap-4 p-4 rounded-lg" style={{ background: tk.providerBg }}>
+                    <div className="w-12 h-12 rounded-full flex items-center justify-center overflow-hidden" style={{ background: tk.avatarBg }}>
+                      {selectedRequest?.provider?.avatar_url ? (
+                        <img src={selectedRequest.provider.avatar_url} alt="Provider" className="w-full h-full object-cover" />
+                      ) : (
+                        <User className="w-6 h-6" style={{ color: tk.iconMuted }} />
+                      )}
+                    </div>
+                    <div>
+                      <p className="font-medium text-sm" style={{ color: tk.pageText }}>{selectedRequest?.provider?.full_name || "Unknown"}</p>
+                      <p className="text-xs flex items-center gap-1" style={{ color: tk.mutedText }}><Mail className="w-3 h-3" />{selectedRequest?.provider?.email}</p>
+                      {selectedRequest?.provider?.phone && (
+                        <p className="text-xs flex items-center gap-1" style={{ color: tk.mutedText }}><Phone className="w-3 h-3" />{selectedRequest.provider.phone}</p>
                       )}
                     </div>
                   </div>
                 </div>
               </div>
             ) : (
-              <div className="py-8 text-center text-gray-500">
+              <div className="py-8 text-center" style={{ color: tk.mutedText }}>
                 Property details not available
               </div>
             )}
 
             {selectedRequest?.status === "pending" && (
               <DialogFooter className="gap-2">
-                <Button
-                  variant="outline"
+                <button
                   onClick={() => setShowDetailsModal(false)}
+                  className="px-4 py-2 rounded-lg text-sm font-medium border transition-colors"
+                  style={{ background: tk.filterBtnBg, color: tk.filterBtnText, borderColor: tk.cardBorder }}
                 >
                   {t("propertyRequestsManagement.modal.details.close")}
-                </Button>
-                <Button
-                  variant="destructive"
-                  onClick={() => {
-                    setShowDetailsModal(false);
-                    openRejectModal(selectedRequest);
-                  }}
+                </button>
+                <button
+                  onClick={() => { setShowDetailsModal(false); openRejectModal(selectedRequest); }}
                   disabled={processing === selectedRequest.id}
+                  className="px-4 py-2 rounded-lg text-sm font-medium disabled:opacity-50 transition-colors"
+                  style={{ background: '#dc2626', color: '#ffffff' }}
                 >
-                  <XCircle className="w-4 h-4 mr-1" />
+                  <XCircle className="w-4 h-4 inline mr-1" />
                   {t("propertyRequestsManagement.actions.reject")}
-                </Button>
-                <Button
-                  onClick={() => handleApprove(selectedRequest.id)}
+                </button>
+                <button
+                  onClick={() => selectedRequest.propertyType === "apartment" ? openApproveModal(selectedRequest) : handleApprove(selectedRequest.id)}
                   disabled={processing === selectedRequest.id}
-                  className="bg-green-600 hover:bg-green-700"
+                  className="px-4 py-2 rounded-lg text-sm font-medium disabled:opacity-50 transition-colors"
+                  style={{ background: '#16a34a', color: '#ffffff' }}
                 >
-                  {processing === selectedRequest.id ? (
-                    <Loader2 className="w-4 h-4 mr-1 animate-spin" />
-                  ) : (
-                    <CheckCircle className="w-4 h-4 mr-1" />
-                  )}
+                  {processing === selectedRequest.id ? <Loader2 className="w-4 h-4 inline mr-1 animate-spin" /> : <CheckCircle className="w-4 h-4 inline mr-1" />}
                   {t("propertyRequestsManagement.modal.details.approve")}
-                </Button>
+                </button>
               </DialogFooter>
             )}
           </DialogContent>
@@ -763,59 +694,125 @@ export default function PropertyRequestsManagement() {
 
         {/* Rejection Modal */}
         <Dialog open={showRejectModal} onOpenChange={setShowRejectModal}>
-          <DialogContent>
+          <DialogContent style={{ background: tk.dialogBg, color: tk.dialogText }}>
             <DialogHeader>
-              <DialogTitle className="text-xl font-bold text-red-600 flex items-center gap-2">
+              <DialogTitle className="text-xl font-bold flex items-center gap-2 text-red-500">
                 <XCircle className="w-5 h-5" />
                 {t("propertyRequestsManagement.modal.reject.title")}
               </DialogTitle>
-              <DialogDescription>
+              <DialogDescription style={{ color: tk.mutedText }}>
                 {t("propertyRequestsManagement.modal.reject.description")}
               </DialogDescription>
             </DialogHeader>
 
             <div className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="rejectionReason">
+                <label className="text-sm font-medium" style={{ color: tk.labelText }}>
                   {t("propertyRequestsManagement.modal.reject.reasonLabel")}
-                </Label>
-                <Textarea
-                  id="rejectionReason"
+                </label>
+                <textarea
                   value={rejectionReason}
                   onChange={(e) => setRejectionReason(e.target.value)}
-                  placeholder={t(
-                    "propertyRequestsManagement.modal.reject.placeholder",
-                  )}
+                  placeholder={t("propertyRequestsManagement.modal.reject.placeholder")}
                   rows={4}
+                  style={{ ...inputStyle, resize: 'vertical' }}
                 />
               </div>
             </div>
 
             <DialogFooter>
-              <Button
-                variant="outline"
+              <button
                 onClick={() => setShowRejectModal(false)}
+                className="px-4 py-2 rounded-lg text-sm font-medium border transition-colors"
+                style={{ background: tk.filterBtnBg, color: tk.filterBtnText, borderColor: tk.cardBorder }}
               >
                 {t("propertyRequestsManagement.modal.reject.cancel")}
-              </Button>
-              <Button
-                variant="destructive"
+              </button>
+              <button
                 onClick={handleReject}
-                disabled={
-                  processing === selectedRequest?.id || !rejectionReason.trim()
-                }
+                disabled={processing === selectedRequest?.id || !rejectionReason.trim()}
+                className="px-4 py-2 rounded-lg text-sm font-medium disabled:opacity-50 transition-colors"
+                style={{ background: '#dc2626', color: '#ffffff' }}
               >
-                {processing === selectedRequest?.id ? (
-                  <Loader2 className="w-4 h-4 mr-1 animate-spin" />
-                ) : (
-                  <XCircle className="w-4 h-4 mr-1" />
-                )}
+                {processing === selectedRequest?.id ? <Loader2 className="w-4 h-4 inline mr-1 animate-spin" /> : <XCircle className="w-4 h-4 inline mr-1" />}
                 {t("propertyRequestsManagement.modal.reject.confirm")}
-              </Button>
+              </button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Approval Rating Modal (for apartments) */}
+        <Dialog open={showApproveModal} onOpenChange={setShowApproveModal}>
+          <DialogContent style={{ background: tk.dialogBg, color: tk.dialogText }}>
+            <DialogHeader>
+              <DialogTitle className="text-xl font-bold flex items-center gap-2 text-green-500">
+                <CheckCircle className="w-5 h-5" />
+                {t("propertyRequestsManagement.modal.approve.title")}
+              </DialogTitle>
+              <DialogDescription style={{ color: tk.mutedText }}>
+                {t("propertyRequestsManagement.modal.approve.description")}
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="space-y-4">
+              {/* Provider's suggested rating hint */}
+              {propertyDetails && "rating" in propertyDetails && propertyDetails.rating > 0 && (
+                <div className="p-3 rounded-lg" style={{ background: tk.hintBg }}>
+                  <p className="text-sm flex items-center gap-2" style={{ color: tk.hintText }}>
+                    <Star className="w-4 h-4 fill-current" />
+                    {t("propertyRequestsManagement.modal.approve.providerRating")}: {propertyDetails.rating}/5
+                  </p>
+                </div>
+              )}
+
+              {/* Admin rating input */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium" style={{ color: tk.labelText }}>
+                  {t("propertyRequestsManagement.modal.approve.adminRatingLabel")}
+                </label>
+                <div className="flex items-center gap-2">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <button
+                      key={star}
+                      type="button"
+                      onClick={() => setAdminRating(star)}
+                      className="focus:outline-none"
+                    >
+                      <Star
+                        className={`w-8 h-8 transition-colors ${
+                          star <= adminRating
+                            ? "fill-yellow-400 text-yellow-400"
+                            : "hover:text-yellow-300"
+                        }`}
+                        style={star > adminRating ? { color: tk.iconMuted } : undefined}
+                      />
+                    </button>
+                  ))}
+                  <span className="ml-2 text-lg font-medium" style={{ color: tk.pageText }}>{adminRating}/5</span>
+                </div>
+              </div>
+            </div>
+
+            <DialogFooter>
+              <button
+                onClick={() => setShowApproveModal(false)}
+                className="px-4 py-2 rounded-lg text-sm font-medium border transition-colors"
+                style={{ background: tk.filterBtnBg, color: tk.filterBtnText, borderColor: tk.cardBorder }}
+              >
+                {t("propertyRequestsManagement.modal.approve.cancel")}
+              </button>
+              <button
+                onClick={() => selectedRequest && handleApprove(selectedRequest.id, adminRating)}
+                disabled={processing === selectedRequest?.id || adminRating === 0}
+                className="px-4 py-2 rounded-lg text-sm font-medium disabled:opacity-50 transition-colors"
+                style={{ background: '#16a34a', color: '#ffffff' }}
+              >
+                {processing === selectedRequest?.id ? <Loader2 className="w-4 h-4 inline mr-1 animate-spin" /> : <CheckCircle className="w-4 h-4 inline mr-1" />}
+                {t("propertyRequestsManagement.modal.approve.confirm")}
+              </button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
       </div>
-    </Hsidebar>
   );
 }

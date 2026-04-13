@@ -4,6 +4,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { getCarUnavailabilityDates } from "@/services/api/carService";
 import { getApartmentUnavailabilityDates } from "@/services/api/apartmentService";
 import { Loader2, CalendarDays } from "lucide-react";
+import { useTheme } from "@/context/ThemeContext";
 
 type PropertyType = "car" | "apartment";
 
@@ -19,9 +20,26 @@ export const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
   className,
 }) => {
   const { t } = useTranslation();
+  const { isDark } = useTheme();
   const [unavailableDates, setUnavailableDates] = useState<Date[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const tk = {
+    headingText: isDark ? "#ffffff" : "#111115",
+    mutedText: isDark ? "rgba(255,255,255,0.45)" : "#6b6663",
+    legendText: isDark ? "rgba(255,255,255,0.60)" : "#44403c",
+    availDot: isDark ? "rgba(255,255,255,0.15)" : "#ffffff",
+    availDotBorder: isDark ? "rgba(255,255,255,0.20)" : "#d1cdc9",
+    allAvailText: "#10b981",
+    infoText: isDark ? "rgba(255,255,255,0.45)" : "#6b6663",
+    errorText: "#ef4444",
+    // Calendar wrapper — give shadcn Calendar a fixed light skin so its
+    // internal CSS vars always resolve correctly regardless of custom theme state.
+    calWrapperBg: isDark ? "#1e1e22" : "#ffffff",
+    calWrapperText: isDark ? "#f0ece8" : "#111115",
+    calBorder: isDark ? "rgba(255,255,255,0.10)" : "#e5e2de",
+  };
 
   useEffect(() => {
     const fetchUnavailabilityDates = async () => {
@@ -32,7 +50,6 @@ export const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
           propertyType === "car"
             ? await getCarUnavailabilityDates(propertyId)
             : await getApartmentUnavailabilityDates(propertyId);
-        // Convert ISO date strings to Date objects
         const dates = dateStrings.map((dateStr) => {
           const [year, month, day] = dateStr.split("-").map(Number);
           return new Date(year, month - 1, day);
@@ -52,8 +69,8 @@ export const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
   if (loading) {
     return (
       <div className={className}>
-        <div className="flex items-center justify-center py-12">
-          <Loader2 className="h-6 w-6 animate-spin text-blue-600" />
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "48px 0" }}>
+          <Loader2 style={{ width: "24px", height: "24px", color: "#E8192C", animation: "spin 1s linear infinite" }} />
         </div>
       </div>
     );
@@ -62,7 +79,7 @@ export const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
   if (error) {
     return (
       <div className={className}>
-        <div className="text-center py-8 text-red-500">
+        <div style={{ textAlign: "center", padding: "32px 0", color: tk.errorText }}>
           <p>{error}</p>
         </div>
       </div>
@@ -71,21 +88,69 @@ export const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
 
   return (
     <div className={className}>
-      <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-        <CalendarDays size={20} className="text-blue-500" />
+      <h2 style={{ fontSize: "18px", fontWeight: 700, color: tk.headingText, marginBottom: "16px", display: "flex", alignItems: "center", gap: "8px" }}>
+        <CalendarDays size={20} style={{ color: "#E8192C" }} />
         {t("availabilityCalendar.title")}
       </h2>
 
-      <div className="flex justify-center">
+      {isDark && (
+        <style>{`
+          .alb-cal-wrapper .rdp,
+          .alb-cal-wrapper [class*="rdp"] {
+            --rdp-background-color: transparent;
+          }
+          .alb-cal-wrapper button,
+          .alb-cal-wrapper [role="gridcell"] {
+            color: #f0ece8 !important;
+          }
+          .alb-cal-wrapper [class*="day_outside"],
+          .alb-cal-wrapper .rdp-day_outside {
+            color: rgba(240,236,232,0.30) !important;
+          }
+          .alb-cal-wrapper [class*="nav_button"],
+          .alb-cal-wrapper .rdp-nav_button {
+            color: #f0ece8 !important;
+            border-color: rgba(255,255,255,0.15) !important;
+          }
+          .alb-cal-wrapper [class*="caption"],
+          .alb-cal-wrapper .rdp-caption {
+            color: #ffffff !important;
+          }
+          .alb-cal-wrapper [class*="head_cell"],
+          .alb-cal-wrapper .rdp-head_cell {
+            color: rgba(240,236,232,0.50) !important;
+          }
+          .alb-cal-wrapper [class*="day_selected"],
+          .alb-cal-wrapper .rdp-day_selected {
+            background-color: #E8192C !important;
+            color: #ffffff !important;
+          }
+          .alb-cal-wrapper [class*="day_today"],
+          .alb-cal-wrapper .rdp-day_today {
+            color: #E8192C !important;
+            font-weight: 700 !important;
+          }
+          .alb-cal-wrapper button:hover:not([disabled]) {
+            background: rgba(255,255,255,0.08) !important;
+          }
+        `}</style>
+      )}
+      <div
+        className="alb-cal-wrapper"
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          background: tk.calWrapperBg,
+          color: tk.calWrapperText,
+          borderRadius: "12px",
+          padding: "8px",
+          border: `1px solid ${tk.calBorder}`,
+        }}
+      >
         <Calendar
           mode={undefined}
-          modifiers={{
-            booked: unavailableDates,
-          }}
-          modifiersClassNames={{
-            booked:
-              "bg-red-400 text-white hover:bg-red-400 hover:text-white rounded-md",
-          }}
+          modifiers={{ booked: unavailableDates }}
+          modifiersClassNames={{ booked: "bg-red-400 text-white hover:bg-red-400 hover:text-white rounded-md" }}
           disabled={unavailableDates}
           className="rounded-md border"
           showOutsideDays={false}
@@ -93,28 +158,24 @@ export const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
       </div>
 
       {/* Legend */}
-      <div className="mt-4 flex items-center justify-center gap-6 text-sm">
-        <div className="flex items-center gap-2">
-          <span className="w-3 h-3 rounded-full bg-red-400"></span>
-          <span className="text-gray-600">
-            {t("availabilityCalendar.legend.booked")}
-          </span>
+      <div style={{ marginTop: "16px", display: "flex", alignItems: "center", justifyContent: "center", gap: "24px", fontSize: "13px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          <span style={{ width: "12px", height: "12px", borderRadius: "50%", background: "#f87171", display: "inline-block" }} />
+          <span style={{ color: tk.legendText }}>{t("availabilityCalendar.legend.booked")}</span>
         </div>
-        <div className="flex items-center gap-2">
-          <span className="w-3 h-3 rounded-full bg-white border border-gray-300"></span>
-          <span className="text-gray-600">
-            {t("availabilityCalendar.legend.available")}
-          </span>
+        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          <span style={{ width: "12px", height: "12px", borderRadius: "50%", background: tk.availDot, border: `1px solid ${tk.availDotBorder}`, display: "inline-block" }} />
+          <span style={{ color: tk.legendText }}>{t("availabilityCalendar.legend.available")}</span>
         </div>
       </div>
 
       {/* Booking count info */}
       {unavailableDates.length === 0 ? (
-        <p className="text-center text-sm text-emerald-600 mt-3 font-medium">
+        <p style={{ textAlign: "center", fontSize: "13px", color: tk.allAvailText, marginTop: "12px", fontWeight: 600 }}>
           {t("availabilityCalendar.info.allAvailable")}
         </p>
       ) : (
-        <p className="text-center text-sm text-gray-500 mt-3">
+        <p style={{ textAlign: "center", fontSize: "13px", color: tk.infoText, marginTop: "12px" }}>
           {unavailableDates.length}{" "}
           {unavailableDates.length === 1
             ? t("availabilityCalendar.info.daysBooked")

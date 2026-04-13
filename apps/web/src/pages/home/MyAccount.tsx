@@ -15,9 +15,28 @@ import { userService } from "@/services/api/userService";
 import { User, UpdateUserProfileData } from "@/types/user.types";
 import PrimarySearchAppBar from "@/components/home/AppBar";
 import { useTranslation } from "react-i18next";
+import { useTheme } from "@/context/ThemeContext";
 
 export default function MyAccount() {
   const { t } = useTranslation();
+  const { isDark } = useTheme();
+
+  const tk = {
+    pageBg: isDark ? "#050508" : "#f7f3ee",
+    pageText: isDark ? "#f9f5f0" : "#141014",
+    cardBg: isDark ? "#111115" : "#ffffff",
+    cardBorder: isDark ? "rgba(255,255,255,0.07)" : "#ede9e5",
+    inputBg: isDark ? "rgba(255,255,255,0.04)" : "#faf8f5",
+    inputBorder: isDark ? "rgba(255,255,255,0.16)" : "#ddd9d5",
+    inputText: isDark ? "#ffffff" : "#111115",
+    mutedText: isDark ? "rgba(255,255,255,0.4)" : "#6b6663",
+    dimText: isDark ? "rgba(255,255,255,0.7)" : "#44403c",
+    labelText: isDark ? "rgba(255,255,255,0.55)" : "#6b6663",
+    divider: isDark ? "rgba(255,255,255,0.06)" : "#e8e4e0",
+    disabledBg: isDark ? "rgba(255,255,255,0.02)" : "#f0ece8",
+    disabledText: isDark ? "rgba(255,255,255,0.3)" : "#9e9994",
+  };
+
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
@@ -140,34 +159,71 @@ export default function MyAccount() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center">
+      <div
+        className="min-h-screen flex items-center justify-center"
+        style={{
+          background: isDark
+            ? "radial-gradient(circle at top, rgba(232,25,44,0.16), transparent 55%), radial-gradient(circle at bottom, rgba(15,23,42,0.9), #050508)"
+            : "radial-gradient(circle at top, rgba(232,25,44,0.06), transparent 55%), linear-gradient(to bottom right, #fdf9f7, #f4ede6)",
+        }}
+      >
         <Loader2 className="w-8 h-8 animate-spin text-red-600" />
       </div>
     );
   }
 
   return (
-    <div>
+    <div
+      style={{
+        background: isDark
+          ? "radial-gradient(circle at top left, rgba(232,25,44,0.2), transparent 55%), radial-gradient(circle at bottom right, rgba(15,23,42,0.9), #050508)"
+          : "radial-gradient(circle at top left, rgba(232,25,44,0.06), transparent 55%), linear-gradient(to bottom right, #fdf9f7, #f4ede6)",
+        color: tk.pageText,
+        minHeight: "100vh",
+        transition: "background 0.5s ease, color 0.3s ease",
+      }}
+    >
       <PrimarySearchAppBar />
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
           {/* Header */}
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900">
+            <h1
+              className="text-3xl sm:text-4xl font-bold tracking-tight"
+              style={{
+                color: tk.pageText,
+                letterSpacing: "0.04em",
+              }}
+            >
               {t("account.profileSettings")}
             </h1>
-            <p className="mt-2 text-sm text-gray-600">
+            <p
+              className="mt-2 text-sm sm:text-base"
+              style={{
+                color: tk.mutedText,
+                maxWidth: "32rem",
+              }}
+            >
               {t("account.managePersonalInfo")}
             </p>
           </div>
 
           {/* Alert Messages */}
           {error && (
-            <div className="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg flex items-center justify-between">
+            <div
+              className="mb-6 px-4 py-3 rounded-xl flex items-center justify-between border"
+              style={{
+                backgroundColor: isDark ? "rgba(248,113,113,0.08)" : "#fef2f2",
+                borderColor: isDark ? "rgba(248,113,113,0.35)" : "#fecaca",
+                color: isDark ? "#fecaca" : "#b91c1c",
+              }}
+            >
               <span>{error}</span>
               <button
                 onClick={() => setError(null)}
-                className="text-red-700 hover:text-red-900"
+                style={{
+                  color: isDark ? "#fecaca" : "#b91c1c",
+                }}
               >
                 <X className="w-5 h-5" />
               </button>
@@ -175,11 +231,20 @@ export default function MyAccount() {
           )}
 
           {success && (
-            <div className="mb-6 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg flex items-center justify-between">
+            <div
+              className="mb-6 px-4 py-3 rounded-xl flex items-center justify-between border"
+              style={{
+                backgroundColor: isDark ? "rgba(34,197,94,0.08)" : "#ecfdf3",
+                borderColor: isDark ? "rgba(34,197,94,0.4)" : "#bbf7d0",
+                color: isDark ? "#bbf7d0" : "#166534",
+              }}
+            >
               <span>{success}</span>
               <button
                 onClick={() => setSuccess(null)}
-                className="text-green-700 hover:text-green-900"
+                style={{
+                  color: isDark ? "#bbf7d0" : "#166534",
+                }}
               >
                 <X className="w-5 h-5" />
               </button>
@@ -187,15 +252,47 @@ export default function MyAccount() {
           )}
 
           {/* Profile Card */}
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+          <div
+            className="rounded-2xl shadow-sm border overflow-hidden backdrop-blur"
+            style={{
+              background: isDark
+                ? "linear-gradient(135deg, rgba(15,15,23,0.98), rgba(10,10,16,0.98))"
+                : "linear-gradient(135deg, #ffffff, #fdf9f7)",
+              borderColor: tk.cardBorder,
+              boxShadow: isDark
+                ? "0 22px 55px rgba(0,0,0,0.65)"
+                : "0 22px 55px rgba(15,23,42,0.12)",
+            }}
+          >
             {/* Cover Image */}
-            <div className="h-32 bg-gradient-to-r from-red-500 to-red-700"></div>
+            <div
+              className="h-32 sm:h-36 relative"
+              style={{
+                background:
+                  "linear-gradient(120deg, #1a0204 0%, #cc1525 30%, #E8192C 50%, #ff6b7a 70%, #2b0b0e 100%)",
+              }}
+            >
+              <div
+                className="absolute inset-0 opacity-30"
+                style={{
+                  backgroundImage:
+                    "radial-gradient(circle at 0 0, rgba(255,255,255,0.35) 0, transparent 55%), radial-gradient(circle at 100% 100%, rgba(0,0,0,0.65) 0, transparent 60%)",
+                }}
+              />
+            </div>
 
             {/* Avatar Section */}
             <div className="px-6 sm:px-8 pb-6">
               <div className="flex flex-col sm:flex-row sm:items-end sm:space-x-6 -mt-16">
                 <div className="relative group">
-                  <div className="w-32 h-32 rounded-full border-4 border-white bg-gray-200 overflow-hidden shadow-lg">
+                  <div
+                    className="w-32 h-32 rounded-full border-4 overflow-hidden shadow-xl"
+                    style={{
+                      borderColor: isDark ? "#050508" : "#f4ede6",
+                      background:
+                        "radial-gradient(circle at 30% 0, #4b5563, #0f172a)",
+                    }}
+                  >
                     {user?.avatar_url ? (
                       <img
                         src={user.avatar_url}
@@ -203,7 +300,7 @@ export default function MyAccount() {
                         className="w-full h-full object-cover"
                       />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-500 to-blue-700 text-white text-3xl font-bold">
+                      <div className="w-full h-full flex items-center justify-center text-white text-3xl font-bold">
                         {user?.full_name?.[0]?.toUpperCase() ||
                           user?.email?.[0]?.toUpperCase()}
                       </div>
@@ -211,7 +308,11 @@ export default function MyAccount() {
                   </div>
                   <label
                     htmlFor="avatar-upload"
-                    className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                    className="absolute inset-0 flex items-center justify-center rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                    style={{
+                      background:
+                        "linear-gradient(to top, rgba(0,0,0,0.7), rgba(0,0,0,0.35))",
+                    }}
                   >
                     {uploadingAvatar ? (
                       <Loader2 className="w-8 h-8 text-white animate-spin" />
@@ -230,10 +331,20 @@ export default function MyAccount() {
                 </div>
 
                 <div className="mt-6 sm:mt-0 flex-1">
-                  <h2 className="text-2xl font-bold text-gray-900">
+                  <h2
+                    className="text-2xl sm:text-3xl font-semibold"
+                    style={{
+                      color: tk.pageText,
+                    }}
+                  >
                     {user.full_name || "Anonymous User"}
                   </h2>
-                  <p className="text-gray-600 flex items-center mt-1">
+                  <p
+                    className="flex items-center mt-1 text-sm sm:text-base"
+                    style={{
+                      color: tk.dimText,
+                    }}
+                  >
                     <Mail className="w-4 h-4 mr-2" />
                     {user?.email}
                   </p>
@@ -243,7 +354,15 @@ export default function MyAccount() {
                   {!editing ? (
                     <button
                       onClick={() => setEditing(true)}
-                      className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium shadow-sm"
+                      className="px-6 py-2 rounded-full font-medium shadow-sm transition-all text-sm"
+                      style={{
+                        background:
+                          "linear-gradient(120deg, #E8192C, #ff6b7a, #E8192C)",
+                        color: "#ffffff",
+                        boxShadow: isDark
+                          ? "0 10px 30px rgba(0,0,0,0.6)"
+                          : "0 10px 30px rgba(220,38,38,0.4)",
+                      }}
                     >
                       {t("account.editProfile")}
                     </button>
@@ -252,7 +371,15 @@ export default function MyAccount() {
                       <button
                         onClick={handleSave}
                         disabled={saving}
-                        className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                        className="px-6 py-2 rounded-full font-medium shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 text-sm"
+                        style={{
+                          background:
+                            "linear-gradient(120deg, #16a34a, #22c55e)",
+                          color: "#ffffff",
+                          boxShadow: isDark
+                            ? "0 10px 30px rgba(0,0,0,0.6)"
+                            : "0 10px 30px rgba(22,163,74,0.35)",
+                        }}
                       >
                         {saving ? (
                           <>
@@ -269,7 +396,11 @@ export default function MyAccount() {
                       <button
                         onClick={handleCancel}
                         disabled={saving}
-                        className="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors font-medium shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="px-6 py-2 rounded-full font-medium shadow-sm disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                        style={{
+                          backgroundColor: tk.disabledBg,
+                          color: tk.dimText,
+                        }}
                       >
                         {t("account.cancel")}
                       </button>
@@ -282,7 +413,10 @@ export default function MyAccount() {
               <div className="mt-8 grid grid-cols-1 gap-6">
                 {/* Full Name */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label
+                    className="block text-sm font-medium mb-2"
+                    style={{ color: tk.labelText }}
+                  >
                     <Contact className="w-4 h-4 inline mr-2" />
                     {t("account.fullName")}
                   </label>
@@ -292,14 +426,22 @@ export default function MyAccount() {
                     value={formData.full_name}
                     onChange={handleInputChange}
                     disabled={!editing}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-50 disabled:text-gray-600 transition-colors"
+                    className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                    style={{
+                      backgroundColor: editing ? tk.inputBg : tk.disabledBg,
+                      borderColor: tk.inputBorder,
+                      color: editing ? tk.inputText : tk.disabledText,
+                    }}
                     placeholder={t("account.enterFullName")}
                   />
                 </div>
 
                 {/* Role */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label
+                    className="block text-sm font-medium mb-2"
+                    style={{ color: tk.labelText }}
+                  >
                     <Contact className="w-4 h-4 inline mr-2" />
                     {t("account.role")}
                   </label>
@@ -309,13 +451,21 @@ export default function MyAccount() {
                     value={formData.role}
                     onChange={handleInputChange}
                     disabled={true}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-50 disabled:text-gray-600 transition-colors"
+                    className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                    style={{
+                      backgroundColor: tk.disabledBg,
+                      borderColor: tk.inputBorder,
+                      color: tk.disabledText,
+                    }}
                   />
                 </div>
 
                 {/* Phone */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label
+                    className="block text-sm font-medium mb-2"
+                    style={{ color: tk.labelText }}
+                  >
                     <Phone className="w-4 h-4 inline mr-2" />
                     {t("account.phoneNumber")}
                   </label>
@@ -334,7 +484,12 @@ export default function MyAccount() {
                     inputComponent={({ className, ...props }) => (
                       <input
                         {...props}
-                        className={`w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-50 disabled:text-gray-600 transition-colors ${className}`}
+                        className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors ${className}`}
+                        style={{
+                          backgroundColor: editing ? tk.inputBg : tk.disabledBg,
+                          borderColor: tk.inputBorder,
+                          color: editing ? tk.inputText : tk.disabledText,
+                        }}
                         placeholder={t("account.phonePlaceholder")}
                       />
                     )}
@@ -343,7 +498,10 @@ export default function MyAccount() {
 
                 {/* Location */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label
+                    className="block text-sm font-medium mb-2"
+                    style={{ color: tk.labelText }}
+                  >
                     <MapPin className="w-4 h-4 inline mr-2" />
                     {t("account.location")}
                   </label>
@@ -353,14 +511,22 @@ export default function MyAccount() {
                     value={formData.location}
                     onChange={handleInputChange}
                     disabled={!editing}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-50 disabled:text-gray-600 transition-colors"
+                    className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                    style={{
+                      backgroundColor: editing ? tk.inputBg : tk.disabledBg,
+                      borderColor: tk.inputBorder,
+                      color: editing ? tk.inputText : tk.disabledText,
+                    }}
                     placeholder={t("account.locationPlaceholder")}
                   />
                 </div>
 
                 {/* Bio */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label
+                    className="block text-sm font-medium mb-2"
+                    style={{ color: tk.labelText }}
+                  >
                     {t("account.bio")}
                   </label>
                   <textarea
@@ -369,23 +535,42 @@ export default function MyAccount() {
                     onChange={handleInputChange}
                     disabled={!editing}
                     rows={4}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-50 disabled:text-gray-600 transition-colors resize-none"
+                    className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors resize-none"
+                    style={{
+                      backgroundColor: editing ? tk.inputBg : tk.disabledBg,
+                      borderColor: tk.inputBorder,
+                      color: editing ? tk.inputText : tk.disabledText,
+                    }}
                     placeholder={t("account.bioPlaceholder")}
                   />
                 </div>
               </div>
 
               {/* Account Info */}
-              <div className="mt-8 pt-6 border-t border-gray-200">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              <div
+                className="mt-8 pt-6 border-t"
+                style={{
+                  borderColor: tk.divider,
+                }}
+              >
+                <h3
+                  className="text-lg font-semibold mb-4"
+                  style={{ color: tk.pageText }}
+                >
                   {t("account.accountInformation")}
                 </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                   <div>
-                    <span className="text-gray-600">
+                    <span
+                      className="text-xs uppercase tracking-wide"
+                      style={{ color: tk.labelText }}
+                    >
                       {t("account.memberSince")}
                     </span>
-                    <p className="font-medium text-gray-900 mt-1">
+                    <p
+                      className="font-medium mt-1"
+                      style={{ color: tk.pageText }}
+                    >
                       {new Date(user?.created_at || "").toLocaleDateString(
                         "en-US",
                         {
@@ -397,10 +582,16 @@ export default function MyAccount() {
                     </p>
                   </div>
                   <div>
-                    <span className="text-gray-600">
+                    <span
+                      className="text-xs uppercase tracking-wide"
+                      style={{ color: tk.labelText }}
+                    >
                       {t("account.lastUpdated")}
                     </span>
-                    <p className="font-medium text-gray-900 mt-1">
+                    <p
+                      className="font-medium mt-1"
+                      style={{ color: tk.pageText }}
+                    >
                       {new Date(user?.updated_at || "").toLocaleDateString(
                         "en-US",
                         {

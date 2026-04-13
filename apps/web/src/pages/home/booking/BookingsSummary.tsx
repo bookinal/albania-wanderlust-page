@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import PrimarySearchAppBar from "@/components/home/AppBar";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import bookingService from "@/services/api/bookingService";
@@ -20,9 +20,9 @@ import {
   Phone,
   Mail,
   ContactRound,
-  X,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import {
   Popover,
   PopoverContent,
@@ -40,6 +40,7 @@ import { jsPDF } from "jspdf";
 import logoImage from "@/assets/logo/logoBOOKinAL.png";
 import { useTranslation } from "react-i18next";
 import ReviewModal from "@/components/reviews/ReviewModal";
+import { useTheme } from "@/context/ThemeContext";
 
 const getPropertyIcon = (type: Booking["propertyType"]) => {
   switch (type) {
@@ -213,6 +214,7 @@ const generateInvoicePDF = async (booking: Booking) => {
 // Provider Contact Button
 function ProviderContactButton({ providerId }: { providerId: string }) {
   const { t } = useTranslation();
+  const { isDark } = useTheme();
   const [provider, setProvider] = useState<User | null>(null);
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
@@ -232,65 +234,126 @@ function ProviderContactButton({ providerId }: { providerId: string }) {
     }
   };
 
+  const popBg = isDark ? '#1a1a1e' : '#ffffff';
+  const popBorder = isDark ? 'rgba(255,255,255,0.08)' : '#ede9e5';
+  const rowBg = isDark ? 'rgba(255,255,255,0.04)' : '#f5f2ee';
+  const rowBorderC = isDark ? 'rgba(255,255,255,0.07)' : '#ede9e5';
+  const rowText = isDark ? '#ffffff' : '#1a1a1a';
+  const mutedText = isDark ? 'rgba(255,255,255,0.40)' : '#6b6663';
+  const triggerBorder = isDark ? 'rgba(255,255,255,0.12)' : '#ddd9d5';
+  const triggerText = isDark ? 'rgba(255,255,255,0.60)' : '#44403c';
+
   return (
     <Popover open={open} onOpenChange={handleOpen}>
       <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          size="sm"
-          className="mt-2 text-indigo-600 border-indigo-200 hover:bg-indigo-50 hover:border-indigo-300"
+        <button
+          style={{
+            marginTop: '8px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+            fontSize: '12px',
+            padding: '6px 12px',
+            borderRadius: '999px',
+            border: `1px solid ${triggerBorder}`,
+            color: triggerText,
+            background: 'transparent',
+            fontWeight: 600,
+            cursor: 'pointer',
+            transition: 'border-color 0.2s, color 0.2s',
+          }}
+          onMouseEnter={e => {
+            (e.currentTarget as HTMLButtonElement).style.borderColor = '#E8192C';
+            (e.currentTarget as HTMLButtonElement).style.color = '#E8192C';
+          }}
+          onMouseLeave={e => {
+            (e.currentTarget as HTMLButtonElement).style.borderColor = triggerBorder;
+            (e.currentTarget as HTMLButtonElement).style.color = triggerText;
+          }}
         >
-          <ContactRound className="w-3.5 h-3.5 mr-1.5" />
+          <ContactRound style={{ width: 14, height: 14 }} />
           {t("booking.contactProvider", "Contact Provider")}
-        </Button>
+        </button>
       </PopoverTrigger>
       <PopoverContent
         align="end"
-        className="w-72 p-0 shadow-xl rounded-2xl overflow-hidden"
+        style={{
+          width: 288,
+          padding: 0,
+          boxShadow: '0 24px 48px rgba(0,0,0,0.4)',
+          borderRadius: 16,
+          overflow: 'hidden',
+          border: `1px solid ${popBorder}`,
+          background: popBg,
+        }}
       >
         {/* Header */}
-        <div className="bg-gradient-to-r from-indigo-600 to-blue-600 px-4 py-3">
-          <p className="text-white font-semibold text-sm">
+        <div style={{
+          background: 'linear-gradient(to right, #b91c1c, #7f1d1d, #000000)',
+          padding: '14px 16px',
+        }}>
+          <p style={{ color: '#ffffff', fontWeight: 700, fontSize: 14, letterSpacing: '-0.02em' }}>
             {t("booking.providerContact", "Provider Contact")}
           </p>
           {!loading && provider?.full_name && (
-            <p className="text-indigo-100 text-xs mt-0.5">
-              {provider.full_name}
-            </p>
+            <p style={{ color: 'rgba(252,165,165,0.8)', fontSize: 12, marginTop: 2 }}>{provider.full_name}</p>
           )}
         </div>
 
         {/* Content */}
-        <div className="p-4 space-y-2.5">
+        <div style={{ padding: 16, display: 'flex', flexDirection: 'column', gap: 10 }}>
           {loading ? (
-            <div className="flex items-center justify-center py-4">
-              <Loader2 className="w-5 h-5 animate-spin text-indigo-500" />
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px 0' }}>
+              <div style={{
+                width: 20, height: 20, borderRadius: '50%',
+                border: '2px solid #E8192C', borderTopColor: 'transparent',
+                animation: 'spin 0.8s linear infinite',
+              }} />
             </div>
           ) : provider ? (
             <>
               {provider.phone ? (
                 <a
                   href={`tel:${provider.phone}`}
-                  className="flex items-center gap-3 p-3 rounded-xl bg-emerald-50 border border-emerald-100 hover:bg-emerald-100 transition-colors group"
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 12,
+                    padding: 12, borderRadius: 12,
+                    background: rowBg, border: `1px solid ${rowBorderC}`,
+                    textDecoration: 'none', transition: 'opacity 0.2s',
+                  }}
+                  onMouseEnter={e => (e.currentTarget as HTMLAnchorElement).style.opacity = '0.8'}
+                  onMouseLeave={e => (e.currentTarget as HTMLAnchorElement).style.opacity = '1'}
                 >
-                  <div className="w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center flex-shrink-0">
-                    <Phone className="w-4 h-4 text-white" />
+                  <div style={{
+                    width: 32, height: 32, borderRadius: '50%',
+                    background: 'linear-gradient(135deg, #dc2626, #7f1d1d)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+                  }}>
+                    <Phone style={{ width: 16, height: 16, color: '#ffffff' }} />
                   </div>
-                  <div className="min-w-0">
-                    <p className="text-xs text-emerald-600 font-medium">
+                  <div style={{ minWidth: 0 }}>
+                    <p style={{ fontSize: 11, color: '#E8192C', fontWeight: 500 }}>
                       {t("booking.callPhone", "Call Phone")}
                     </p>
-                    <p className="text-sm font-semibold text-gray-800 truncate">
+                    <p style={{ fontSize: 14, fontWeight: 600, color: rowText, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {provider.phone}
                     </p>
                   </div>
                 </a>
               ) : (
-                <div className="flex items-center gap-3 p-3 rounded-xl bg-gray-50 border border-gray-100">
-                  <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center flex-shrink-0">
-                    <Phone className="w-4 h-4 text-gray-400" />
+                <div style={{
+                  display: 'flex', alignItems: 'center', gap: 12,
+                  padding: 12, borderRadius: 12,
+                  background: rowBg, border: `1px solid ${rowBorderC}`,
+                }}>
+                  <div style={{
+                    width: 32, height: 32, borderRadius: '50%',
+                    background: isDark ? 'rgba(255,255,255,0.08)' : '#e5e2de',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+                  }}>
+                    <Phone style={{ width: 16, height: 16, color: mutedText }} />
                   </div>
-                  <p className="text-sm text-gray-400">
+                  <p style={{ fontSize: 14, color: mutedText }}>
                     {t("booking.noPhone", "No phone number available")}
                   </p>
                 </div>
@@ -298,27 +361,35 @@ function ProviderContactButton({ providerId }: { providerId: string }) {
 
               <a
                 href={`mailto:${provider.email}`}
-                className="flex items-center gap-3 p-3 rounded-xl bg-blue-50 border border-blue-100 hover:bg-blue-100 transition-colors group"
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 12,
+                  padding: 12, borderRadius: 12,
+                  background: rowBg, border: `1px solid ${rowBorderC}`,
+                  textDecoration: 'none', transition: 'opacity 0.2s',
+                }}
+                onMouseEnter={e => (e.currentTarget as HTMLAnchorElement).style.opacity = '0.8'}
+                onMouseLeave={e => (e.currentTarget as HTMLAnchorElement).style.opacity = '1'}
               >
-                <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center flex-shrink-0">
-                  <Mail className="w-4 h-4 text-white" />
+                <div style={{
+                  width: 32, height: 32, borderRadius: '50%',
+                  background: isDark ? '#222' : '#111115',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+                }}>
+                  <Mail style={{ width: 16, height: 16, color: '#ffffff' }} />
                 </div>
-                <div className="min-w-0">
-                  <p className="text-xs text-blue-600 font-medium">
+                <div style={{ minWidth: 0 }}>
+                  <p style={{ fontSize: 11, color: mutedText, fontWeight: 500 }}>
                     {t("booking.sendEmail", "Send Email")}
                   </p>
-                  <p className="text-sm font-semibold text-gray-800 truncate">
+                  <p style={{ fontSize: 14, fontWeight: 600, color: rowText, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {provider.email}
                   </p>
                 </div>
               </a>
             </>
           ) : (
-            <p className="text-sm text-gray-400 text-center py-3">
-              {t(
-                "booking.providerInfoUnavailable",
-                "Provider info unavailable",
-              )}
+            <p style={{ fontSize: 14, color: mutedText, textAlign: 'center', padding: '12px 0' }}>
+              {t("booking.providerInfoUnavailable", "Provider info unavailable")}
             </p>
           )}
         </div>
@@ -383,7 +454,6 @@ function PayPalPaymentButton({ booking }: { booking: Booking }) {
         description: "Your payment has been processed successfully.",
       });
 
-      // Invalidate and refetch bookings
       await queryClient.invalidateQueries({
         queryKey: ["bookings", "currentUser"],
       });
@@ -455,16 +525,102 @@ export default function BookingsSummary() {
   const { t } = useTranslation();
   const { toast } = useToast();
   const navigate = useNavigate();
+  const { isDark } = useTheme();
   const [reviewBooking, setReviewBooking] = useState<Booking | null>(null);
+  const [page, setPage] = useState(1);
+  const PAGE_SIZE = 5;
+
+  const tk = {
+    pageBg: isDark ? '#0d0d0d' : '#f5f4f1',
+    pageText: isDark ? '#ffffff' : '#111115',
+    cardBg: isDark ? 'rgba(255,255,255,0.03)' : '#ffffff',
+    cardBorder: isDark ? 'rgba(255,255,255,0.07)' : '#ede9e5',
+    mutedText: isDark ? 'rgba(255,255,255,0.40)' : '#6b6663',
+    dimText: isDark ? 'rgba(255,255,255,0.70)' : '#44403c',
+    imagePlaceholder: isDark ? '#1a1a1e' : '#e5e2de',
+    refBg: isDark ? 'rgba(255,255,255,0.06)' : '#f0ece8',
+    refText: isDark ? 'rgba(255,255,255,0.40)' : '#6b6663',
+    paginationBg: isDark ? 'rgba(255,255,255,0.04)' : '#f5f2ee',
+    paginationBorder: isDark ? 'rgba(255,255,255,0.10)' : '#ddd9d5',
+    paginationText: isDark ? 'rgba(255,255,255,0.50)' : '#6b6663',
+    emptyBg: isDark ? 'rgba(255,255,255,0.03)' : '#ffffff',
+    emptyIconBg: isDark ? 'rgba(232,25,44,0.12)' : '#fef2f2',
+    errorBg: isDark ? 'rgba(232,25,44,0.08)' : '#fef2f2',
+    errorText: isDark ? '#fca5a5' : '#b91c1c',
+    errorBorder: isDark ? 'rgba(232,25,44,0.30)' : '#fecaca',
+  };
+
+  // Status badge styles
+  const getStatusBadgeStyle = (status: string): React.CSSProperties => {
+    if (status === 'confirmed') return {
+      background: isDark ? 'rgba(16,185,129,0.15)' : '#ecfdf5',
+      color: isDark ? '#6ee7b7' : '#065f46',
+      border: `1px solid ${isDark ? 'rgba(16,185,129,0.30)' : '#a7f3d0'}`,
+    };
+    if (status === 'pending') return {
+      background: isDark ? 'rgba(245,158,11,0.15)' : '#fffbeb',
+      color: isDark ? '#fcd34d' : '#92400e',
+      border: `1px solid ${isDark ? 'rgba(245,158,11,0.30)' : '#fde68a'}`,
+    };
+    if (status === 'canceled') return {
+      background: isDark ? 'rgba(239,68,68,0.15)' : '#fef2f2',
+      color: isDark ? '#fca5a5' : '#991b1b',
+      border: `1px solid ${isDark ? 'rgba(239,68,68,0.30)' : '#fecaca'}`,
+    };
+    return {
+      background: isDark ? 'rgba(255,255,255,0.06)' : '#f5f4f1',
+      color: tk.dimText,
+      border: `1px solid ${tk.paginationBorder}`,
+    };
+  };
+
+  // Combined status description box style
+  const getCombinedStatusStyle = (isSuccess: boolean, isWarning: boolean, isDanger: boolean): React.CSSProperties => {
+    if (isSuccess) return {
+      background: isDark ? 'rgba(16,185,129,0.10)' : '#ecfdf5',
+      color: isDark ? '#6ee7b7' : '#065f46',
+      border: `1px solid ${isDark ? 'rgba(16,185,129,0.25)' : '#a7f3d0'}`,
+    };
+    if (isWarning) return {
+      background: isDark ? 'rgba(245,158,11,0.10)' : '#fffbeb',
+      color: isDark ? '#fcd34d' : '#92400e',
+      border: `1px solid ${isDark ? 'rgba(245,158,11,0.25)' : '#fde68a'}`,
+    };
+    if (isDanger) return {
+      background: isDark ? 'rgba(239,68,68,0.10)' : '#fef2f2',
+      color: isDark ? '#fca5a5' : '#991b1b',
+      border: `1px solid ${isDark ? 'rgba(239,68,68,0.25)' : '#fecaca'}`,
+    };
+    return {
+      background: isDark ? 'rgba(255,255,255,0.04)' : '#f5f4f1',
+      color: tk.dimText,
+      border: `1px solid ${tk.paginationBorder}`,
+    };
+  };
+
+  // Border-left accent per booking status
+  const getStatusBorderColor = (status: string) => {
+    if (status === 'confirmed') return '#10b981';
+    if (status === 'pending') return '#f59e0b';
+    if (status === 'canceled') return '#ef4444';
+    return isDark ? 'rgba(255,255,255,0.15)' : '#d1d5db';
+  };
+
   const {
-    data: bookings,
+    data: bookingPage,
     isLoading,
     isError,
     error,
+    isFetching,
   } = useQuery({
-    queryKey: ["bookings", "currentUser"],
-    queryFn: bookingService.getCurrentUserBookings,
+    queryKey: ["bookings", "currentUser", page],
+    queryFn: () => bookingService.getCurrentUserBookingsPaginated(page, PAGE_SIZE),
+    placeholderData: (prev) => prev,
   });
+
+  const bookings = bookingPage?.data;
+  const totalPages = bookingPage?.totalPages ?? 1;
+  const total = bookingPage?.total ?? 0;
 
   const getPropertyRoute = (booking: Booking) => {
     const id = booking.propertyId;
@@ -510,305 +666,965 @@ export default function BookingsSummary() {
   };
 
   return (
-    <div>
+    <div style={{ minHeight: '100vh', background: tk.pageBg, color: tk.pageText }}>
       <PrimarySearchAppBar />
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 py-10 px-4">
+
+      {/* ── Page Hero Header ── */}
+      <div className="bg-gradient-to-r from-red-700 via-red-900 to-black px-4 pt-12 pb-16">
         <div className="max-w-5xl mx-auto">
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-slate-900 flex items-center gap-3">
-              <Calendar className="w-7 h-7 text-blue-600" />
-              {t("booking.myBookings")}
-            </h1>
-            <p className="mt-2 text-slate-600">
-              {t("booking.bookingSummaryDescription")}
-            </p>
+          <p className="text-red-300 text-xs font-bold uppercase tracking-widest mb-2">
+            My Account
+          </p>
+          <h1 className="text-4xl font-black text-white tracking-tight">
+            {t("booking.myBookings")}
+          </h1>
+          <p className="mt-2 text-red-200/60 text-sm max-w-lg">
+            {t("booking.bookingSummaryDescription")}
+          </p>
+        </div>
+      </div>
+
+      {/* ── Content ── */}
+      <div className="max-w-5xl mx-auto px-4 -mt-6 pb-16">
+
+        {/* Loading */}
+        {isLoading && (
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '96px 0', gap: 16 }}>
+            <div style={{
+              width: 40, height: 40, borderRadius: '50%',
+              border: '2px solid #E8192C', borderTopColor: 'transparent',
+              animation: 'spin 0.8s linear infinite',
+            }} />
+            <p style={{ fontSize: 14, color: tk.mutedText }}>Loading your bookings…</p>
           </div>
+        )}
 
-          {isLoading && (
-            <div className="flex items-center justify-center py-20">
-              <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+        {/* Error */}
+        {isError && (
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 12,
+            padding: 20,
+            background: tk.errorBg,
+            borderLeft: `4px solid #E8192C`,
+            borderRadius: '0 12px 12px 0',
+            color: tk.errorText,
+          }}>
+            <AlertCircle style={{ width: 20, height: 20, flexShrink: 0 }} />
+            <span style={{ fontSize: 14 }}>
+              {(error as any)?.message ||
+                "We couldn't load your bookings right now. Please try again later."}
+            </span>
+          </div>
+        )}
+
+        {/* Empty State */}
+        {!isLoading && !isError && (!bookings || bookings.length === 0) && (
+          <div style={{
+            background: tk.emptyBg,
+            borderRadius: 16,
+            boxShadow: isDark ? 'none' : '0 1px 3px rgba(0,0,0,0.08)',
+            border: `1px solid ${tk.cardBorder}`,
+            padding: 48,
+            display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center',
+          }}>
+            <div style={{
+              width: 64, height: 64, borderRadius: '50%',
+              background: tk.emptyIconBg,
+              display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16,
+            }}>
+              <Calendar style={{ width: 28, height: 28, color: '#E8192C' }} />
             </div>
-          )}
+            <h3 style={{ fontWeight: 900, fontSize: 18, color: tk.pageText, marginBottom: 4 }}>
+              {t("booking.noBookings")}
+            </h3>
+            <p style={{ fontSize: 14, color: tk.mutedText, marginBottom: 24 }}>
+              {t("booking.startExploring")}
+            </p>
+            <button
+              onClick={() => navigate("/")}
+              style={{
+                padding: '10px 24px',
+                background: 'linear-gradient(to right, #b91c1c, #000000)',
+                color: '#ffffff',
+                fontSize: 14,
+                fontWeight: 700,
+                borderRadius: 999,
+                border: 'none',
+                cursor: 'pointer',
+                opacity: 1,
+                transition: 'opacity 0.2s',
+              }}
+              onMouseEnter={e => (e.currentTarget as HTMLButtonElement).style.opacity = '0.85'}
+              onMouseLeave={e => (e.currentTarget as HTMLButtonElement).style.opacity = '1'}
+            >
+              Explore Albania
+            </button>
+          </div>
+        )}
 
-          {isError && (
-            <div className="flex items-center gap-3 p-4 bg-red-50 border border-red-200 rounded-xl text-red-700">
-              <AlertCircle className="w-5 h-5" />
-              <span>
-                {(error as any)?.message ||
-                  "We couldn't load your bookings right now. Please try again later."}
-              </span>
-            </div>
-          )}
+        {/* ── Booking Cards ── */}
+        {!isLoading && !isError && bookings && bookings.length > 0 && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            {bookings.map((booking) => {
+              const Icon = getPropertyIcon(booking.propertyType);
+              const start = new Date(booking.startDate);
+              const end = new Date(booking.endDate);
+              const statusBorderColor = getStatusBorderColor(booking.status);
 
-          {!isLoading && !isError && (!bookings || bookings.length === 0) && (
-            <div className="p-8 bg-white border border-slate-200 rounded-2xl text-center shadow-sm">
-              <p className="text-slate-700 font-medium mb-2">
-                {t("booking.noBookings")}
-              </p>
-              <p className="text-slate-500 text-sm">
-                {t("booking.startExploring")}
-              </p>
-            </div>
-          )}
-
-          {!isLoading && !isError && bookings && bookings.length > 0 && (
-            <div className="space-y-4">
-              {bookings.map((booking) => {
-                const Icon = getPropertyIcon(booking.propertyType);
-                const start = new Date(booking.startDate);
-                const end = new Date(booking.endDate);
-
-                return (
+              return (
+                <div
+                  key={booking.id}
+                  style={{
+                    background: tk.cardBg,
+                    borderRadius: 16,
+                    borderLeft: `4px solid ${statusBorderColor}`,
+                    overflow: "hidden",
+                    boxShadow: isDark ? "none" : "0 1px 3px rgba(0,0,0,0.08)",
+                    border: `1px solid ${tk.cardBorder}`,
+                    borderLeftColor: statusBorderColor,
+                  }}
+                >
                   <div
-                    key={booking.id}
-                    className="bg-white border border-slate-200 rounded-2xl shadow-sm p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+                    style={{ display: "flex", flexDirection: "column" }}
+                    className="sm:flex-row"
                   >
+                    {/* ── Property Image Strip ── */}
                     <div
-                      className="flex items-start gap-4 hover:bg-red-50 transition-colors cursor-pointer"
+                      style={{
+                        position: "relative",
+                        width: "100%",
+                        height: 144,
+                        flexShrink: 0,
+                        cursor: "pointer",
+                        overflow: "hidden",
+                        background: tk.imagePlaceholder,
+                      }}
+                      className="sm:w-40 sm:h-auto"
                       onClick={() => navigate(getPropertyRoute(booking))}
                     >
-                      <div className="w-11 h-11 rounded-full bg-blue-50 flex items-center justify-center flex-shrink-0">
-                        <img
-                          src={
-                            booking.propertyData?.imageUrls?.[0] ||
-                            "/images/placeholder.png"
-                          }
-                          alt={booking.propertyData?.name || "Property Image"}
-                          className="w-11 h-11 rounded-full object-cover"
+                      <img
+                        src={
+                          booking.propertyData?.imageUrls?.[0] ||
+                          "/images/placeholder.png"
+                        }
+                        alt={booking.propertyData?.name || "Property"}
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "cover",
+                          transition: "transform 0.5s",
+                        }}
+                        onMouseEnter={(e) =>
+                          ((
+                            e.currentTarget as HTMLImageElement
+                          ).style.transform = "scale(1.05)")
+                        }
+                        onMouseLeave={(e) =>
+                          ((
+                            e.currentTarget as HTMLImageElement
+                          ).style.transform = "scale(1)")
+                        }
+                      />
+                      <div
+                        style={{
+                          position: "absolute",
+                          inset: 0,
+                          background:
+                            "linear-gradient(to top, rgba(0,0,0,0.6), transparent)",
+                        }}
+                      />
+                      {/* Property type icon */}
+                      <div
+                        style={{
+                          position: "absolute",
+                          bottom: 8,
+                          left: 8,
+                          width: 28,
+                          height: 28,
+                          borderRadius: "50%",
+                          background: "rgba(255,255,255,0.95)",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          boxShadow: "0 1px 4px rgba(0,0,0,0.2)",
+                        }}
+                      >
+                        <Icon
+                          style={{ width: 14, height: 14, color: "#E8192C" }}
                         />
                       </div>
-                      <div className="w-11 h-11 rounded-full bg-blue-50 flex items-center justify-center flex-shrink-0">
-                        <Icon className="w-5 h-5 text-blue-600" />
-                      </div>
+                    </div>
 
-                      <div>
-                        {/* Header */}
-                        <div className="flex items-center gap-2 mb-1 flex-wrap">
-                          <span className="text-sm uppercase tracking-wide text-slate-500 font-semibold">
+                    {/* ── Card Body ── */}
+                    <div
+                      style={{ display: "flex", flex: 1, padding: 20, gap: 20 }}
+                      className="flex-col sm:flex-row"
+                    >
+                      {/* Left: Booking Info */}
+                      <div
+                        style={{ flex: 1, minWidth: 0, cursor: "pointer" }}
+                        onClick={() => navigate(getPropertyRoute(booking))}
+                      >
+                        {/* Type + Reference */}
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 8,
+                            marginBottom: 2,
+                          }}
+                        >
+                          <span
+                            style={{
+                              fontSize: 10,
+                              textTransform: "uppercase",
+                              letterSpacing: "0.1em",
+                              color: "#E8192C",
+                              fontWeight: 700,
+                            }}
+                          >
                             {booking.propertyType}
-                            {booking.propertyData?.name &&
-                              `, ${booking.propertyData.name}`}
                           </span>
-
-                          <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 font-medium">
-                            Ref: {booking.id}
+                          <span
+                            style={{
+                              fontSize: 10,
+                              color: tk.refText,
+                              fontFamily: "monospace",
+                              background: tk.refBg,
+                              padding: "2px 6px",
+                              borderRadius: 4,
+                            }}
+                          >
+                            #{booking.id.slice(0, 8).toUpperCase()}
                           </span>
                         </div>
 
-                        {/* Booking Info */}
-                        <div className="space-y-1">
-                          <p className="text-sm text-slate-900 flex items-center gap-2">
-                            <Calendar className="w-5 h-5 text-blue-600" />
-                            {formatDate(start)} – {formatDate(end)}
-                          </p>
+                        {/* Property Name */}
+                        <h3
+                          style={{
+                            fontWeight: 900,
+                            fontSize: 18,
+                            color: tk.pageText,
+                            lineHeight: 1.2,
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            whiteSpace: "nowrap",
+                          }}
+                        >
+                          {booking.propertyData?.name || "Property"}
+                        </h3>
 
-                          <p className="text-sm text-slate-600 flex items-center gap-2">
-                            <MapPin className="w-5 h-5 text-blue-600" />
-                            Pick up: {booking.pickUpLocation} • Drop off:{" "}
-                            {booking.dropOffLocation}
-                          </p>
+                        {/* Details */}
+                        <div
+                          style={{
+                            marginTop: 12,
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: 6,
+                          }}
+                        >
+                          <div
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 8,
+                              fontSize: 14,
+                            }}
+                          >
+                            <Calendar
+                              style={{
+                                width: 16,
+                                height: 16,
+                                color: "#E8192C",
+                                flexShrink: 0,
+                              }}
+                            />
+                            <span
+                              style={{ fontWeight: 600, color: tk.pageText }}
+                            >
+                              {formatDate(start)}
+                            </span>
+                            <span style={{ color: tk.mutedText, fontSize: 12 }}>
+                              →
+                            </span>
+                            <span
+                              style={{ fontWeight: 600, color: tk.pageText }}
+                            >
+                              {formatDate(end)}
+                            </span>
+                          </div>
 
-                          <p className="text-sm text-slate-600 flex items-center gap-2">
-                            <Clock className="w-5 h-5 text-blue-600" />
-                            Pick up: {booking.pickUpTime} • Drop off:{" "}
-                            {booking.dropOffTime}
+                          {(booking.pickUpLocation ||
+                            booking.dropOffLocation) && (
+                            <div
+                              style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 8,
+                                fontSize: 14,
+                                color: tk.dimText,
+                              }}
+                            >
+                              <MapPin
+                                style={{
+                                  width: 16,
+                                  height: 16,
+                                  color: "#E8192C",
+                                  opacity: 0.7,
+                                  flexShrink: 0,
+                                }}
+                              />
+                              <span
+                                style={{
+                                  overflow: "hidden",
+                                  textOverflow: "ellipsis",
+                                  whiteSpace: "nowrap",
+                                }}
+                              >
+                                {booking.pickUpLocation} →{" "}
+                                {booking.dropOffLocation}
+                              </span>
+                            </div>
+                          )}
+
+                          {(booking.pickUpTime || booking.dropOffTime) && (
+                            <div
+                              style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 8,
+                                fontSize: 14,
+                                color: tk.dimText,
+                              }}
+                            >
+                              <Clock
+                                style={{
+                                  width: 16,
+                                  height: 16,
+                                  color: "#E8192C",
+                                  opacity: 0.7,
+                                  flexShrink: 0,
+                                }}
+                              />
+                              <span>
+                                {booking.pickUpTime} → {booking.dropOffTime}
+                              </span>
+                            </div>
+                          )}
+
+                          <p
+                            style={{
+                              fontSize: 12,
+                              color: tk.mutedText,
+                              paddingTop: 2,
+                            }}
+                          >
+                            {booking.requesterName} · {booking.contactMail}
                           </p>
                         </div>
 
-                        {/* Contact */}
-                        <p className="text-xs text-slate-500 mt-2">
-                          Contact: {booking.requesterName} •{" "}
-                          {booking.contactMail}
-                        </p>
+                        {/* Combined status description */}
+                        {(() => {
+                          const key =
+                            booking.status === "pending" &&
+                            booking.payment_status === "pending"
+                              ? "pendingPending"
+                              : booking.status === "confirmed" &&
+                                  booking.payment_status === "pending"
+                                ? "confirmedPending"
+                                : booking.status === "confirmed" &&
+                                    booking.payment_status === "paid"
+                                  ? "confirmedPaid"
+                                  : booking.status === "canceled" &&
+                                      booking.payment_status === "paid"
+                                    ? "canceledPaid"
+                                    : booking.status === "canceled" &&
+                                        booking.payment_status === "pending"
+                                      ? "canceledPending"
+                                      : booking.status === "confirmed" &&
+                                          booking.payment_status === "failed"
+                                        ? "confirmedFailed"
+                                        : null;
+                          if (!key) return null;
+                          const isWarning =
+                            key === "confirmedPending" ||
+                            key === "pendingPending" ||
+                            key === "confirmedFailed";
+                          const isSuccess = key === "confirmedPaid";
+                          const isDanger =
+                            key === "canceledPaid" || key === "canceledPending";
+                          return (
+                            <div
+                              style={{
+                                marginTop: 12,
+                                display: "flex",
+                                alignItems: "flex-start",
+                                gap: 8,
+                                padding: "8px 12px",
+                                borderRadius: 8,
+                                fontSize: 12,
+                                fontWeight: 500,
+                                ...getCombinedStatusStyle(
+                                  isSuccess,
+                                  isWarning,
+                                  isDanger,
+                                ),
+                              }}
+                            >
+                              <span
+                                style={{
+                                  marginTop: 2,
+                                  flexShrink: 0,
+                                  fontSize: 14,
+                                  lineHeight: 1,
+                                }}
+                              >
+                                {isSuccess ? "✓" : isWarning ? "⏳" : "✕"}
+                              </span>
+                              <span>{t(`booking.combinedStatus.${key}`)}</span>
+                            </div>
+                          );
+                        })()}
 
-                        {/* Invoice Download Button - Only shown when payment is completed */}
+                        {/* Invoice download link */}
                         {booking.payment_status === "paid" && (
-                          <Button
+                          <button
                             onClick={(e) => {
                               e.stopPropagation();
                               generateInvoicePDF(booking);
                             }}
-                            variant="outline"
-                            size="sm"
-                            className="mt-3 text-blue-600 border-blue-200 hover:bg-blue-50 hover:border-blue-300"
+                            style={{
+                              marginTop: 12,
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 6,
+                              fontSize: 12,
+                              color: "#E8192C",
+                              fontWeight: 600,
+                              background: "transparent",
+                              border: "none",
+                              cursor: "pointer",
+                              transition: "opacity 0.2s",
+                            }}
+                            onMouseEnter={(e) =>
+                              ((
+                                e.currentTarget as HTMLButtonElement
+                              ).style.opacity = "0.7")
+                            }
+                            onMouseLeave={(e) =>
+                              ((
+                                e.currentTarget as HTMLButtonElement
+                              ).style.opacity = "1")
+                            }
                           >
-                            <FileText className="w-4 h-4 mr-2" />
+                            <FileText style={{ width: 14, height: 14 }} />
                             {t("booking.downloadInvoice")}
-                            <Download className="w-3 h-3 ml-1" />
-                          </Button>
+                            <Download style={{ width: 12, height: 12 }} />
+                          </button>
                         )}
                       </div>
-                    </div>
 
-                    <div className="flex flex-col items-end gap-1">
-                      <span className="text-sm font-semibold text-slate-900">
-                        Total: ${booking.totalPrice.toFixed(2)}
-                      </span>
-                      <div className="flex items-center gap-2">
-                        <span
-                          className={`text-xs px-3 py-1 rounded-full font-semibold capitalize ${
-                            booking.status === "confirmed"
-                              ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
-                              : booking.status === "pending"
-                                ? "bg-amber-50 text-amber-700 border border-amber-200"
-                                : booking.status === "canceled"
-                                  ? "bg-red-50 text-red-700 border border-red-200"
-                                  : "bg-slate-50 text-slate-700 border border-slate-200"
-                          }`}
-                        >
-                          {t("booking.bookingStatus")}: {booking.status}
-                        </span>
-                        {booking.payment_status && (
-                          <span
-                            className={`text-xs px-2 py-1 rounded-full font-semibold capitalize ${
-                              booking.payment_status === "paid"
-                                ? "bg-green-50 text-green-700 border border-green-200"
-                                : booking.payment_status === "pending"
-                                  ? "bg-yellow-50 text-yellow-700 border border-yellow-200"
-                                  : "bg-red-50 text-red-700 border border-red-200"
-                            }`}
+                      {/* Right: Price + Status + Actions */}
+                      <div
+                        style={{
+                          display: "flex",
+                          flexDirection: "column",
+                          alignItems: "flex-end",
+                          justifyContent: "space-between",
+                          gap: 12,
+                          minWidth: 168,
+                        }}
+                      >
+                        {/* Price */}
+                        <div style={{ textAlign: "right" }}>
+                          <p
+                            style={{
+                              fontSize: 10,
+                              color: tk.mutedText,
+                              textTransform: "uppercase",
+                              letterSpacing: "0.1em",
+                            }}
                           >
-                            {t("booking.paymentStatus")}:{" "}
-                            {booking.payment_status}
-                          </span>
-                        )}
-                      </div>
-                      <div className="flex flex-col items-end gap-2">
-                        {/* CASE 1: Booking Confirmed + Payment Pending - Show Payment Button */}
-                        {booking.status === "confirmed" &&
-                          booking.payment_status === "pending" && (
-                            <>
-                              <div className="flex items-center gap-1 text-xs text-amber-600 mb-1">
-                                <CreditCard className="w-3 h-3" />
-                                <span>{t("booking.paymentRequired")}</span>
-                              </div>
-                              <div className="flex flex-col items-end gap-2">
-                                <StripePaymentButton booking={booking} />
-                                {/* <div className="text-xs text-slate-400 my-1">
-                                  {t("common.or")}
-                                </div>
-                                <PayPalPaymentButton booking={booking} /> */}
-                              </div>
-                              <Button
-                                onClick={() =>
-                                  handlePendingBookingCancel(booking)
-                                }
-                                size="sm"
-                                variant="outline"
-                                className="mt-2"
-                              >
-                                {t("booking.cancelBooking")}
-                              </Button>
-                            </>
-                          )}
+                            Total
+                          </p>
+                          <p
+                            style={{
+                              fontSize: 24,
+                              fontWeight: 900,
+                              color: tk.pageText,
+                              lineHeight: 1,
+                            }}
+                          >
+                            ${booking.totalPrice.toFixed(2)}
+                          </p>
+                          <p
+                            style={{
+                              fontSize: 14,
+                              fontWeight: 900,
+                              color: tk.pageText,
+                              lineHeight: 1,
+                            }}
+                          >
+                            + ${(booking.totalPrice * 0.07).toFixed(2)} Fee
+                          </p>
+                        </div>
 
-                        {/* CASE 2: Booking Pending - Only Cancel Button (Awaiting Confirmation) */}
-                        {booking.status === "pending" &&
-                          booking.payment_status === "pending" && (
-                            <>
-                              <div className="text-xs text-slate-500 mb-1">
-                                {t("booking.awaitingConfirmation")}
-                              </div>
-                              <Button
-                                onClick={() =>
-                                  handlePendingBookingCancel(booking)
-                                }
-                                size="sm"
-                                variant="outline"
-                              >
-                                {t("booking.cancelBooking")}
-                              </Button>
-                            </>
-                          )}
-
-                        {/* CASE 3: Payment Completed - Show Success Message */}
-                        {booking.payment_status === "paid" &&
-                          booking.status !== "canceled" && (
-                            <div className="flex flex-col items-end gap-1">
-                              <div className="flex items-center gap-1 text-xs text-green-600">
-                                <CreditCard className="w-3 h-3" />
-                                <span className="font-semibold">
-                                  {t("booking.paymentCompleted")} ✓
-                                </span>
-                              </div>
-                              {booking.status === "confirmed" && (
-                                <div className="text-xs text-slate-500">
-                                  {t("booking.confirmed")}
-                                </div>
+                        {/* Status Badges */}
+                        <div
+                          style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "flex-end",
+                            gap: 8,
+                          }}
+                        >
+                          {/* Booking status row */}
+                          <div
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 8,
+                            }}
+                          >
+                            <span
+                              style={{
+                                fontSize: 10,
+                                color: tk.mutedText,
+                                textTransform: "uppercase",
+                                letterSpacing: "0.05em",
+                                fontWeight: 500,
+                              }}
+                            >
+                              {t("booking.statusLabel")}
+                            </span>
+                            <span
+                              title={t(
+                                `booking.statusHint.${booking.status}`,
+                                "",
                               )}
-                              {/* Add Review button – only for car/apartment */}
-                              {(booking.propertyType === "car" ||
-                                booking.propertyType === "apartment") && (
-                                <Button
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    setReviewBooking(booking);
+                              style={{
+                                cursor: "help",
+                                fontSize: 11,
+                                padding: "4px 10px",
+                                borderRadius: 999,
+                                fontWeight: 700,
+                                textTransform: "capitalize",
+                                ...getStatusBadgeStyle(booking.status),
+                              }}
+                            >
+                              {booking.status}
+                            </span>
+                          </div>
+
+                          {/* Payment status row */}
+                          {booking.payment_status && (
+                            <div
+                              style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 8,
+                              }}
+                            >
+                              <span
+                                style={{
+                                  fontSize: 10,
+                                  color: tk.mutedText,
+                                  textTransform: "uppercase",
+                                  letterSpacing: "0.05em",
+                                  fontWeight: 500,
+                                }}
+                              >
+                                {t("booking.paymentLabel")}
+                              </span>
+                              <span
+                                title={t(
+                                  `booking.paymentHint.${booking.payment_status}`,
+                                  "",
+                                )}
+                                style={{
+                                  cursor: "help",
+                                  fontSize: 11,
+                                  padding: "4px 10px",
+                                  borderRadius: 999,
+                                  fontWeight: 700,
+                                  textTransform: "capitalize",
+                                  ...getStatusBadgeStyle(
+                                    booking.payment_status === "paid"
+                                      ? "confirmed"
+                                      : booking.payment_status === "pending"
+                                        ? "pending"
+                                        : "canceled",
+                                  ),
+                                }}
+                              >
+                                {booking.payment_status === "paid"
+                                  ? "✓ Paid"
+                                  : booking.payment_status}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* ── Action Zone ── */}
+                        <div
+                          style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "flex-end",
+                            gap: 8,
+                            width: "100%",
+                          }}
+                        >
+                          {/* CASE 1: Confirmed + Payment Pending */}
+                          {booking.status === "confirmed" &&
+                            booking.payment_status === "pending" && (
+                              <>
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: 4,
+                                    fontSize: 12,
+                                    color: isDark ? "#fcd34d" : "#92400e",
                                   }}
-                                  variant="outline"
-                                  size="sm"
-                                  className="mt-2 text-yellow-600 border-yellow-300 hover:bg-yellow-50 hover:border-yellow-400"
                                 >
-                                  <Star className="w-3 h-3 mr-1 fill-yellow-500 text-yellow-500" />
-                                  {t("review.addReview", "Add Review")}
-                                </Button>
-                              )}
-                              {/* Contact Provider button */}
-                              <ProviderContactButton
-                                providerId={booking.providerId}
-                              />
-                            </div>
-                          )}
+                                  <CreditCard
+                                    style={{ width: 12, height: 12 }}
+                                  />
+                                  <span>{t("booking.paymentRequired")}</span>
+                                </div>
+                                <StripePaymentButton booking={booking} />
+                                <button
+                                  onClick={() =>
+                                    handlePendingBookingCancel(booking)
+                                  }
+                                  style={{
+                                    fontSize: 12,
+                                    color: tk.mutedText,
+                                    background: "transparent",
+                                    border: "none",
+                                    cursor: "pointer",
+                                    textDecoration: "underline",
+                                    textUnderlineOffset: 2,
+                                    transition: "color 0.2s",
+                                  }}
+                                  onMouseEnter={(e) =>
+                                    ((
+                                      e.currentTarget as HTMLButtonElement
+                                    ).style.color = "#E8192C")
+                                  }
+                                  onMouseLeave={(e) =>
+                                    ((
+                                      e.currentTarget as HTMLButtonElement
+                                    ).style.color = tk.mutedText)
+                                  }
+                                >
+                                  {t("booking.cancelBooking")}
+                                </button>
+                              </>
+                            )}
 
-                        {/* CASE 4: Booking Canceled - Show Info */}
-                        {booking.status === "canceled" && (
-                          <div className="flex flex-col items-end gap-1">
-                            <div className="text-xs text-red-600 font-semibold">
-                              {t("booking.cancelled")}
-                            </div>
-                            {booking.payment_status === "paid" && (
-                              <div className="text-xs text-slate-500">
-                                {t("booking.refundWillBeProcessed")}
+                          {/* CASE 2: Pending (awaiting confirmation) */}
+                          {booking.status === "pending" &&
+                            booking.payment_status === "pending" && (
+                              <>
+                                <p
+                                  style={{
+                                    fontSize: 12,
+                                    color: isDark ? "#fcd34d" : "#92400e",
+                                    textAlign: "right",
+                                  }}
+                                >
+                                  {t("booking.awaitingConfirmation")}
+                                </p>
+                                <button
+                                  onClick={() =>
+                                    handlePendingBookingCancel(booking)
+                                  }
+                                  style={{
+                                    fontSize: 12,
+                                    color: tk.mutedText,
+                                    background: "transparent",
+                                    border: "none",
+                                    cursor: "pointer",
+                                    textDecoration: "underline",
+                                    textUnderlineOffset: 2,
+                                    transition: "color 0.2s",
+                                  }}
+                                  onMouseEnter={(e) =>
+                                    ((
+                                      e.currentTarget as HTMLButtonElement
+                                    ).style.color = "#E8192C")
+                                  }
+                                  onMouseLeave={(e) =>
+                                    ((
+                                      e.currentTarget as HTMLButtonElement
+                                    ).style.color = tk.mutedText)
+                                  }
+                                >
+                                  {t("booking.cancelBooking")}
+                                </button>
+                              </>
+                            )}
+
+                          {/* CASE 3: Paid */}
+                          {booking.payment_status === "paid" &&
+                            booking.status !== "canceled" && (
+                              <div
+                                style={{
+                                  display: "flex",
+                                  flexDirection: "column",
+                                  alignItems: "flex-end",
+                                  gap: 6,
+                                }}
+                              >
+                                {(booking.propertyType === "car" ||
+                                  booking.propertyType === "apartment") && (
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setReviewBooking(booking);
+                                    }}
+                                    style={{
+                                      display: "flex",
+                                      alignItems: "center",
+                                      gap: 6,
+                                      fontSize: 12,
+                                      padding: "6px 12px",
+                                      borderRadius: 999,
+                                      border: `1px solid ${isDark ? "rgba(245,158,11,0.40)" : "#fcd34d"}`,
+                                      color: isDark ? "#fcd34d" : "#92400e",
+                                      background: "transparent",
+                                      cursor: "pointer",
+                                      fontWeight: 700,
+                                      transition: "background 0.2s",
+                                    }}
+                                    onMouseEnter={(e) =>
+                                      ((
+                                        e.currentTarget as HTMLButtonElement
+                                      ).style.background = isDark
+                                        ? "rgba(245,158,11,0.10)"
+                                        : "#fffbeb")
+                                    }
+                                    onMouseLeave={(e) =>
+                                      ((
+                                        e.currentTarget as HTMLButtonElement
+                                      ).style.background = "transparent")
+                                    }
+                                  >
+                                    <Star
+                                      style={{
+                                        width: 12,
+                                        height: 12,
+                                        fill: "#f59e0b",
+                                        color: "#f59e0b",
+                                      }}
+                                    />
+                                    {t("review.addReview", "Add Review")}
+                                  </button>
+                                )}
+                                <ProviderContactButton
+                                  providerId={booking.providerId}
+                                />
                               </div>
                             )}
-                          </div>
-                        )}
 
-                        {/* CASE 5: Payment Failed - Show Retry Option */}
-                        {booking.payment_status === "failed" &&
-                          booking.status === "confirmed" && (
-                            <>
-                              <div className="flex items-center gap-1 text-xs text-red-600 mb-1">
-                                <AlertCircle className="w-3 h-3" />
-                                <span>{t("booking.paymentFailed")}</span>
-                              </div>
-                              <div className="flex flex-col items-end gap-2">
-                                <StripePaymentButton booking={booking} />
-                                <div className="text-xs text-slate-400 my-1">
-                                  {t("common.or")}
-                                </div>
-                                <PayPalPaymentButton booking={booking} />
-                              </div>
-                              <Button
-                                onClick={() =>
-                                  handlePendingBookingCancel(booking)
-                                }
-                                size="sm"
-                                variant="outline"
-                                className="mt-2"
+                          {/* CASE 4: Canceled */}
+                          {booking.status === "canceled" && (
+                            <div style={{ textAlign: "right" }}>
+                              <p
+                                style={{
+                                  fontSize: 12,
+                                  fontWeight: 700,
+                                  color: "#E8192C",
+                                }}
                               >
-                                {t("booking.cancelBooking")}
-                              </Button>
-                            </>
+                                {t("booking.cancelled")}
+                              </p>
+                              {booking.payment_status === "paid" && (
+                                <p
+                                  style={{
+                                    fontSize: 12,
+                                    color: tk.mutedText,
+                                    marginTop: 2,
+                                  }}
+                                >
+                                  {t("booking.refundWillBeProcessed")}
+                                </p>
+                              )}
+                            </div>
                           )}
+
+                          {/* CASE 5: Payment Failed */}
+                          {booking.payment_status === "failed" &&
+                            booking.status === "confirmed" && (
+                              <>
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: 4,
+                                    fontSize: 12,
+                                    color: isDark ? "#fca5a5" : "#991b1b",
+                                  }}
+                                >
+                                  <AlertCircle
+                                    style={{ width: 12, height: 12 }}
+                                  />
+                                  <span>{t("booking.paymentFailed")}</span>
+                                </div>
+                                <StripePaymentButton booking={booking} />
+                                <PayPalPaymentButton booking={booking} />
+                                <button
+                                  onClick={() =>
+                                    handlePendingBookingCancel(booking)
+                                  }
+                                  style={{
+                                    fontSize: 12,
+                                    color: tk.mutedText,
+                                    background: "transparent",
+                                    border: "none",
+                                    cursor: "pointer",
+                                    textDecoration: "underline",
+                                    textUnderlineOffset: 2,
+                                    transition: "color 0.2s",
+                                  }}
+                                  onMouseEnter={(e) =>
+                                    ((
+                                      e.currentTarget as HTMLButtonElement
+                                    ).style.color = "#E8192C")
+                                  }
+                                  onMouseLeave={(e) =>
+                                    ((
+                                      e.currentTarget as HTMLButtonElement
+                                    ).style.color = tk.mutedText)
+                                  }
+                                >
+                                  {t("booking.cancelBooking")}
+                                </button>
+                              </>
+                            )}
+                        </div>
                       </div>
                     </div>
                   </div>
-                );
-              })}
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {/* ── Pagination ── */}
+        {!isLoading && !isError && total > 0 && totalPages > 1 && (
+          <div style={{ marginTop: 32, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
+
+            {/* Range label */}
+            <p style={{ fontSize: 12, color: tk.mutedText }}>
+              Showing{" "}
+              <span style={{ fontWeight: 600, color: tk.dimText }}>
+                {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, total)}
+              </span>{" "}
+              of{" "}
+              <span style={{ fontWeight: 600, color: tk.dimText }}>{total}</span>{" "}
+              bookings
+            </p>
+
+            {/* Controls */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+              {/* Prev */}
+              <button
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                disabled={page === 1 || isFetching}
+                style={{
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  width: 36, height: 36, borderRadius: '50%',
+                  border: `1px solid ${tk.paginationBorder}`,
+                  color: tk.paginationText,
+                  background: 'transparent', cursor: 'pointer',
+                  transition: 'border-color 0.2s, color 0.2s',
+                  opacity: (page === 1 || isFetching) ? 0.3 : 1,
+                }}
+                onMouseEnter={e => { if (!(page === 1 || isFetching)) { (e.currentTarget as HTMLButtonElement).style.borderColor = '#E8192C'; (e.currentTarget as HTMLButtonElement).style.color = '#E8192C'; } }}
+                onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = tk.paginationBorder; (e.currentTarget as HTMLButtonElement).style.color = tk.paginationText; }}
+              >
+                <ChevronLeft style={{ width: 16, height: 16 }} />
+              </button>
+
+              {/* Page numbers */}
+              {Array.from({ length: totalPages }, (_, i) => i + 1)
+                .filter((p) =>
+                  p === 1 || p === totalPages || Math.abs(p - page) <= 1
+                )
+                .reduce<(number | "…")[]>((acc, p, idx, arr) => {
+                  if (idx > 0 && (p as number) - (arr[idx - 1] as number) > 1) {
+                    acc.push("…");
+                  }
+                  acc.push(p);
+                  return acc;
+                }, [])
+                .map((p, idx) =>
+                  p === "…" ? (
+                    <span key={`ellipsis-${idx}`} style={{
+                      width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      fontSize: 14, color: tk.mutedText,
+                    }}>
+                      …
+                    </span>
+                  ) : (
+                    <button
+                      key={p}
+                      onClick={() => setPage(p as number)}
+                      disabled={isFetching}
+                      style={{
+                        width: 36, height: 36, borderRadius: '50%',
+                        fontSize: 14, fontWeight: 700,
+                        border: p === page ? 'none' : `1px solid ${tk.paginationBorder}`,
+                        background: p === page
+                          ? 'linear-gradient(135deg, #dc2626, #7f1d1d)'
+                          : 'transparent',
+                        color: p === page ? '#ffffff' : tk.paginationText,
+                        cursor: 'pointer',
+                        transition: 'border-color 0.2s, color 0.2s',
+                      }}
+                      onMouseEnter={e => { if (p !== page) { (e.currentTarget as HTMLButtonElement).style.borderColor = '#E8192C'; (e.currentTarget as HTMLButtonElement).style.color = '#E8192C'; } }}
+                      onMouseLeave={e => { if (p !== page) { (e.currentTarget as HTMLButtonElement).style.borderColor = tk.paginationBorder; (e.currentTarget as HTMLButtonElement).style.color = tk.paginationText; } }}
+                    >
+                      {p}
+                    </button>
+                  )
+                )}
+
+              {/* Next */}
+              <button
+                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                disabled={page === totalPages || isFetching}
+                style={{
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  width: 36, height: 36, borderRadius: '50%',
+                  border: `1px solid ${tk.paginationBorder}`,
+                  color: tk.paginationText,
+                  background: 'transparent', cursor: 'pointer',
+                  transition: 'border-color 0.2s, color 0.2s',
+                  opacity: (page === totalPages || isFetching) ? 0.3 : 1,
+                }}
+                onMouseEnter={e => { if (!(page === totalPages || isFetching)) { (e.currentTarget as HTMLButtonElement).style.borderColor = '#E8192C'; (e.currentTarget as HTMLButtonElement).style.color = '#E8192C'; } }}
+                onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = tk.paginationBorder; (e.currentTarget as HTMLButtonElement).style.color = tk.paginationText; }}
+              >
+                <ChevronRight style={{ width: 16, height: 16 }} />
+              </button>
             </div>
-          )}
-        </div>
+
+            {/* Fetching indicator */}
+            {isFetching && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: tk.mutedText }}>
+                <Loader2 style={{ width: 12, height: 12, animation: 'spin 1s linear infinite' }} />
+                Loading…
+              </div>
+            )}
+          </div>
+        )}
       </div>
+
       {/* Review Modal */}
       {reviewBooking && (
         <ReviewModal

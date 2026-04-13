@@ -83,6 +83,11 @@
     "login": "Accedi",
     "profile": "Profilo"
   },
+  "auth": {
+    "loginRequired": "Accesso richiesto",
+    "loginToBook": "Effettua l'accesso per effettuare una prenotazione.",
+    "login": "Accedi"
+  },
   "footer": {
     "description": "La tua piattaforma affidabile per scoprire e prenotare i migliori alloggi e noleggi auto in Albania.",
     "explore": "Esplora",
@@ -92,6 +97,7 @@
     "cultureCuisine": "Cultura & Cucina",
     "support": "Supporto",
     "helpCenter": "Centro Assistenza",
+    "rentalTerms": "Termini di Noleggio",
     "cancellationPolicy": "Politica di Cancellazione",
     "privacyPolicy": "Privacy Policy",
     "termsOfService": "Termini di Servizio",
@@ -122,12 +128,12 @@
     "subtotal": "Subtotale",
     "pricesVaryByMonth": "I prezzi variano mensilmente in base alle tariffe stagionali.",
     "selectDatesForBreakdown": "Seleziona le date per vedere il dettaglio prezzi.",
-    "serviceFee": "Commissione di servizio",
+    "serviceFee": "+ Commissione di servizio",
     "serviceFeeDescription": "Copre le operazioni della piattaforma, l'assistenza clienti e la protezione della prenotazione.",
     "tax": "Tasse (10%)",
     "taxDescription": "Tasse locali e governative applicate al tuo noleggio.",
     "total": "Totale",
-    "totalDescription": "Questo è l'importo totale che pagherai se confermi la prenotazione.",
+    "totalDescription": "Questo è l'importo totale che dovrai pagare, più il 7% per confermare la prenotazione.",
     "confirmBooking": "Conferma Prenotazione",
     "processing": "Elaborazione in corso...",
     "paymentNote": "Non verrai ancora addebitato. Il pagamento viene completato dopo la conferma.",
@@ -145,7 +151,9 @@
     "emailPlaceholder": "mario.rossi@esempio.com",
     "phonePlaceholder": "Inserisci il numero di telefono",
     "phoneRequired": "Numero di telefono obbligatorio",
-    "invalidPhone": "Numero di telefono non valido"
+    "invalidPhone": "Numero di telefono non valido",
+    "ownPropertyTitle": "Impossibile prenotare la propria proprietà",
+    "ownPropertyMessage": "Non puoi prenotare una proprietà che possiedi. Scegli un altro annuncio."
   },
   "terms": {
     "minimumRentalPeriod": "Periodo Minimo di Noleggio",
@@ -173,6 +181,7 @@
       "all": "Tutti",
       "hotel": "Hotel",
       "apartment": "Appartamento",
+      "destination": "Destinazione",
       "guests": "Ospiti",
       "adults": "Adulti",
       "children": "Bambini",
@@ -283,12 +292,34 @@
     "completed": "Prenotazione Completata",
     "paymentStatus": "Stato Pagamento",
     "paymentCompleted": "Pagamento Completato",
-    "paymentRequired": "Pagamento Richiesto",
+    "paymentRequired": "Pagamento Richiesto 7% per confermare la prenotazione",
     "paymentPending": "Pagamento in Attesa",
     "paymentFailed": "Pagamento Fallito",
     "paymentSuccess": "Pagamento Riuscito",
     "refundWillBeProcessed": "Il rimborso verrà elaborato",
-    "downloadInvoice": "Scarica Fattura"
+    "downloadInvoice": "Scarica Fattura",
+    "statusLabel": "Prenotazione",
+    "paymentLabel": "Pagamento",
+    "statusHint": {
+      "pending": "In attesa di conferma dal fornitore",
+      "confirmed": "La tua prenotazione è stata confermata dal fornitore",
+      "canceled": "Questa prenotazione è stata cancellata"
+    },
+    "paymentHint": {
+      "pending": "Il pagamento non è ancora stato completato",
+      "paid": "Pagamento ricevuto con successo",
+      "failed": "Il pagamento è fallito — riprova"
+    },
+    "combinedStatus": {
+      "pendingPending": "In attesa di conferma dal fornitore",
+      "confirmedPending": "Confermato dal fornitore · In attesa del tuo pagamento",
+      "confirmedPaid": "Confermato dal fornitore · Pagamento ricevuto",
+      "canceledPaid": "Prenotazione annullata · Il rimborso verrà elaborato",
+      "canceledPending": "La prenotazione è stata annullata",
+      "confirmedFailed": "Confermato dal fornitore · Pagamento fallito, riprova"
+    },
+    "currentlyRented": "Attualmente noleggiato — puoi ancora prenotare per un altro periodo",
+    "underMaintenance": "In Manutenzione"
   },
   "user": {
     "fullName": "Nome Completo",
@@ -366,6 +397,8 @@
     "apartment": "Appartamento",
     "hotel": "Hotel",
     "stay": "Soggiorno",
+    "culture": "Culture",
+    "map": "Mappa",
     "explore": "Esplora di Più",
     "learnMore": "Scopri di Più",
     "tryAgain": "Riprova",
@@ -373,6 +406,8 @@
     "yes": "Sì",
     "no": "No",
     "confirm": "Conferma",
+    "cancel": "Annulla",
+    "more": "Altro",
     "day": "giorno",
     "days": "giorni",
     "pageNotFound": "Oops! Pagina non trovata",
@@ -570,11 +605,35 @@
     "noImages": "Nessuna immagine disponibile",
     "photos": "foto",
     "updateSuccess": "Appartamento aggiornato con successo!",
-    "updateFailed": "Aggiornamento appartamento fallito."
+    "updateFailed": "Aggiornamento appartamento fallito.",
+    "successTitle": "Invio ricevuto!",
+    "successMessage": "Il tuo annuncio dell'appartamento è stato inviato per la revisione. Il nostro team di amministrazione esaminerà il tuo annuncio e lo approverà a breve.",
+    "statusPending": "In attesa di revisione dell'amministratore",
+    "statusDescription": "Il tuo annuncio è attualmente in fase di revisione. Sarai avvisato una volta approvato e visibile agli ospiti.",
+    "close": "Chiudi",
+    "review": "In Revisione"
   },
   "bookingManagement": {
     "title": "Gestione Prenotazioni",
     "subtitle": "Visualizza e gestisci tutte le richieste di prenotazione per le tue strutture",
+    "cancelBooking": {
+      "title": "Annulla Prenotazione",
+      "subtitle": "Seleziona un motivo per l'annullamento",
+      "reasonRequired": "Seleziona o fornisci un motivo per l'annullamento",
+      "reasons": {
+        "dateConflict": "Conflitto di date con un'altra prenotazione",
+        "propertyUnavailable": "La struttura non è più disponibile",
+        "pricingIssue": "Errore di prezzo o problema di disponibilità",
+        "customerRequest": "Il cliente ha richiesto l'annullamento",
+        "maintenance": "Struttura in manutenzione",
+        "forceMajeure": "Forza maggiore / Circostanze impreviste",
+        "other": "Altro motivo"
+      },
+      "customReasonLabel": "Altro motivo (si prega di specificare)",
+      "customReasonPlaceholder": "Inserisci il tuo motivo...",
+      "confirmCancel": "Conferma Annullamento",
+      "autoCancelled": "Prenotazione automaticamente annullata a causa di un conflitto di date con un'altra prenotazione"
+    },
     "stats": {
       "totalBookings": "Prenotazioni Totali",
       "pending": "In Attesa",
@@ -1187,6 +1246,14 @@
         "placeholder": "Spiega perché questa struttura viene respinta...",
         "cancel": "Annulla",
         "confirm": "Conferma Reiezione"
+      },
+      "approve": {
+        "title": "Approva Struttura con Valutazione",
+        "description": "Imposta la valutazione ufficiale per questo appartamento prima dell'approvazione. La valutazione suggerita dal fornitore è mostrata come riferimento.",
+        "providerRating": "Valutazione suggerita dal fornitore",
+        "adminRatingLabel": "Imposta Valutazione Ufficiale *",
+        "cancel": "Annulla",
+        "confirm": "Approva con Valutazione"
       }
     }
   },
@@ -1271,7 +1338,8 @@
     },
     "bookings": {
       "title": "Prenotazioni",
-      "allBookings": "Tutte le Prenotazioni"
+      "allBookings": "Tutte le Prenotazioni",
+      "supervision": "Supervisione Prenotazioni"
     },
     "destinations": {
       "title": "Destinazioni",
@@ -1287,6 +1355,69 @@
       "providerRequests": "Richieste Fornitori",
       "propertyRequests": "Richieste Strutture"
     }
+  },
+  "adminProvidersList": {
+    "title": "Supervisione Prenotazioni",
+    "subtitle": "Monitora e traccia tutte le prenotazioni dei fornitori sulla piattaforma",
+    "searchPlaceholder": "Cerca fornitori per nome, email o località...",
+    "totalProviders": "fornitori totali",
+    "noProviders": "Nessun fornitore trovato",
+    "noProvidersSearch": "Nessun fornitore corrisponde alla ricerca",
+    "viewBookings": "Visualizza Prenotazioni",
+    "memberSince": "Membro dal",
+    "unnamed": "Fornitore senza nome",
+    "loading": "Caricamento fornitori...",
+    "error": "Impossibile caricare i fornitori"
+  },
+  "adminProviderBookings": {
+    "title": "Prenotazioni del Fornitore",
+    "subtitle": "Tutte le prenotazioni gestite da questo fornitore",
+    "backToProviders": "Torna ai Fornitori",
+    "booked": "Prenotato il",
+    "stats": {
+      "total": "Totale",
+      "pending": "In attesa",
+      "confirmed": "Confermate",
+      "canceled": "Annullate",
+      "completed": "Completate",
+      "revenue": "Ricavi"
+    },
+    "filters": {
+      "searchPlaceholder": "Cerca per ospite, struttura o ID...",
+      "allStatuses": "Tutti gli stati",
+      "allTypes": "Tutti i tipi"
+    },
+    "table": {
+      "property": "Struttura",
+      "guest": "Ospite",
+      "dates": "Date",
+      "total": "Totale",
+      "status": "Stato",
+      "paymentStatus": "Pagamento",
+      "cancellationReason": "Motivo di cancellazione"
+    },
+    "status": {
+      "pending": "In attesa",
+      "confirmed": "Confermata",
+      "canceled": "Annullata",
+      "completed": "Completata"
+    },
+    "paymentStatus": {
+      "pending": "In attesa",
+      "paid": "Pagato",
+      "failed": "Fallito",
+      "refunded": "Rimborsato"
+    },
+    "propertyTypes": {
+      "car": "Auto",
+      "apartment": "Appartamento",
+      "hotel": "Hotel"
+    },
+    "noBookings": "Questo fornitore non ha ancora prenotazioni",
+    "noBookingsSearch": "Nessuna prenotazione corrisponde ai filtri",
+    "loading": "Caricamento prenotazioni...",
+    "error": "Impossibile caricare le prenotazioni",
+    "noCancellationReason": "Nessun motivo fornito"
   },
   "availabilityCalendar": {
     "title": "Disponibilità",

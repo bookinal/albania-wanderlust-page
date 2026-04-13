@@ -2,8 +2,6 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import { ArrowLeft, MapPin, Heart, Share2, Loader2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Destination } from "@albania/shared-types";
 import {
   getDestinationById,
@@ -14,6 +12,7 @@ import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import { useTranslation } from "react-i18next";
 import { useLocalized } from "@/hooks/useLocalized";
+import { useTheme } from "@/context/ThemeContext";
 
 // Fix for default marker icon issue in React-Leaflet
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -32,11 +31,29 @@ const DestinationDetails = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { isDark } = useTheme();
   const [destination, setDestination] = useState<Destination | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isAddingToWishlist, setIsAddingToWishlist] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+
+  const tk = {
+    pageBg: isDark ? '#0d0d0d' : '#f5f4f1',
+    pageText: isDark ? '#ffffff' : '#111115',
+    headerBg: isDark ? '#111111' : '#ffffff',
+    headerBorder: isDark ? 'rgba(255,255,255,0.06)' : '#e5e2de',
+    cardBg: isDark ? 'rgba(255,255,255,0.025)' : '#ffffff',
+    cardBorder: isDark ? 'rgba(255,255,255,0.07)' : '#ede9e5',
+    cardShadow: isDark ? '0 8px 32px rgba(0,0,0,0.5)' : '0 8px 32px rgba(15,23,42,0.08)',
+    mutedText: isDark ? 'rgba(255,255,255,0.40)' : '#6b6663',
+    dimText: isDark ? 'rgba(255,255,255,0.70)' : '#44403c',
+    backBg: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
+    mapFallbackBg: isDark ? 'rgba(255,255,255,0.04)' : '#f0ece8',
+    btnOutlineBg: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)',
+    btnOutlineBorder: isDark ? 'rgba(255,255,255,0.14)' : '#d0ccc8',
+    thumbBorder: isDark ? 'rgba(255,255,255,0.10)' : '#e5e2de',
+  };
 
   useEffect(() => {
     const fetchDestination = async () => {
@@ -112,25 +129,25 @@ const DestinationDetails = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
-        <Loader2 className="w-8 h-8 animate-spin text-red-600" />
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: tk.pageBg }}>
+        <Loader2 className="w-8 h-8 animate-spin" style={{ color: '#E8192C' }} />
       </div>
     );
   }
 
   if (error || !destination) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 px-4">
-        <h2 className="text-2xl font-bold text-slate-900 mb-4">
+      <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: tk.pageBg, padding: '0 1rem' }}>
+        <h2 style={{ fontSize: '1.5rem', fontWeight: 700, color: tk.pageText, marginBottom: '1rem' }}>
           {error || "Destination not found"}
         </h2>
-        <Button
+        <button
           onClick={() => navigate("/")}
-          className="bg-red-600 hover:bg-red-700"
+          style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.625rem 1.25rem', background: '#E8192C', color: '#fff', border: 'none', borderRadius: '0.5rem', fontWeight: 600, cursor: 'pointer', fontSize: '0.9rem' }}
         >
-          <ArrowLeft className="w-4 h-4 mr-2" />
+          <ArrowLeft className="w-4 h-4" />
           Back to Home
-        </Button>
+        </button>
       </div>
     );
   }
@@ -141,88 +158,72 @@ const DestinationDetails = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-red-50 to-slate-100">
+    <div style={{ minHeight: '100vh', background: tk.pageBg, color: tk.pageText }}>
       {/* Header */}
-      <div className="bg-white shadow-sm sticky top-0 z-40">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <Button
-              variant="ghost"
+      <div style={{ background: tk.headerBg, borderBottom: `1px solid ${tk.headerBorder}`, position: 'sticky', top: 0, zIndex: 40 }}>
+        <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '1rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <button
               onClick={() => navigate("/")}
-              className="hover:bg-slate-100"
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 0.875rem', background: tk.backBg, border: `1px solid ${tk.btnOutlineBorder}`, borderRadius: '0.5rem', color: tk.pageText, cursor: 'pointer', fontSize: '0.875rem', fontWeight: 500 }}
             >
-              <ArrowLeft className="w-5 h-5 mr-2" />
+              <ArrowLeft className="w-5 h-5" />
               Back
-            </Button>
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                size="icon"
+            </button>
+            <div style={{ display: 'flex', gap: '0.5rem' }}>
+              <button
                 onClick={handleShare}
-                className="hover:bg-slate-100"
+                style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '2.25rem', height: '2.25rem', background: tk.btnOutlineBg, border: `1px solid ${tk.btnOutlineBorder}`, borderRadius: '0.5rem', color: tk.dimText, cursor: 'pointer' }}
               >
                 <Share2 className="w-5 h-5" />
-              </Button>
-              <Button
-                variant="outline"
-                size="icon"
+              </button>
+              <button
                 onClick={handleAddToWishlist}
                 disabled={isAddingToWishlist}
-                className="hover:bg-red-50 hover:text-red-600 hover:border-red-300"
+                style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '2.25rem', height: '2.25rem', background: tk.btnOutlineBg, border: `1px solid ${tk.btnOutlineBorder}`, borderRadius: '0.5rem', color: '#E8192C', cursor: isAddingToWishlist ? 'not-allowed' : 'pointer', opacity: isAddingToWishlist ? 0.6 : 1 }}
               >
                 {isAddingToWishlist ? (
                   <Loader2 className="w-5 h-5 animate-spin" />
                 ) : (
                   <Heart className="w-5 h-5" />
                 )}
-              </Button>
+              </button>
             </div>
           </div>
         </div>
       </div>
 
       {/* Hero Section */}
-      <div className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+      <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '2rem 1rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 480px), 1fr))', gap: '1.5rem', marginBottom: '2rem' }}>
           {/* Main Image */}
-          <div className="space-y-4">
-            <div className="relative h-96 lg:h-[500px] rounded-2xl overflow-hidden shadow-2xl">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <div style={{ position: 'relative', height: '28rem', borderRadius: '1rem', overflow: 'hidden', boxShadow: tk.cardShadow }}>
               <img
-                src={
-                  destination.imageUrls[selectedImageIndex] ||
-                  "/placeholder.svg"
-                }
+                src={destination.imageUrls[selectedImageIndex] || "/placeholder.svg"}
                 alt={localize(destination.name)}
-                className="w-full h-full object-cover"
-                onError={(e) => {
-                  e.currentTarget.src = "/placeholder.svg";
-                }}
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                onError={(e) => { e.currentTarget.src = "/placeholder.svg"; }}
               />
-              <div className="absolute top-4 right-4 bg-red-600 text-white px-4 py-2 rounded-full font-semibold shadow-lg">
+              <div style={{ position: 'absolute', top: '1rem', right: '1rem', background: '#E8192C', color: '#fff', padding: '0.375rem 1rem', borderRadius: '9999px', fontWeight: 600, fontSize: '0.875rem', boxShadow: '0 2px 12px rgba(0,0,0,0.3)' }}>
                 {destination.category}
               </div>
             </div>
 
             {/* Thumbnail Gallery */}
             {destination.imageUrls.length > 1 && (
-              <div className="grid grid-cols-4 gap-2">
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.5rem' }}>
                 {destination.imageUrls.slice(0, 4).map((url, index) => (
                   <button
                     key={index}
                     onClick={() => setSelectedImageIndex(index)}
-                    className={`relative h-20 rounded-lg overflow-hidden transition-all ${
-                      selectedImageIndex === index
-                        ? "ring-4 ring-red-600 scale-105"
-                        : "hover:scale-105"
-                    }`}
+                    style={{ position: 'relative', height: '5rem', borderRadius: '0.5rem', overflow: 'hidden', border: selectedImageIndex === index ? '3px solid #E8192C' : `2px solid ${tk.thumbBorder}`, cursor: 'pointer', transform: selectedImageIndex === index ? 'scale(1.05)' : 'scale(1)', transition: 'all 0.2s', padding: 0 }}
                   >
                     <img
                       src={url}
                       alt={`${localize(destination.name)} ${index + 1}`}
-                      className="w-full h-full object-cover"
-                      onError={(e) => {
-                        e.currentTarget.src = "/placeholder.svg";
-                      }}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                      onError={(e) => { e.currentTarget.src = "/placeholder.svg"; }}
                     />
                   </button>
                 ))}
@@ -231,84 +232,77 @@ const DestinationDetails = () => {
           </div>
 
           {/* Details */}
-          <div className="space-y-6">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
             <div>
-              <div className="flex items-start gap-3 mb-4">
-                <MapPin className="w-6 h-6 text-red-600 flex-shrink-0 mt-1" />
-                <h1 className="text-4xl font-bold text-slate-900">
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', marginBottom: '1rem' }}>
+                <MapPin className="w-6 h-6 flex-shrink-0 mt-1" style={{ color: '#E8192C' }} />
+                <h1 style={{ fontSize: '2.25rem', fontWeight: 700, color: tk.pageText, lineHeight: 1.2 }}>
                   {localize(destination.name)}
                 </h1>
               </div>
-              <p className="text-lg text-slate-600 leading-relaxed">
+              <p style={{ fontSize: '1.05rem', color: tk.dimText, lineHeight: 1.7 }}>
                 {localize(destination.description)}
               </p>
             </div>
 
             {/* Location Map */}
-            <Card className="overflow-hidden shadow-lg">
-              <CardContent className="p-0">
-                <div className="h-64 lg:h-80">
-                  {destination.lat && destination.lng ? (
-                    <MapContainer
-                      center={mapCenter}
-                      zoom={13}
-                      style={{ height: "100%", width: "100%" }}
-                      scrollWheelZoom={false}
-                    >
-                      <TileLayer
-                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                      />
-                      <Marker position={mapCenter}>
-                        <Popup>
-                          <div className="text-center">
-                            <h3 className="font-bold">
-                              {localize(destination.name)}
-                            </h3>
-                            <p className="text-sm text-slate-600">
-                              {destination.category}
-                            </p>
-                          </div>
-                        </Popup>
-                      </Marker>
-                    </MapContainer>
-                  ) : (
-                    <div className="h-full flex items-center justify-center bg-slate-100">
-                      <p className="text-slate-500">Location not available</p>
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
+            <div style={{ borderRadius: '0.75rem', overflow: 'hidden', border: `1px solid ${tk.cardBorder}`, boxShadow: tk.cardShadow }}>
+              <div style={{ height: '18rem' }}>
+                {destination.lat && destination.lng ? (
+                  <MapContainer
+                    center={mapCenter}
+                    zoom={13}
+                    style={{ height: "100%", width: "100%" }}
+                    scrollWheelZoom={false}
+                  >
+                    <TileLayer
+                      attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                      url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    />
+                    <Marker position={mapCenter}>
+                      <Popup>
+                        <div style={{ textAlign: 'center' }}>
+                          <h3 style={{ fontWeight: 700, margin: 0 }}>{localize(destination.name)}</h3>
+                          <p style={{ fontSize: '0.875rem', color: '#6b6663', margin: '0.25rem 0 0' }}>{destination.category}</p>
+                        </div>
+                      </Popup>
+                    </Marker>
+                  </MapContainer>
+                ) : (
+                  <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: tk.mapFallbackBg }}>
+                    <p style={{ color: tk.mutedText }}>Location not available</p>
+                  </div>
+                )}
+              </div>
+            </div>
 
             {/* Action Buttons */}
-            <div className="flex gap-4">
-              <Button
+            <div style={{ display: 'flex', gap: '1rem' }}>
+              <button
                 onClick={handleAddToWishlist}
                 disabled={isAddingToWishlist}
-                className="flex-1 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white shadow-lg hover:shadow-xl"
+                style={{ flex: 1, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', padding: '0.75rem 1.25rem', background: 'linear-gradient(135deg, #E8192C, #c0101f)', color: '#fff', border: 'none', borderRadius: '0.625rem', fontWeight: 600, cursor: isAddingToWishlist ? 'not-allowed' : 'pointer', opacity: isAddingToWishlist ? 0.7 : 1, fontSize: '0.9rem', boxShadow: '0 4px 16px rgba(232,25,44,0.35)' }}
               >
                 {isAddingToWishlist ? (
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  <Loader2 className="w-4 h-4 animate-spin" />
                 ) : (
-                  <Heart className="w-4 h-4 mr-2" />
+                  <Heart className="w-4 h-4" />
                 )}
                 Add to Wishlist
-              </Button>
-              <Button
+              </button>
+              <button
                 onClick={() =>
                   window.open(
                     `https://www.google.com/maps/search/?api=1&query=${destination.lat},${destination.lng}`,
                     "_blank",
                   )
                 }
-                variant="outline"
-                className="flex-1 hover:bg-slate-100"
                 disabled={!destination.lat || !destination.lng}
+                style={{ flex: 1, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', padding: '0.75rem 1.25rem', background: tk.btnOutlineBg, color: tk.pageText, border: `1px solid ${tk.btnOutlineBorder}`, borderRadius: '0.625rem', fontWeight: 600, cursor: (!destination.lat || !destination.lng) ? 'not-allowed' : 'pointer', opacity: (!destination.lat || !destination.lng) ? 0.5 : 1, fontSize: '0.9rem' }}
               >
-                <MapPin className="w-4 h-4 mr-2" />
+                <MapPin className="w-4 h-4" />
                 {t("map.openInGoogleMaps")}
-              </Button>
+              </button>
             </div>
           </div>
         </div>

@@ -5,6 +5,7 @@ import Stripe from "npm:stripe@17";
 const STRIPE_SECRET_KEY = Deno.env.get("STRIPE_SECRET_KEY");
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY");
 
 // Initialize Stripe
 const stripe = new Stripe(STRIPE_SECRET_KEY || "", {
@@ -89,12 +90,15 @@ Deno.serve(async (req) => {
       SUPABASE_SERVICE_ROLE_KEY!,
     );
 
+    // Create Supabase client with anon key to verify user's JWT token
+    const supabaseUser = createClient(SUPABASE_URL!, SUPABASE_ANON_KEY!);
+
     // Verify user authentication
     const token = authHeader.replace("Bearer ", "");
     const {
       data: { user },
       error: authError,
-    } = await supabaseAdmin.auth.getUser(token);
+    } = await supabaseUser.auth.getUser(token);
 
     if (authError || !user) {
       return new Response(

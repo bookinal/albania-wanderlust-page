@@ -83,6 +83,11 @@
     "login": "Connexion",
     "profile": "Profil"
   },
+  "auth": {
+    "loginRequired": "Connexion requise",
+    "loginToBook": "Veuillez vous connecter pour effectuer une réservation.",
+    "login": "Connexion"
+  },
   "footer": {
     "description": "Votre plateforme de confiance pour découvrir et réserver les meilleurs hébergements et locations de voitures en Albanie.",
     "explore": "Explorer",
@@ -92,6 +97,7 @@
     "cultureCuisine": "Culture & Cuisine",
     "support": "Assistance",
     "helpCenter": "Centre d'aide",
+    "rentalTerms": "Conditions de location",
     "cancellationPolicy": "Politique d'annulation",
     "privacyPolicy": "Politique de confidentialité",
     "termsOfService": "Conditions d'utilisation",
@@ -122,12 +128,12 @@
     "subtotal": "Sous-total",
     "pricesVaryByMonth": "Les prix varient selon le mois en fonction des tarifs saisonniers.",
     "selectDatesForBreakdown": "Sélectionnez les dates pour voir le détail des prix.",
-    "serviceFee": "Frais de service",
+    "serviceFee": "+ Frais de service",
     "serviceFeeDescription": "Couvre les opérations de la plateforme, l'assistance client et la protection de la réservation.",
     "tax": "Taxe (10%)",
     "taxDescription": "Taxe locale et gouvernementale appliquée à votre location.",
     "total": "Total",
-    "totalDescription": "C'est le montant total que vous paierez si vous confirmez la réservation.",
+    "totalDescription": "Il s'agit du montant total à payer, dont 7% pour confirmer la réservation.",
     "confirmBooking": "Confirmer la réservation",
     "processing": "Traitement en cours...",
     "paymentNote": "Vous ne serez pas débité immédiatement. Le paiement est effectué après confirmation.",
@@ -145,7 +151,9 @@
     "emailPlaceholder": "jean@exemple.com",
     "phonePlaceholder": "Entrez le numéro de téléphone",
     "phoneRequired": "Numéro de téléphone requis",
-    "invalidPhone": "Numéro de téléphone invalide"
+    "invalidPhone": "Numéro de téléphone invalide",
+    "ownPropertyTitle": "Impossible de réserver votre propre propriété",
+    "ownPropertyMessage": "Vous ne pouvez pas réserver une propriété que vous possédez. Veuillez choisir une autre annonce."
   },
   "terms": {
     "minimumRentalPeriod": "Période de location minimale",
@@ -173,6 +181,7 @@
       "all": "Tous",
       "hotel": "Hôtel",
       "apartment": "Appartement",
+      "destination": "Destination",
       "guests": "Voyageurs",
       "adults": "Adultes",
       "children": "Enfants",
@@ -283,12 +292,34 @@
     "completed": "Réservation terminée",
     "paymentStatus": "Statut du paiement",
     "paymentCompleted": "Paiement effectué",
-    "paymentRequired": "Paiement requis",
+    "paymentRequired": "Paiement requis 7% pour confirmer la réservation",
     "paymentPending": "Paiement en attente",
     "paymentFailed": "Paiement échoué",
     "paymentSuccess": "Paiement réussi",
     "refundWillBeProcessed": "Le remboursement sera traité",
-    "downloadInvoice": "Télécharger la facture"
+    "downloadInvoice": "Télécharger la facture",
+    "statusLabel": "Réservation",
+    "paymentLabel": "Paiement",
+    "statusHint": {
+      "pending": "En attente de confirmation du prestataire",
+      "confirmed": "Votre réservation a été confirmée par le prestataire",
+      "canceled": "Cette réservation a été annulée"
+    },
+    "paymentHint": {
+      "pending": "Le paiement n'a pas encore été effectué",
+      "paid": "Paiement reçu avec succès",
+      "failed": "Le paiement a échoué — veuillez réessayer"
+    },
+    "combinedStatus": {
+      "pendingPending": "En attente de confirmation du prestataire",
+      "confirmedPending": "Confirmé par le prestataire · En attente de votre paiement",
+      "confirmedPaid": "Confirmé par le prestataire · Paiement reçu",
+      "canceledPaid": "Réservation annulée · Le remboursement sera traité",
+      "canceledPending": "La réservation a été annulée",
+      "confirmedFailed": "Confirmé par le prestataire · Paiement échoué, veuillez réessayer"
+    },
+    "currentlyRented": "Actuellement loué — vous pouvez toujours réserver pour une autre période",
+    "underMaintenance": "En Maintenance"
   },
   "user": {
     "fullName": "Nom complet",
@@ -366,6 +397,8 @@
     "apartment": "Appartement",
     "hotel": "Hôtel",
     "stay": "Séjour",
+    "culture": "Culture",
+    "map": "Carte",
     "explore": "Explorer plus",
     "learnMore": "En savoir plus",
     "tryAgain": "Réessayer",
@@ -373,6 +406,8 @@
     "yes": "Oui",
     "no": "Non",
     "confirm": "Confirmer",
+    "cancel": "Annuler",
+    "more": "Plus",
     "day": "jour",
     "days": "jours",
     "pageNotFound": "Oups ! Page non trouvée",
@@ -570,11 +605,35 @@
     "noImages": "Aucune image disponible",
     "photos": "photos",
     "updateSuccess": "Appartement mis à jour avec succès !",
-    "updateFailed": "Échec de la mise à jour de l'appartement."
+    "updateFailed": "Échec de la mise à jour de l'appartement.",
+    "successTitle": "Soumission reçue !",
+    "successMessage": "Votre annonce d'appartement a été soumise pour examen. Notre équipe d'administration examinera votre annonce et l'approuvera sous peu.",
+    "statusPending": "En attente d'examen par l'administrateur",
+    "statusDescription": "Votre annonce est actuellement en cours d'examen. Vous serez notifié dès qu'elle sera approuvée et visible par les clients.",
+    "close": "Fermer",
+    "review": "En cours d'examen"
   },
   "bookingManagement": {
     "title": "Gestion des réservations",
     "subtitle": "Consultez et gérez toutes les demandes de réservation pour vos biens",
+    "cancelBooking": {
+      "title": "Annuler la réservation",
+      "subtitle": "Veuillez sélectionner une raison d'annulation",
+      "reasonRequired": "Veuillez sélectionner ou fournir une raison pour l'annulation",
+      "reasons": {
+        "dateConflict": "Conflit de dates avec une autre réservation",
+        "propertyUnavailable": "La propriété n'est plus disponible",
+        "pricingIssue": "Erreur de prix ou problème de disponibilité",
+        "customerRequest": "Le client a demandé l'annulation",
+        "maintenance": "Propriété en maintenance",
+        "forceMajeure": "Force majeure / Circonstances imprévues",
+        "other": "Autre raison"
+      },
+      "customReasonLabel": "Autre raison (veuillez préciser)",
+      "customReasonPlaceholder": "Entrez votre raison...",
+      "confirmCancel": "Confirmer l'annulation",
+      "autoCancelled": "Réservation automatiquement annulée en raison d'un conflit de dates avec une autre réservation"
+    },
     "stats": {
       "totalBookings": "Total des réservations",
       "pending": "En attente",
@@ -1187,6 +1246,14 @@
         "placeholder": "Expliquez pourquoi ce bien est rejeté...",
         "cancel": "Annuler",
         "confirm": "Confirmer le rejet"
+      },
+      "approve": {
+        "title": "Approuver le bien avec notation",
+        "description": "Définissez la note officielle pour cet appartement avant l'approbation. La note suggérée par le prestataire est indiquée comme référence.",
+        "providerRating": "Note suggérée par le prestataire",
+        "adminRatingLabel": "Définir la note officielle *",
+        "cancel": "Annuler",
+        "confirm": "Approuver avec notation"
       }
     }
   },
@@ -1271,7 +1338,8 @@
     },
     "bookings": {
       "title": "Réservations",
-      "allBookings": "Toutes les réservations"
+      "allBookings": "Toutes les réservations",
+      "supervision": "Supervision des réservations"
     },
     "destinations": {
       "title": "Destinations",
@@ -1287,6 +1355,69 @@
       "providerRequests": "Demandes de prestataires",
       "propertyRequests": "Demandes de biens"
     }
+  },
+  "adminProvidersList": {
+    "title": "Supervision des réservations",
+    "subtitle": "Surveillez et suivez toutes les réservations sur la plateforme",
+    "searchPlaceholder": "Rechercher des prestataires par nom, e-mail ou lieu...",
+    "totalProviders": "prestataires au total",
+    "noProviders": "Aucun prestataire trouvé",
+    "noProvidersSearch": "Aucun prestataire ne correspond à votre recherche",
+    "viewBookings": "Voir les réservations",
+    "memberSince": "Membre depuis",
+    "unnamed": "Prestataire sans nom",
+    "loading": "Chargement des prestataires...",
+    "error": "Impossible de charger les prestataires"
+  },
+  "adminProviderBookings": {
+    "title": "Réservations du prestataire",
+    "subtitle": "Toutes les réservations gérées par ce prestataire",
+    "backToProviders": "Retour aux prestataires",
+    "booked": "Réservé le",
+    "stats": {
+      "total": "Total",
+      "pending": "En attente",
+      "confirmed": "Confirmées",
+      "canceled": "Annulées",
+      "completed": "Terminées",
+      "revenue": "Revenus"
+    },
+    "filters": {
+      "searchPlaceholder": "Rechercher par client, bien ou ID...",
+      "allStatuses": "Tous les statuts",
+      "allTypes": "Tous les types"
+    },
+    "table": {
+      "property": "Bien",
+      "guest": "Client",
+      "dates": "Dates",
+      "total": "Total",
+      "status": "Statut",
+      "paymentStatus": "Paiement",
+      "cancellationReason": "Motif d'annulation"
+    },
+    "status": {
+      "pending": "En attente",
+      "confirmed": "Confirmée",
+      "canceled": "Annulée",
+      "completed": "Terminée"
+    },
+    "paymentStatus": {
+      "pending": "En attente",
+      "paid": "Payé",
+      "failed": "Échoué",
+      "refunded": "Remboursé"
+    },
+    "propertyTypes": {
+      "car": "Voiture",
+      "apartment": "Appartement",
+      "hotel": "Hôtel"
+    },
+    "noBookings": "Ce prestataire n'a pas encore de réservations",
+    "noBookingsSearch": "Aucune réservation ne correspond à vos filtres",
+    "loading": "Chargement des réservations...",
+    "error": "Impossible de charger les réservations",
+    "noCancellationReason": "Aucun motif fourni"
   },
   "availabilityCalendar": {
     "title": "Disponibilité",

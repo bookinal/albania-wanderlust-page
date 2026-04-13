@@ -1,7 +1,5 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
 import {
   ArrowLeft,
   MapPin,
@@ -29,6 +27,10 @@ import { Month, MONTHS, MONTH_NAMES } from "@/types/price.type";
 import { getCarById } from "@/services/api/carService";
 import { AvailabilityCalendar } from "@/components/dashboard/AvailabilityCalendar";
 import { useTranslation } from "react-i18next";
+import Swal from "sweetalert2";
+import { userService } from "@/services/api/userService";
+import { User } from "@/types/user.types";
+import { useTheme } from "@/context/ThemeContext";
 
 // Helper to get current month as Month type
 const getCurrentMonth = (): Month => {
@@ -47,18 +49,35 @@ const CarReservation = () => {
   const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { isDark } = useTheme();
+
+  const tk = {
+    pageBg: isDark ? '#0d0d0d' : '#f5f4f1',
+    pageText: isDark ? '#ffffff' : '#111115',
+    cardBg: isDark ? 'rgba(255,255,255,0.025)' : '#ffffff',
+    cardBorder: isDark ? 'rgba(255,255,255,0.07)' : '#ede9e5',
+    cardShadow: isDark ? '0 8px 32px rgba(0,0,0,0.5)' : '0 8px 32px rgba(15,23,42,0.08)',
+    statBg: isDark ? 'rgba(255,255,255,0.04)' : '#f5f2ee',
+    statBorder: isDark ? 'rgba(255,255,255,0.07)' : '#e5e2de',
+    mutedText: isDark ? 'rgba(255,255,255,0.40)' : '#6b6663',
+    dimText: isDark ? 'rgba(255,255,255,0.70)' : '#44403c',
+    thumbBg: isDark ? '#0a0a0a' : '#f0ece8',
+    amenityBg: isDark ? 'rgba(255,255,255,0.04)' : '#eef4ff',
+    backBg: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
+    termsBg: isDark ? 'rgba(232,25,44,0.06)' : '#fff5f5',
+    termsBorder: isDark ? 'rgba(232,25,44,0.15)' : '#fecaca',
+  };
 
   const [car, setCar] = useState<Car | null>(null);
   const [loading, setLoading] = useState(true);
   const [images, setImages] = useState<string[]>([]);
   const [photoIndex, setPhotoIndex] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
 
-  // Fetch car data
   useEffect(() => {
     const fetchCar = async () => {
       if (!id) return;
-
       setLoading(true);
       try {
         const data = await getCarById(parseInt(id));
@@ -66,7 +85,6 @@ const CarReservation = () => {
           setCar(null);
         } else {
           setCar(data);
-          // If car has a single image string, convert to array
           setImages(data.imageUrls || []);
         }
       } catch (error) {
@@ -76,23 +94,45 @@ const CarReservation = () => {
       }
     };
 
+    const fetchUser = async () => {
+      try {
+        const data = await userService.getCurrentUser();
+        setUser(data);
+      } catch (error) {
+        console.error("Error fetching user:", error);
+      }
+    };
+
     fetchCar();
+    fetchUser();
   }, [id]);
 
   const handleReservation = () => {
-    // navigate to /carBilling/{id}
+    if (!user) {
+      localStorage.setItem("redirectAfterLogin", `/carBilling/${id}`);
+      Swal.fire({
+        title: t("auth.loginRequired"),
+        text: t("auth.loginToBook"),
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: t("auth.login"),
+        cancelButtonText: t("common.cancel"),
+      }).then((result) => {
+        if (result.isConfirmed) {
+          navigate("/auth");
+        }
+      });
+      return;
+    }
     navigate(`/carBilling/${id}`);
   };
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-screen bg-gradient-to-br from-blue-50 to-indigo-50">
+      <div style={{ background: tk.pageBg }} className="flex items-center justify-center h-screen">
         <div className="text-center">
-          <Loader2
-            className="animate-spin text-blue-600 mx-auto mb-4"
-            size={48}
-          />
-          <p className="text-gray-600 font-medium">Loading car details...</p>
+          <Loader2 style={{ color: '#E8192C' }} className="animate-spin mx-auto mb-4" size={48} />
+          <p style={{ color: tk.mutedText }} className="font-medium">Loading car details...</p>
         </div>
       </div>
     );
@@ -100,48 +140,38 @@ const CarReservation = () => {
 
   if (!car) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center p-4">
-        <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 text-center">
-          <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <CarIcon className="text-red-600" size={40} />
+      <div style={{ background: tk.pageBg }} className="min-h-screen flex items-center justify-center p-4">
+        <div style={{ background: tk.cardBg, border: `1px solid ${tk.cardBorder}`, boxShadow: tk.cardShadow }} className="max-w-md w-full rounded-2xl p-8 text-center">
+          <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: 'rgba(232,25,44,0.12)' }}>
+            <CarIcon style={{ color: '#E8192C' }} size={40} />
           </div>
-          <h3 className="text-2xl font-bold text-gray-900 mb-2">
-            Car Not Found
-          </h3>
-          <p className="text-gray-500 mb-6">
-            The car you're looking for doesn't exist or has been removed.
-          </p>
-          <Button
+          <h3 style={{ color: tk.pageText }} className="text-2xl font-bold mb-2">Car Not Found</h3>
+          <p style={{ color: tk.mutedText }} className="mb-6">The car you're looking for doesn't exist or has been removed.</p>
+          <button
             onClick={() => navigate("/searchCarResults")}
-            className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
+            style={{ background: '#E8192C', color: '#fff' }}
+            className="w-full flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold hover:opacity-90 transition-opacity"
           >
-            <ArrowLeft className="mr-2" size={16} />
+            <ArrowLeft size={16} />
             {t("navigation.backToCars")}
-          </Button>
+          </button>
         </div>
       </div>
     );
   }
 
-  // Get status badge color
   const getStatusColor = () => {
     switch (car.status) {
-      case "available":
-        return "bg-emerald-500/90 text-white";
-      case "rented":
-        return "bg-amber-500/90 text-white";
-      case "maintenance":
-        return "bg-red-500/90 text-white";
-      default:
-        return "bg-gray-500/90 text-white";
+      case "available": return "bg-emerald-500/90 text-white";
+      case "rented": return "bg-amber-500/90 text-white";
+      case "maintenance": return "bg-red-500/90 text-white";
+      default: return "bg-gray-500/90 text-white";
     }
   };
 
-  // Get fuel type icon
   const getFuelIcon = () => {
     switch (car.fuelType) {
       case "Electric":
-        return Zap;
       case "Hybrid":
         return Zap;
       default:
@@ -151,38 +181,32 @@ const CarReservation = () => {
 
   const FuelIcon = getFuelIcon();
 
-  // Get type badge color
   const getTypeColor = () => {
     switch (car.type) {
-      case "Sports":
-        return "bg-red-500/90 text-white";
-      case "SUV":
-        return "bg-blue-500/90 text-white";
-      case "Sedan":
-        return "bg-purple-500/90 text-white";
-      default:
-        return "bg-gray-500/90 text-white";
+      case "Sports": return "bg-red-500/90 text-white";
+      case "SUV": return "bg-blue-500/90 text-white";
+      case "Sedan": return "bg-purple-500/90 text-white";
+      default: return "bg-gray-500/90 text-white";
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+    <div style={{ minHeight: '100vh', background: tk.pageBg }}>
       <PrimarySearchAppBar />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Back Button */}
-        <Button
-          variant="ghost"
+        <button
           onClick={() => navigate("/searchCarResults")}
-          className="mb-6 hover:bg-white/50"
+          style={{ background: tk.backBg, color: tk.dimText }}
+          className="mb-6 flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium hover:opacity-80 transition-opacity"
         >
-          <ArrowLeft className="mr-2" size={16} />
+          <ArrowLeft size={16} />
           {t("navigation.backToCars")}
-        </Button>
+        </button>
 
-        {/* Hero Section with Image Gallery */}
-        <div className="bg-white rounded-3xl shadow-2xl overflow-hidden mb-8">
+        {/* Hero Section */}
+        <div style={{ background: tk.cardBg, border: `1px solid ${tk.cardBorder}`, boxShadow: tk.cardShadow }} className="rounded-3xl overflow-hidden mb-8">
           <div className="relative">
-            {/* Main Image Display */}
             {images.length > 0 ? (
               <div className="relative h-96 sm:h-[500px]">
                 <img
@@ -193,23 +217,16 @@ const CarReservation = () => {
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
 
-                {/* Image Navigation */}
                 {images.length > 1 && (
                   <>
                     <button
-                      onClick={() =>
-                        setPhotoIndex(
-                          (photoIndex + images.length - 1) % images.length,
-                        )
-                      }
+                      onClick={() => setPhotoIndex((photoIndex + images.length - 1) % images.length)}
                       className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/90 hover:bg-white rounded-full flex items-center justify-center shadow-lg transition-all hover:scale-110"
                     >
                       <ChevronLeft size={24} className="text-gray-900" />
                     </button>
                     <button
-                      onClick={() =>
-                        setPhotoIndex((photoIndex + 1) % images.length)
-                      }
+                      onClick={() => setPhotoIndex((photoIndex + 1) % images.length)}
                       className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/90 hover:bg-white rounded-full flex items-center justify-center shadow-lg transition-all hover:scale-110"
                     >
                       <ChevronRight size={24} className="text-gray-900" />
@@ -217,7 +234,6 @@ const CarReservation = () => {
                   </>
                 )}
 
-                {/* View All Photos Button */}
                 {images.length > 1 && (
                   <button
                     onClick={() => setIsOpen(true)}
@@ -228,70 +244,48 @@ const CarReservation = () => {
                   </button>
                 )}
 
-                {/* Image Counter */}
                 {images.length > 1 && (
                   <div className="absolute bottom-6 left-6 px-4 py-2 bg-black/60 backdrop-blur-sm rounded-full text-white text-sm font-medium">
                     {photoIndex + 1} / {images.length}
                   </div>
                 )}
 
-                {/* Floating Badges */}
                 <div className="absolute top-6 right-6 flex flex-col gap-3">
-                  <span
-                    className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-bold uppercase tracking-wider shadow-lg backdrop-blur-sm ${getStatusColor()}`}
-                  >
+                  <span className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-bold uppercase tracking-wider shadow-lg backdrop-blur-sm ${getStatusColor()}`}>
                     <CheckCircle2 size={16} className="mr-2" />
                     {car.status}
                   </span>
-                  <span
-                    className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-bold uppercase tracking-wider shadow-lg backdrop-blur-sm ${getTypeColor()}`}
-                  >
+                  <span className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-bold uppercase tracking-wider shadow-lg backdrop-blur-sm ${getTypeColor()}`}>
                     <Package size={16} className="mr-2" />
                     {car.type}
                   </span>
                 </div>
 
-                {/* Car Info Overlay */}
                 <div className="absolute bottom-0 left-0 right-0 p-8 text-white">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
-                      <div className="text-lg font-semibold mb-2 opacity-90">
-                        {car.brand}
-                      </div>
-                      <h1 className="text-4xl sm:text-5xl font-bold mb-3 drop-shadow-lg">
-                        {car.name}
-                      </h1>
+                      <div className="text-lg font-semibold mb-2 opacity-90">{car.brand}</div>
+                      <h1 className="text-4xl sm:text-5xl font-bold mb-3 drop-shadow-lg">{car.name}</h1>
                       <div className="flex items-center gap-2 text-lg mb-4">
                         <MapPin size={20} />
-                        <span className="drop-shadow">
-                          {car.pickUpLocation ||
-                            "Pick-up location not specified"}
-                        </span>
+                        <span className="drop-shadow">{car.pickUpLocation || "Pick-up location not specified"}</span>
                       </div>
                       <div className="flex items-center gap-4 flex-wrap">
                         <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full">
                           <Calendar size={18} />
-                          <span className="font-medium text-sm">
-                            {car.year}
-                          </span>
+                          <span className="font-medium text-sm">{car.year}</span>
                         </div>
                         <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full">
                           <Settings size={18} />
-                          <span className="font-medium text-sm">
-                            {car.transmission}
-                          </span>
+                          <span className="font-medium text-sm">{car.transmission}</span>
                         </div>
                         <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full">
                           <FuelIcon size={18} />
-                          <span className="font-medium text-sm">
-                            {car.fuelType}
-                          </span>
+                          <span className="font-medium text-sm">{car.fuelType}</span>
                         </div>
                         <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full">
                           <Users size={18} />
-                          <span className="font-medium text-sm">
-                            {car.seats} {t("searchResults.cars.seats")}
-                          </span>
+                          <span className="font-medium text-sm">{car.seats} {t("searchResults.cars.seats")}</span>
                         </div>
                       </div>
                     </div>
@@ -299,30 +293,28 @@ const CarReservation = () => {
                 </div>
               </div>
             ) : (
-              <div className="h-96 sm:h-[500px] bg-gray-200 flex items-center justify-center">
-                <p className="text-gray-500">No images available</p>
+              <div className="h-96 sm:h-[500px] flex items-center justify-center" style={{ background: tk.statBg }}>
+                <p style={{ color: tk.mutedText }}>No images available</p>
               </div>
             )}
 
             {/* Thumbnail Strip */}
             {images.length > 1 && (
-              <div className="p-4 bg-gray-50 overflow-x-auto">
+              <div style={{ background: tk.thumbBg }} className="p-4 overflow-x-auto">
                 <div className="flex gap-3">
                   {images.map((img, index) => (
                     <button
                       key={index}
                       onClick={() => setPhotoIndex(index)}
-                      className={`flex-shrink-0 w-24 h-24 rounded-lg overflow-hidden transition-all ${
-                        index === photoIndex
-                          ? "ring-4 ring-blue-600 scale-105"
-                          : "ring-2 ring-gray-300 hover:ring-blue-400 opacity-70 hover:opacity-100"
-                      }`}
+                      style={{
+                        outline: index === photoIndex ? `3px solid #E8192C` : `2px solid ${tk.cardBorder}`,
+                        opacity: index === photoIndex ? 1 : 0.65,
+                        transform: index === photoIndex ? 'scale(1.05)' : 'scale(1)',
+                        transition: 'all 0.15s',
+                      }}
+                      className="flex-shrink-0 w-24 h-24 rounded-lg overflow-hidden"
                     >
-                      <img
-                        src={img}
-                        alt={`Thumbnail ${index + 1}`}
-                        className="w-full h-full object-cover"
-                      />
+                      <img src={img} alt={`Thumbnail ${index + 1}`} className="w-full h-full object-cover" />
                     </button>
                   ))}
                 </div>
@@ -339,9 +331,7 @@ const CarReservation = () => {
             index={photoIndex}
             slides={images.map((src) => ({ src }))}
             plugins={[Zoom, Fullscreen]}
-            on={{
-              view: ({ index }) => setPhotoIndex(index),
-            }}
+            on={{ view: ({ index }) => setPhotoIndex(index) }}
           />
         )}
 
@@ -349,21 +339,17 @@ const CarReservation = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left Column - Reservation Card */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-2xl shadow-xl p-6 sticky top-8 border border-gray-100">
+            <div style={{ background: tk.cardBg, border: `1px solid ${tk.cardBorder}`, boxShadow: tk.cardShadow }} className="rounded-2xl p-6 sticky top-8">
               {(() => {
                 const currentMonth = getCurrentMonth();
-                const monthlyPrice = car.monthlyPrices?.find(
-                  (p) => p.month === currentMonth,
-                );
-                const displayPrice =
-                  monthlyPrice?.pricePerDay ?? car.pricePerDay;
-                const hasSeasonalPrice =
-                  monthlyPrice && monthlyPrice.pricePerDay !== car.pricePerDay;
+                const monthlyPrice = car.monthlyPrices?.find((p) => p.month === currentMonth);
+                const displayPrice = monthlyPrice?.pricePerDay ?? car.pricePerDay;
+                const hasSeasonalPrice = monthlyPrice && monthlyPrice.pricePerDay !== car.pricePerDay;
 
                 return (
                   <div className="text-center mb-6">
                     <div className="flex items-center justify-center gap-2 mb-2">
-                      <p className="text-gray-600 text-sm">{t("billing.pricePerDay")}</p>
+                      <p style={{ color: tk.mutedText }} className="text-sm">{t("billing.pricePerDay")}</p>
                       {hasSeasonalPrice && (
                         <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-amber-100 text-amber-700 rounded-full text-xs font-medium">
                           <TrendingUp size={12} />
@@ -372,78 +358,59 @@ const CarReservation = () => {
                       )}
                     </div>
                     <div className="flex items-center justify-center gap-2">
-                      <DollarSign size={32} className="text-emerald-600" />
-                      <span className="text-5xl font-bold text-gray-900">
-                        {displayPrice}
-                      </span>
+                      <DollarSign size={32} className="text-emerald-500" />
+                      <span style={{ color: tk.pageText }} className="text-5xl font-bold">{displayPrice}</span>
                     </div>
                     {hasSeasonalPrice && (
-                      <p className="text-gray-400 text-sm mt-1 line-through">
-                        Base: ${car.pricePerDay}/day
-                      </p>
+                      <p style={{ color: tk.mutedText }} className="text-sm mt-1 line-through">Base: ${car.pricePerDay}/day</p>
                     )}
-                    <p className="text-gray-500 text-sm mt-2">+ {t("billing.insurance")}</p>
+                    <p style={{ color: tk.mutedText }} className="text-sm mt-2">+ {t("billing.insurance")}</p>
                   </div>
                 );
               })()}
 
               <div className="space-y-4 mb-6">
-                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
-                  <div className="flex items-center gap-3">
-                    <Gauge size={20} className="text-blue-600" />
-                    <span className="font-medium text-gray-700">{t("searchResults.cars.Mileage")}</span>
+                {[
+                  { icon: <Gauge size={20} style={{ color: '#E8192C' }} />, label: t("searchResults.cars.Mileage"), value: `${car.mileage.toLocaleString()} km` },
+                  { icon: <Users size={20} style={{ color: '#E8192C' }} />, label: t("searchResults.cars.seats"), value: String(car.seats) },
+                  { icon: <Palette size={20} style={{ color: '#E8192C' }} />, label: t("searchResults.cars.color"), value: car.color },
+                  { icon: <Hash size={20} style={{ color: '#E8192C' }} />, label: t("searchResults.cars.plate"), value: car.plateNumber },
+                ].map(({ icon, label, value }, i) => (
+                  <div key={i} style={{ background: tk.statBg, border: `1px solid ${tk.statBorder}` }} className="flex items-center justify-between p-4 rounded-xl">
+                    <div className="flex items-center gap-3">
+                      {icon}
+                      <span style={{ color: tk.dimText }} className="font-medium">{label}</span>
+                    </div>
+                    <span style={{ color: tk.pageText }} className="font-bold font-mono">{value}</span>
                   </div>
-                  <span className="font-bold text-gray-900">
-                    {car.mileage.toLocaleString()} km
-                  </span>
-                </div>
-
-                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
-                  <div className="flex items-center gap-3">
-                    <Users size={20} className="text-blue-600" />
-                    <span className="font-medium text-gray-700">{t("searchResults.cars.seats")}</span>
-                  </div>
-                  <span className="font-bold text-gray-900">{car.seats}</span>
-                </div>
-
-                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
-                  <div className="flex items-center gap-3">
-                    <Palette size={20} className="text-blue-600" />
-                    <span className="font-medium text-gray-700">{t("searchResults.cars.color")}</span>
-                  </div>
-                  <span className="font-bold text-gray-900 capitalize">
-                    {car.color}
-                  </span>
-                </div>
-
-                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
-                  <div className="flex items-center gap-3">
-                    <Hash size={20} className="text-blue-600" />
-                    <span className="font-medium text-gray-700">{t("searchResults.cars.plate")}</span>
-                  </div>
-                  <span className="font-bold text-gray-900 font-mono">
-                    {car.plateNumber}
-                  </span>
-                </div>
+                ))}
               </div>
 
-              <Button
-                onClick={handleReservation}
-                disabled={car.status !== "available"}
-                className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-6 text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <Calendar className="mr-2" size={20} />
-                {car.status === "available"
-                  ? t("booking.bookNow")
-                  : car.status === "rented"
-                    ? "Currently Rented"
-                    : "Under Maintenance"}
-              </Button>
+              {car.status === "rented" && (
+                <div className="mb-4 flex items-center justify-center gap-2 rounded-xl border border-amber-400/30 bg-amber-400/10 px-4 py-2">
+                  <span className="h-2 w-2 rounded-full bg-amber-400 animate-pulse" />
+                  <span className="text-xs font-medium text-amber-500">{t("booking.currentlyRented")}</span>
+                </div>
+              )}
 
-              {car.status === "available" && (
-                <p className="text-center text-xs text-gray-500 mt-4">
-                  {t("billing.flexibleCancellation")}
-                </p>
+              <button
+                onClick={handleReservation}
+                disabled={car.status === "maintenance" || car.status === "review"}
+                style={{
+                  background: (car.status === "maintenance" || car.status === "review") ? tk.statBg : '#E8192C',
+                  color: (car.status === "maintenance" || car.status === "review") ? tk.mutedText : '#fff',
+                  cursor: (car.status === "maintenance" || car.status === "review") ? 'not-allowed' : 'pointer',
+                }}
+                className="w-full flex items-center justify-center gap-2 py-4 rounded-xl font-bold text-lg transition-opacity hover:opacity-90"
+              >
+                <Calendar size={20} />
+                {car.status === "maintenance" || car.status === "review"
+                  ? t("booking.underMaintenance")
+                  : t("booking.bookNow")}
+              </button>
+
+              {(car.status === "available" || car.status === "rented") && (
+                <p style={{ color: tk.mutedText }} className="text-center text-xs mt-4">{t("billing.flexibleCancellation")}</p>
               )}
             </div>
           </div>
@@ -451,82 +418,37 @@ const CarReservation = () => {
           {/* Right Column - Details */}
           <div className="lg:col-span-2 space-y-6">
             {/* Vehicle Specifications */}
-            <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-                <CarIcon className="text-blue-600" size={24} />
+            <div style={{ background: tk.cardBg, border: `1px solid ${tk.cardBorder}`, boxShadow: tk.cardShadow }} className="rounded-2xl p-8">
+              <h2 style={{ color: tk.pageText }} className="text-2xl font-bold mb-6 flex items-center gap-2">
+                <CarIcon style={{ color: '#E8192C' }} size={24} />
                 {t("billing.vehicleSpecifications")}
               </h2>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
-                <div className="flex flex-col gap-2">
-                  <span className="text-sm text-gray-500 font-medium">
-                    {t("searchResults.cars.brand")}
-                  </span>
-                  <span className="text-lg font-bold text-gray-900">
-                    {car.brand}
-                  </span>
-                </div>
-                <div className="flex flex-col gap-2">
-                  <span className="text-sm text-gray-500 font-medium">
-                    {t("searchResults.cars.year")}
-                  </span>
-                  <span className="text-lg font-bold text-gray-900">
-                    {car.year}
-                  </span>
-                </div>
-                <div className="flex flex-col gap-2">
-                  <span className="text-sm text-gray-500 font-medium">
-                    {t("searchResults.filters.carType")}
-                  </span>
-                  <span className="text-lg font-bold text-gray-900">
-                    {car.type}
-                  </span>
-                </div>
-                <div className="flex flex-col gap-2">
-                  <span className="text-sm text-gray-500 font-medium">
-                    {t("searchResults.filters.transmission")}
-                  </span>
-                  <span className="text-lg font-bold text-gray-900">
-                    {car.transmission}
-                  </span>
-                </div>
-                <div className="flex flex-col gap-2">
-                  <span className="text-sm text-gray-500 font-medium">
-                    {t("searchResults.filters.fuelType")}
-                  </span>
-                  <span className="text-lg font-bold text-gray-900">
-                    {car.fuelType}
-                  </span>
-                </div>
-                <div className="flex flex-col gap-2">
-                  <span className="text-sm text-gray-500 font-medium">
-                    {t("searchResults.cars.seats")}
-                  </span>
-                  <span className="text-lg font-bold text-gray-900">
-                    {car.seats} Persons
-                  </span>
-                </div>
+                {[
+                  { label: t("searchResults.cars.brand"), value: car.brand },
+                  { label: t("searchResults.cars.year"), value: String(car.year) },
+                  { label: t("searchResults.filters.carType"), value: car.type },
+                  { label: t("searchResults.filters.transmission"), value: car.transmission },
+                  { label: t("searchResults.filters.fuelType"), value: car.fuelType },
+                  { label: t("searchResults.cars.seats"), value: `${car.seats} Persons` },
+                ].map(({ label, value }, i) => (
+                  <div key={i} className="flex flex-col gap-2">
+                    <span style={{ color: tk.mutedText }} className="text-sm font-medium">{label}</span>
+                    <span style={{ color: tk.pageText }} className="text-lg font-bold">{value}</span>
+                  </div>
+                ))}
               </div>
             </div>
 
             {/* Features */}
             {car.features && car.features.length > 0 && (
-              <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100">
-                <h2 className="text-2xl font-bold text-gray-900 mb-6">
-                  {t("billing.featuresAndEquipment")}
-                </h2>
+              <div style={{ background: tk.cardBg, border: `1px solid ${tk.cardBorder}`, boxShadow: tk.cardShadow }} className="rounded-2xl p-8">
+                <h2 style={{ color: tk.pageText }} className="text-2xl font-bold mb-6">{t("billing.featuresAndEquipment")}</h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {car.features.map((feature, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center gap-3 p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl hover:shadow-md transition-shadow"
-                    >
-                      <CheckCircle2
-                        size={20}
-                        className="text-blue-600 flex-shrink-0"
-                      />
-                      <span className="font-medium text-gray-700 capitalize">
-                        {feature}
-                      </span>
+                    <div key={index} style={{ background: tk.amenityBg }} className="flex items-center gap-3 p-4 rounded-xl hover:opacity-90 transition-opacity">
+                      <CheckCircle2 size={20} style={{ color: '#E8192C' }} className="flex-shrink-0" />
+                      <span style={{ color: tk.dimText }} className="font-medium capitalize">{feature}</span>
                     </div>
                   ))}
                 </div>
@@ -534,46 +456,27 @@ const CarReservation = () => {
             )}
 
             {/* Pick-up Location */}
-            <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">
-                {t("billing.pickUpAndContactInformation")}
-              </h2>
+            <div style={{ background: tk.cardBg, border: `1px solid ${tk.cardBorder}`, boxShadow: tk.cardShadow }} className="rounded-2xl p-8">
+              <h2 style={{ color: tk.pageText }} className="text-2xl font-bold mb-6">{t("billing.pickUpAndContactInformation")}</h2>
               <div className="grid grid-cols-1 gap-6">
-                <div className="flex items-start gap-4 p-4 bg-gray-50 rounded-xl">
-                  <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
-                    <MapPinned size={20} className="text-blue-600" />
+                <div style={{ background: tk.statBg }} className="flex items-start gap-4 p-4 rounded-xl">
+                  <div className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: 'rgba(232,25,44,0.12)' }}>
+                    <MapPinned size={20} style={{ color: '#E8192C' }} />
                   </div>
                   <div>
-                    <Label className="text-sm font-medium text-gray-600 mb-1 block">
-                      {t("billing.pickUpLocation")}
-                    </Label>
-                    <p className="text-gray-900 font-medium">
-                      {car.pickUpLocation || "Location not specified"}
-                    </p>
+                    <p style={{ color: tk.mutedText }} className="text-sm font-medium mb-1">{t("billing.pickUpLocation")}</p>
+                    <p style={{ color: tk.pageText }} className="font-medium">{car.pickUpLocation || "Location not specified"}</p>
                   </div>
                 </div>
 
-                <div className="flex items-start gap-4 p-4 bg-gray-50 rounded-xl">
-                  <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
-                    <CarIcon size={20} className="text-blue-600" />
-                  </div>
-                  <div>
-                    <Label className="text-sm font-medium text-gray-600 mb-1 block">
-                      Provider ID
-                    </Label>
-                    <p className="text-gray-900 font-medium font-mono">
-                      {car.providerId}
-                    </p>
-                  </div>
-                </div>
               </div>
             </div>
 
             {/* Map Location */}
             {car.lat !== undefined && car.lng !== undefined && (
-              <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100">
-                <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-                  <MapPin className="text-blue-600" size={24} />
+              <div style={{ background: tk.cardBg, border: `1px solid ${tk.cardBorder}`, boxShadow: tk.cardShadow }} className="rounded-2xl p-8">
+                <h2 style={{ color: tk.pageText }} className="text-2xl font-bold mb-6 flex items-center gap-2">
+                  <MapPin style={{ color: '#E8192C' }} size={24} />
                   {t("map.locationOnMap")}
                 </h2>
                 <div className="rounded-xl overflow-hidden shadow-md">
@@ -591,57 +494,29 @@ const CarReservation = () => {
               </div>
             )}
 
-            <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-              <AvailabilityCalendar
-                propertyId={parseInt(id!)}
-                propertyType="car"
-              />
+            <div style={{ background: tk.cardBg, border: `1px solid ${tk.cardBorder}` }} className="rounded-xl p-6">
+              <AvailabilityCalendar propertyId={parseInt(id!)} propertyType="car" />
             </div>
 
             {/* Guest Reviews */}
             <ReviewsSection propertyId={parseInt(id!)} propertyType="car" />
 
             {/* Rental Terms */}
-            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-8 border border-blue-100">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">
-                {t("billing.rentalTermsAndConditions")}
-              </h2>
-              <ul className="space-y-3 text-gray-700">
-                <li className="flex items-start gap-3">
-                  <CheckCircle2
-                    size={20}
-                    className="text-blue-600 flex-shrink-0 mt-0.5"
-                  />
-                  <span>{t("terms.minimumRentalPeriod")}</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle2
-                    size={20}
-                    className="text-blue-600 flex-shrink-0 mt-0.5"
-                  />
-                  <span>{t("terms.validDriversLicense")}</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle2
-                    size={20}
-                    className="text-blue-600 flex-shrink-0 mt-0.5"
-                  />
-                  <span>{t("terms.fullInsuranceCoverageIncluded")}</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle2
-                    size={20}
-                    className="text-blue-600 flex-shrink-0 mt-0.5"
-                  />
-                  <span>{t("terms.24/7RoadsideAssistance")}</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle2
-                    size={20}
-                    className="text-blue-600 flex-shrink-0 mt-0.5"
-                  />
-                  <span>{t("terms.freeCancellation")}</span>
-                </li>
+            <div style={{ background: tk.termsBg, border: `1px solid ${tk.termsBorder}` }} className="rounded-2xl p-8">
+              <h2 style={{ color: tk.pageText }} className="text-2xl font-bold mb-4">{t("billing.rentalTermsAndConditions")}</h2>
+              <ul className="space-y-3" style={{ color: tk.dimText }}>
+                {[
+                  t("terms.minimumRentalPeriod"),
+                  t("terms.validDriversLicense"),
+                  t("terms.fullInsuranceCoverageIncluded"),
+                  t("terms.24/7RoadsideAssistance"),
+                  t("terms.freeCancellation"),
+                ].map((term, i) => (
+                  <li key={i} className="flex items-start gap-3">
+                    <CheckCircle2 size={20} style={{ color: '#E8192C' }} className="flex-shrink-0 mt-0.5" />
+                    <span>{term}</span>
+                  </li>
+                ))}
               </ul>
             </div>
           </div>
