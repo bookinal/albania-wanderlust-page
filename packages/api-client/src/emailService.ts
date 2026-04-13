@@ -9,9 +9,6 @@ import {
  * Email service for sending emails via Supabase Edge Function
  */
 
-const EDGE_FUNCTION_URL =
-  "https://futuwdbxszdovuliybfu.supabase.co/functions/v1/send-email";
-
 interface EmailPayload {
   to: string | string[];
   subject: string;
@@ -75,67 +72,54 @@ export const sendEmailDirect = async (
       tags: emailData.tags,
     });
 
-    // Make request to edge function
     console.log(
-      "[Email Service] 📤 Sending POST request to:",
-      EDGE_FUNCTION_URL,
+      "[Email Service] 📤 Invoking Supabase function:",
+      "send-email",
     );
 
-    const response = await fetch(EDGE_FUNCTION_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${session.access_token}`,
+    const { data: result, error } = await apiClient.functions.invoke(
+      "send-email",
+      {
+        body: emailData,
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        },
       },
-      body: JSON.stringify(emailData),
+    );
+
+    console.log("[Email Service] 📥 Function response received:", {
+      hasResult: !!result,
+      error: error
+        ? {
+            name: error.name,
+            message: error.message,
+          }
+        : null,
     });
 
-    console.log("[Email Service] 📥 Response received:", {
-      status: response.status,
-      statusText: response.statusText,
-      ok: response.ok,
-      headers: Object.fromEntries(response.headers.entries()),
-    });
-
-    // Parse response
-    let result;
-    const contentType = response.headers.get("content-type");
-
-    if (contentType?.includes("application/json")) {
-      result = await response.json();
-      console.log("[Email Service] 📄 Response JSON:", result);
-    } else {
-      const text = await response.text();
-      console.log("[Email Service] 📄 Response text:", text);
-      result = { error: text || "Non-JSON response received" };
-    }
-
-    // Handle non-OK responses
-    if (!response.ok) {
+    if (error) {
       console.error("[Email Service] ❌ Request failed:", {
-        status: response.status,
-        statusText: response.statusText,
-        error: result.error,
-        fullResponse: result,
+        name: error.name,
+        message: error.message,
+        context: (error as { context?: unknown }).context,
       });
 
       return {
         success: false,
-        error:
-          result.error || `HTTP ${response.status}: ${response.statusText}`,
-        statusCode: response.status,
+        error: error.message || "Failed to invoke send-email function",
+        statusCode: 400,
       };
     }
 
     // Success
     console.log("[Email Service] ✅ Email sent successfully:", {
-      messageId: result.messageId,
-      success: result.success,
+      messageId: result?.messageId,
+      success: result?.success,
     });
 
     return {
       success: true,
-      messageId: result.messageId,
+      messageId: result?.messageId,
       statusCode: 200,
     };
   } catch (error) {
