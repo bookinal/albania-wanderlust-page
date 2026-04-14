@@ -59,11 +59,12 @@ Payload shape sent to `send-email`:
 
 - Trigger file: `apps/web/src/pages/dashboard/bookings/BookingsManagement.tsx`
 - Trigger moment: when a booking status is updated to `confirmed`.
-- Recipient: `bookingData.contactMail`
-- Template path: `packages/api-client/src/emailTemplates/clientBookingStatusTemplate.ts`
-- Sender helper: `sendClientBookingStatusEmail()` in `packages/api-client/src/emailService.ts`
+- Recipient: resolved server-side from the booking record
+- Trigger transport: `notify-booking-status` Edge Function
+- Template path: `supabase/functions/_shared/clientBookingStatusTemplate.ts`
+- Sender helper: `notifyClientBookingStatus()` in `packages/api-client/src/emailService.ts`
 - Notes:
-  - This flow now uses the shared client status template.
+  - This flow now sends from the backend so the provider UI does not need the client email address.
   - The CTA points the user back to `/myBookings`.
 
 ### 3. Client cancellation email from the scheduled expiry function
@@ -103,7 +104,7 @@ Payload shape sent to `send-email`:
 | Trigger | File | Recipient | Template |
 | --- | --- | --- | --- |
 | Booking created | `packages/api-client/src/bookingService.ts` | Provider | `packages/api-client/src/emailTemplates/providerBookingTemplate.ts` |
-| Booking confirmed | `apps/web/src/pages/dashboard/bookings/BookingsManagement.tsx` | Client | `packages/api-client/src/emailTemplates/clientBookingStatusTemplate.ts` |
+| Booking confirmed | `apps/web/src/pages/dashboard/bookings/BookingsManagement.tsx` | Client | `supabase/functions/_shared/clientBookingStatusTemplate.ts` via `notify-booking-status` |
 | Booking auto-cancelled | `supabase/functions/expire-bookings/index.ts` | Client | `supabase/functions/_shared/bookingCancellationTemplate.ts` |
 | Manual/example send | `apps/web/src/components/examples/EmailComponentExample.tsx` | User/Admin | `getBookingConfirmationTemplate()` or inline HTML |
 

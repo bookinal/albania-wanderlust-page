@@ -26,6 +26,12 @@ interface EmailResponse {
   statusCode: number;
 }
 
+interface BookingStatusNotificationPayload {
+  bookingId: string;
+  status: BookingStatusType;
+  statusMessage: string;
+}
+
 /**
  * Send email directly via edge function
  */
@@ -200,6 +206,68 @@ export const sendClientBookingStatusEmail = async (
         error instanceof Error
           ? error.message
           : "Failed to send booking status email",
+      statusCode: 500,
+    };
+  }
+};
+
+export const notifyClientBookingStatus = async (
+  payload: BookingStatusNotificationPayload,
+): Promise<EmailResponse> => {
+  console.log("[Email Service] Notifying client booking status...", payload);
+
+  try {
+    const { data: result, error } = await apiClient.functions.invoke(
+      "notify-booking-status",
+      {
+        body: payload,
+      },
+    );
+
+    if (error) {
+      let detailedError = error.message || "Failed to invoke notify-booking-status";
+
+      const context = (error as { context?: Response }).context;
+      if (context) {
+        try {
+          const errorBody = await context.json();
+          if (errorBody?.error) {
+            detailedError = errorBody.error;
+          }
+        } catch {
+          try {
+            const errorText = await context.text();
+            if (errorText) {
+              detailedError = errorText;
+            }
+          } catch {
+            // Keep fallback error message
+          }
+        }
+      }
+
+      console.error("[Email Service] Booking status notification failed:", {
+        name: error.name,
+        message: error.message,
+        detailedError,
+      });
+
+      return {
+        success: false,
+        error: detailedError,
+        statusCode: 400,
+      };
+    }
+
+    return {
+      success: true,
+      messageId: result?.messageId,
+      statusCode: 200,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Failed to notify booking status",
       statusCode: 500,
     };
   }

@@ -43,7 +43,7 @@ import {
 } from "@/components/ui/dialog";
 import { userService } from "@/services/api/userService";
 import { User } from "@/types/user.types";
-import { sendClientBookingStatusEmail } from "@/services/api/emailService";
+import { notifyClientBookingStatus } from "@/services/api/emailService";
 import Swal from "sweetalert2";
 
 const CANCELLATION_REASONS = [
@@ -677,24 +677,10 @@ export default function BookingsManagement() {
         const bookingData = bookings.find((b) => b.id === bookingId);
         if (bookingData) {
           try {
-            const propertyName =
-              bookingData.propertyData?.name ||
-              `${bookingData.propertyType.charAt(0).toUpperCase() + bookingData.propertyType.slice(1)}`;
-            const propertyTypeLabel =
-              bookingData.propertyType.charAt(0).toUpperCase() +
-              bookingData.propertyType.slice(1);
-
-            await sendClientBookingStatusEmail(bookingData.contactMail, {
-              clientName: bookingData.requesterName,
+            await notifyClientBookingStatus({
               bookingId: bookingData.id,
-              propertyName,
-              propertyType: propertyTypeLabel,
-              checkInDate: new Date(bookingData.startDate).toLocaleDateString(),
-              checkOutDate: new Date(bookingData.endDate).toLocaleDateString(),
-              totalPrice: bookingData.totalPrice,
               status: "confirmed",
               statusMessage: t("bookingManagement.email.confirmationMessage"),
-              dashboardUrl: `${window.location.origin}/myBookings`,
             });
           } catch (emailError) {
             console.error("Error sending confirmation email:", emailError);
