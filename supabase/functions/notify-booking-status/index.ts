@@ -13,13 +13,28 @@ const corsHeaders = {
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
-type BookingStatusType = "confirmed" | "pending" | "cancelled" | "completed";
+type BookingStatusType = "confirmed" | "pending" | "canceled" | "completed";
 
 interface NotifyRequest {
   bookingId: string;
   status: BookingStatusType;
   statusMessage: string;
+  cancellationReason?: string;
 }
+
+const getEmailSubject = (status: BookingStatusType, bookingId: string): string => {
+  switch (status) {
+    case "confirmed":
+      return `Booking Confirmed - ${bookingId}`;
+    case "canceled":
+      return `Booking Canceled - ${bookingId}`;
+    case "completed":
+      return `Booking Completed - ${bookingId}`;
+    case "pending":
+    default:
+      return `Booking Status Update - ${bookingId}`;
+  }
+};
 
 const getPropertyTypeLabel = (propertyType: string): string => {
   switch (propertyType) {
@@ -178,6 +193,7 @@ Deno.serve(async (req: Request) => {
       totalPrice: booking.totalPrice,
       status: body.status,
       statusMessage: body.statusMessage,
+      cancellationReason: body.cancellationReason,
       dashboardUrl,
     });
 
@@ -189,7 +205,7 @@ Deno.serve(async (req: Request) => {
       },
       body: JSON.stringify({
         to: booking.contactMail,
-        subject: `Booking Status Update - ${booking.id}`,
+        subject: getEmailSubject(body.status, booking.id),
         html,
         tags: {
           type: "booking-status-update",

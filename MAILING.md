@@ -67,7 +67,18 @@ Payload shape sent to `send-email`:
   - This flow now sends from the backend so the provider UI does not need the client email address.
   - The CTA points the user back to `/myBookings`.
 
-### 3. Client cancellation email from the scheduled expiry function
+### 3. Client cancellation email when the provider rejects or cancels a booking
+
+- Trigger file: `apps/web/src/pages/dashboard/bookings/BookingsManagement.tsx`
+- Trigger moment: when a provider cancels a booking, including conflict-driven auto-declines.
+- Recipient: resolved server-side from the booking record
+- Trigger transport: `notify-booking-status` Edge Function
+- Template path: `supabase/functions/_shared/clientBookingStatusTemplate.ts`
+- Notes:
+  - The cancellation reason selected by the provider is included in the email.
+  - Auto-declined conflicting bookings use the date-conflict reason in the email.
+
+### 4. Client cancellation email from the scheduled expiry function
 
 - Trigger file: `supabase/functions/expire-bookings/index.ts`
 - Trigger moment: when unpaid bookings are automatically cancelled before check-in.

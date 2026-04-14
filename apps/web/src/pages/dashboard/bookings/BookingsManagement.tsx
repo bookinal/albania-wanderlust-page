@@ -489,15 +489,57 @@ export default function BookingsManagement() {
         prev.map((b) => (b.id === bookingId ? { ...b, ...updatedBooking } : b)),
       );
 
+      try {
+        await notifyClientBookingStatus({
+          bookingId,
+          status: "canceled",
+          statusMessage: isAutoCancel
+            ? t(
+                "bookingManagement.email.autoCancellationMessage",
+                "Your booking was canceled because the selected dates are no longer available.",
+              )
+            : t(
+                "bookingManagement.email.cancellationMessage",
+                "Your booking request was declined by the provider.",
+              ),
+          cancellationReason,
+        });
+      } catch (emailError) {
+        console.error("Error sending cancellation email:", emailError);
+      }
+
       // Auto-decline conflicting bookings when confirming
       if (conflictingBookings.length > 0) {
         const autoCancelReason = t(
           "bookingManagement.cancelBooking.reasons.dateConflict",
         );
         const declineResults = await Promise.allSettled(
-          conflictingBookings.map((cb) =>
-            updateBookingStatus(cb.id, "canceled", autoCancelReason),
-          ),
+          conflictingBookings.map(async (cb) => {
+            const result = await updateBookingStatus(
+              cb.id,
+              "canceled",
+              autoCancelReason,
+            );
+
+            try {
+              await notifyClientBookingStatus({
+                bookingId: cb.id,
+                status: "canceled",
+                statusMessage: t(
+                  "bookingManagement.email.autoCancellationMessage",
+                  "Your booking was canceled because the selected dates are no longer available.",
+                ),
+                cancellationReason: autoCancelReason,
+              });
+            } catch (emailError) {
+              console.error(
+                "Error sending conflict cancellation email:",
+                emailError,
+              );
+            }
+
+            return result;
+          }),
         );
 
         setBookings((prev) =>
@@ -649,9 +691,32 @@ export default function BookingsManagement() {
           "bookingManagement.cancelBooking.reasons.dateConflict",
         );
         const declineResults = await Promise.allSettled(
-          conflictingBookings.map((cb) =>
-            updateBookingStatus(cb.id, "canceled", autoCancelReason),
-          ),
+          conflictingBookings.map(async (cb) => {
+            const result = await updateBookingStatus(
+              cb.id,
+              "canceled",
+              autoCancelReason,
+            );
+
+            try {
+              await notifyClientBookingStatus({
+                bookingId: cb.id,
+                status: "canceled",
+                statusMessage: t(
+                  "bookingManagement.email.autoCancellationMessage",
+                  "Your booking was canceled because the selected dates are no longer available.",
+                ),
+                cancellationReason: autoCancelReason,
+              });
+            } catch (emailError) {
+              console.error(
+                "Error sending conflict cancellation email:",
+                emailError,
+              );
+            }
+
+            return result;
+          }),
         );
 
         setBookings((prev) =>

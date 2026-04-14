@@ -30,6 +30,7 @@ interface BookingStatusNotificationPayload {
   bookingId: string;
   status: BookingStatusType;
   statusMessage: string;
+  cancellationReason?: string;
 }
 
 /**

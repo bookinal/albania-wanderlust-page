@@ -8,7 +8,7 @@ const escapeHtml = (value: string): string =>
 
 const formatPrice = (value: number): string => `$${value.toFixed(2)}`;
 
-type BookingStatusType = "confirmed" | "pending" | "cancelled" | "completed";
+type BookingStatusType = "confirmed" | "pending" | "canceled" | "completed";
 
 const statusConfig: Record<
   BookingStatusType,
@@ -26,11 +26,11 @@ const statusConfig: Record<
     icon: "..",
     title: "Booking pending",
   },
-  cancelled: {
+  canceled: {
     color: "#b42318",
     bgColor: "#fff1f0",
     icon: "X",
-    title: "Booking cancelled",
+    title: "Booking canceled",
   },
   completed: {
     color: "#24567a",
@@ -50,6 +50,7 @@ export const getClientBookingStatusTemplate = (data: {
   totalPrice: number;
   status: BookingStatusType;
   statusMessage: string;
+  cancellationReason?: string;
   dashboardUrl: string;
 }): string => {
   const config = statusConfig[data.status];
@@ -61,6 +62,9 @@ export const getClientBookingStatusTemplate = (data: {
   const checkInDate = escapeHtml(data.checkInDate);
   const checkOutDate = escapeHtml(data.checkOutDate);
   const statusMessage = escapeHtml(data.statusMessage);
+  const cancellationReason = data.cancellationReason
+    ? escapeHtml(data.cancellationReason)
+    : "";
   const dashboardUrl = escapeHtml(data.dashboardUrl);
   const totalPrice = formatPrice(data.totalPrice);
 
@@ -84,6 +88,9 @@ export const getClientBookingStatusTemplate = (data: {
         .status-copy { margin: 0; font-size: 14px; line-height: 1.6; color: #415a73; }
         .card { padding: 20px 22px; border: 1px solid #e3ebf3; border-radius: 14px; background: #fbfdff; }
         .card-title { margin: 0 0 14px; font-size: 17px; color: #16324f; }
+        .reason-box { margin: 18px 0 0; padding: 16px 18px; border-radius: 12px; background: #fff6f5; border: 1px solid #f3d0cb; }
+        .reason-label { margin: 0 0 6px; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: #b42318; font-weight: 700; }
+        .reason-copy { margin: 0; font-size: 14px; line-height: 1.6; color: #7a2e26; }
         table { width: 100%; border-collapse: collapse; }
         td { padding: 10px 0; border-bottom: 1px solid #edf2f7; font-size: 14px; }
         tr:last-child td { border-bottom: none; }
@@ -107,6 +114,14 @@ export const getClientBookingStatusTemplate = (data: {
               <h2 class="status-title">${config.icon} ${config.title}</h2>
               <p class="status-copy">${statusMessage}</p>
             </div>
+            ${
+              cancellationReason
+                ? `<div class="reason-box">
+              <p class="reason-label">Cancellation reason</p>
+              <p class="reason-copy">${cancellationReason}</p>
+            </div>`
+                : ""
+            }
             <div class="card">
               <h2 class="card-title">Booking summary</h2>
               <table role="presentation">

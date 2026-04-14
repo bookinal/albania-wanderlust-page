@@ -4,7 +4,7 @@
 export type BookingStatusType =
   | "confirmed"
   | "pending"
-  | "cancelled"
+  | "canceled"
   | "completed";
 
 /**
@@ -43,7 +43,7 @@ export const getClientBookingStatusTemplate = (data: {
       icon: "⏳",
       bgColor: "#fffbeb",
     },
-    cancelled: {
+    canceled: {
       color: "#ef4444",
       icon: "❌",
       bgColor: "#fef2f2",
