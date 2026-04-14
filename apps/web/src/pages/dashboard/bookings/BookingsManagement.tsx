@@ -43,7 +43,7 @@ import {
 } from "@/components/ui/dialog";
 import { userService } from "@/services/api/userService";
 import { User } from "@/types/user.types";
-import { sendEmailDirect } from "@/services/api/emailService";
+import { sendClientBookingStatusEmail } from "@/services/api/emailService";
 import Swal from "sweetalert2";
 
 const CANCELLATION_REASONS = [
@@ -163,6 +163,8 @@ const getPropertyRoute = (booking: Booking) => {
 // Contact Client Popover Button
 function ContactClientButton({ booking }: { booking: Booking }) {
   const { t } = useTranslation();
+  const contactUnlocked = booking.payment_status === "paid";
+
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -187,7 +189,7 @@ function ContactClientButton({ booking }: { booking: Booking }) {
 
         {/* Contact Actions */}
         <div className="p-4 space-y-2.5">
-          {booking.contactPhone ? (
+          {contactUnlocked && booking.contactPhone ? (
             <a
               href={`tel:${booking.contactPhone}`}
               className="flex items-center gap-3 p-3 rounded-xl border border-emerald-500/20 bg-emerald-500/10 hover:bg-emerald-500/20 transition-colors"
@@ -215,22 +217,33 @@ function ContactClientButton({ booking }: { booking: Booking }) {
             </div>
           )}
 
-          <a
-            href={`mailto:${booking.contactMail}`}
-            className="flex items-center gap-3 p-3 rounded-xl border border-sky-500/20 bg-sky-500/10 hover:bg-sky-500/20 transition-colors"
-          >
-            <div className="w-8 h-8 rounded-full bg-sky-500/20 flex items-center justify-center flex-shrink-0">
-              <Mail className="w-4 h-4 text-sky-400" />
+          {contactUnlocked && booking.contactMail ? (
+            <a
+              href={`mailto:${booking.contactMail}`}
+              className="flex items-center gap-3 p-3 rounded-xl border border-sky-500/20 bg-sky-500/10 hover:bg-sky-500/20 transition-colors"
+            >
+              <div className="w-8 h-8 rounded-full bg-sky-500/20 flex items-center justify-center flex-shrink-0">
+                <Mail className="w-4 h-4 text-sky-400" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-xs text-sky-400 font-medium">
+                  {t("booking.sendEmail", "Send Email")}
+                </p>
+                <p className="text-sm font-semibold text-white truncate">
+                  {booking.contactMail}
+                </p>
+              </div>
+            </a>
+          ) : null}
+
+          {!contactUnlocked && (
+            <div className="rounded-xl border border-amber-500/20 bg-amber-500/10 p-3 text-sm text-amber-200">
+              {t(
+                "bookingManagement.contactLocked",
+                "Client contact details unlock only after payment is completed.",
+              )}
             </div>
-            <div className="min-w-0">
-              <p className="text-xs text-sky-400 font-medium">
-                {t("booking.sendEmail", "Send Email")}
-              </p>
-              <p className="text-sm font-semibold text-white truncate">
-                {booking.contactMail}
-              </p>
-            </div>
-          </a>
+          )}
         </div>
       </PopoverContent>
     </Popover>
@@ -664,32 +677,24 @@ export default function BookingsManagement() {
         const bookingData = bookings.find((b) => b.id === bookingId);
         if (bookingData) {
           try {
-            const emailSubject = t("bookingManagement.email.subject", {
-              propertyName:
-                bookingData.propertyData?.name || bookingData.propertyType,
-            });
-            const emailHtml = `
-              <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                <h2 style="color: #2563eb;">${t("bookingManagement.email.subject", { propertyName: bookingData.propertyData?.name || `${bookingData.propertyType.charAt(0).toUpperCase() + bookingData.propertyType.slice(1)}` })}</h2>
-                <p>${t("bookingManagement.email.greeting", { requesterName: bookingData.requesterName })}</p>
-                <p>${t("bookingManagement.email.confirmationMessage")}</p>
-                <div style="background-color: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0;">
-                  <h3 style="margin-top: 0; color: #1f2937;">${bookingData.propertyData?.name || `${bookingData.propertyType.charAt(0).toUpperCase() + bookingData.propertyType.slice(1)}`}</h3>
-                  <p><strong>${t("bookingManagement.email.checkIn")}</strong> ${new Date(bookingData.startDate).toLocaleDateString()}</p>
-                  <p><strong>${t("bookingManagement.email.checkOut")}</strong> ${new Date(bookingData.endDate).toLocaleDateString()}</p>
-                  ${bookingData.pickUpTime && bookingData.dropOffTime ? `<p><strong>${t("bookingManagement.email.time")}</strong> ${bookingData.pickUpTime} - ${bookingData.dropOffTime}</p>` : ""}
-                  <p><strong>${t("bookingManagement.email.totalPrice")}</strong> $${bookingData.totalPrice.toFixed(2)}</p>
-                  <p><strong>${t("bookingManagement.email.status")}</strong> ${t("bookingManagement.email.confirmed")}</p>
-                </div>
-                <p>${t("bookingManagement.email.questions")}</p>
-                <p>${t("bookingManagement.email.regards")}</p>
-              </div>
-            `;
+            const propertyName =
+              bookingData.propertyData?.name ||
+              `${bookingData.propertyType.charAt(0).toUpperCase() + bookingData.propertyType.slice(1)}`;
+            const propertyTypeLabel =
+              bookingData.propertyType.charAt(0).toUpperCase() +
+              bookingData.propertyType.slice(1);
 
-            await sendEmailDirect({
-              to: bookingData.contactMail,
-              subject: emailSubject,
-              html: emailHtml,
+            await sendClientBookingStatusEmail(bookingData.contactMail, {
+              clientName: bookingData.requesterName,
+              bookingId: bookingData.id,
+              propertyName,
+              propertyType: propertyTypeLabel,
+              checkInDate: new Date(bookingData.startDate).toLocaleDateString(),
+              checkOutDate: new Date(bookingData.endDate).toLocaleDateString(),
+              totalPrice: bookingData.totalPrice,
+              status: "confirmed",
+              statusMessage: t("bookingManagement.email.confirmationMessage"),
+              dashboardUrl: `${window.location.origin}/myBookings`,
             });
           } catch (emailError) {
             console.error("Error sending confirmation email:", emailError);

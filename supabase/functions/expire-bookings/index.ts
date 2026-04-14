@@ -1,5 +1,6 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
+import { getBookingCancellationTemplate } from "../_shared/bookingCancellationTemplate.ts";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -110,44 +111,13 @@ async function sendCancellationEmail(booking: {
     year: "numeric",
   });
 
-  const html = `
-    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #1a1a1a;">
-      <div style="background: #0d0d0d; padding: 24px 32px; border-radius: 12px 12px 0 0;">
-        <h1 style="color: #e41e20; font-size: 22px; margin: 0;">Booking Cancelled</h1>
-      </div>
-      <div style="background: #f9f9f9; padding: 28px 32px; border-radius: 0 0 12px 12px; border: 1px solid #e5e5e5;">
-        <p style="margin-top: 0;">Hi <strong>${booking.requesterName}</strong>,</p>
-        <p>
-          Unfortunately your booking has been <strong>automatically cancelled</strong> because
-          payment was not completed before the check-in date.
-        </p>
-        <div style="background: #fff; border: 1px solid #e5e5e5; border-radius: 8px; padding: 20px; margin: 20px 0;">
-          <table style="width: 100%; border-collapse: collapse;">
-            <tr>
-              <td style="padding: 6px 0; color: #666; font-size: 13px;">Property type</td>
-              <td style="padding: 6px 0; font-weight: 600; text-transform: capitalize;">${booking.propertyType}</td>
-            </tr>
-            <tr>
-              <td style="padding: 6px 0; color: #666; font-size: 13px;">Check-in</td>
-              <td style="padding: 6px 0; font-weight: 600;">${checkIn}</td>
-            </tr>
-            <tr>
-              <td style="padding: 6px 0; color: #666; font-size: 13px;">Check-out</td>
-              <td style="padding: 6px 0; font-weight: 600;">${checkOut}</td>
-            </tr>
-            <tr>
-              <td style="padding: 6px 0; color: #666; font-size: 13px;">Total</td>
-              <td style="padding: 6px 0; font-weight: 600;">$${booking.totalPrice.toFixed(2)}</td>
-            </tr>
-          </table>
-        </div>
-        <p style="color: #555; font-size: 14px;">
-          If you believe this is a mistake or need assistance, please contact us directly.
-        </p>
-        <p style="margin-bottom: 0;">The BOOKinAL Team</p>
-      </div>
-    </div>
-  `;
+  const html = getBookingCancellationTemplate({
+    requesterName: booking.requesterName,
+    propertyType: booking.propertyType,
+    checkIn,
+    checkOut,
+    totalPrice: booking.totalPrice,
+  });
 
   const response = await fetch(`${SUPABASE_URL}/functions/v1/send-email`, {
     method: "POST",

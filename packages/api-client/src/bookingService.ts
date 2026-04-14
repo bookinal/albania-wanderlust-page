@@ -15,6 +15,22 @@ interface ProviderData {
   full_name: string;
 }
 
+const canShareContactDetails = (
+  paymentStatus: Booking["payment_status"] | undefined,
+): boolean => paymentStatus === "paid";
+
+const maskContactDetailsForProvider = (booking: Booking): Booking => {
+  if (canShareContactDetails(booking.payment_status)) {
+    return booking;
+  }
+
+  return {
+    ...booking,
+    contactMail: "",
+    contactPhone: "",
+  };
+};
+
 const getPropertyTypeLabel = (
   propertyType: CreateBookingDto["propertyType"],
 ): string => {
@@ -124,6 +140,7 @@ export const createBooking = async (
       getPropertyDisplayName(payload.propertyId, payload.propertyType),
     ]);
     const propertyTypeLabel = getPropertyTypeLabel(payload.propertyType);
+    const shareGuestContact = canShareContactDetails(booking.payment_status);
 
     console.log("[Booking Service] Provider data retrieved:", {
       email: providerData?.email,
@@ -143,12 +160,13 @@ export const createBooking = async (
         propertyName,
         propertyType: propertyTypeLabel,
         guestName: payload.requesterName,
-        guestEmail: payload.contactMail,
-        guestPhone: payload.contactPhone,
+        guestEmail: shareGuestContact ? payload.contactMail : "",
+        guestPhone: shareGuestContact ? payload.contactPhone : "",
         checkInDate: new Date(payload.startDate).toLocaleDateString(),
         checkOutDate: new Date(payload.endDate).toLocaleDateString(),
         totalPrice: payload.totalPrice,
         bookingId: booking.id,
+        showGuestContact: shareGuestContact,
       });
 
       const html = getProviderBookingNotificationTemplate({
@@ -156,12 +174,13 @@ export const createBooking = async (
         propertyName,
         propertyType: propertyTypeLabel,
         guestName: payload.requesterName,
-        guestEmail: payload.contactMail,
-        guestPhone: payload.contactPhone,
+        guestEmail: shareGuestContact ? payload.contactMail : "",
+        guestPhone: shareGuestContact ? payload.contactPhone : "",
         checkInDate: new Date(payload.startDate).toLocaleDateString(),
         checkOutDate: new Date(payload.endDate).toLocaleDateString(),
         totalPrice: payload.totalPrice,
         bookingId: booking.id,
+        showGuestContact: shareGuestContact,
         dashboardUrl: `${window.location.origin}/dashboard/bookings`,
       });
 
@@ -179,7 +198,7 @@ export const createBooking = async (
         to: providerData.email, // For testing
         subject: `New booking request for ${propertyName}`,
         html,
-        replyTo: payload.contactMail,
+        replyTo: shareGuestContact ? payload.contactMail : undefined,
         tags: {
           category: "booking_notification",
           bookingId: booking.id,
@@ -424,7 +443,7 @@ export const getBookingsByProviderId = async (): Promise<Booking[]> => {
     );
     throw error;
   }
-  return data || [];
+  return (data || []).map((booking) => maskContactDetailsForProvider(booking));
 };
 
 /**

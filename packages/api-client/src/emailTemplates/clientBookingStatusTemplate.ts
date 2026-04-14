@@ -65,7 +65,7 @@ export const getClientBookingStatusTemplate = (data: {
       <style>
         body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
         .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-        .header { background-color: #4F46E5; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
+        .header { background-color: #1f4f75; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
         .content { background-color: #f9fafb; padding: 30px; border: 1px solid #e5e7eb; }
         .status-badge { 
           background-color: ${config.bgColor}; 
@@ -106,11 +106,11 @@ export const getClientBookingStatusTemplate = (data: {
     <body>
       <div class="container">
         <div class="header">
-          <h1>Booking Status Update</h1>
+          <h1>Bookinal Booking Update</h1>
         </div>
         <div class="content">
           <p>Hello ${data.clientName},</p>
-          <p>Here's an update on your booking:</p>
+          <p>Here is the latest update on your booking.</p>
           
           <div class="status-badge">
             <div class="status-text">${config.icon} ${data.status.toUpperCase()}</div>
@@ -153,17 +153,17 @@ export const getClientBookingStatusTemplate = (data: {
             data.supportEmail
               ? `
           <div class="support-info">
-            <p style="margin: 0;"><strong>Need Help?</strong></p>
-            <p style="margin: 5px 0 0 0;">If you have any questions about your booking, please contact us at <a href="mailto:${data.supportEmail}">${data.supportEmail}</a></p>
-          </div>
-          `
+             <p style="margin: 0;"><strong>Need help?</strong></p>
+             <p style="margin: 5px 0 0 0;">If you have any questions, please contact Bookinal support at <a href="mailto:${data.supportEmail}">${data.supportEmail}</a></p>
+           </div>
+           `
               : ""
           }
         </div>
         
         <div class="footer">
-          <p>This is an automated notification from Discover Albania.</p>
-          <p>Please do not reply to this email.</p>
+          <p>This is an automated notification from Bookinal.</p>
+          <p>Please manage your booking from the platform for the latest updates.</p>
         </div>
       </div>
     </body>

@@ -8,7 +8,6 @@ import {
   Bed,
   DollarSign,
   Mail,
-  Phone,
   Home,
   Loader2,
   Calendar,
@@ -396,20 +395,22 @@ const HotelReservation = () => {
                 {t("hotel.contactInformation")}
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {[
-                  { icon: Mail, label: t("hotel.emailAddress"), value: hotel.contactEmail || "contact@hotel.com" },
-                  { icon: Phone, label: t("hotel.phoneNumber"), value: hotel.contactPhone || "+1 (555) 123-4567" },
-                ].map((item, i) => (
-                  <div key={i} className="flex items-start gap-4 p-4 rounded-xl" style={{ background: tk.statBg, border: `1px solid ${tk.statBorder}` }}>
-                    <div className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: tk.iconCircle }}>
-                      <item.icon size={20} style={{ color: "#E8192C" }} />
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium mb-1" style={{ color: tk.mutedText }}>{item.label}</p>
-                      <p className="font-medium break-all" style={{ color: tk.pageText }}>{item.value}</p>
-                    </div>
+                <div className="flex items-start gap-4 p-4 rounded-xl md:col-span-2" style={{ background: tk.statBg, border: `1px solid ${tk.statBorder}` }}>
+                  <div className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: tk.iconCircle }}>
+                    <Mail size={20} style={{ color: "#E8192C" }} />
                   </div>
-                ))}
+                  <div>
+                    <p className="text-sm font-medium mb-1" style={{ color: tk.mutedText }}>
+                      {t("hotel.contactInformation")}
+                    </p>
+                    <p className="font-medium" style={{ color: tk.pageText }}>
+                      {t(
+                        "hotel.contactUnlockedAfterPayment",
+                        "Direct host contact details are shared after a booking is confirmed and paid through Bookinal.",
+                      )}
+                    </p>
+                  </div>
+                </div>
                 <div className="flex items-start gap-4 p-4 rounded-xl md:col-span-2" style={{ background: tk.statBg, border: `1px solid ${tk.statBorder}` }}>
                   <div className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: tk.iconCircle }}>
                     <MapPin size={20} style={{ color: "#E8192C" }} />

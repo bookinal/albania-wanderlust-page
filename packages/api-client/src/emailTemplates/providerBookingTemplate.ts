@@ -22,6 +22,7 @@ export const getProviderBookingNotificationTemplate = (data: {
   checkOutDate: string;
   totalPrice: number;
   bookingId: string;
+  showGuestContact?: boolean;
   dashboardUrl: string;
 }): string => {
   console.log(
@@ -40,6 +41,7 @@ export const getProviderBookingNotificationTemplate = (data: {
   const bookingId = escapeHtml(data.bookingId);
   const dashboardUrl = escapeHtml(data.dashboardUrl);
   const totalPrice = formatPrice(data.totalPrice);
+  const showGuestContact = data.showGuestContact === true;
 
   const template = `
     <!DOCTYPE html>
@@ -86,7 +88,6 @@ export const getProviderBookingNotificationTemplate = (data: {
           <div class="header">
             <div class="brand">Bookinal Host Updates</div>
             <h1 class="headline">You have a new booking request</h1>
-            <p class="subhead">Review the guest details, travel dates, and total amount so you can respond promptly from your dashboard.</p>
           </div>
           <div class="content">
             <div class="eyebrow">Action needed</div>
@@ -129,14 +130,21 @@ export const getProviderBookingNotificationTemplate = (data: {
                   <td class="detail-label">Guest name</td>
                   <td class="detail-value">${guestName}</td>
                 </tr>
-                <tr>
+                ${
+                  showGuestContact
+                    ? `<tr>
                   <td class="detail-label">Email</td>
                   <td class="detail-value"><a href="mailto:${guestEmail}" style="color: #24567a; text-decoration: none;">${guestEmail}</a></td>
                 </tr>
                 <tr>
                   <td class="detail-label">Phone</td>
                   <td class="detail-value">${guestPhone}</td>
-                </tr>
+                </tr>`
+                    : `<tr>
+                  <td class="detail-label">Contact details</td>
+                  <td class="detail-value">Locked until payment is completed</td>
+                </tr>`
+                }
               </table>
             </div>
 
