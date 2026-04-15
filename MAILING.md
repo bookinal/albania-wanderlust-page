@@ -89,6 +89,21 @@ Payload shape sent to `send-email`:
   - This is a backend-to-backend flow.
   - It calls `send-email` with `Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}`.
 
+### 5. Payment received and contact details unlocked
+
+- Trigger files:
+  - `supabase/functions/confirm-stripe-payment/index.ts`
+  - `supabase/functions/stripe-webhook/index.ts`
+- Trigger moment: when Stripe payment moves a booking from `payment_status = pending` to `payment_status = paid`.
+- Recipients:
+  - client receives provider contact details
+  - provider receives client contact details
+- Template path: `supabase/functions/_shared/contactUnlockNotifications.ts`
+- Notes:
+  - The emails explain that Bookinal collected the platform booking fee.
+  - They instruct both sides to coordinate the remaining rental/payment details directly outside the app.
+  - Notifications are only sent on the actual transition from `pending` to `paid`, which avoids duplicate sends between confirm and webhook flows.
+
 ## Templates currently in the codebase
 
 ### Active templates
@@ -117,6 +132,7 @@ Payload shape sent to `send-email`:
 | Booking created | `packages/api-client/src/bookingService.ts` | Provider | `packages/api-client/src/emailTemplates/providerBookingTemplate.ts` |
 | Booking confirmed | `apps/web/src/pages/dashboard/bookings/BookingsManagement.tsx` | Client | `supabase/functions/_shared/clientBookingStatusTemplate.ts` via `notify-booking-status` |
 | Booking auto-cancelled | `supabase/functions/expire-bookings/index.ts` | Client | `supabase/functions/_shared/bookingCancellationTemplate.ts` |
+| Payment received / contacts unlocked | `supabase/functions/confirm-stripe-payment/index.ts`, `supabase/functions/stripe-webhook/index.ts` | Client + Provider | `supabase/functions/_shared/contactUnlockNotifications.ts` |
 | Manual/example send | `apps/web/src/components/examples/EmailComponentExample.tsx` | User/Admin | `getBookingConfirmationTemplate()` or inline HTML |
 
 ## Reusable email helpers

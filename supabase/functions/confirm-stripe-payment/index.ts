@@ -1,6 +1,7 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
 import Stripe from "npm:stripe@17";
+import { sendContactUnlockNotifications } from "../_shared/contactUnlockNotifications.ts";
 
 const STRIPE_SECRET_KEY = Deno.env.get("STRIPE_SECRET_KEY");
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
@@ -170,17 +171,36 @@ Deno.serve(async (req) => {
       }
 
       // Update booking status
-      const { error: updateError } = await supabaseAdmin
+      const { data: updatedBookings, error: updateError } = await supabaseAdmin
         .from("booking")
         .update({
           payment_status: "paid",
           paid_at: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
         })
-        .eq("id", bookingId);
+        .eq("id", bookingId)
+        .eq("payment_status", "pending")
+        .select("*");
 
       if (updateError) {
         console.error("[Stripe Confirm] Error updating booking:", updateError);
+      }
+
+      const updatedBooking = updatedBookings?.[0];
+
+      if (updatedBooking) {
+        try {
+          await sendContactUnlockNotifications(supabaseAdmin, updatedBooking, {
+            supabaseUrl: SUPABASE_URL!,
+            serviceRoleKey: SUPABASE_SERVICE_ROLE_KEY!,
+            origin: req.headers.get("origin") || undefined,
+          });
+        } catch (emailError) {
+          console.error(
+            "[Stripe Confirm] Error sending contact unlock notifications:",
+            emailError,
+          );
+        }
       }
 
       return new Response(
