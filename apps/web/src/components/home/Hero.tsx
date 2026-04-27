@@ -4,6 +4,7 @@ import slide1 from "@/assets/home/slide1.jpg";
 import slide2 from "@/assets/home/slide2.jpg";
 import slide3 from "@/assets/home/slide3.jpg";
 import ReservationPickerValue from "./reservationPicker";
+import HeroInventoryPreview from "./HeroInventoryPreview";
 import { Link } from "react-router";
 import { Slide } from "react-slideshow-image";
 import { useTranslation } from "react-i18next";
@@ -28,7 +29,7 @@ const Hero = () => {
   ];
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+    <section className="relative min-h-screen flex items-start justify-center overflow-hidden pt-24 sm:pt-12 lg:pt-12">
       {/* Background Image with Overlay */}
       <div className="absolute inset-0 z-0">
         <Slide
@@ -51,8 +52,11 @@ const Hero = () => {
       </div>
 
       {/* Content */}
-      <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 text-center text-white">
-        <div className="animate-fade-in-up max-w-4xl mx-auto">
+      <div className="relative z-10 container mx-auto flex flex-1 flex-col items-center px-4 sm:px-6 lg:px-8 text-white">
+        <div className="w-full xl:grid xl:grid-cols-[minmax(280px,1fr)_minmax(0,720px)_minmax(280px,1fr)] xl:items-stretch xl:gap-6">
+          <HeroInventoryPreview layout="split" side="stays" />
+
+          <div className="animate-fade-in-up mx-auto max-w-4xl text-center xl:flex xl:min-h-[540px] xl:flex-col xl:justify-center xl:self-center">
           {/* Badge */}
           <div className="inline-flex items-center gap-2 bg-white/15 backdrop-blur-md px-4 py-2 rounded-full mb-6 border border-white/20">
             <MapPin className="w-4 h-4 text-red-400" />
@@ -74,8 +78,12 @@ const Hero = () => {
             {t("home.hero.subheading")}
           </p>
 
+          <div className="mb-4 w-full xl:hidden">
+            <HeroInventoryPreview layout="stacked" />
+          </div>
+
           {/* Search Widget */}
-          <div className="mb-8">
+          <div className="mb-6 sm:mb-8">
             <ReservationPickerValue />
           </div>
 
@@ -100,6 +108,10 @@ const Hero = () => {
               <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </Button>
           </div>
+
+          </div>
+
+          <HeroInventoryPreview layout="split" side="cars" />
         </div>
       </div>
 

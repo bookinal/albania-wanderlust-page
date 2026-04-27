@@ -37,3 +37,5 @@ vite.config.*.mjs
 .claude
 .expo
 .vscode
+
+.playwright-mcp

@@ -93,10 +93,10 @@ export default function ReservationPickerValue() {
         opacity: 0.85,
         borderRadius: { xs: 2, md: 3 },
         boxShadow: 3,
-        maxWidth: { xs: "95%", sm: "90%", md: "fit-content" },
-        width: { xs: "95%", sm: "auto" },
+        maxWidth: { xs: "100%", sm: "90%", md: "fit-content" },
+        width: { xs: "100%", sm: "auto" },
         mx: "auto",
-        my: { xs: 2, md: 4 },
+        my: { xs: 1, sm: 1.5, md: 4 },
         overflow: "hidden",
       }}
     >
@@ -110,7 +110,8 @@ export default function ReservationPickerValue() {
           borderColor: "divider",
           "& .MuiTab-root": {
             fontWeight: 600,
-            fontSize: { xs: "0.875rem", sm: "1rem" },
+            fontSize: { xs: "0.8rem", sm: "1rem" },
+            minHeight: { xs: 46, sm: 56 },
           },
         }}
       >
@@ -125,8 +126,8 @@ export default function ReservationPickerValue() {
           flexDirection: { xs: "column", md: "row" },
           alignItems: "center",
           justifyContent: "center",
-          gap: { xs: 1.5, sm: 2 },
-          p: { xs: 2, sm: 2.5, md: 3 },
+          gap: { xs: 1.25, sm: 2 },
+          p: { xs: 1.25, sm: 2.5, md: 3 },
         }}
       >
         <TextField
@@ -134,6 +135,7 @@ export default function ReservationPickerValue() {
           value={destination}
           onChange={(e) => setDestination(e.target.value)}
           variant="outlined"
+          size="small"
           sx={{ minWidth: { xs: "100%", sm: 100 } }}
         />
 
