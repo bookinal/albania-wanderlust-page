@@ -41,6 +41,7 @@ import logoImage from "@/assets/logo/logoBOOKinAL.png";
 import { useTranslation } from "react-i18next";
 import ReviewModal from "@/components/reviews/ReviewModal";
 import { useTheme } from "@/context/ThemeContext";
+import { getBookingThemeTokens } from "./bookingTheme";
 
 const getPropertyIcon = (type: Booking["propertyType"]) => {
   switch (type) {
@@ -214,7 +215,7 @@ const generateInvoicePDF = async (booking: Booking) => {
 // Provider Contact Button
 function ProviderContactButton({ providerId }: { providerId: string }) {
   const { t } = useTranslation();
-  const { isDark } = useTheme();
+  const { isDark, isBlue } = useTheme();
   const [provider, setProvider] = useState<User | null>(null);
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
@@ -234,6 +235,7 @@ function ProviderContactButton({ providerId }: { providerId: string }) {
     }
   };
 
+  const bookingTk = getBookingThemeTokens({ isDark, isBlue });
   const popBg = isDark ? '#1a1a1e' : '#ffffff';
   const popBorder = isDark ? 'rgba(255,255,255,0.08)' : '#ede9e5';
   const rowBg = isDark ? 'rgba(255,255,255,0.04)' : '#f5f2ee';
@@ -263,8 +265,8 @@ function ProviderContactButton({ providerId }: { providerId: string }) {
             transition: 'border-color 0.2s, color 0.2s',
           }}
           onMouseEnter={e => {
-            (e.currentTarget as HTMLButtonElement).style.borderColor = '#E8192C';
-            (e.currentTarget as HTMLButtonElement).style.color = '#E8192C';
+            (e.currentTarget as HTMLButtonElement).style.borderColor = bookingTk.brand;
+            (e.currentTarget as HTMLButtonElement).style.color = bookingTk.brand;
           }}
           onMouseLeave={e => {
             (e.currentTarget as HTMLButtonElement).style.borderColor = triggerBorder;
@@ -306,7 +308,7 @@ function ProviderContactButton({ providerId }: { providerId: string }) {
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px 0' }}>
               <div style={{
                 width: 20, height: 20, borderRadius: '50%',
-                border: '2px solid #E8192C', borderTopColor: 'transparent',
+                border: `2px solid ${bookingTk.brand}`, borderTopColor: 'transparent',
                 animation: 'spin 0.8s linear infinite',
               }} />
             </div>
@@ -332,7 +334,7 @@ function ProviderContactButton({ providerId }: { providerId: string }) {
                     <Phone style={{ width: 16, height: 16, color: '#ffffff' }} />
                   </div>
                   <div style={{ minWidth: 0 }}>
-                    <p style={{ fontSize: 11, color: '#E8192C', fontWeight: 500 }}>
+                    <p style={{ fontSize: 11, color: bookingTk.brand, fontWeight: 500 }}>
                       {t("booking.callPhone", "Call Phone")}
                     </p>
                     <p style={{ fontSize: 14, fontWeight: 600, color: rowText, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
@@ -401,6 +403,8 @@ function ProviderContactButton({ providerId }: { providerId: string }) {
 // PayPal Button Component for individual booking
 function PayPalPaymentButton({ booking }: { booking: Booking }) {
   const { toast } = useToast();
+  const { isDark, isBlue } = useTheme();
+  const bookingTk = getBookingThemeTokens({ isDark, isBlue });
   const queryClient = useQueryClient();
   const [{ isPending }] = usePayPalScriptReducer();
   const [isProcessing, setIsProcessing] = useState(false);
@@ -498,7 +502,7 @@ function PayPalPaymentButton({ booking }: { booking: Booking }) {
   if (isPending || isProcessing) {
     return (
       <div className="flex items-center justify-center p-2">
-        <Loader2 className="w-4 h-4 animate-spin text-blue-600" />
+        <Loader2 className="w-4 h-4 animate-spin" style={{ color: bookingTk.brand }} />
       </div>
     );
   }
@@ -525,47 +529,62 @@ export default function BookingsSummary() {
   const { t } = useTranslation();
   const { toast } = useToast();
   const navigate = useNavigate();
-  const { isDark } = useTheme();
+  const { isDark, isBlue } = useTheme();
+  const bookingTk = getBookingThemeTokens({ isDark, isBlue });
   const [reviewBooking, setReviewBooking] = useState<Booking | null>(null);
   const [page, setPage] = useState(1);
   const PAGE_SIZE = 5;
 
   const tk = {
-    pageBg: isDark ? '#0d0d0d' : '#f5f4f1',
-    pageText: isDark ? '#ffffff' : '#111115',
-    cardBg: isDark ? 'rgba(255,255,255,0.03)' : '#ffffff',
-    cardBorder: isDark ? 'rgba(255,255,255,0.07)' : '#ede9e5',
-    mutedText: isDark ? 'rgba(255,255,255,0.40)' : '#6b6663',
-    dimText: isDark ? 'rgba(255,255,255,0.70)' : '#44403c',
-    imagePlaceholder: isDark ? '#1a1a1e' : '#e5e2de',
-    refBg: isDark ? 'rgba(255,255,255,0.06)' : '#f0ece8',
-    refText: isDark ? 'rgba(255,255,255,0.40)' : '#6b6663',
-    paginationBg: isDark ? 'rgba(255,255,255,0.04)' : '#f5f2ee',
-    paginationBorder: isDark ? 'rgba(255,255,255,0.10)' : '#ddd9d5',
-    paginationText: isDark ? 'rgba(255,255,255,0.50)' : '#6b6663',
-    emptyBg: isDark ? 'rgba(255,255,255,0.03)' : '#ffffff',
-    emptyIconBg: isDark ? 'rgba(232,25,44,0.12)' : '#fef2f2',
-    errorBg: isDark ? 'rgba(232,25,44,0.08)' : '#fef2f2',
-    errorText: isDark ? '#fca5a5' : '#b91c1c',
-    errorBorder: isDark ? 'rgba(232,25,44,0.30)' : '#fecaca',
+    pageBg: bookingTk.pageBg,
+    pageText: bookingTk.pageText,
+    cardBg: bookingTk.cardBg,
+    cardBorder: bookingTk.cardBorder,
+    mutedText: bookingTk.mutedText,
+    dimText: bookingTk.dimText,
+    imagePlaceholder: isDark ? '#1a1a1e' : isBlue ? '#dbeafe' : '#e5e2de',
+    refBg: isDark ? 'rgba(255,255,255,0.06)' : isBlue ? '#eff6ff' : '#f0ece8',
+    refText: bookingTk.mutedText,
+    paginationBg: bookingTk.statBg,
+    paginationBorder: bookingTk.statBorder,
+    paginationText: isDark ? 'rgba(255,255,255,0.50)' : isBlue ? 'hsl(211 22% 42%)' : '#6b6663',
+    emptyBg: bookingTk.cardBg,
+    emptyIconBg: bookingTk.brandSoftStrong,
+    errorBg: bookingTk.brandSoft,
+    errorText: bookingTk.infoText,
+    errorBorder: bookingTk.brandBorder,
+    heroBg: isBlue
+      ? 'linear-gradient(to right, #082f49, #0369a1, #164e63)'
+      : 'linear-gradient(to right, #b91c1c, #7f1d1d, #000000)',
+    heroEyebrow: isBlue ? '#7dd3fc' : '#fca5a5',
+    heroMuted: isBlue ? 'rgba(186,230,253,0.7)' : 'rgba(254,202,202,0.6)',
+    warningText: isDark ? '#fcd34d' : isBlue ? '#9a6700' : '#92400e',
+    dangerText: isDark ? '#fca5a5' : isBlue ? '#b91c1c' : '#991b1b',
+    successText: isDark ? '#6ee7b7' : isBlue ? '#0369a1' : '#065f46',
+    successBg: isDark ? 'rgba(16,185,129,0.15)' : isBlue ? 'rgba(14,165,233,0.12)' : '#ecfdf5',
+    successBorder: isDark ? 'rgba(16,185,129,0.30)' : isBlue ? 'rgba(14,165,233,0.22)' : '#a7f3d0',
+    warningBg: isDark ? 'rgba(245,158,11,0.15)' : isBlue ? 'rgba(245,158,11,0.12)' : '#fffbeb',
+    warningBorder: isDark ? 'rgba(245,158,11,0.30)' : isBlue ? 'rgba(245,158,11,0.24)' : '#fde68a',
+    dangerBg: isDark ? 'rgba(239,68,68,0.15)' : isBlue ? 'rgba(239,68,68,0.1)' : '#fef2f2',
+    dangerBorder: isDark ? 'rgba(239,68,68,0.30)' : isBlue ? 'rgba(239,68,68,0.24)' : '#fecaca',
   };
 
   // Status badge styles
   const getStatusBadgeStyle = (status: string): React.CSSProperties => {
     if (status === 'confirmed') return {
-      background: isDark ? 'rgba(16,185,129,0.15)' : '#ecfdf5',
-      color: isDark ? '#6ee7b7' : '#065f46',
-      border: `1px solid ${isDark ? 'rgba(16,185,129,0.30)' : '#a7f3d0'}`,
+      background: tk.successBg,
+      color: tk.successText,
+      border: `1px solid ${tk.successBorder}`,
     };
     if (status === 'pending') return {
-      background: isDark ? 'rgba(245,158,11,0.15)' : '#fffbeb',
-      color: isDark ? '#fcd34d' : '#92400e',
-      border: `1px solid ${isDark ? 'rgba(245,158,11,0.30)' : '#fde68a'}`,
+      background: tk.warningBg,
+      color: tk.warningText,
+      border: `1px solid ${tk.warningBorder}`,
     };
     if (status === 'canceled') return {
-      background: isDark ? 'rgba(239,68,68,0.15)' : '#fef2f2',
-      color: isDark ? '#fca5a5' : '#991b1b',
-      border: `1px solid ${isDark ? 'rgba(239,68,68,0.30)' : '#fecaca'}`,
+      background: tk.dangerBg,
+      color: tk.dangerText,
+      border: `1px solid ${tk.dangerBorder}`,
     };
     return {
       background: isDark ? 'rgba(255,255,255,0.06)' : '#f5f4f1',
@@ -577,19 +596,19 @@ export default function BookingsSummary() {
   // Combined status description box style
   const getCombinedStatusStyle = (isSuccess: boolean, isWarning: boolean, isDanger: boolean): React.CSSProperties => {
     if (isSuccess) return {
-      background: isDark ? 'rgba(16,185,129,0.10)' : '#ecfdf5',
-      color: isDark ? '#6ee7b7' : '#065f46',
-      border: `1px solid ${isDark ? 'rgba(16,185,129,0.25)' : '#a7f3d0'}`,
+      background: tk.successBg,
+      color: tk.successText,
+      border: `1px solid ${tk.successBorder}`,
     };
     if (isWarning) return {
-      background: isDark ? 'rgba(245,158,11,0.10)' : '#fffbeb',
-      color: isDark ? '#fcd34d' : '#92400e',
-      border: `1px solid ${isDark ? 'rgba(245,158,11,0.25)' : '#fde68a'}`,
+      background: tk.warningBg,
+      color: tk.warningText,
+      border: `1px solid ${tk.warningBorder}`,
     };
     if (isDanger) return {
-      background: isDark ? 'rgba(239,68,68,0.10)' : '#fef2f2',
-      color: isDark ? '#fca5a5' : '#991b1b',
-      border: `1px solid ${isDark ? 'rgba(239,68,68,0.25)' : '#fecaca'}`,
+      background: tk.dangerBg,
+      color: tk.dangerText,
+      border: `1px solid ${tk.dangerBorder}`,
     };
     return {
       background: isDark ? 'rgba(255,255,255,0.04)' : '#f5f4f1',
@@ -670,15 +689,15 @@ export default function BookingsSummary() {
       <PrimarySearchAppBar />
 
       {/* ── Page Hero Header ── */}
-      <div className="bg-gradient-to-r from-red-700 via-red-900 to-black px-4 pt-12 pb-16">
+      <div className="px-4 pt-12 pb-16" style={{ background: tk.heroBg }}>
         <div className="max-w-5xl mx-auto">
-          <p className="text-red-300 text-xs font-bold uppercase tracking-widest mb-2">
+          <p className="text-xs font-bold uppercase tracking-widest mb-2" style={{ color: tk.heroEyebrow }}>
             My Account
           </p>
           <h1 className="text-4xl font-black text-white tracking-tight">
             {t("booking.myBookings")}
           </h1>
-          <p className="mt-2 text-red-200/60 text-sm max-w-lg">
+          <p className="mt-2 text-sm max-w-lg" style={{ color: tk.heroMuted }}>
             {t("booking.bookingSummaryDescription")}
           </p>
         </div>
@@ -692,7 +711,7 @@ export default function BookingsSummary() {
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '96px 0', gap: 16 }}>
             <div style={{
               width: 40, height: 40, borderRadius: '50%',
-              border: '2px solid #E8192C', borderTopColor: 'transparent',
+              border: `2px solid ${bookingTk.brand}`, borderTopColor: 'transparent',
               animation: 'spin 0.8s linear infinite',
             }} />
             <p style={{ fontSize: 14, color: tk.mutedText }}>Loading your bookings…</p>
@@ -705,7 +724,7 @@ export default function BookingsSummary() {
             display: 'flex', alignItems: 'center', gap: 12,
             padding: 20,
             background: tk.errorBg,
-            borderLeft: `4px solid #E8192C`,
+            borderLeft: `4px solid ${bookingTk.brand}`,
             borderRadius: '0 12px 12px 0',
             color: tk.errorText,
           }}>
@@ -732,7 +751,7 @@ export default function BookingsSummary() {
               background: tk.emptyIconBg,
               display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16,
             }}>
-              <Calendar style={{ width: 28, height: 28, color: '#E8192C' }} />
+              <Calendar style={{ width: 28, height: 28, color: bookingTk.brand }} />
             </div>
             <h3 style={{ fontWeight: 900, fontSize: 18, color: tk.pageText, marginBottom: 4 }}>
               {t("booking.noBookings")}
@@ -744,7 +763,7 @@ export default function BookingsSummary() {
               onClick={() => navigate("/")}
               style={{
                 padding: '10px 24px',
-                background: 'linear-gradient(to right, #b91c1c, #000000)',
+                background: tk.heroBg,
                 color: '#ffffff',
                 fontSize: 14,
                 fontWeight: 700,
@@ -850,7 +869,7 @@ export default function BookingsSummary() {
                         }}
                       >
                         <Icon
-                          style={{ width: 14, height: 14, color: "#E8192C" }}
+                          style={{ width: 14, height: 14, color: bookingTk.brand }}
                         />
                       </div>
                     </div>
@@ -879,7 +898,7 @@ export default function BookingsSummary() {
                               fontSize: 10,
                               textTransform: "uppercase",
                               letterSpacing: "0.1em",
-                              color: "#E8192C",
+                              color: bookingTk.brand,
                               fontWeight: 700,
                             }}
                           >
@@ -935,7 +954,7 @@ export default function BookingsSummary() {
                               style={{
                                 width: 16,
                                 height: 16,
-                                color: "#E8192C",
+                                color: bookingTk.brand,
                                 flexShrink: 0,
                               }}
                             />
@@ -969,7 +988,7 @@ export default function BookingsSummary() {
                                 style={{
                                   width: 16,
                                   height: 16,
-                                  color: "#E8192C",
+                                  color: bookingTk.brand,
                                   opacity: 0.7,
                                   flexShrink: 0,
                                 }}
@@ -1001,7 +1020,7 @@ export default function BookingsSummary() {
                                 style={{
                                   width: 16,
                                   height: 16,
-                                  color: "#E8192C",
+                                  color: bookingTk.brand,
                                   opacity: 0.7,
                                   flexShrink: 0,
                                 }}
@@ -1099,7 +1118,7 @@ export default function BookingsSummary() {
                               alignItems: "center",
                               gap: 6,
                               fontSize: 12,
-                              color: "#E8192C",
+                              color: bookingTk.brand,
                               fontWeight: 600,
                               background: "transparent",
                               border: "none",
@@ -1285,7 +1304,7 @@ export default function BookingsSummary() {
                                     alignItems: "center",
                                     gap: 4,
                                     fontSize: 12,
-                                    color: isDark ? "#fcd34d" : "#92400e",
+                                    color: tk.warningText,
                                   }}
                                 >
                                   <CreditCard
@@ -1311,7 +1330,7 @@ export default function BookingsSummary() {
                                   onMouseEnter={(e) =>
                                     ((
                                       e.currentTarget as HTMLButtonElement
-                                    ).style.color = "#E8192C")
+                                    ).style.color = bookingTk.brand)
                                   }
                                   onMouseLeave={(e) =>
                                     ((
@@ -1331,7 +1350,7 @@ export default function BookingsSummary() {
                                 <p
                                   style={{
                                     fontSize: 12,
-                                    color: isDark ? "#fcd34d" : "#92400e",
+                                    color: tk.warningText,
                                     textAlign: "right",
                                   }}
                                 >
@@ -1354,7 +1373,7 @@ export default function BookingsSummary() {
                                   onMouseEnter={(e) =>
                                     ((
                                       e.currentTarget as HTMLButtonElement
-                                    ).style.color = "#E8192C")
+                                    ).style.color = bookingTk.brand)
                                   }
                                   onMouseLeave={(e) =>
                                     ((
@@ -1392,8 +1411,8 @@ export default function BookingsSummary() {
                                       fontSize: 12,
                                       padding: "6px 12px",
                                       borderRadius: 999,
-                                      border: `1px solid ${isDark ? "rgba(245,158,11,0.40)" : "#fcd34d"}`,
-                                      color: isDark ? "#fcd34d" : "#92400e",
+                                      border: `1px solid ${tk.warningBorder}`,
+                                      color: tk.warningText,
                                       background: "transparent",
                                       cursor: "pointer",
                                       fontWeight: 700,
@@ -1403,8 +1422,8 @@ export default function BookingsSummary() {
                                       ((
                                         e.currentTarget as HTMLButtonElement
                                       ).style.background = isDark
-                                        ? "rgba(245,158,11,0.10)"
-                                        : "#fffbeb")
+                                        ? tk.warningBg
+                                        : tk.warningBg)
                                     }
                                     onMouseLeave={(e) =>
                                       ((
@@ -1436,7 +1455,7 @@ export default function BookingsSummary() {
                                 style={{
                                   fontSize: 12,
                                   fontWeight: 700,
-                                  color: "#E8192C",
+                                  color: bookingTk.brand,
                                 }}
                               >
                                 {t("booking.cancelled")}
@@ -1465,7 +1484,7 @@ export default function BookingsSummary() {
                                     alignItems: "center",
                                     gap: 4,
                                     fontSize: 12,
-                                    color: isDark ? "#fca5a5" : "#991b1b",
+                                    color: tk.dangerText,
                                   }}
                                 >
                                   <AlertCircle
@@ -1492,7 +1511,7 @@ export default function BookingsSummary() {
                                   onMouseEnter={(e) =>
                                     ((
                                       e.currentTarget as HTMLButtonElement
-                                    ).style.color = "#E8192C")
+                                    ).style.color = bookingTk.brand)
                                   }
                                   onMouseLeave={(e) =>
                                     ((
@@ -1544,7 +1563,7 @@ export default function BookingsSummary() {
                   transition: 'border-color 0.2s, color 0.2s',
                   opacity: (page === 1 || isFetching) ? 0.3 : 1,
                 }}
-                onMouseEnter={e => { if (!(page === 1 || isFetching)) { (e.currentTarget as HTMLButtonElement).style.borderColor = '#E8192C'; (e.currentTarget as HTMLButtonElement).style.color = '#E8192C'; } }}
+                onMouseEnter={e => { if (!(page === 1 || isFetching)) { (e.currentTarget as HTMLButtonElement).style.borderColor = bookingTk.brand; (e.currentTarget as HTMLButtonElement).style.color = bookingTk.brand; } }}
                 onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = tk.paginationBorder; (e.currentTarget as HTMLButtonElement).style.color = tk.paginationText; }}
               >
                 <ChevronLeft style={{ width: 16, height: 16 }} />
@@ -1580,13 +1599,13 @@ export default function BookingsSummary() {
                         fontSize: 14, fontWeight: 700,
                         border: p === page ? 'none' : `1px solid ${tk.paginationBorder}`,
                         background: p === page
-                          ? 'linear-gradient(135deg, #dc2626, #7f1d1d)'
+                          ? bookingTk.primaryBtn
                           : 'transparent',
                         color: p === page ? '#ffffff' : tk.paginationText,
                         cursor: 'pointer',
                         transition: 'border-color 0.2s, color 0.2s',
                       }}
-                      onMouseEnter={e => { if (p !== page) { (e.currentTarget as HTMLButtonElement).style.borderColor = '#E8192C'; (e.currentTarget as HTMLButtonElement).style.color = '#E8192C'; } }}
+                       onMouseEnter={e => { if (p !== page) { (e.currentTarget as HTMLButtonElement).style.borderColor = bookingTk.brand; (e.currentTarget as HTMLButtonElement).style.color = bookingTk.brand; } }}
                       onMouseLeave={e => { if (p !== page) { (e.currentTarget as HTMLButtonElement).style.borderColor = tk.paginationBorder; (e.currentTarget as HTMLButtonElement).style.color = tk.paginationText; } }}
                     >
                       {p}
@@ -1607,7 +1626,7 @@ export default function BookingsSummary() {
                   transition: 'border-color 0.2s, color 0.2s',
                   opacity: (page === totalPages || isFetching) ? 0.3 : 1,
                 }}
-                onMouseEnter={e => { if (!(page === totalPages || isFetching)) { (e.currentTarget as HTMLButtonElement).style.borderColor = '#E8192C'; (e.currentTarget as HTMLButtonElement).style.color = '#E8192C'; } }}
+                onMouseEnter={e => { if (!(page === totalPages || isFetching)) { (e.currentTarget as HTMLButtonElement).style.borderColor = bookingTk.brand; (e.currentTarget as HTMLButtonElement).style.color = bookingTk.brand; } }}
                 onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = tk.paginationBorder; (e.currentTarget as HTMLButtonElement).style.color = tk.paginationText; }}
               >
                 <ChevronRight style={{ width: 16, height: 16 }} />

@@ -335,11 +335,11 @@ export const getCurrentUserBookingsPaginated = async (
   for (const booking of data || []) {
     try {
       if (booking.propertyType === "car") {
-        booking.propertyData = await getCarById(booking.propertyId);
+        booking.propertyData = await getCarById(Number(booking.propertyId));
       } else if (booking.propertyType === "apartment") {
-        booking.propertyData = await getApartmentById(booking.propertyId);
+        booking.propertyData = await getApartmentById(Number(booking.propertyId));
       } else if (booking.propertyType === "hotel") {
-        booking.propertyData = await getHotelById(booking.propertyId);
+        booking.propertyData = await getHotelById(Number(booking.propertyId));
       }
     } catch {
       booking.propertyData = null;
@@ -381,11 +381,11 @@ export const getCurrentUserBookings = async (): Promise<Booking[]> => {
   // get properties data for each booking
   for (const booking of data || []) {
     if (booking.propertyType === "car") {
-      booking.propertyData = await getCarById(booking.propertyId);
+      booking.propertyData = await getCarById(Number(booking.propertyId));
     } else if (booking.propertyType === "apartment") {
-      booking.propertyData = await getApartmentById(booking.propertyId);
+      booking.propertyData = await getApartmentById(Number(booking.propertyId));
     } else if (booking.propertyType === "hotel") {
-      booking.propertyData = await getHotelById(booking.propertyId);
+      booking.propertyData = await getHotelById(Number(booking.propertyId));
     }
   }
   return data || [];
@@ -413,11 +413,11 @@ export const getBookingsByProviderIdForAdmin = async (
   for (const booking of data || []) {
     try {
       if (booking.propertyType === "car") {
-        booking.propertyData = await getCarById(booking.propertyId);
+        booking.propertyData = await getCarById(Number(booking.propertyId));
       } else if (booking.propertyType === "apartment") {
-        booking.propertyData = await getApartmentById(booking.propertyId);
+        booking.propertyData = await getApartmentById(Number(booking.propertyId));
       } else if (booking.propertyType === "hotel") {
-        booking.propertyData = await getHotelById(booking.propertyId);
+        booking.propertyData = await getHotelById(Number(booking.propertyId));
       }
     } catch {
       booking.propertyData = null;

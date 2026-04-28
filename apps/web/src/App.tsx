@@ -38,6 +38,7 @@ import CarReservation from "./pages/home/booking/CarReservation";
 import CarBilling from "./pages/home/booking/CarBilling";
 import BookingsSummary from "./pages/home/booking/BookingsSummary";
 import ApartmentBilling from "./pages/home/booking/ApartmentBilling";
+import HotelBilling from "./pages/home/booking/HotelBilling";
 import BookingsManagement from "./pages/dashboard/bookings/BookingsManagement";
 import AdminProvidersList from "./pages/dashboard/bookings/AdminProvidersList";
 import AdminProviderBookings from "./pages/dashboard/bookings/AdminProviderBookings";
@@ -115,6 +116,10 @@ const App = () => (
               <Route
                 path="/apartmentBilling/:id"
                 element={<ApartmentBilling />}
+              />
+              <Route
+                path="/hotelBilling/:id"
+                element={<HotelBilling />}
               />
               <Route path="/myBookings" element={<BookingsSummary />} />
               <Route path="/ProviderRequest" element={<ProviderRequest />} />

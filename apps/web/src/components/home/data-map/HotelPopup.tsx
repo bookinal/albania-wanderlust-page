@@ -1,20 +1,22 @@
 import { Hotel } from "@/types/hotel.types";
 import { Link } from "react-router-dom";
 import { useTheme } from "@/context/ThemeContext";
+import { getHomeThemeTokens } from "../homeTheme";
 
 interface HotelPopupProps {
   hotel: Hotel;
 }
 
 export function HotelPopup({ hotel }: HotelPopupProps) {
-  const { isDark } = useTheme();
+  const { isDark, isBlue } = useTheme();
+  const homeTk = getHomeThemeTokens({ isDark, isBlue });
 
   const popupBg = isDark ? '#1a1a1e' : '#ffffff';
   const popupText = isDark ? '#f5f5f5' : '#111115';
   const mutedText = isDark ? 'rgba(255,255,255,0.5)' : '#6b6663';
   const statBg = isDark ? 'rgba(255,255,255,0.06)' : '#f5f2ee';
-  const amenityBg = isDark ? 'rgba(232,25,44,0.10)' : '#fef2f2';
-  const amenityText = isDark ? '#f87171' : '#b91c1c';
+  const amenityBg = isDark ? homeTk.brandSoft : isBlue ? 'rgba(2,132,199,0.08)' : '#fef2f2';
+  const amenityText = isDark ? '#f87171' : isBlue ? '#0369a1' : '#b91c1c';
 
   return (
     <div style={{ width: '16rem', display: 'flex', flexDirection: 'column', gap: '0.75rem', background: popupBg, color: popupText }}>
@@ -31,7 +33,7 @@ export function HotelPopup({ hotel }: HotelPopupProps) {
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', fontSize: '0.875rem' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.25rem 0.5rem', background: statBg, borderRadius: '0.375rem' }}>
           <span style={{ fontWeight: 500 }}>Price:</span>
-          <span style={{ color: '#E8192C', fontWeight: 700 }}>€{hotel.price} / night</span>
+          <span style={{ color: homeTk.brand, fontWeight: 700 }}>€{hotel.price} / night</span>
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
           <span style={{ fontWeight: 500 }}>Rooms:</span>
@@ -79,7 +81,7 @@ export function HotelPopup({ hotel }: HotelPopupProps) {
       )}
 
       <Link to={`/hotelReservation/${hotel.id}`}>
-        <button style={{ width: '100%', background: '#E8192C', color: '#fff', padding: '0.5rem 1rem', borderRadius: '0.375rem', border: 'none', cursor: 'pointer', fontWeight: 600, fontSize: '0.875rem' }}>
+        <button style={{ width: '100%', background: homeTk.brand, color: '#fff', padding: '0.5rem 1rem', borderRadius: '0.375rem', border: 'none', cursor: 'pointer', fontWeight: 600, fontSize: '0.875rem' }}>
           Book Now
         </button>
       </Link>

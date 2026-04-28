@@ -1,6 +1,7 @@
 import { Star, MapPin, Zap, Building2, Home } from "lucide-react";
 import { PropertyCardProps } from "@/types/search.types";
 import { useTheme } from "@/context/ThemeContext";
+import { getHomeThemeTokens } from "./homeTheme";
 
 /**
  * Reusable property card component for hotels and apartments — Albanian dark luxury theme
@@ -19,7 +20,8 @@ export const PropertyCard = ({
   propertyType,
   onClick,
 }: PropertyCardProps) => {
-  const { isDark } = useTheme();
+  const { isDark, isBlue } = useTheme();
+  const homeTk = getHomeThemeTokens({ isDark, isBlue });
 
   const isAvailable =
     propertyType === "hotel"
@@ -31,23 +33,23 @@ export const PropertyCard = ({
 
   const statusColor = isAvailable
     ? { bg: 'rgba(34,197,94,0.12)', border: 'rgba(34,197,94,0.3)', text: '#4ade80' }
-    : { bg: 'rgba(232,25,44,0.1)', border: 'rgba(232,25,44,0.3)', text: '#E8192C' };
+    : { bg: homeTk.brandSoft, border: homeTk.brandBorder, text: homeTk.brand };
 
   // Theme tokens
   const tk = {
     cardBg: isDark ? '#141417' : '#ffffff',
-    cardBorder: isDark ? 'rgba(232,25,44,0.12)' : 'rgba(232,25,44,0.14)',
+    cardBorder: isDark ? homeTk.brandSoft : isBlue ? 'rgba(2, 132, 199, 0.16)' : 'rgba(232,25,44,0.14)',
     imageFallbackBg: isDark
       ? 'linear-gradient(135deg, #0f0f12, #1a1a1f)'
       : 'linear-gradient(135deg, #f4f1ee, #e8e4e0)',
-    imageFallbackText: isDark ? 'rgba(232,25,44,0.15)' : 'rgba(232,25,44,0.2)',
+    imageFallbackText: isDark ? homeTk.brandSoftStrong : isBlue ? 'rgba(2, 132, 199, 0.24)' : 'rgba(232,25,44,0.2)',
     nameText: isDark ? '#f0ece8' : '#111115',
     locationText: isDark ? 'rgba(240,236,232,0.45)' : 'rgba(17,17,21,0.45)',
     specText: isDark ? 'rgba(240,236,232,0.55)' : 'rgba(17,17,21,0.55)',
     featureText: isDark ? 'rgba(240,236,232,0.45)' : 'rgba(17,17,21,0.5)',
     featureBg: isDark ? 'rgba(240,236,232,0.05)' : 'rgba(17,17,21,0.04)',
     featureBorder: isDark ? 'rgba(240,236,232,0.1)' : 'rgba(17,17,21,0.1)',
-    priceDivider: isDark ? 'rgba(232,25,44,0.1)' : 'rgba(232,25,44,0.12)',
+    priceDivider: isDark ? homeTk.brandSoft : isBlue ? 'rgba(2, 132, 199, 0.14)' : 'rgba(232,25,44,0.12)',
     priceLabel: isDark ? 'rgba(240,236,232,0.35)' : 'rgba(17,17,21,0.4)',
     typeBadgeBg: isDark ? 'rgba(10,10,12,0.7)' : 'rgba(240,236,232,0.88)',
     typeBadgeBorder: isDark ? 'rgba(240,236,232,0.15)' : 'rgba(17,17,21,0.15)',
@@ -75,10 +77,10 @@ export const PropertyCard = ({
       }}
       onMouseEnter={e => {
         const el = e.currentTarget as HTMLDivElement;
-        el.style.borderColor = 'rgba(232,25,44,0.45)';
+        el.style.borderColor = homeTk.brandBorder;
         el.style.boxShadow = isDark
-          ? '0 12px 40px rgba(232,25,44,0.12), 0 2px 8px rgba(0,0,0,0.5)'
-          : '0 12px 40px rgba(232,25,44,0.1), 0 2px 8px rgba(0,0,0,0.08)';
+          ? `0 12px 40px ${homeTk.brandSoft}, 0 2px 8px rgba(0,0,0,0.5)`
+          : `0 12px 40px ${homeTk.brandSoft}, 0 2px 8px rgba(0,0,0,0.08)`;
         el.style.transform = 'translateY(-3px)';
       }}
       onMouseLeave={e => {
@@ -172,7 +174,7 @@ export const PropertyCard = ({
             fontSize: '0.7rem',
             letterSpacing: '0.2em',
             textTransform: 'uppercase',
-            color: '#E8192C',
+             color: homeTk.brand,
             marginBottom: 3,
           }}>
             {propertyType === 'hotel' ? 'Hotel' : 'Apartment'}
@@ -196,7 +198,7 @@ export const PropertyCard = ({
         {/* Location */}
         {(location || address) && (
           <div style={{ display: 'flex', alignItems: 'flex-start', gap: 5, marginBottom: 14 }}>
-            <MapPin style={{ width: 13, height: 13, color: 'rgba(232,25,44,0.6)', flexShrink: 0, marginTop: 2 }} />
+            <MapPin style={{ width: 13, height: 13, color: homeTk.brand, opacity: 0.6, flexShrink: 0, marginTop: 2 }} />
             <span style={{
               fontFamily: 'Crimson Pro, Georgia, serif',
               fontSize: '0.88rem',
@@ -214,7 +216,7 @@ export const PropertyCard = ({
         {/* Rooms */}
         {rooms !== undefined && (
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 14 }}>
-            <Zap style={{ width: 13, height: 13, color: 'rgba(232,25,44,0.55)' }} />
+            <Zap style={{ width: 13, height: 13, color: homeTk.brand, opacity: 0.55 }} />
             <span style={{
               fontFamily: 'Crimson Pro, Georgia, serif',
               fontSize: '0.88rem',
@@ -250,9 +252,9 @@ export const PropertyCard = ({
                 fontFamily: 'Crimson Pro, Georgia, serif',
                 fontSize: '0.72rem',
                 letterSpacing: '0.07em',
-                color: 'rgba(232,25,44,0.6)',
-                background: 'rgba(232,25,44,0.06)',
-                border: '1px solid rgba(232,25,44,0.15)',
+                 color: homeTk.brand,
+                 background: homeTk.brandSoft,
+                 border: `1px solid ${homeTk.brandBorder}`,
                 padding: '2px 8px',
                 borderRadius: 2,
               }}>
@@ -286,7 +288,7 @@ export const PropertyCard = ({
             fontFamily: 'Bebas Neue, Impact, sans-serif',
             fontSize: '1.55rem',
             letterSpacing: '0.02em',
-            color: '#E8192C',
+             color: homeTk.brand,
             lineHeight: 1,
           }}>
             €{price}

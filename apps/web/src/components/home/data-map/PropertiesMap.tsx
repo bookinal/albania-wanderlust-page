@@ -11,6 +11,7 @@ import L from "leaflet";
 import { useState, useEffect } from "react";
 import { useLocalized } from "@/hooks/useLocalized";
 import { useTheme } from "@/context/ThemeContext";
+import { getHomeThemeTokens } from "../homeTheme";
 
 type Selected =
   | { type: "hotel"; data: Hotel }
@@ -31,11 +32,12 @@ interface PropertiesMapProps {
  */
 function createPriceMarker(
   type: "hotel" | "apartment" | "destination",
-  label: string
+  label: string,
+  accent: { brand: string; destinationBorder: string; hover: string; text: string; bg: string },
 ): L.DivIcon {
   const emoji = type === "hotel" ? "🏨" : type === "apartment" ? "🏠" : "📍";
-  const borderColor = type === "destination" ? "#374151" : "#dc2626";
-  const bgHover = type === "destination" ? "#374151" : "#dc2626";
+  const borderColor = type === "destination" ? accent.destinationBorder : accent.brand;
+  const bgHover = type === "destination" ? accent.destinationBorder : accent.hover;
 
   const html = `
     <div style="
@@ -46,14 +48,14 @@ function createPriceMarker(
       cursor:pointer;
     ">
       <div style="
-        background:white;
+        background:${accent.bg};
         border:2.5px solid ${borderColor};
         border-radius:20px;
         padding:4px 10px;
         font-size:12px;
         font-weight:700;
         white-space:nowrap;
-        color:#111111;
+        color:${accent.text};
         display:flex;
         align-items:center;
         gap:5px;
@@ -63,7 +65,7 @@ function createPriceMarker(
         transition:background 0.15s,color 0.15s;
       "
         onmouseover="this.style.background='${bgHover}';this.style.color='white';"
-        onmouseout="this.style.background='white';this.style.color='#111111';"
+        onmouseout="this.style.background='${accent.bg}';this.style.color='${accent.text}';"
       >
         <span>${emoji}</span>
         <span>${label}</span>
@@ -91,21 +93,29 @@ const ALBANIA_CENTER: [number, number] = [41.3275, 19.8187];
 
 export default function PropertiesMap({ onSelect, filters }: PropertiesMapProps) {
   const { localize } = useLocalized();
-  const { isDark } = useTheme();
+  const { isDark, isBlue } = useTheme();
   const [hotelsData, setHotelsData] = useState<Hotel[]>([]);
   const [loading, setLoading] = useState(true);
   const [apartmentsData, setApartmentsData] = useState<Apartment[]>([]);
   const [destinationsData, setDestinationsData] = useState<Destination[]>([]);
 
+  const homeTk = getHomeThemeTokens({ isDark, isBlue });
   const tk = {
-    sidebarBg: isDark ? "#111115" : "#ffffff",
-    sidebarBorder: isDark ? "rgba(255,255,255,0.07)" : "#e5e2de",
-    filterBtnBg: isDark ? "#1a1a1e" : "#ffffff",
-    filterBtnText: isDark ? "rgba(255,255,255,0.80)" : "#374151",
+    sidebarBg: isDark ? "#111115" : isBlue ? "rgba(255,255,255,0.82)" : "#ffffff",
+    sidebarBorder: isDark ? "rgba(255,255,255,0.07)" : isBlue ? "rgba(2,132,199,0.14)" : "#e5e2de",
+    filterBtnBg: isDark ? "#1a1a1e" : isBlue ? "rgba(255,255,255,0.92)" : "#ffffff",
+    filterBtnText: isDark ? "rgba(255,255,255,0.80)" : isBlue ? "hsl(212 48% 18%)" : "#374151",
     filterBtnShadow: "0 2px 8px rgba(0,0,0,0.28)",
-    closeBtnHover: isDark ? "rgba(255,255,255,0.08)" : "#f3f4f6",
-    closeIconColor: isDark ? "rgba(255,255,255,0.60)" : "#4b5563",
+    closeBtnHover: isDark ? "rgba(255,255,255,0.08)" : isBlue ? "rgba(2,132,199,0.08)" : "#f3f4f6",
+    closeIconColor: isDark ? "rgba(255,255,255,0.60)" : isBlue ? "#0369a1" : "#4b5563",
     overlayBg: "rgba(0,0,0,0.55)",
+    markerAccent: {
+      brand: homeTk.brand,
+      destinationBorder: isBlue ? "#0f4c81" : "#374151",
+      hover: isBlue ? "#0284c7" : "#dc2626",
+      text: isBlue ? "#082f49" : "#111111",
+      bg: isBlue ? "#f0f9ff" : "white",
+    },
   };
 
   // Remove the local MapFilters states since we rely on `filters` prop now.
@@ -217,7 +227,8 @@ export default function PropertiesMap({ onSelect, filters }: PropertiesMapProps)
               position={[hotel.lat || 0, hotel.lng || 0]}
               icon={createPriceMarker(
                 "hotel",
-                hotel.price ? `$${hotel.price}` : "Hotel"
+                hotel.price ? `$${hotel.price}` : "Hotel",
+                tk.markerAccent,
               )}
               eventHandlers={{
                 click: () => onSelect?.({ type: "hotel", data: hotel }),
@@ -235,7 +246,8 @@ export default function PropertiesMap({ onSelect, filters }: PropertiesMapProps)
               position={[apartment.lat, apartment.lng]}
               icon={createPriceMarker(
                 "apartment",
-                apartment.price ? `$${apartment.price}` : "Apartment"
+                apartment.price ? `$${apartment.price}` : "Apartment",
+                tk.markerAccent,
               )}
               eventHandlers={{
                 click: () => onSelect?.({ type: "apartment", data: apartment }),
@@ -251,7 +263,7 @@ export default function PropertiesMap({ onSelect, filters }: PropertiesMapProps)
             <Marker
               key={`destination-${destination.id}`}
               position={[destination.lat || 0, destination.lng || 0]}
-              icon={createPriceMarker("destination", destination.category)}
+              icon={createPriceMarker("destination", destination.category, tk.markerAccent)}
               eventHandlers={{
                 click: () =>
                   onSelect?.({ type: "destination", data: destination }),

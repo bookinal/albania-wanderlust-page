@@ -4,6 +4,7 @@ import { Slider } from "@/components/ui/slider";
 import { CarFilters } from "@/types/car.types";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@/context/ThemeContext";
+import { getSearchResultsThemeTokens } from "./searchResultsTheme";
 
 export interface CarFilterState extends CarFilters {
   priceRange?: { min: number; max: number };
@@ -25,17 +26,21 @@ const AccSection = ({
   label,
   children,
   defaultOpen = false,
-  isDark,
+  headerColor,
+  dividerColor,
+  iconColor,
 }: {
   label: string;
   children: React.ReactNode;
   defaultOpen?: boolean;
-  isDark: boolean;
+  headerColor: string;
+  dividerColor: string;
+  iconColor: string;
 }) => {
   const [open, setOpen] = useState(defaultOpen);
   return (
     <div style={{
-      borderBottom: `1px solid ${isDark ? 'rgba(232,25,44,0.1)' : 'rgba(232,25,44,0.12)'}`,
+      borderBottom: `1px solid ${dividerColor}`,
       paddingBottom: 16,
       marginBottom: 16,
     }}>
@@ -57,7 +62,7 @@ const AccSection = ({
           fontFamily: 'Bebas Neue, Impact, sans-serif',
           fontSize: '0.95rem',
           letterSpacing: '0.1em',
-          color: isDark ? '#f0ece8' : '#111115',
+          color: headerColor,
         }}>
           {label}
         </span>
@@ -65,7 +70,7 @@ const AccSection = ({
           style={{
             width: 14,
             height: 14,
-            color: 'rgba(232,25,44,0.6)',
+            color: iconColor,
             transition: 'transform 0.2s',
             transform: open ? 'rotate(180deg)' : 'rotate(0deg)',
           }}
@@ -84,28 +89,30 @@ export const CarFilterBar = ({
   featuresLoading = false,
 }: CarFilterBarProps) => {
   const { t } = useTranslation();
-  const { isDark } = useTheme();
+  const { isDark, isBlue } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
+  const themeTk = getSearchResultsThemeTokens({ isDark, isBlue });
 
   // Theme tokens
   const tk = {
-    sidebarBg: isDark ? '#111115' : '#f8f6f3',
-    sidebarBorder: isDark ? 'rgba(232,25,44,0.1)' : 'rgba(232,25,44,0.12)',
-    headerText: isDark ? '#f0ece8' : '#111115',
-    resetText: isDark ? 'rgba(240,236,232,0.4)' : 'rgba(17,17,21,0.4)',
-    labelColor: '#E8192C',
-    inputBg: isDark ? 'rgba(240,236,232,0.04)' : 'rgba(17,17,21,0.04)',
-    inputBorder: isDark ? 'rgba(232,25,44,0.15)' : 'rgba(232,25,44,0.18)',
-    inputColor: isDark ? '#f0ece8' : '#111115',
-    selectOptionBg: isDark ? '#1c1c21' : '#f8f6f3',
-    priceMinText: isDark ? '#f0ece8' : '#111115',
-    featureText: isDark ? 'rgba(240,236,232,0.5)' : 'rgba(17,17,21,0.5)',
-    featureCheckedText: isDark ? '#f0ece8' : '#111115',
-    loadingText: isDark ? 'rgba(240,236,232,0.35)' : 'rgba(17,17,21,0.35)',
-    mobileBtnBg: isDark ? 'rgba(232,25,44,0.08)' : 'rgba(232,25,44,0.06)',
-    mobileBtnBorder: isDark ? 'rgba(232,25,44,0.25)' : 'rgba(232,25,44,0.22)',
-    mobileBtnText: isDark ? '#f0ece8' : '#111115',
-    colorScheme: isDark ? 'dark' : 'light',
+    sidebarBg: themeTk.sidebarBg,
+    sidebarBorder: themeTk.sidebarBorder,
+    headerText: themeTk.headerText,
+    resetText: themeTk.resetText,
+    labelColor: themeTk.labelColor,
+    inputBg: themeTk.inputBg,
+    inputBorder: themeTk.inputBorder,
+    inputColor: themeTk.inputColor,
+    selectOptionBg: themeTk.selectOptionBg,
+    priceMinText: themeTk.priceText,
+    featureText: themeTk.checkboxUncheckedText,
+    featureCheckedText: themeTk.checkboxCheckedText,
+    loadingText: themeTk.minMaxLabel,
+    mobileBtnBg: themeTk.mobileBtnBg,
+    mobileBtnBorder: themeTk.mobileBtnBorder,
+    mobileBtnText: themeTk.mobileBtnText,
+    colorScheme: themeTk.colorScheme,
+    focusBorder: themeTk.brandBorder,
   };
 
   const inputStyle: React.CSSProperties = {
@@ -125,7 +132,7 @@ export const CarFilterBar = ({
     ...inputStyle,
     appearance: 'none',
     cursor: 'pointer',
-    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23E8192C' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")`,
+    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='${encodeURIComponent(themeTk.brand)}' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")`,
     backgroundRepeat: 'no-repeat',
     backgroundPosition: 'right 12px center',
     paddingRight: 32,
@@ -162,7 +169,7 @@ export const CarFilterBar = ({
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <Filter style={{ width: 15, height: 15, color: '#E8192C' }} />
+          <Filter style={{ width: 15, height: 15, color: themeTk.brand }} />
           <span style={{
             fontFamily: 'Bebas Neue, Impact, sans-serif',
             fontSize: '1.1rem',
@@ -173,7 +180,7 @@ export const CarFilterBar = ({
           </span>
           {activeFiltersCount > 0 && (
             <span style={{
-              background: '#E8192C',
+              background: themeTk.brand,
               color: '#fff',
               fontFamily: 'Crimson Pro, Georgia, serif',
               fontSize: '0.7rem',
@@ -205,7 +212,7 @@ export const CarFilterBar = ({
               letterSpacing: '0.07em',
               transition: 'color 0.2s',
             }}
-            onMouseEnter={e => (e.currentTarget.style.color = '#E8192C')}
+            onMouseEnter={e => (e.currentTarget.style.color = themeTk.brand)}
             onMouseLeave={e => (e.currentTarget.style.color = tk.resetText)}
           >
             <RotateCcw style={{ width: 11, height: 11 }} />
@@ -214,23 +221,23 @@ export const CarFilterBar = ({
         )}
       </div>
 
-      <div style={{ height: 1, background: 'linear-gradient(90deg, #E8192C, transparent)', marginBottom: 20 }} />
+      <div style={{ height: 1, background: `linear-gradient(90deg, ${themeTk.brand}, transparent)`, marginBottom: 20 }} />
 
       {/* Search */}
-      <AccSection label={t("searchResults.filters.search")} defaultOpen isDark={isDark}>
+      <AccSection label={t("searchResults.filters.search")} defaultOpen headerColor={tk.headerText} dividerColor={tk.sidebarBorder} iconColor={themeTk.brand}>
         <label style={labelStyle}>{t("searchResults.filters.searchPlaceholderCars")}</label>
         <input
           style={inputStyle}
           placeholder={t("searchResults.filters.searchPlaceholderCars")}
           value={filters.searchTerm || ""}
           onChange={e => onFilterChange({ searchTerm: e.target.value })}
-          onFocus={e => (e.currentTarget.style.borderColor = 'rgba(232,25,44,0.5)')}
+          onFocus={e => (e.currentTarget.style.borderColor = tk.focusBorder)}
           onBlur={e => (e.currentTarget.style.borderColor = tk.inputBorder)}
         />
       </AccSection>
 
       {/* Dates */}
-      <AccSection label={t("searchResults.filters.rentalDates")} defaultOpen={!!(filters.pickupDate || filters.returnDate)} isDark={isDark}>
+      <AccSection label={t("searchResults.filters.rentalDates")} defaultOpen={!!(filters.pickupDate || filters.returnDate)} headerColor={tk.headerText} dividerColor={tk.sidebarBorder} iconColor={themeTk.brand}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           <div>
             <label style={labelStyle}>{t("searchResults.filters.pickupDate")}</label>
@@ -239,7 +246,7 @@ export const CarFilterBar = ({
               style={{ ...inputStyle, colorScheme: tk.colorScheme as any }}
               value={filters.pickupDate ? filters.pickupDate.toISOString().split("T")[0] : ""}
               onChange={e => onFilterChange({ pickupDate: e.target.value ? new Date(e.target.value) : null })}
-              onFocus={e => (e.currentTarget.style.borderColor = 'rgba(232,25,44,0.5)')}
+              onFocus={e => (e.currentTarget.style.borderColor = tk.focusBorder)}
               onBlur={e => (e.currentTarget.style.borderColor = tk.inputBorder)}
             />
           </div>
@@ -251,14 +258,14 @@ export const CarFilterBar = ({
               value={filters.returnDate ? filters.returnDate.toISOString().split("T")[0] : ""}
               min={filters.pickupDate ? filters.pickupDate.toISOString().split("T")[0] : undefined}
               onChange={e => onFilterChange({ returnDate: e.target.value ? new Date(e.target.value) : null })}
-              onFocus={e => (e.currentTarget.style.borderColor = 'rgba(232,25,44,0.5)')}
+              onFocus={e => (e.currentTarget.style.borderColor = tk.focusBorder)}
               onBlur={e => (e.currentTarget.style.borderColor = tk.inputBorder)}
             />
           </div>
           {(filters.pickupDate || filters.returnDate) && (
             <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-              <Calendar style={{ width: 11, height: 11, color: 'rgba(232,25,44,0.7)' }} />
-              <span style={{ fontFamily: 'Crimson Pro, Georgia, serif', fontSize: '0.82rem', color: 'rgba(232,25,44,0.7)' }}>
+              <Calendar style={{ width: 11, height: 11, color: themeTk.infoText }} />
+              <span style={{ fontFamily: 'Crimson Pro, Georgia, serif', fontSize: '0.82rem', color: themeTk.infoText }}>
                 {t("searchResults.filters.showingCarsForDates")}
               </span>
             </div>
@@ -267,12 +274,12 @@ export const CarFilterBar = ({
       </AccSection>
 
       {/* Price Range */}
-      <AccSection label={t("searchResults.filters.dailyPriceRange")} defaultOpen isDark={isDark}>
+      <AccSection label={t("searchResults.filters.dailyPriceRange")} defaultOpen headerColor={tk.headerText} dividerColor={tk.sidebarBorder} iconColor={themeTk.brand}>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
           <span style={{ fontFamily: 'Bebas Neue, Impact, sans-serif', fontSize: '1rem', color: tk.priceMinText, letterSpacing: '0.05em' }}>
             €{filters.priceRange?.min || 0}
           </span>
-          <span style={{ fontFamily: 'Bebas Neue, Impact, sans-serif', fontSize: '1rem', color: '#E8192C', letterSpacing: '0.05em' }}>
+          <span style={{ fontFamily: 'Bebas Neue, Impact, sans-serif', fontSize: '1rem', color: themeTk.brand, letterSpacing: '0.05em' }}>
             €{filters.priceRange?.max || 1000}
           </span>
         </div>
@@ -287,13 +294,13 @@ export const CarFilterBar = ({
       </AccSection>
 
       {/* Car Type */}
-      <AccSection label={t("searchResults.filters.carType")} isDark={isDark}>
+      <AccSection label={t("searchResults.filters.carType")} headerColor={tk.headerText} dividerColor={tk.sidebarBorder} iconColor={themeTk.brand}>
         <div style={{ position: 'relative' }}>
           <select
             style={selectStyle}
             value={filters.type || "all"}
             onChange={e => onFilterChange({ type: e.target.value as any })}
-            onFocus={e => (e.currentTarget.style.borderColor = 'rgba(232,25,44,0.5)')}
+            onFocus={e => (e.currentTarget.style.borderColor = tk.focusBorder)}
             onBlur={e => (e.currentTarget.style.borderColor = tk.inputBorder)}
           >
             <option value="all" style={{ background: tk.selectOptionBg }}>{t("searchResults.filters.allTypes")}</option>
@@ -305,12 +312,12 @@ export const CarFilterBar = ({
       </AccSection>
 
       {/* Transmission */}
-      <AccSection label={t("searchResults.filters.transmission")} isDark={isDark}>
+      <AccSection label={t("searchResults.filters.transmission")} headerColor={tk.headerText} dividerColor={tk.sidebarBorder} iconColor={themeTk.brand}>
         <select
           style={selectStyle}
           value={filters.transmission || "all"}
           onChange={e => onFilterChange({ transmission: e.target.value as any })}
-          onFocus={e => (e.currentTarget.style.borderColor = 'rgba(232,25,44,0.5)')}
+          onFocus={e => (e.currentTarget.style.borderColor = tk.focusBorder)}
           onBlur={e => (e.currentTarget.style.borderColor = tk.inputBorder)}
         >
           <option value="all" style={{ background: tk.selectOptionBg }}>{t("searchResults.filters.any")}</option>
@@ -320,12 +327,12 @@ export const CarFilterBar = ({
       </AccSection>
 
       {/* Fuel Type */}
-      <AccSection label={t("searchResults.filters.fuelType")} isDark={isDark}>
+      <AccSection label={t("searchResults.filters.fuelType")} headerColor={tk.headerText} dividerColor={tk.sidebarBorder} iconColor={themeTk.brand}>
         <select
           style={selectStyle}
           value={filters.fuelType || "all"}
           onChange={e => onFilterChange({ fuelType: e.target.value as any })}
-          onFocus={e => (e.currentTarget.style.borderColor = 'rgba(232,25,44,0.5)')}
+          onFocus={e => (e.currentTarget.style.borderColor = tk.focusBorder)}
           onBlur={e => (e.currentTarget.style.borderColor = tk.inputBorder)}
         >
           <option value="all" style={{ background: tk.selectOptionBg }}>{t("searchResults.filters.anyFuel")}</option>
@@ -337,7 +344,7 @@ export const CarFilterBar = ({
       </AccSection>
 
       {/* Seats */}
-      <AccSection label={t("searchResults.filters.minSeats")} isDark={isDark}>
+      <AccSection label={t("searchResults.filters.minSeats")} headerColor={tk.headerText} dividerColor={tk.sidebarBorder} iconColor={themeTk.brand}>
         <input
           type="number"
           min="1"
@@ -346,13 +353,13 @@ export const CarFilterBar = ({
           placeholder={t("searchResults.filters.seatsPlaceholder")}
           value={filters.seats || ""}
           onChange={e => onFilterChange({ seats: e.target.value ? parseInt(e.target.value) : undefined })}
-          onFocus={e => (e.currentTarget.style.borderColor = 'rgba(232,25,44,0.5)')}
+          onFocus={e => (e.currentTarget.style.borderColor = tk.focusBorder)}
           onBlur={e => (e.currentTarget.style.borderColor = tk.inputBorder)}
         />
       </AccSection>
 
       {/* Features */}
-      <AccSection label={t("searchResults.filters.features")} isDark={isDark}>
+      <AccSection label={t("searchResults.filters.features")} headerColor={tk.headerText} dividerColor={tk.sidebarBorder} iconColor={themeTk.brand}>
         {featuresLoading ? (
           <span style={{ fontFamily: 'Crimson Pro, Georgia, serif', fontSize: '0.9rem', color: tk.loadingText }}>
             {t("searchResults.filters.loadingFeatures")}
@@ -386,8 +393,8 @@ export const CarFilterBar = ({
                     style={{
                       width: 16,
                       height: 16,
-                      border: `1px solid ${checked ? '#E8192C' : isDark ? 'rgba(240,236,232,0.2)' : 'rgba(17,17,21,0.2)'}`,
-                      background: checked ? 'rgba(232,25,44,0.15)' : 'transparent',
+                      border: `1px solid ${checked ? themeTk.brand : themeTk.checkboxBorder}`,
+                      background: checked ? themeTk.brandSoftStrong : 'transparent',
                       borderRadius: 2,
                       display: 'flex',
                       alignItems: 'center',
@@ -398,7 +405,7 @@ export const CarFilterBar = ({
                   >
                     {checked && (
                       <svg width="9" height="7" viewBox="0 0 9 7" fill="none">
-                        <path d="M1 3.5L3.5 6L8 1" stroke="#E8192C" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                        <path d="M1 3.5L3.5 6L8 1" stroke={themeTk.brand} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
                     )}
                   </div>
@@ -440,11 +447,11 @@ export const CarFilterBar = ({
             cursor: 'pointer',
           }}
         >
-          <Filter style={{ width: 14, height: 14, color: '#E8192C' }} />
+          <Filter style={{ width: 14, height: 14, color: themeTk.brand }} />
           {t("searchResults.filters.filters")}
           {activeFiltersCount > 0 && (
             <span style={{
-              background: '#E8192C',
+              background: themeTk.brand,
               color: '#fff',
               fontSize: '0.7rem',
               borderRadius: '50%',

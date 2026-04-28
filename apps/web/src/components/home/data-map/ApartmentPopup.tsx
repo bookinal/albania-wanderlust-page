@@ -1,16 +1,20 @@
 import { Apartment } from "@/types/apartment.type";
 import { Link } from "react-router-dom";
+import { useTheme } from "@/context/ThemeContext";
+import { getHomeThemeTokens } from "../homeTheme";
 
 interface ApartmentPopupProps {
   apartment: Apartment;
 }
 
 export function ApartmentPopup({ apartment }: ApartmentPopupProps) {
+  const { isDark, isBlue } = useTheme();
+  const homeTk = getHomeThemeTokens({ isDark, isBlue });
   return (
-    <div className="w-64 space-y-3">
+    <div className="w-64 space-y-3" style={{ color: isDark ? '#f5f5f5' : isBlue ? 'hsl(212 48% 18%)' : '#111115' }}>
       <div>
         <h3 className="font-semibold text-base">{apartment.name}</h3>
-        <p className="text-sm text-gray-600">{apartment.location}</p>
+        <p className="text-sm" style={{ color: isDark ? 'rgba(255,255,255,0.5)' : isBlue ? 'hsl(211 22% 42%)' : '#6b6663' }}>{apartment.location}</p>
       </div>
       <img
         src={apartment.imageUrls[0]}
@@ -51,9 +55,9 @@ export function ApartmentPopup({ apartment }: ApartmentPopupProps) {
       </div>
 
       <Link to={`/apartmentReservation/${apartment.id}`}>
-        <button className="w-full bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700 transition font-medium text-sm">
-          View Details
-        </button>
+         <button className="w-full text-white px-4 py-2 rounded-md transition font-medium text-sm" style={{ background: homeTk.brand }}>
+           View Details
+         </button>
       </Link>
     </div>
   );

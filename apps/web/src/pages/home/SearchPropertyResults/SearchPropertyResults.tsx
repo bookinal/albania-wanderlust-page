@@ -14,12 +14,13 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { useInView } from "react-intersection-observer";
 import { searchHotels } from "@/services/api/hotelService";
 import { searchApartments } from "@/services/api/apartmentService";
+import { getSearchResultsThemeTokens } from "./searchResultsTheme";
 
 const PROPERTIES_PER_PAGE = 9;
 
 const SearchPropertyResults = () => {
   const { t } = useTranslation();
-  const { isDark } = useTheme();
+  const { isDark, isBlue } = useTheme();
   const location = useLocation();
   const navigate = useNavigate();
   const state = location.state as {
@@ -255,28 +256,7 @@ const SearchPropertyResults = () => {
   };
 
   // Theme tokens
-  const tk = {
-    pageBg: isDark
-      ? 'linear-gradient(160deg, #0a0a0c 0%, #111115 40%, #16080a 100%)'
-      : 'linear-gradient(160deg, #f8f4f1 0%, #fdf9f7 40%, #fff5f5 100%)',
-    heroBg: isDark
-      ? 'linear-gradient(180deg, rgba(232,25,44,0.08) 0%, transparent 100%)'
-      : 'linear-gradient(180deg, rgba(232,25,44,0.06) 0%, transparent 100%)',
-    heroBorder: isDark ? 'rgba(232,25,44,0.12)' : 'rgba(232,25,44,0.15)',
-    headingColor: isDark ? '#f0ece8' : '#1a0a0d',
-    skeletonBg: isDark ? '#141417' : '#ffffff',
-    skeletonBorder: isDark ? 'rgba(232,25,44,0.1)' : 'rgba(232,25,44,0.12)',
-    skeletonPulseFrom: isDark ? '#1c1c21' : '#f0e8e8',
-    skeletonPulseMid: isDark ? '#252528' : '#fde8e8',
-    errorText: isDark ? '#f0ece8' : '#1a0a0d',
-    emptyStateBg: isDark ? '#141417' : '#ffffff',
-    emptyStateBorder: isDark ? 'rgba(232,25,44,0.2)' : 'rgba(232,25,44,0.25)',
-    clearBtnColor: isDark ? 'rgba(240,236,232,0.7)' : 'rgba(26,10,13,0.6)',
-    clearBtnBorder: isDark ? 'rgba(240,236,232,0.2)' : 'rgba(26,10,13,0.2)',
-    textureBg: isDark
-      ? "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E\")"
-      : "none",
-  };
+  const tk = getSearchResultsThemeTokens({ isDark, isBlue });
 
   const renderSkeletons = (count: number = 6) =>
     Array.from({ length: count }).map((_, idx) => (
@@ -345,16 +325,16 @@ const SearchPropertyResults = () => {
 
         .alb-red-line {
           height: 3px;
-          background: linear-gradient(90deg, #E8192C, #b01020 60%, transparent);
+          background: linear-gradient(90deg, ${tk.brand}, ${tk.brand} 60%, transparent);
         }
 
         .alb-count-badge {
           display: inline-flex;
           align-items: center;
           gap: 6px;
-          background: rgba(232, 25, 44, 0.08);
-          border: 1px solid rgba(232, 25, 44, 0.22);
-          color: #E8192C;
+          background: ${tk.brandSoft};
+          border: 1px solid ${tk.brandBorder};
+          color: ${tk.brand};
           font-family: 'Crimson Pro', serif;
           font-size: 0.95rem;
           letter-spacing: 0.03em;
@@ -365,8 +345,8 @@ const SearchPropertyResults = () => {
         .alb-retry-btn {
           margin-left: auto;
           background: transparent;
-          border: 1px solid rgba(232, 25, 44, 0.5);
-          color: #E8192C;
+          border: 1px solid ${tk.brandBorder};
+          color: ${tk.brand};
           font-family: 'Crimson Pro', serif;
           font-size: 0.9rem;
           letter-spacing: 0.05em;
@@ -378,12 +358,12 @@ const SearchPropertyResults = () => {
           white-space: nowrap;
         }
         .alb-retry-btn:hover {
-          background: rgba(232, 25, 44, 0.12);
+          background: ${tk.brandSoftStrong};
         }
 
         .alb-clear-btn:hover {
-          border-color: #E8192C !important;
-          color: #E8192C !important;
+          border-color: ${tk.brand} !important;
+          color: ${tk.brand} !important;
         }
 
         .alb-bg-texture {
@@ -408,7 +388,7 @@ const SearchPropertyResults = () => {
           transition: 'background 0.3s, border-color 0.3s',
         }}>
           <div className="container mx-auto px-4 pb-6">
-            <p className="alb-body" style={{ color: 'rgba(232,25,44,0.7)', fontSize: '0.8rem', letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: 8 }}>
+            <p className="alb-body" style={{ color: tk.labelColor, fontSize: '0.8rem', letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: 8 }}>
               Albania — Properties
             </p>
             <h1 className="alb-title" style={{ fontSize: 'clamp(2.8rem, 6vw, 4.5rem)', color: tk.headingColor, lineHeight: 0.95, marginBottom: 0, transition: 'color 0.3s' }}>
@@ -442,7 +422,7 @@ const SearchPropertyResults = () => {
               {!isLoading && status !== "error" && (
                 <div style={{ marginBottom: 28 }}>
                   <span className="alb-count-badge alb-body">
-                    <span style={{ display: 'inline-block', width: 6, height: 6, borderRadius: '50%', background: '#E8192C', flexShrink: 0 }} />
+                    <span style={{ display: 'inline-block', width: 6, height: 6, borderRadius: '50%', background: tk.brand, flexShrink: 0 }} />
                     {t("searchResults.properties.found", { count: totalResults })}
                   </span>
                 </div>
@@ -451,9 +431,9 @@ const SearchPropertyResults = () => {
               {/* Error State */}
               {status === "error" && (
                 <div style={{
-                  background: isDark ? 'rgba(232,25,44,0.07)' : 'rgba(232,25,44,0.05)',
-                  border: '1px solid rgba(232,25,44,0.3)',
-                  borderLeft: '4px solid #E8192C',
+                  background: tk.brandSoft,
+                  border: `1px solid ${tk.brandBorder}`,
+                  borderLeft: `4px solid ${tk.brand}`,
                   borderRadius: 4,
                   padding: '16px 20px',
                   display: 'flex',
@@ -463,7 +443,7 @@ const SearchPropertyResults = () => {
                   marginBottom: 24,
                   transition: 'background 0.3s',
                 }}>
-                  <AlertCircle style={{ color: '#E8192C', width: 20, height: 20, flexShrink: 0 }} />
+                  <AlertCircle style={{ color: tk.brand, width: 20, height: 20, flexShrink: 0 }} />
                   <span className="alb-body" style={{ flex: 1, fontSize: '1rem' }}>
                     {error instanceof Error ? error.message : "Failed to fetch properties"}
                   </span>
@@ -489,18 +469,18 @@ const SearchPropertyResults = () => {
                 }}>
                   <div style={{
                     width: 72, height: 72,
-                    border: '1px solid rgba(232,25,44,0.25)',
+                    border: `1px solid ${tk.brandBorder}`,
                     borderRadius: '50%',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     marginBottom: 20,
-                    background: 'rgba(232,25,44,0.06)',
+                    background: tk.brandSoft,
                   }}>
-                    <Building2 style={{ width: 32, height: 32, color: '#E8192C', opacity: 0.7 }} />
+                    <Building2 style={{ width: 32, height: 32, color: tk.brand, opacity: 0.7 }} />
                   </div>
                   <h3 className="alb-title" style={{ fontSize: '1.8rem', color: tk.headingColor, marginBottom: 10, transition: 'color 0.3s' }}>
                     {t("searchResults.properties.emptyTitle")}
                   </h3>
-                  <p className="alb-body" style={{ color: isDark ? 'rgba(240,236,232,0.5)' : 'rgba(26,10,13,0.55)', fontSize: '1.1rem', maxWidth: 360 }}>
+                  <p className="alb-body" style={{ color: tk.bodyText, fontSize: '1.1rem', maxWidth: 360 }}>
                     {t("searchResults.properties.emptyDescription")}
                   </p>
                   <button

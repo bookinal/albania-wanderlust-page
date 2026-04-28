@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { useState } from "react";
+import { useTheme } from "@/context/ThemeContext";
+import { getHomeThemeTokens } from "../homeTheme";
 
 interface MapFiltersProps {
   selectedTypes: string[];
@@ -37,6 +39,8 @@ export function MapFilters({
   onCategoriesChange,
 }: MapFiltersProps) {
   const [showCategoryFilter, setShowCategoryFilter] = useState(false);
+  const { isDark, isBlue } = useTheme();
+  const tk = getHomeThemeTokens({ isDark, isBlue });
 
   const handleTypeChange = (typeId: string, checked: boolean) => {
     if (checked) {
@@ -60,11 +64,11 @@ export function MapFilters({
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="border-b border-gray-200 pb-4">
-        <h2 className="text-xl font-semibold text-gray-900">
-          Filter Properties
-        </h2>
-        <p className="text-sm text-gray-600 mt-1">Customize your map view</p>
+        <div className="border-b pb-4" style={{ borderColor: tk.dividerColor }}>
+         <h2 className="text-xl font-semibold" style={{ color: tk.textMain }}>
+           Filter Properties
+         </h2>
+         <p className="text-sm mt-1" style={{ color: tk.textMuted }}>Customize your map view</p>
       </div>
 
       {/* Property Types */}
@@ -93,10 +97,11 @@ export function MapFilters({
 
       {/* Destination Categories Sub-filter */}
       {isDestinationSelected && onCategoriesChange && (
-        <div className="pl-4 border-l-2 border-blue-200">
+        <div className="pl-4 border-l-2" style={{ borderColor: tk.brandBorder }}>
           <button
             onClick={() => setShowCategoryFilter(!showCategoryFilter)}
-            className="flex items-center gap-1 font-medium mb-2 text-sm text-blue-600 hover:text-blue-800"
+            className="flex items-center gap-1 font-medium mb-2 text-sm"
+            style={{ color: tk.brand }}
           >
             {showCategoryFilter ? (
               <ChevronDown className="w-4 h-4" />
@@ -144,7 +149,7 @@ export function MapFilters({
           step={10}
           className="w-full"
         />
-        <div className="flex justify-between text-xs text-gray-500 mt-1">
+        <div className="flex justify-between text-xs mt-1" style={{ color: tk.textMuted }}>
           <span>€0</span>
           <span>€500+</span>
         </div>

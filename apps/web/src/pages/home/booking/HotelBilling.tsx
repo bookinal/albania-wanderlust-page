@@ -11,9 +11,8 @@ import {
   UserIcon,
 } from "lucide-react";
 import { DateRange } from "react-day-picker";
-import { Apartment } from "@/types/apartment.type";
-import { getApartmentById } from "@/services/api/apartmentService";
-import { getApartmentUnavailabilityDates } from "@/services/api/apartmentService";
+import { Hotel } from "@/types/hotel.types";
+import { getHotelById } from "@/services/api/hotelService";
 import { useNavigate, useParams } from "react-router";
 import PrimarySearchAppBar from "@/components/home/AppBar";
 import "react-phone-number-input/style.css";
@@ -28,7 +27,7 @@ import { useTranslation } from "react-i18next";
 import { useTheme } from "@/context/ThemeContext";
 import { getBookingThemeTokens } from "./bookingTheme";
 
-export default function ApartmentBilling() {
+export default function HotelBilling() {
   const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -36,43 +35,36 @@ export default function ApartmentBilling() {
   const tk = getBookingThemeTokens({ isDark, isBlue });
 
   const [loading, setLoading] = useState(true);
-  const [apartment, setApartment] = useState<Apartment | null>(null);
-  const [unavailabilityDates, setUnavailabilityDates] = useState<string[]>([]);
+  const [hotel, setHotel] = useState<Hotel | null>(null);
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    const fetchApartment = async () => {
+    const fetchHotel = async () => {
       if (!id) return;
       setLoading(true);
       try {
-        const data = await getApartmentById(parseInt(id));
+        const data = await getHotelById(parseInt(id));
         if (!data) {
-          setApartment(null);
-        } else if (data.status === "maintenance" || data.status === "review") {
+          setHotel(null);
+        } else if (data.status === "maintenance") {
           Swal.fire({
             title: "Not Available",
             text: "This property is currently unavailable for booking.",
             icon: "error",
             confirmButtonText: "Go Back",
             confirmButtonColor: tk.brand,
-          }).then(() => navigate(`/apartmentReservation/${id}`));
+          }).then(() => navigate(`/hotelReservation/${id}`));
           return;
         } else {
-          setApartment(data);
-          try {
-            const dates = await getApartmentUnavailabilityDates(data.id);
-            setUnavailabilityDates(dates);
-          } catch (error) {
-            console.error("Error fetching unavailability dates:", error);
-          }
+          setHotel(data);
         }
       } catch (error) {
-        console.error("Error fetching apartment:", error);
+        console.error("Error fetching hotel:", error);
       } finally {
         setLoading(false);
       }
     };
-    fetchApartment();
+    fetchHotel();
   }, [id]);
 
   useEffect(() => {
@@ -116,7 +108,7 @@ export default function ApartmentBilling() {
       Swal.fire({
         icon: "success",
         title: "Booking confirmed",
-        text: "Your apartment booking has been created successfully.",
+        text: "Your hotel booking has been created successfully.",
       });
       navigate("/myBookings");
     },
@@ -133,7 +125,7 @@ export default function ApartmentBilling() {
   });
 
   useEffect(() => {
-    if (!apartment) return;
+    if (!hotel) return;
     if (dateRange?.from && dateRange?.to) {
       const diffTime = Math.abs(
         dateRange.to.getTime() - dateRange.from.getTime(),
@@ -141,12 +133,12 @@ export default function ApartmentBilling() {
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
       const days = diffDays || 1;
       setTotalDays(days);
-      setTotalPrice(apartment.price * Math.max(1, days));
+      setTotalPrice(hotel.price * Math.max(1, days));
     } else {
       setTotalDays(0);
       setTotalPrice(0);
     }
-  }, [dateRange, apartment]);
+  }, [dateRange, hotel]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -161,8 +153,8 @@ export default function ApartmentBilling() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!apartment) return;
-    if (user && apartment.providerId && user.id === apartment.providerId) {
+    if (!hotel) return;
+    if (user && hotel.providerId && user.id === hotel.providerId) {
       Swal.fire({
         icon: "error",
         title: t("billing.ownPropertyTitle"),
@@ -187,13 +179,13 @@ export default function ApartmentBilling() {
       return;
     }
     bookingMutation.mutate({
-      propertyId: String(apartment.id),
-      providerId: apartment.providerId,
-      propertyType: "apartment",
+      propertyId: String(hotel.id),
+      providerId: hotel.providerId,
+      propertyType: "hotel",
       startDate: formatDateLocal(dateRange.from),
       endDate: formatDateLocal(dateRange.to),
-      pickUpLocation: apartment.address || apartment.location || "",
-      dropOffLocation: apartment.address || apartment.location || "",
+      pickUpLocation: hotel.address || hotel.location || "",
+      dropOffLocation: hotel.address || hotel.location || "",
       pickUpTime: formData.checkInTime,
       dropOffTime: formData.checkOutTime,
       totalPrice: Math.round(totalPrice),
@@ -237,19 +229,19 @@ export default function ApartmentBilling() {
             style={{ borderColor: tk.brand }}
             className="inline-block animate-spin rounded-full h-10 w-10 border-b-2 mb-4"
           ></div>
-          <p style={{ color: tk.mutedText }}>Loading apartment details…</p>
+          <p style={{ color: tk.mutedText }}>Loading hotel details…</p>
         </div>
       </div>
     );
   }
 
-  if (!apartment) {
+  if (!hotel) {
     return (
       <div
         style={{ background: tk.pageBg, minHeight: "100vh" }}
         className="flex items-center justify-center"
       >
-        <p style={{ color: tk.pageText }}>Apartment not found</p>
+        <p style={{ color: tk.pageText }}>Hotel not found</p>
       </div>
     );
   }
@@ -404,9 +396,6 @@ export default function ApartmentBilling() {
                       onDateRangeChange={setDateRange}
                       placeholder="Select stay dates"
                       minDate={new Date()}
-                      disabledDates={unavailabilityDates.map(
-                        (date) => new Date(date),
-                      )}
                     />
                   </div>
 
@@ -476,7 +465,7 @@ export default function ApartmentBilling() {
             {/* Summary Sidebar */}
             <div className="lg:col-span-1">
               <div className="sticky top-8 space-y-6">
-                {/* Apartment Summary */}
+                {/* Hotel Summary */}
                 <div
                   style={{
                     background: tk.cardBg,
@@ -486,8 +475,8 @@ export default function ApartmentBilling() {
                 >
                   <div className="h-48 overflow-hidden">
                     <img
-                      src={apartment.imageUrls?.[0]}
-                      alt={apartment.name}
+                      src={hotel.imageUrls?.[0]}
+                      alt={hotel.name}
                       className="w-full h-full object-cover"
                     />
                   </div>
@@ -496,11 +485,11 @@ export default function ApartmentBilling() {
                       style={{ color: tk.pageText }}
                       className="text-xl font-bold mb-1"
                     >
-                      {apartment.name}
+                      {hotel.name}
                     </h3>
                     <p style={{ color: tk.mutedText }} className="text-sm mb-4">
-                      {apartment.location ||
-                        apartment.address ||
+                      {hotel.location ||
+                        hotel.address ||
                         "Location not specified"}
                     </p>
                     <div className="space-y-2 mb-4">
@@ -509,21 +498,12 @@ export default function ApartmentBilling() {
                         style={{ color: tk.dimText }}
                       >
                         <Home className="w-4 h-4" />
-                        <span>{apartment.rooms} Rooms</span>
+                        <span>{hotel.rooms} Rooms</span>
                       </div>
-                      {apartment.beds && (
-                        <div
-                          className="flex items-center gap-2 text-sm"
-                          style={{ color: tk.dimText }}
-                        >
-                          <span>•</span>
-                          <span>{apartment.beds} Beds</span>
-                        </div>
-                      )}
-                      {apartment.amenities &&
-                        apartment.amenities.length > 0 && (
+                      {hotel.amenities &&
+                        hotel.amenities.length > 0 && (
                           <div className="flex gap-2 flex-wrap mt-2">
-                            {apartment.amenities
+                            {hotel.amenities
                               .slice(0, 3)
                               .map((amenity, idx) => (
                                 <span
@@ -568,7 +548,7 @@ export default function ApartmentBilling() {
                       style={{ color: tk.dimText }}
                     >
                       <span>
-                        ${apartment.price}/day × {totalDays || 1}{" "}
+                        ${hotel.price}/day × {totalDays || 1}{" "}
                         {totalDays === 1 ? "day" : "days"}
                       </span>
                       <span className="font-medium">

@@ -9,30 +9,24 @@ import LoadingScreen from "@/components/home/LoadingScreen";
 import { Building2, Car, Star, Users, Shield } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@/context/ThemeContext";
+import { getHomeThemeTokens } from "@/components/home/homeTheme";
 
 const Index = () => {
   const { t } = useTranslation();
-  const { isDark } = useTheme();
-
-  const sectionAlt = isDark ? '#0a0a0c' : '#f5f4f1';
-  const sectionMain = isDark ? '#111115' : '#ffffff';
-  const textMain = isDark ? '#ffffff' : '#111115';
-  const textMuted = isDark ? 'rgba(255,255,255,0.5)' : '#6b6663';
-  const badgeBg = isDark ? 'rgba(232,25,44,0.12)' : '#fef2f2';
-  const badgeText = isDark ? '#f87171' : '#b91c1c';
-  const dividerColor = isDark ? 'rgba(255,255,255,0.07)' : 'rgba(100,92,84,0.15)';
+  const { isDark, isBlue } = useTheme();
+  const tk = getHomeThemeTokens({ isDark, isBlue });
 
   return (
-    <div style={{ minHeight: "100vh", background: sectionMain }}>
+    <div style={{ minHeight: "100vh", background: tk.sectionMain }}>
       <LoadingScreen />
       <PrimarySearchAppBar />
       <Hero />
 
-      {/* Trust Indicators Section — always dark crimson gradient, works on both themes */}
+       {/* Trust Indicators Section */}
       <section
         style={{
           padding: "2rem 0",
-          background: "linear-gradient(to right, #7f1d1d, #991b1b, #000000)",
+          background: tk.trustGradient,
         }}
       >
         <div className="container mx-auto px-4">
@@ -115,7 +109,7 @@ const Index = () => {
       <section
         style={{
           padding: "3rem 0",
-          background: sectionAlt,
+          background: tk.sectionAlt,
           overflow: "hidden",
         }}
       >
@@ -128,7 +122,7 @@ const Index = () => {
       <section
         style={{
           padding: "3rem 0",
-          background: sectionMain,
+          background: tk.sectionMain,
           overflow: "hidden",
         }}
       >
@@ -141,8 +135,8 @@ const Index = () => {
               style={{
                 display: "inline-block",
                 padding: "0.375rem 1rem",
-                background: badgeBg,
-                color: badgeText,
+                 background: tk.badgeBg,
+                 color: tk.badgeText,
                 fontWeight: 600,
                 letterSpacing: "0.1em",
                 textTransform: "uppercase",
@@ -157,7 +151,7 @@ const Index = () => {
               style={{
                 fontSize: "clamp(1.75rem, 4vw, 3rem)",
                 fontWeight: 700,
-                color: textMain,
+                 color: tk.textMain,
                 marginBottom: "0.75rem",
               }}
             >
@@ -166,7 +160,7 @@ const Index = () => {
             <p
               style={{
                 fontSize: "1.05rem",
-                color: textMuted,
+                 color: tk.textMuted,
                 maxWidth: "40rem",
                 margin: "0 auto",
               }}
@@ -189,9 +183,9 @@ const Index = () => {
             <div
               id="apartments"
               style={{
-                borderLeft: `1px solid ${dividerColor}`,
-                paddingLeft: "1.5rem",
-              }}
+                 borderLeft: `1px solid ${tk.dividerColor}`,
+                 paddingLeft: "1.5rem",
+               }}
             >
               <ApartmentsPreview />
             </div>

@@ -16,25 +16,58 @@ import { User, UpdateUserProfileData } from "@/types/user.types";
 import PrimarySearchAppBar from "@/components/home/AppBar";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@/context/ThemeContext";
+import { getHomeThemeTokens } from "@/components/home/homeTheme";
 
 export default function MyAccount() {
   const { t } = useTranslation();
-  const { isDark } = useTheme();
+  const { isDark, isBlue } = useTheme();
+  const homeTk = getHomeThemeTokens({ isDark, isBlue });
 
   const tk = {
-    pageBg: isDark ? "#050508" : "#f7f3ee",
-    pageText: isDark ? "#f9f5f0" : "#141014",
-    cardBg: isDark ? "#111115" : "#ffffff",
-    cardBorder: isDark ? "rgba(255,255,255,0.07)" : "#ede9e5",
-    inputBg: isDark ? "rgba(255,255,255,0.04)" : "#faf8f5",
-    inputBorder: isDark ? "rgba(255,255,255,0.16)" : "#ddd9d5",
-    inputText: isDark ? "#ffffff" : "#111115",
-    mutedText: isDark ? "rgba(255,255,255,0.4)" : "#6b6663",
-    dimText: isDark ? "rgba(255,255,255,0.7)" : "#44403c",
-    labelText: isDark ? "rgba(255,255,255,0.55)" : "#6b6663",
-    divider: isDark ? "rgba(255,255,255,0.06)" : "#e8e4e0",
-    disabledBg: isDark ? "rgba(255,255,255,0.02)" : "#f0ece8",
-    disabledText: isDark ? "rgba(255,255,255,0.3)" : "#9e9994",
+    pageBg: isDark ? "#050508" : isBlue ? "hsl(205 55% 96%)" : "#f7f3ee",
+    pageText: isDark ? "#f9f5f0" : isBlue ? "hsl(212 48% 18%)" : "#141014",
+    cardBg: isDark ? "#111115" : isBlue ? "rgba(255,255,255,0.82)" : "#ffffff",
+    cardBorder: isDark ? "rgba(255,255,255,0.07)" : isBlue ? "rgba(2,132,199,0.14)" : "#ede9e5",
+    inputBg: isDark ? "rgba(255,255,255,0.04)" : isBlue ? "rgba(255,255,255,0.92)" : "#faf8f5",
+    inputBorder: isDark ? "rgba(255,255,255,0.16)" : isBlue ? "rgba(2,132,199,0.18)" : "#ddd9d5",
+    inputText: isDark ? "#ffffff" : isBlue ? "hsl(212 48% 18%)" : "#111115",
+    mutedText: isDark ? "rgba(255,255,255,0.4)" : isBlue ? "hsl(211 22% 42%)" : "#6b6663",
+    dimText: isDark ? "rgba(255,255,255,0.7)" : isBlue ? "hsl(212 28% 30%)" : "#44403c",
+    labelText: isDark ? "rgba(255,255,255,0.55)" : isBlue ? "hsl(211 22% 42%)" : "#6b6663",
+    divider: isDark ? "rgba(255,255,255,0.06)" : isBlue ? "rgba(2,132,199,0.12)" : "#e8e4e0",
+    disabledBg: isDark ? "rgba(255,255,255,0.02)" : isBlue ? "rgba(240,249,255,0.92)" : "#f0ece8",
+    disabledText: isDark ? "rgba(255,255,255,0.3)" : isBlue ? "rgba(15,23,42,0.35)" : "#9e9994",
+    alertErrorBg: isDark ? "rgba(248,113,113,0.08)" : isBlue ? "rgba(239,68,68,0.08)" : "#fef2f2",
+    alertErrorBorder: isDark ? "rgba(248,113,113,0.35)" : isBlue ? "rgba(239,68,68,0.24)" : "#fecaca",
+    alertErrorText: isDark ? "#fecaca" : "#b91c1c",
+    alertSuccessBg: isDark ? "rgba(34,197,94,0.08)" : isBlue ? "rgba(14,165,233,0.08)" : "#ecfdf3",
+    alertSuccessBorder: isDark ? "rgba(34,197,94,0.4)" : isBlue ? "rgba(14,165,233,0.28)" : "#bbf7d0",
+    alertSuccessText: isDark ? "#bbf7d0" : isBlue ? "#0369a1" : "#166534",
+    coverGradient: isBlue
+      ? "linear-gradient(120deg, #082f49 0%, #0369a1 30%, #0ea5e9 50%, #7dd3fc 70%, #164e63 100%)"
+      : "linear-gradient(120deg, #1a0204 0%, #cc1525 30%, #E8192C 50%, #ff6b7a 70%, #2b0b0e 100%)",
+    coverOverlay: isBlue
+      ? "radial-gradient(circle at 0 0, rgba(255,255,255,0.28) 0, transparent 55%), radial-gradient(circle at 100% 100%, rgba(3,37,65,0.65) 0, transparent 60%)"
+      : "radial-gradient(circle at 0 0, rgba(255,255,255,0.35) 0, transparent 55%), radial-gradient(circle at 100% 100%, rgba(0,0,0,0.65) 0, transparent 60%)",
+    avatarBorder: isDark ? "#050508" : isBlue ? "#dbeafe" : "#f4ede6",
+    avatarFallback: isBlue ? "radial-gradient(circle at 30% 0, #38bdf8, #082f49)" : "radial-gradient(circle at 30% 0, #4b5563, #0f172a)",
+    primaryBtn: isBlue
+      ? "linear-gradient(120deg, #0284c7, #38bdf8, #0284c7)"
+      : "linear-gradient(120deg, #E8192C, #ff6b7a, #E8192C)",
+    primaryShadow: isDark
+      ? "0 10px 30px rgba(0,0,0,0.6)"
+      : isBlue
+        ? "0 10px 30px rgba(2,132,199,0.28)"
+        : "0 10px 30px rgba(220,38,38,0.4)",
+    successBtn: isBlue
+      ? "linear-gradient(120deg, #0369a1, #0ea5e9)"
+      : "linear-gradient(120deg, #16a34a, #22c55e)",
+    successShadow: isDark
+      ? "0 10px 30px rgba(0,0,0,0.6)"
+      : isBlue
+        ? "0 10px 30px rgba(14,165,233,0.24)"
+        : "0 10px 30px rgba(22,163,74,0.35)",
+    focusRing: isBlue ? "#0ea5e9" : "#3b82f6",
   };
 
   const [user, setUser] = useState<User | null>(null);
@@ -164,23 +197,27 @@ export default function MyAccount() {
         style={{
           background: isDark
             ? "radial-gradient(circle at top, rgba(232,25,44,0.16), transparent 55%), radial-gradient(circle at bottom, rgba(15,23,42,0.9), #050508)"
-            : "radial-gradient(circle at top, rgba(232,25,44,0.06), transparent 55%), linear-gradient(to bottom right, #fdf9f7, #f4ede6)",
+            : isBlue
+              ? "radial-gradient(circle at top, rgba(14,165,233,0.14), transparent 55%), linear-gradient(to bottom right, #eff6ff, #e0f2fe)"
+              : "radial-gradient(circle at top, rgba(232,25,44,0.06), transparent 55%), linear-gradient(to bottom right, #fdf9f7, #f4ede6)",
         }}
       >
-        <Loader2 className="w-8 h-8 animate-spin text-red-600" />
+        <Loader2 className="w-8 h-8 animate-spin" style={{ color: homeTk.brand }} />
       </div>
     );
   }
 
   return (
     <div
-      style={{
-        background: isDark
-          ? "radial-gradient(circle at top left, rgba(232,25,44,0.2), transparent 55%), radial-gradient(circle at bottom right, rgba(15,23,42,0.9), #050508)"
-          : "radial-gradient(circle at top left, rgba(232,25,44,0.06), transparent 55%), linear-gradient(to bottom right, #fdf9f7, #f4ede6)",
-        color: tk.pageText,
-        minHeight: "100vh",
-        transition: "background 0.5s ease, color 0.3s ease",
+        style={{
+          background: isDark
+            ? "radial-gradient(circle at top left, rgba(232,25,44,0.2), transparent 55%), radial-gradient(circle at bottom right, rgba(15,23,42,0.9), #050508)"
+            : isBlue
+              ? "radial-gradient(circle at top left, rgba(14,165,233,0.14), transparent 55%), linear-gradient(to bottom right, #eff6ff, #e0f2fe)"
+              : "radial-gradient(circle at top left, rgba(232,25,44,0.06), transparent 55%), linear-gradient(to bottom right, #fdf9f7, #f4ede6)",
+          color: tk.pageText,
+          minHeight: "100vh",
+          transition: "background 0.5s ease, color 0.3s ease",
       }}
     >
       <PrimarySearchAppBar />
@@ -213,16 +250,16 @@ export default function MyAccount() {
             <div
               className="mb-6 px-4 py-3 rounded-xl flex items-center justify-between border"
               style={{
-                backgroundColor: isDark ? "rgba(248,113,113,0.08)" : "#fef2f2",
-                borderColor: isDark ? "rgba(248,113,113,0.35)" : "#fecaca",
-                color: isDark ? "#fecaca" : "#b91c1c",
+                backgroundColor: tk.alertErrorBg,
+                borderColor: tk.alertErrorBorder,
+                color: tk.alertErrorText,
               }}
             >
               <span>{error}</span>
               <button
                 onClick={() => setError(null)}
                 style={{
-                  color: isDark ? "#fecaca" : "#b91c1c",
+                  color: tk.alertErrorText,
                 }}
               >
                 <X className="w-5 h-5" />
@@ -234,16 +271,16 @@ export default function MyAccount() {
             <div
               className="mb-6 px-4 py-3 rounded-xl flex items-center justify-between border"
               style={{
-                backgroundColor: isDark ? "rgba(34,197,94,0.08)" : "#ecfdf3",
-                borderColor: isDark ? "rgba(34,197,94,0.4)" : "#bbf7d0",
-                color: isDark ? "#bbf7d0" : "#166534",
+                backgroundColor: tk.alertSuccessBg,
+                borderColor: tk.alertSuccessBorder,
+                color: tk.alertSuccessText,
               }}
             >
               <span>{success}</span>
               <button
                 onClick={() => setSuccess(null)}
                 style={{
-                  color: isDark ? "#bbf7d0" : "#166534",
+                  color: tk.alertSuccessText,
                 }}
               >
                 <X className="w-5 h-5" />
@@ -257,26 +294,28 @@ export default function MyAccount() {
             style={{
               background: isDark
                 ? "linear-gradient(135deg, rgba(15,15,23,0.98), rgba(10,10,16,0.98))"
-                : "linear-gradient(135deg, #ffffff, #fdf9f7)",
+                : isBlue
+                  ? "linear-gradient(135deg, rgba(255,255,255,0.96), rgba(239,246,255,0.96))"
+                  : "linear-gradient(135deg, #ffffff, #fdf9f7)",
               borderColor: tk.cardBorder,
               boxShadow: isDark
                 ? "0 22px 55px rgba(0,0,0,0.65)"
-                : "0 22px 55px rgba(15,23,42,0.12)",
+                : isBlue
+                  ? "0 22px 55px rgba(2,132,199,0.12)"
+                  : "0 22px 55px rgba(15,23,42,0.12)",
             }}
           >
             {/* Cover Image */}
             <div
               className="h-32 sm:h-36 relative"
               style={{
-                background:
-                  "linear-gradient(120deg, #1a0204 0%, #cc1525 30%, #E8192C 50%, #ff6b7a 70%, #2b0b0e 100%)",
+                background: tk.coverGradient,
               }}
             >
               <div
                 className="absolute inset-0 opacity-30"
                 style={{
-                  backgroundImage:
-                    "radial-gradient(circle at 0 0, rgba(255,255,255,0.35) 0, transparent 55%), radial-gradient(circle at 100% 100%, rgba(0,0,0,0.65) 0, transparent 60%)",
+                  backgroundImage: tk.coverOverlay,
                 }}
               />
             </div>
@@ -287,11 +326,10 @@ export default function MyAccount() {
                 <div className="relative group">
                   <div
                     className="w-32 h-32 rounded-full border-4 overflow-hidden shadow-xl"
-                    style={{
-                      borderColor: isDark ? "#050508" : "#f4ede6",
-                      background:
-                        "radial-gradient(circle at 30% 0, #4b5563, #0f172a)",
-                    }}
+                      style={{
+                        borderColor: tk.avatarBorder,
+                        background: tk.avatarFallback,
+                      }}
                   >
                     {user?.avatar_url ? (
                       <img
@@ -309,11 +347,11 @@ export default function MyAccount() {
                   <label
                     htmlFor="avatar-upload"
                     className="absolute inset-0 flex items-center justify-center rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
-                    style={{
-                      background:
-                        "linear-gradient(to top, rgba(0,0,0,0.7), rgba(0,0,0,0.35))",
-                    }}
-                  >
+                      style={{
+                        background:
+                          "linear-gradient(to top, rgba(0,0,0,0.7), rgba(0,0,0,0.35))",
+                      }}
+                    >
                     {uploadingAvatar ? (
                       <Loader2 className="w-8 h-8 text-white animate-spin" />
                     ) : (
@@ -356,12 +394,9 @@ export default function MyAccount() {
                       onClick={() => setEditing(true)}
                       className="px-6 py-2 rounded-full font-medium shadow-sm transition-all text-sm"
                       style={{
-                        background:
-                          "linear-gradient(120deg, #E8192C, #ff6b7a, #E8192C)",
+                        background: tk.primaryBtn,
                         color: "#ffffff",
-                        boxShadow: isDark
-                          ? "0 10px 30px rgba(0,0,0,0.6)"
-                          : "0 10px 30px rgba(220,38,38,0.4)",
+                        boxShadow: tk.primaryShadow,
                       }}
                     >
                       {t("account.editProfile")}
@@ -373,12 +408,9 @@ export default function MyAccount() {
                         disabled={saving}
                         className="px-6 py-2 rounded-full font-medium shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 text-sm"
                         style={{
-                          background:
-                            "linear-gradient(120deg, #16a34a, #22c55e)",
+                          background: tk.successBtn,
                           color: "#ffffff",
-                          boxShadow: isDark
-                            ? "0 10px 30px rgba(0,0,0,0.6)"
-                            : "0 10px 30px rgba(22,163,74,0.35)",
+                          boxShadow: tk.successShadow,
                         }}
                       >
                         {saving ? (
@@ -426,11 +458,12 @@ export default function MyAccount() {
                     value={formData.full_name}
                     onChange={handleInputChange}
                     disabled={!editing}
-                    className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                    className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:border-transparent transition-colors"
                     style={{
                       backgroundColor: editing ? tk.inputBg : tk.disabledBg,
                       borderColor: tk.inputBorder,
                       color: editing ? tk.inputText : tk.disabledText,
+                      ["--tw-ring-color" as any]: tk.focusRing,
                     }}
                     placeholder={t("account.enterFullName")}
                   />
@@ -451,11 +484,12 @@ export default function MyAccount() {
                     value={formData.role}
                     onChange={handleInputChange}
                     disabled={true}
-                    className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                    className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:border-transparent transition-colors"
                     style={{
                       backgroundColor: tk.disabledBg,
                       borderColor: tk.inputBorder,
                       color: tk.disabledText,
+                      ["--tw-ring-color" as any]: tk.focusRing,
                     }}
                   />
                 </div>
@@ -479,16 +513,17 @@ export default function MyAccount() {
                     className="w-full"
                     style={{
                       "--PhoneInputCountryFlag-height": "1em",
-                      "--PhoneInput-color--focus": "#3b82f6",
+                        "--PhoneInput-color--focus": tk.focusRing,
                     }}
                     inputComponent={({ className, ...props }) => (
                       <input
                         {...props}
-                        className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors ${className}`}
+                        className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:border-transparent transition-colors ${className}`}
                         style={{
                           backgroundColor: editing ? tk.inputBg : tk.disabledBg,
                           borderColor: tk.inputBorder,
                           color: editing ? tk.inputText : tk.disabledText,
+                          ["--tw-ring-color" as any]: tk.focusRing,
                         }}
                         placeholder={t("account.phonePlaceholder")}
                       />
@@ -511,11 +546,12 @@ export default function MyAccount() {
                     value={formData.location}
                     onChange={handleInputChange}
                     disabled={!editing}
-                    className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                    className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:border-transparent transition-colors"
                     style={{
                       backgroundColor: editing ? tk.inputBg : tk.disabledBg,
                       borderColor: tk.inputBorder,
                       color: editing ? tk.inputText : tk.disabledText,
+                      ["--tw-ring-color" as any]: tk.focusRing,
                     }}
                     placeholder={t("account.locationPlaceholder")}
                   />
@@ -535,11 +571,12 @@ export default function MyAccount() {
                     onChange={handleInputChange}
                     disabled={!editing}
                     rows={4}
-                    className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors resize-none"
+                    className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:border-transparent transition-colors resize-none"
                     style={{
                       backgroundColor: editing ? tk.inputBg : tk.disabledBg,
                       borderColor: tk.inputBorder,
                       color: editing ? tk.inputText : tk.disabledText,
+                      ["--tw-ring-color" as any]: tk.focusRing,
                     }}
                     placeholder={t("account.bioPlaceholder")}
                   />

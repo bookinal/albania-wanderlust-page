@@ -427,17 +427,7 @@ export const searchHotels = async (
     if (f.amenities.bar) query = query.eq("bar", true);
   }
 
-  // Date Availability
-  if (filters.checkInDate && filters.checkOutDate) {
-    const unavailableIds = await getUnavailablePropertyIds(
-      "hotel",
-      new Date(filters.checkInDate),
-      new Date(filters.checkOutDate)
-    );
-    if (unavailableIds.length > 0) {
-      query = query.not("id", "in", `(${unavailableIds.join(",")})`);
-    }
-  }
+  // Date Availability - Removed: hotels are always available for any dates
 
   // Pagination
   query = query.range(from, to);

@@ -26,33 +26,17 @@ import { DateRangePicker } from "@/components/ui/date-range-picker";
 import { userService } from "@/services/api/userService";
 import { User } from "@/types/user.types";
 import { useTheme } from "@/context/ThemeContext";
+import { getBookingThemeTokens } from "./bookingTheme";
 
 export default function CarBilling() {
   const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { isDark } = useTheme();
-
+  const { isDark, isBlue } = useTheme();
+  const tkBase = getBookingThemeTokens({ isDark, isBlue });
   const tk = {
-    pageBg: isDark ? "#0d0d0d" : "#f5f4f1",
-    pageText: isDark ? "#ffffff" : "#111115",
-    headerText: isDark ? "rgba(255,255,255,0.85)" : "#1e293b",
-    cardBg: isDark ? "rgba(255,255,255,0.03)" : "#ffffff",
-    cardBorder: isDark ? "rgba(255,255,255,0.07)" : "#e2e8f0",
-    inputBg: isDark ? "rgba(255,255,255,0.05)" : "#ffffff",
-    inputBorder: isDark ? "rgba(255,255,255,0.12)" : "#cbd5e1",
-    inputText: isDark ? "#ffffff" : "#111115",
-    labelText: isDark ? "rgba(255,255,255,0.60)" : "#475569",
-    mutedText: isDark ? "rgba(255,255,255,0.40)" : "#64748b",
-    dimText: isDark ? "rgba(255,255,255,0.70)" : "#334155",
-    statBg: isDark ? "rgba(255,255,255,0.04)" : "#f8fafc",
-    statBorder: isDark ? "rgba(255,255,255,0.07)" : "#e2e8f0",
-    featureTag: isDark ? "rgba(255,255,255,0.06)" : "#f1f5f9",
-    featureTagText: isDark ? "rgba(255,255,255,0.60)" : "#475569",
-    infoBg: isDark ? "rgba(232,25,44,0.07)" : "#fff5f5",
-    infoBorder: isDark ? "rgba(232,25,44,0.18)" : "#fecaca",
-    infoText: isDark ? "rgba(255,180,180,0.9)" : "#991b1b",
-    divider: isDark ? "rgba(255,255,255,0.07)" : "#e2e8f0",
+    ...tkBase,
+    headerText: isDark ? "rgba(255,255,255,0.85)" : isBlue ? "hsl(212 48% 18%)" : "#1e293b",
   };
 
   const [loading, setLoading] = useState(true);
@@ -75,7 +59,7 @@ export default function CarBilling() {
             text: "This vehicle is currently unavailable for booking.",
             icon: "error",
             confirmButtonText: "Go Back",
-            confirmButtonColor: "#e41e20",
+            confirmButtonColor: tkBase.brand,
           }).then(() => navigate(`/carReservation/${id}`));
           return;
         } else {
@@ -292,7 +276,7 @@ export default function CarBilling() {
       >
         <div className="text-center">
           <div
-            style={{ borderColor: "#E8192C" }}
+            style={{ borderColor: tk.brand }}
             className="inline-block animate-spin rounded-full h-10 w-10 border-b-2 mb-4"
           ></div>
           <p style={{ color: tk.mutedText }}>
@@ -355,7 +339,7 @@ export default function CarBilling() {
                   style={{ color: tk.pageText }}
                   className="text-xl font-semibold mb-6 flex items-center gap-2"
                 >
-                  <UserIcon className="w-5 h-5" style={{ color: "#E8192C" }} />
+                  <UserIcon className="w-5 h-5" style={{ color: tk.brand }} />
                   {t("booking.personalInformation")}
                 </h2>
 
@@ -646,7 +630,7 @@ export default function CarBilling() {
                   >
                     <CreditCard
                       className="w-5 h-5"
-                      style={{ color: "#E8192C" }}
+                      style={{ color: tk.brand }}
                     />
                     {t("billing.priceSummary")}
                   </h3>
@@ -753,7 +737,7 @@ export default function CarBilling() {
                         {t("billing.total")}
                       </span>
                       <span
-                        style={{ color: "#E8192C" }}
+                        style={{ color: tk.brand }}
                         className="text-2xl font-bold"
                       >
                         ${finalTotal.toFixed(2)}
@@ -782,7 +766,7 @@ export default function CarBilling() {
                         !dateRange?.from ||
                         !dateRange?.to
                           ? tk.statBg
-                          : "#E8192C",
+                          : tk.brand,
                       color:
                         bookingMutation.isPending ||
                         !formData.fullName ||

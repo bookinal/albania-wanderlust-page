@@ -8,8 +8,9 @@ import { ClipLoader } from "react-spinners";
 import { useNavigate, Link } from "react-router-dom";
 import { CarCard } from "./CarCard";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Car } from "lucide-react";
+import { Car } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { getHomeThemeTokens } from "./homeTheme";
 
 // Helper to get current month as Month type
 const getCurrentMonth = (): Month => {
@@ -26,7 +27,7 @@ const CarsPreview = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const currentMonth = getCurrentMonth();
-  const { isDark } = useTheme();
+  const { isDark, isBlue } = useTheme();
   const [carMonthlyPrices, setCarMonthlyPrices] = useState<
     Record<number, number | null>
   >({});
@@ -79,34 +80,39 @@ const CarsPreview = () => {
     navigate(`/carReservation/${carId}`);
   };
 
+  const tk = getHomeThemeTokens({ isDark, isBlue });
+
   return (
     <div className="flex flex-col w-full">
       {/* Section Header */}
       <div className="text-center mb-8 md:mb-10 animate-fade-in">
-        <span className="inline-block px-4 py-1.5 bg-red-100 text-red-700 font-semibold tracking-wider uppercase text-xs rounded-full mb-3">
+        <span
+          className="inline-block px-4 py-1.5 font-semibold tracking-wider uppercase text-xs rounded-full mb-3"
+          style={{ background: tk.badgeBg, color: tk.badgeText }}
+        >
           {t("home.carsPreview.chip")}
         </span>
-        <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-3" style={{ color: isDark ? '#ffffff' : '#0f172a' }}>
+        <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-3" style={{ color: tk.textMain }}>
           {t("home.carsPreview.title")}
         </h2>
-        <p className="text-base md:text-lg max-w-2xl mx-auto leading-relaxed" style={{ color: isDark ? 'rgba(255,255,255,0.7)' : 'hsl(var(--muted-foreground))' }}>
+        <p className="text-base md:text-lg max-w-2xl mx-auto leading-relaxed" style={{ color: tk.textMuted }}>
           {t("home.carsPreview.description")}
         </p>
       </div>
 
       {isLoading ? (
         <div className="flex items-center justify-center py-16">
-          <ClipLoader
-            color="#dc2626"
-            loading={isLoading}
-            cssOverride={override}
-            size={50}
+            <ClipLoader
+             color={tk.loader}
+             loading={isLoading}
+             cssOverride={override}
+             size={50}
           />
         </div>
       ) : availableTopCars.length === 0 ? (
-<div className="flex flex-col items-center justify-center p-10 rounded-2xl border border-dashed" style={{ background: isDark ? 'rgba(255,255,255,0.03)' : '#f8fafc', borderColor: isDark ? 'rgba(255,255,255,0.1)' : '#e2e8f0' }}>
-          <Car className="w-10 h-10 mb-3" style={{ color: isDark ? 'rgba(255,255,255,0.2)' : '#cbd5e1' }} />
-          <p className="text-base" style={{ color: isDark ? 'rgba(255,255,255,0.5)' : 'hsl(var(--muted-foreground))' }}>
+<div className="flex flex-col items-center justify-center p-10 rounded-2xl border border-dashed" style={{ background: tk.emptyBg, borderColor: tk.emptyBorder }}>
+          <Car className="w-10 h-10 mb-3" style={{ color: tk.emptyIcon }} />
+          <p className="text-base" style={{ color: tk.emptyText }}>
             {t("home.carsPreview.noCars")}
           </p>
         </div>
@@ -147,7 +153,8 @@ const CarsPreview = () => {
             <Link to="/searchCarResults">
               <Button
                 size="lg"
-                className="px-6 py-3 bg-foreground text-background rounded-full font-semibold hover:bg-foreground/90 transition inline-block text-center"
+                className="px-6 py-3 rounded-full font-semibold transition inline-block text-center"
+                style={{ background: tk.ctaBg, color: tk.ctaText }}
               >
                 {t("home.carsPreview.viewAll")}
               </Button>

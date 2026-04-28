@@ -45,27 +45,14 @@ import Swal from "sweetalert2";
 import { userService } from "@/services/api/userService";
 import { User } from "@/types/user.types";
 import { useTheme } from "@/context/ThemeContext";
+import { getBookingThemeTokens } from "./bookingTheme";
 
 const ApartmentReservation = () => {
   const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { isDark } = useTheme();
-
-  const tk = {
-    pageBg: isDark ? '#0d0d0d' : '#f5f4f1',
-    pageText: isDark ? '#ffffff' : '#111115',
-    cardBg: isDark ? 'rgba(255,255,255,0.025)' : '#ffffff',
-    cardBorder: isDark ? 'rgba(255,255,255,0.07)' : '#ede9e5',
-    cardShadow: isDark ? '0 8px 32px rgba(0,0,0,0.5)' : '0 8px 32px rgba(15,23,42,0.08)',
-    statBg: isDark ? 'rgba(255,255,255,0.04)' : '#f5f2ee',
-    statBorder: isDark ? 'rgba(255,255,255,0.07)' : '#e5e2de',
-    mutedText: isDark ? 'rgba(255,255,255,0.40)' : '#6b6663',
-    dimText: isDark ? 'rgba(255,255,255,0.70)' : '#44403c',
-    thumbBg: isDark ? '#0a0a0a' : '#f0ece8',
-    amenityBg: isDark ? 'rgba(255,255,255,0.04)' : '#eef4ff',
-    backBg: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
-  };
+  const { isDark, isBlue } = useTheme();
+  const tk = getBookingThemeTokens({ isDark, isBlue });
 
   const [apartment, setApartment] = useState<Apartment | null>(null);
   const [loading, setLoading] = useState(true);
@@ -128,7 +115,7 @@ const ApartmentReservation = () => {
     return (
       <div style={{ background: tk.pageBg }} className="flex items-center justify-center h-screen">
         <div className="text-center">
-          <Loader2 style={{ color: '#E8192C' }} className="animate-spin mx-auto mb-4" size={48} />
+          <Loader2 style={{ color: tk.brand }} className="animate-spin mx-auto mb-4" size={48} />
           <p style={{ color: tk.mutedText }} className="font-medium">Loading apartment details...</p>
         </div>
       </div>
@@ -139,14 +126,14 @@ const ApartmentReservation = () => {
     return (
       <div style={{ background: tk.pageBg }} className="min-h-screen flex items-center justify-center p-4">
         <div style={{ background: tk.cardBg, border: `1px solid ${tk.cardBorder}`, boxShadow: tk.cardShadow }} className="max-w-md w-full rounded-2xl p-8 text-center">
-          <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: 'rgba(232,25,44,0.12)' }}>
-            <Home style={{ color: '#E8192C' }} size={40} />
+          <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: tk.brandSoftStrong }}>
+            <Home style={{ color: tk.brand }} size={40} />
           </div>
           <h3 style={{ color: tk.pageText }} className="text-2xl font-bold mb-2">Apartment Not Found</h3>
           <p style={{ color: tk.mutedText }} className="mb-6">The apartment you're looking for doesn't exist or has been removed.</p>
           <button
             onClick={() => navigate("/searchResults")}
-            style={{ background: '#E8192C', color: '#fff' }}
+            style={{ background: tk.brand, color: '#fff' }}
             className="w-full flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold hover:opacity-90 transition-opacity"
           >
             <ArrowLeft size={16} />
@@ -226,22 +213,25 @@ const ApartmentReservation = () => {
                   <>
                     <button
                       onClick={() => setPhotoIndex((photoIndex + images.length - 1) % images.length)}
-                      className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/90 hover:bg-white rounded-full flex items-center justify-center shadow-lg transition-all hover:scale-110"
+                      className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full flex items-center justify-center shadow-lg transition-all hover:scale-110"
+                      style={{ background: isBlue ? 'rgba(255,255,255,0.95)' : 'rgba(255,255,255,0.9)' }}
                     >
-                      <ChevronLeft size={24} className="text-gray-900" />
+                      <ChevronLeft size={24} style={{ color: tk.pageText }} />
                     </button>
                     <button
                       onClick={() => setPhotoIndex((photoIndex + 1) % images.length)}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/90 hover:bg-white rounded-full flex items-center justify-center shadow-lg transition-all hover:scale-110"
+                      className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full flex items-center justify-center shadow-lg transition-all hover:scale-110"
+                      style={{ background: isBlue ? 'rgba(255,255,255,0.95)' : 'rgba(255,255,255,0.9)' }}
                     >
-                      <ChevronRight size={24} className="text-gray-900" />
+                      <ChevronRight size={24} style={{ color: tk.pageText }} />
                     </button>
                   </>
                 )}
 
                 <button
                   onClick={() => setIsOpen(true)}
-                  className="absolute bottom-6 right-6 px-6 py-3 bg-white hover:bg-gray-50 rounded-xl shadow-lg flex items-center gap-2 font-semibold text-gray-900 transition-all hover:scale-105"
+                  className="absolute bottom-6 right-6 px-6 py-3 rounded-xl shadow-lg flex items-center gap-2 font-semibold transition-all hover:scale-105"
+                  style={{ background: isBlue ? 'rgba(255,255,255,0.96)' : '#ffffff', color: tk.pageText }}
                 >
                   <ImageIcon size={20} />
                   View All {images.length} Photos
@@ -296,7 +286,7 @@ const ApartmentReservation = () => {
                       key={index}
                       onClick={() => setPhotoIndex(index)}
                       style={{
-                        outline: index === photoIndex ? `3px solid #E8192C` : `2px solid ${tk.cardBorder}`,
+                        outline: index === photoIndex ? `3px solid ${tk.brand}` : `2px solid ${tk.cardBorder}`,
                         opacity: index === photoIndex ? 1 : 0.65,
                         transform: index === photoIndex ? 'scale(1.05)' : 'scale(1)',
                         transition: 'all 0.15s',
@@ -341,7 +331,7 @@ const ApartmentReservation = () => {
               <div className="space-y-4 mb-6">
                 <div style={{ background: tk.statBg, border: `1px solid ${tk.statBorder}` }} className="flex items-center justify-between p-4 rounded-xl">
                   <div className="flex items-center gap-3">
-                    <Home size={20} style={{ color: '#E8192C' }} />
+                    <Home size={20} style={{ color: tk.brand }} />
                     <span style={{ color: tk.dimText }} className="font-medium">{t("searchResults.filters.rooms")}</span>
                   </div>
                   <span style={{ color: tk.pageText }} className="font-bold">{apartment.rooms}</span>
@@ -350,7 +340,7 @@ const ApartmentReservation = () => {
                 {apartment.beds !== undefined && (
                   <div style={{ background: tk.statBg, border: `1px solid ${tk.statBorder}` }} className="flex items-center justify-between p-4 rounded-xl">
                     <div className="flex items-center gap-3">
-                      <Bed size={20} style={{ color: '#E8192C' }} />
+                      <Bed size={20} style={{ color: tk.brand }} />
                       <span style={{ color: tk.dimText }} className="font-medium">{t("searchResults.filters.beds")}</span>
                     </div>
                     <span style={{ color: tk.pageText }} className="font-bold">{apartment.beds}</span>
@@ -360,7 +350,7 @@ const ApartmentReservation = () => {
                 {apartment.bathrooms !== undefined && (
                   <div style={{ background: tk.statBg, border: `1px solid ${tk.statBorder}` }} className="flex items-center justify-between p-4 rounded-xl">
                     <div className="flex items-center gap-3">
-                      <Bath size={20} style={{ color: '#E8192C' }} />
+                      <Bath size={20} style={{ color: tk.brand }} />
                       <span style={{ color: tk.dimText }} className="font-medium">{t("searchResults.filters.bathrooms")}</span>
                     </div>
                     <span style={{ color: tk.pageText }} className="font-bold">{apartment.bathrooms}</span>
@@ -370,7 +360,7 @@ const ApartmentReservation = () => {
                 {apartment.kitchens !== undefined && (
                   <div style={{ background: tk.statBg, border: `1px solid ${tk.statBorder}` }} className="flex items-center justify-between p-4 rounded-xl">
                     <div className="flex items-center gap-3">
-                      <ChefHat size={20} style={{ color: '#E8192C' }} />
+                      <ChefHat size={20} style={{ color: tk.brand }} />
                       <span style={{ color: tk.dimText }} className="font-medium">{t("searchResults.filters.kitchens")}</span>
                     </div>
                     <span style={{ color: tk.pageText }} className="font-bold">{apartment.kitchens}</span>
@@ -380,7 +370,7 @@ const ApartmentReservation = () => {
                 {apartment.livingRooms !== undefined && (
                   <div style={{ background: tk.statBg, border: `1px solid ${tk.statBorder}` }} className="flex items-center justify-between p-4 rounded-xl">
                     <div className="flex items-center gap-3">
-                      <Sofa size={20} style={{ color: '#E8192C' }} />
+                      <Sofa size={20} style={{ color: tk.brand }} />
                       <span style={{ color: tk.dimText }} className="font-medium">{t("searchResults.filters.livingRooms")}</span>
                     </div>
                     <span style={{ color: tk.pageText }} className="font-bold">{apartment.livingRooms}</span>
@@ -399,7 +389,7 @@ const ApartmentReservation = () => {
                 onClick={handleReservation}
                 disabled={apartment.status === "maintenance" || apartment.status === "review"}
                 style={{
-                  background: (apartment.status === "maintenance" || apartment.status === "review") ? tk.statBg : '#E8192C',
+                  background: (apartment.status === "maintenance" || apartment.status === "review") ? tk.statBg : tk.brand,
                   color: (apartment.status === "maintenance" || apartment.status === "review") ? tk.mutedText : '#fff',
                   cursor: (apartment.status === "maintenance" || apartment.status === "review") ? 'not-allowed' : 'pointer',
                 }}
@@ -422,7 +412,7 @@ const ApartmentReservation = () => {
             {/* Description */}
             <div style={{ background: tk.cardBg, border: `1px solid ${tk.cardBorder}`, boxShadow: tk.cardShadow }} className="rounded-2xl p-8">
               <h2 style={{ color: tk.pageText }} className="text-2xl font-bold mb-4 flex items-center gap-2">
-                <Home style={{ color: '#E8192C' }} size={24} />
+                <Home style={{ color: tk.brand }} size={24} />
                 {t("billing.aboutThisApartment")}
               </h2>
               <p style={{ color: tk.dimText }} className="leading-relaxed text-lg">
@@ -437,7 +427,7 @@ const ApartmentReservation = () => {
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                   {availableAmenities.map((amenity, index) => (
                     <div key={index} style={{ background: tk.amenityBg }} className="flex items-center gap-3 p-4 rounded-xl hover:opacity-90 transition-opacity">
-                      {amenity.icon && <amenity.icon size={24} style={{ color: '#E8192C' }} />}
+                      {amenity.icon && <amenity.icon size={24} style={{ color: tk.brand }} />}
                       <span style={{ color: tk.dimText }} className="font-medium">{amenity.label}</span>
                     </div>
                   ))}
@@ -456,7 +446,7 @@ const ApartmentReservation = () => {
             {apartment.lat !== undefined && apartment.lng !== undefined && (
               <div style={{ background: tk.cardBg, border: `1px solid ${tk.cardBorder}`, boxShadow: tk.cardShadow }} className="rounded-2xl p-8">
                 <h2 style={{ color: tk.pageText }} className="text-2xl font-bold mb-6 flex items-center gap-2">
-                  <MapPin style={{ color: '#E8192C' }} size={24} />
+                  <MapPin style={{ color: tk.brand }} size={24} />
                   {t("map.locationOnMap")}
                 </h2>
                 <div className="rounded-xl overflow-hidden shadow-md">

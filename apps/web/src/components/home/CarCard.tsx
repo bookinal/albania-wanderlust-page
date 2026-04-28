@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@/context/ThemeContext";
+import { getHomeThemeTokens } from "./homeTheme";
 
 interface CarCardProps {
   id: number;
@@ -53,7 +54,8 @@ export const CarCard = ({
   onClick,
 }: CarCardProps) => {
   const { t } = useTranslation();
-  const { isDark } = useTheme();
+  const { isDark, isBlue } = useTheme();
+  const homeTk = getHomeThemeTokens({ isDark, isBlue });
 
   const displayPrice = currentMonthPrice ?? pricePerDay;
   const hasSeasonalPrice =
@@ -66,7 +68,7 @@ export const CarCard = ({
 
   const statusColor = isAvailable
     ? { bg: 'rgba(34,197,94,0.12)', border: 'rgba(34,197,94,0.3)', text: '#4ade80' }
-    : { bg: 'rgba(232,25,44,0.1)', border: 'rgba(232,25,44,0.3)', text: '#E8192C' };
+    : { bg: homeTk.brandSoft, border: homeTk.brandBorder, text: homeTk.brand };
 
   const statusLabel = (() => {
     switch (status.toLowerCase()) {
@@ -80,18 +82,18 @@ export const CarCard = ({
   // Theme tokens
   const tk = {
     cardBg: isDark ? '#141417' : '#ffffff',
-    cardBorder: isDark ? 'rgba(232,25,44,0.12)' : 'rgba(232,25,44,0.14)',
+    cardBorder: isDark ? homeTk.brandSoft : isBlue ? 'rgba(2, 132, 199, 0.16)' : 'rgba(232,25,44,0.14)',
     imageFallbackBg: isDark
       ? 'linear-gradient(135deg, #0f0f12, #1a1a1f)'
       : 'linear-gradient(135deg, #f4f1ee, #e8e4e0)',
-    imageFallbackText: isDark ? 'rgba(232,25,44,0.15)' : 'rgba(232,25,44,0.2)',
+    imageFallbackText: isDark ? homeTk.brandSoftStrong : isBlue ? 'rgba(2, 132, 199, 0.24)' : 'rgba(232,25,44,0.2)',
     nameText: isDark ? '#f0ece8' : '#111115',
     locationText: isDark ? 'rgba(240,236,232,0.45)' : 'rgba(17,17,21,0.45)',
     specText: isDark ? 'rgba(240,236,232,0.55)' : 'rgba(17,17,21,0.55)',
     featureText: isDark ? 'rgba(240,236,232,0.45)' : 'rgba(17,17,21,0.5)',
     featureBg: isDark ? 'rgba(240,236,232,0.05)' : 'rgba(17,17,21,0.04)',
     featureBorder: isDark ? 'rgba(240,236,232,0.1)' : 'rgba(17,17,21,0.1)',
-    priceDivider: isDark ? 'rgba(232,25,44,0.1)' : 'rgba(232,25,44,0.12)',
+    priceDivider: isDark ? homeTk.brandSoft : isBlue ? 'rgba(2, 132, 199, 0.14)' : 'rgba(232,25,44,0.12)',
     priceLabel: isDark ? 'rgba(240,236,232,0.35)' : 'rgba(17,17,21,0.4)',
     strikeText: isDark ? 'rgba(240,236,232,0.25)' : 'rgba(17,17,21,0.3)',
   };
@@ -113,10 +115,10 @@ export const CarCard = ({
       }}
       onMouseEnter={e => {
         const el = e.currentTarget as HTMLDivElement;
-        el.style.borderColor = 'rgba(232,25,44,0.45)';
+        el.style.borderColor = homeTk.brandBorder;
         el.style.boxShadow = isDark
-          ? '0 12px 40px rgba(232,25,44,0.12), 0 2px 8px rgba(0,0,0,0.5)'
-          : '0 12px 40px rgba(232,25,44,0.1), 0 2px 8px rgba(0,0,0,0.08)';
+          ? `0 12px 40px ${homeTk.brandSoft}, 0 2px 8px rgba(0,0,0,0.5)`
+          : `0 12px 40px ${homeTk.brandSoft}, 0 2px 8px rgba(0,0,0,0.08)`;
         el.style.transform = 'translateY(-3px)';
       }}
       onMouseLeave={e => {
@@ -202,7 +204,7 @@ export const CarCard = ({
             fontSize: '0.7rem',
             letterSpacing: '0.2em',
             textTransform: 'uppercase',
-            color: '#E8192C',
+             color: homeTk.brand,
             marginBottom: 3,
           }}>
             {brand}
@@ -225,7 +227,7 @@ export const CarCard = ({
         {/* Location */}
         {pickUpLocation && (
           <div style={{ display: 'flex', alignItems: 'flex-start', gap: 5, marginBottom: 14 }}>
-            <MapPin style={{ width: 13, height: 13, color: 'rgba(232,25,44,0.6)', flexShrink: 0, marginTop: 2 }} />
+            <MapPin style={{ width: 13, height: 13, color: homeTk.brand, opacity: 0.6, flexShrink: 0, marginTop: 2 }} />
             <span style={{
               fontFamily: 'Crimson Pro, Georgia, serif',
               fontSize: '0.88rem',
@@ -248,7 +250,7 @@ export const CarCard = ({
             { icon: <Gauge style={{ width: 13, height: 13 }} />, label: `${mileage.toLocaleString()} km` },
           ].map((spec, i) => (
             <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              <span style={{ color: 'rgba(232,25,44,0.55)' }}>{spec.icon}</span>
+               <span style={{ color: homeTk.brand, opacity: 0.55 }}>{spec.icon}</span>
               <span style={{
                 fontFamily: 'Crimson Pro, Georgia, serif',
                 fontSize: '0.88rem',
@@ -283,9 +285,9 @@ export const CarCard = ({
                 fontFamily: 'Crimson Pro, Georgia, serif',
                 fontSize: '0.72rem',
                 letterSpacing: '0.07em',
-                color: 'rgba(232,25,44,0.6)',
-                background: 'rgba(232,25,44,0.06)',
-                border: '1px solid rgba(232,25,44,0.15)',
+                 color: homeTk.brand,
+                 background: homeTk.brandSoft,
+                 border: `1px solid ${homeTk.brandBorder}`,
                 padding: '2px 8px',
                 borderRadius: 2,
               }}>
@@ -322,7 +324,7 @@ export const CarCard = ({
               fontFamily: 'Bebas Neue, Impact, sans-serif',
               fontSize: '1.55rem',
               letterSpacing: '0.02em',
-              color: isPriceLower ? '#4ade80' : '#E8192C',
+               color: isPriceLower ? '#4ade80' : homeTk.brand,
               lineHeight: 1,
             }}>
               €{displayPrice}

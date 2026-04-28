@@ -10,6 +10,7 @@ import { PropertyCard } from "./PropertyCard";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Home } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { getHomeThemeTokens } from "./homeTheme";
 
 const animation = { duration: 50000, easing: (t: number) => t };
 
@@ -21,7 +22,8 @@ const override: CSSProperties = {
 const ApartmentsPreview = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { isDark } = useTheme();
+  const { isDark, isBlue } = useTheme();
+  const tk = getHomeThemeTokens({ isDark, isBlue });
 
   const [sliderRef] = useKeenSlider({
     loop: true,
@@ -71,14 +73,14 @@ const ApartmentsPreview = () => {
       {/* Section Header */}
       <div className="mb-6 animate-fade-in">
         <div className="flex items-center gap-3 mb-2">
-          <div className="w-10 h-10 rounded-xl bg-red-100 flex items-center justify-center">
-            <Home className="w-5 h-5 text-red-600" />
+          <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: tk.badgeIconBg }}>
+            <Home className="w-5 h-5" style={{ color: tk.badgeIconText }} />
           </div>
-          <h3 className="text-2xl md:text-3xl font-bold" style={{ color: isDark ? '#ffffff' : '#0f172a' }}>
+          <h3 className="text-2xl md:text-3xl font-bold" style={{ color: tk.textMain }}>
             {t("home.apartmentsPreview.title")}
           </h3>
         </div>
-        <p className="leading-relaxed text-sm" style={{ color: isDark ? 'rgba(255,255,255,0.7)' : 'hsl(var(--muted-foreground))' }}>
+        <p className="leading-relaxed text-sm" style={{ color: tk.textMuted }}>
           {t("home.apartmentsPreview.description")}
         </p>
       </div>
@@ -86,16 +88,16 @@ const ApartmentsPreview = () => {
       {isLoading ? (
         <div className="flex-grow flex items-center justify-center py-12">
           <ClipLoader
-            color="#dc2626"
+            color={tk.loader}
             loading={isLoading}
             cssOverride={override}
             size={45}
           />
         </div>
       ) : availableTopApartments.length === 0 ? (
-<div className="flex-grow flex flex-col items-center justify-center p-10 rounded-2xl border border-dashed" style={{ background: isDark ? 'rgba(255,255,255,0.03)' : '#f8fafc', borderColor: isDark ? 'rgba(255,255,255,0.1)' : '#e2e8f0' }}>
-          <Home className="w-10 h-10 mb-3" style={{ color: isDark ? 'rgba(255,255,255,0.2)' : '#cbd5e1' }} />
-          <p style={{ color: isDark ? 'rgba(255,255,255,0.5)' : 'hsl(var(--muted-foreground))' }}>
+<div className="flex-grow flex flex-col items-center justify-center p-10 rounded-2xl border border-dashed" style={{ background: tk.emptyBg, borderColor: tk.emptyBorder }}>
+          <Home className="w-10 h-10 mb-3" style={{ color: tk.emptyIcon }} />
+          <p style={{ color: tk.emptyText }}>
             {t("home.apartmentsPreview.noApartments")}
           </p>
         </div>
@@ -133,7 +135,8 @@ const ApartmentsPreview = () => {
             <Link to="/searchResults">
               <Button
                 variant="ghost"
-                className="group p-0 hover:bg-transparent text-red-600 font-semibold gap-2"
+                className="group p-0 hover:bg-transparent font-semibold gap-2"
+                style={{ color: tk.actionText }}
               >
                 {t("home.apartmentsPreview.viewAll")}
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />

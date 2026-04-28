@@ -3,6 +3,7 @@ import { ChevronDown, RotateCcw, Filter, Calendar, X } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@/context/ThemeContext";
+import { getSearchResultsThemeTokens } from "./searchResultsTheme";
 import {
   HotelFiltersInput,
   ApartmentFiltersInput,
@@ -36,17 +37,21 @@ const AccSection = ({
   label,
   children,
   defaultOpen = false,
-  isDark,
+  headerColor,
+  dividerColor,
+  iconColor,
 }: {
   label: string;
   children: React.ReactNode;
   defaultOpen?: boolean;
-  isDark: boolean;
+  headerColor: string;
+  dividerColor: string;
+  iconColor: string;
 }) => {
   const [open, setOpen] = useState(defaultOpen);
   return (
     <div style={{
-      borderBottom: `1px solid ${isDark ? 'rgba(232,25,44,0.1)' : 'rgba(232,25,44,0.12)'}`,
+      borderBottom: `1px solid ${dividerColor}`,
       paddingBottom: 16,
       marginBottom: 16,
     }}>
@@ -68,7 +73,7 @@ const AccSection = ({
           fontFamily: 'Bebas Neue, Impact, sans-serif',
           fontSize: '0.95rem',
           letterSpacing: '0.1em',
-          color: isDark ? '#f0ece8' : '#111115',
+          color: headerColor,
           transition: 'color 0.3s',
         }}>
           {label}
@@ -76,7 +81,7 @@ const AccSection = ({
         <ChevronDown style={{
           width: 14,
           height: 14,
-          color: 'rgba(232,25,44,0.6)',
+          color: iconColor,
           transition: 'transform 0.2s',
           transform: open ? 'rotate(180deg)' : 'rotate(0deg)',
         }} />
@@ -101,39 +106,41 @@ export const FilterBar = ({
   availableTypes = ["hotel", "apartment"],
 }: FilterBarProps) => {
   const { t } = useTranslation();
-  const { isDark } = useTheme();
+  const { isDark, isBlue } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
+  const themeTk = getSearchResultsThemeTokens({ isDark, isBlue });
 
   // Theme tokens
   const tk = {
-    sidebarBg: isDark ? '#111115' : '#f8f6f3',
-    sidebarBorder: isDark ? 'rgba(232,25,44,0.1)' : 'rgba(232,25,44,0.12)',
-    headerText: isDark ? '#f0ece8' : '#111115',
-    resetText: isDark ? 'rgba(240,236,232,0.4)' : 'rgba(17,17,21,0.4)',
-    inputBg: isDark ? 'rgba(240,236,232,0.04)' : 'rgba(17,17,21,0.04)',
-    inputBorder: isDark ? 'rgba(232,25,44,0.15)' : 'rgba(232,25,44,0.18)',
-    inputColor: isDark ? '#f0ece8' : '#111115',
-    selectOptionBg: isDark ? '#1c1c21' : '#f8f6f3',
-    labelColor: '#E8192C',
-    typeActiveBg: 'rgba(232,25,44,0.12)',
-    typeActiveBorder: 'rgba(232,25,44,0.4)',
-    typeActiveText: '#E8192C',
-    typeInactiveBg: isDark ? 'rgba(240,236,232,0.04)' : 'rgba(17,17,21,0.04)',
-    typeInactiveBorder: isDark ? 'rgba(240,236,232,0.1)' : 'rgba(17,17,21,0.12)',
-    typeInactiveText: isDark ? 'rgba(240,236,232,0.5)' : 'rgba(17,17,21,0.5)',
-    applyBtnBg: '#E8192C',
+    sidebarBg: themeTk.sidebarBg,
+    sidebarBorder: themeTk.sidebarBorder,
+    headerText: themeTk.headerText,
+    resetText: themeTk.resetText,
+    inputBg: themeTk.inputBg,
+    inputBorder: themeTk.inputBorder,
+    inputColor: themeTk.inputColor,
+    selectOptionBg: themeTk.selectOptionBg,
+    labelColor: themeTk.labelColor,
+    typeActiveBg: themeTk.typeActiveBg,
+    typeActiveBorder: themeTk.typeActiveBorder,
+    typeActiveText: themeTk.typeActiveText,
+    typeInactiveBg: themeTk.typeInactiveBg,
+    typeInactiveBorder: themeTk.typeInactiveBorder,
+    typeInactiveText: themeTk.typeInactiveText,
+    applyBtnBg: themeTk.applyBtnBg,
     applyBtnText: '#ffffff',
-    applyBtnDisabledBg: isDark ? 'rgba(232,25,44,0.3)' : 'rgba(232,25,44,0.25)',
-    checkboxBorder: isDark ? 'rgba(240,236,232,0.2)' : 'rgba(17,17,21,0.2)',
-    checkboxCheckedText: isDark ? '#f0ece8' : '#111115',
-    checkboxUncheckedText: isDark ? 'rgba(240,236,232,0.5)' : 'rgba(17,17,21,0.5)',
-    infoText: 'rgba(232,25,44,0.7)',
-    mobileBtnBg: isDark ? 'rgba(232,25,44,0.08)' : 'rgba(232,25,44,0.06)',
-    mobileBtnBorder: isDark ? 'rgba(232,25,44,0.25)' : 'rgba(232,25,44,0.22)',
-    mobileBtnText: isDark ? '#f0ece8' : '#111115',
-    colorScheme: isDark ? 'dark' : 'light',
-    minMaxLabel: isDark ? 'rgba(240,236,232,0.4)' : 'rgba(17,17,21,0.4)',
-    priceText: isDark ? '#f0ece8' : '#111115',
+    applyBtnDisabledBg: themeTk.applyBtnDisabledBg,
+    checkboxBorder: themeTk.checkboxBorder,
+    checkboxCheckedText: themeTk.checkboxCheckedText,
+    checkboxUncheckedText: themeTk.checkboxUncheckedText,
+    infoText: themeTk.infoText,
+    mobileBtnBg: themeTk.mobileBtnBg,
+    mobileBtnBorder: themeTk.mobileBtnBorder,
+    mobileBtnText: themeTk.mobileBtnText,
+    colorScheme: themeTk.colorScheme,
+    minMaxLabel: themeTk.minMaxLabel,
+    priceText: themeTk.priceText,
+    focusBorder: themeTk.brandBorder,
   };
 
   const inputStyle: React.CSSProperties = {
@@ -154,7 +161,7 @@ export const FilterBar = ({
     ...inputStyle,
     appearance: 'none',
     cursor: 'pointer',
-    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23E8192C' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")`,
+    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='${encodeURIComponent(themeTk.brand)}' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")`,
     backgroundRepeat: 'no-repeat',
     backgroundPosition: 'right 12px center',
     paddingRight: 32,
@@ -229,7 +236,7 @@ export const FilterBar = ({
         placeholder={placeholder}
         value={value || ""}
         onChange={e => onChange(e.target.value ? parseInt(e.target.value) : 0)}
-        onFocus={e => (e.currentTarget.style.borderColor = 'rgba(232,25,44,0.5)')}
+        onFocus={e => (e.currentTarget.style.borderColor = tk.focusBorder)}
         onBlur={e => (e.currentTarget.style.borderColor = tk.inputBorder)}
       />
       {!!value && (
@@ -269,7 +276,7 @@ export const FilterBar = ({
           placeholder={t("searchResults.filters.min")}
           value={minVal || ""}
           onChange={e => onMinChange(e.target.value ? parseInt(e.target.value) : undefined)}
-          onFocus={e => (e.currentTarget.style.borderColor = 'rgba(232,25,44,0.5)')}
+          onFocus={e => (e.currentTarget.style.borderColor = tk.focusBorder)}
           onBlur={e => (e.currentTarget.style.borderColor = tk.inputBorder)}
         />
       </div>
@@ -281,7 +288,7 @@ export const FilterBar = ({
           placeholder={t("searchResults.filters.max")}
           value={maxVal || ""}
           onChange={e => onMaxChange(e.target.value ? parseInt(e.target.value) : undefined)}
-          onFocus={e => (e.currentTarget.style.borderColor = 'rgba(232,25,44,0.5)')}
+          onFocus={e => (e.currentTarget.style.borderColor = tk.focusBorder)}
           onBlur={e => (e.currentTarget.style.borderColor = tk.inputBorder)}
         />
       </div>
@@ -303,8 +310,8 @@ export const FilterBar = ({
         onClick={() => onChange(!checked)}
         style={{
           width: 16, height: 16,
-          border: `1px solid ${checked ? '#E8192C' : tk.checkboxBorder}`,
-          background: checked ? 'rgba(232,25,44,0.15)' : 'transparent',
+          border: `1px solid ${checked ? themeTk.brand : tk.checkboxBorder}`,
+          background: checked ? themeTk.brandSoftStrong : 'transparent',
           borderRadius: 2,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           flexShrink: 0,
@@ -313,7 +320,7 @@ export const FilterBar = ({
       >
         {checked && (
           <svg width="9" height="7" viewBox="0 0 9 7" fill="none">
-            <path d="M1 3.5L3.5 6L8 1" stroke="#E8192C" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M1 3.5L3.5 6L8 1" stroke={themeTk.brand} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         )}
       </div>
@@ -333,7 +340,7 @@ export const FilterBar = ({
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <Filter style={{ width: 15, height: 15, color: '#E8192C' }} />
+          <Filter style={{ width: 15, height: 15, color: themeTk.brand }} />
           <span style={{
             fontFamily: 'Bebas Neue, Impact, sans-serif',
             fontSize: '1.1rem',
@@ -345,7 +352,7 @@ export const FilterBar = ({
           </span>
           {activeFiltersCount > 0 && (
             <span style={{
-              background: '#E8192C', color: '#fff',
+              background: themeTk.brand, color: '#fff',
               fontFamily: 'Crimson Pro, Georgia, serif',
               fontSize: '0.7rem', borderRadius: '50%',
               width: 18, height: 18,
@@ -367,7 +374,7 @@ export const FilterBar = ({
               fontSize: '0.8rem', letterSpacing: '0.07em',
               transition: 'color 0.2s',
             }}
-            onMouseEnter={e => (e.currentTarget.style.color = '#E8192C')}
+            onMouseEnter={e => (e.currentTarget.style.color = themeTk.brand)}
             onMouseLeave={e => (e.currentTarget.style.color = tk.resetText)}
           >
             <RotateCcw style={{ width: 11, height: 11 }} />
@@ -376,7 +383,7 @@ export const FilterBar = ({
         )}
       </div>
 
-      <div style={{ height: 1, background: 'linear-gradient(90deg, #E8192C, transparent)', marginBottom: 20 }} />
+      <div style={{ height: 1, background: `linear-gradient(90deg, ${themeTk.brand}, transparent)`, marginBottom: 20 }} />
 
       {/* Property Type */}
       <div style={{ marginBottom: 20 }}>
@@ -410,7 +417,7 @@ export const FilterBar = ({
       </div>
 
       {/* Search */}
-      <AccSection label={t("searchResults.filters.search")} defaultOpen isDark={isDark}>
+      <AccSection label={t("searchResults.filters.search")} defaultOpen headerColor={tk.headerText} dividerColor={tk.sidebarBorder} iconColor={themeTk.brand}>
         <input
           style={inputStyle}
           placeholder={t("searchResults.filters.searchPlaceholderProperties")}
@@ -426,7 +433,7 @@ export const FilterBar = ({
             onApartmentFiltersChange({ searchTerm: e.target.value });
             onDestinationFiltersChange?.({ searchTerm: e.target.value });
           }}
-          onFocus={e => (e.currentTarget.style.borderColor = 'rgba(232,25,44,0.5)')}
+          onFocus={e => (e.currentTarget.style.borderColor = tk.focusBorder)}
           onBlur={e => (e.currentTarget.style.borderColor = tk.inputBorder)}
         />
       </AccSection>
@@ -436,7 +443,7 @@ export const FilterBar = ({
         <AccSection
           label={t("searchResults.filters.stayDates")}
           defaultOpen={!!(filters.checkInDate || filters.checkOutDate)}
-          isDark={isDark}
+          headerColor={tk.headerText} dividerColor={tk.sidebarBorder} iconColor={themeTk.brand}
         >
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             <div>
@@ -446,7 +453,7 @@ export const FilterBar = ({
                 style={{ ...inputStyle, colorScheme: tk.colorScheme as any }}
                 value={filters.checkInDate ? new Date(filters.checkInDate).toISOString().split("T")[0] : ""}
                 onChange={e => onDateChange({ checkInDate: e.target.value ? new Date(e.target.value).toISOString() : null })}
-                onFocus={e => (e.currentTarget.style.borderColor = 'rgba(232,25,44,0.5)')}
+                onFocus={e => (e.currentTarget.style.borderColor = tk.focusBorder)}
                 onBlur={e => (e.currentTarget.style.borderColor = tk.inputBorder)}
               />
             </div>
@@ -458,7 +465,7 @@ export const FilterBar = ({
                 value={filters.checkOutDate ? new Date(filters.checkOutDate).toISOString().split("T")[0] : ""}
                 min={filters.checkInDate ? new Date(filters.checkInDate).toISOString().split("T")[0] : undefined}
                 onChange={e => onDateChange({ checkOutDate: e.target.value ? new Date(e.target.value).toISOString() : null })}
-                onFocus={e => (e.currentTarget.style.borderColor = 'rgba(232,25,44,0.5)')}
+                onFocus={e => (e.currentTarget.style.borderColor = tk.focusBorder)}
                 onBlur={e => (e.currentTarget.style.borderColor = tk.inputBorder)}
               />
             </div>
@@ -479,7 +486,7 @@ export const FilterBar = ({
         <AccSection
           label={t("searchResults.filters.guests")}
           defaultOpen={!!(filters.adults || filters.children || filters.rooms)}
-          isDark={isDark}
+          headerColor={tk.headerText} dividerColor={tk.sidebarBorder} iconColor={themeTk.brand}
         >
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             <div>
@@ -544,7 +551,7 @@ export const FilterBar = ({
 
       {/* Destination Categories */}
       {filters.propertyType === "destination" && (
-        <AccSection label={t("searchResults.filters.categories", "Categories")} defaultOpen isDark={isDark}>
+        <AccSection label={t("searchResults.filters.categories", "Categories")} defaultOpen headerColor={tk.headerText} dividerColor={tk.sidebarBorder} iconColor={themeTk.brand}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 9 }}>
             {[
               { id: "Adventure", label: t("searchResults.filters.catAdventure", "Adventure") },
@@ -570,12 +577,12 @@ export const FilterBar = ({
 
       {/* Price Range */}
       {filters.propertyType !== "destination" && (
-        <AccSection label={t("searchResults.filters.priceRange")} defaultOpen isDark={isDark}>
+        <AccSection label={t("searchResults.filters.priceRange")} defaultOpen headerColor={tk.headerText} dividerColor={tk.sidebarBorder} iconColor={themeTk.brand}>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
             <span style={{ fontFamily: 'Bebas Neue, Impact, sans-serif', fontSize: '1rem', color: tk.priceText, letterSpacing: '0.05em' }}>
               €{filters.propertyType === "hotel" ? (filters.hotelFilters.priceRange?.min || 0) : (filters.apartmentFilters.priceRange?.min || 0)}
             </span>
-            <span style={{ fontFamily: 'Bebas Neue, Impact, sans-serif', fontSize: '1rem', color: '#E8192C', letterSpacing: '0.05em' }}>
+            <span style={{ fontFamily: 'Bebas Neue, Impact, sans-serif', fontSize: '1rem', color: themeTk.brand, letterSpacing: '0.05em' }}>
               €{filters.propertyType === "hotel" ? (filters.hotelFilters.priceRange?.max || 500) : (filters.apartmentFilters.priceRange?.max || 500)}
             </span>
           </div>
@@ -593,7 +600,7 @@ export const FilterBar = ({
             }}
             className="py-1"
           />
-          <p style={{ fontFamily: 'Crimson Pro, Georgia, serif', fontSize: '0.78rem', color: isDark ? 'rgba(240,236,232,0.3)' : 'rgba(17,17,21,0.35)', marginTop: 8 }}>
+          <p style={{ fontFamily: 'Crimson Pro, Georgia, serif', fontSize: '0.78rem', color: tk.minMaxLabel, marginTop: 8 }}>
             {filters.propertyType === "hotel"
               ? t("searchResults.filters.perNight")
               : t("searchResults.filters.perDay")}
@@ -603,7 +610,7 @@ export const FilterBar = ({
 
       {/* Rating */}
       {filters.propertyType !== "destination" && (
-        <AccSection label={t("searchResults.filters.rating")} isDark={isDark}>
+        <AccSection label={t("searchResults.filters.rating")} headerColor={tk.headerText} dividerColor={tk.sidebarBorder} iconColor={themeTk.brand}>
           <select
             style={selectStyle}
             value={filters.propertyType === "hotel" ? filters.hotelFilters.rating || "all" : filters.apartmentFilters.rating || "all"}
@@ -612,7 +619,7 @@ export const FilterBar = ({
               onHotelFiltersChange({ rating: val });
               onApartmentFiltersChange({ rating: val });
             }}
-            onFocus={e => (e.currentTarget.style.borderColor = 'rgba(232,25,44,0.5)')}
+            onFocus={e => (e.currentTarget.style.borderColor = tk.focusBorder)}
             onBlur={e => (e.currentTarget.style.borderColor = tk.inputBorder)}
           >
             <option value="all" style={{ background: tk.selectOptionBg }}>{t("searchResults.filters.allRatings")}</option>
@@ -626,7 +633,7 @@ export const FilterBar = ({
 
       {/* Availability */}
       {filters.propertyType !== "destination" && (
-        <AccSection label={t("searchResults.filters.availability")} isDark={isDark}>
+        <AccSection label={t("searchResults.filters.availability")} headerColor={tk.headerText} dividerColor={tk.sidebarBorder} iconColor={themeTk.brand}>
           <select
             style={selectStyle}
             value={filters.propertyType === "hotel" ? filters.hotelFilters.status || "all" : filters.apartmentFilters.status || "all"}
@@ -635,7 +642,7 @@ export const FilterBar = ({
               if (filters.propertyType === "hotel") onHotelFiltersChange({ status: val });
               else onApartmentFiltersChange({ status: val });
             }}
-            onFocus={e => (e.currentTarget.style.borderColor = 'rgba(232,25,44,0.5)')}
+            onFocus={e => (e.currentTarget.style.borderColor = tk.focusBorder)}
             onBlur={e => (e.currentTarget.style.borderColor = tk.inputBorder)}
           >
             <option value="all" style={{ background: tk.selectOptionBg }}>{t("searchResults.filters.allStatus")}</option>
@@ -657,7 +664,7 @@ export const FilterBar = ({
 
       {/* Hotel Rooms */}
       {filters.propertyType === "hotel" && (
-        <AccSection label={t("searchResults.filters.rooms")} isDark={isDark}>
+        <AccSection label={t("searchResults.filters.rooms")} headerColor={tk.headerText} dividerColor={tk.sidebarBorder} iconColor={themeTk.brand}>
           <MinMaxPair
             minVal={filters.hotelFilters.rooms?.min}
             maxVal={filters.hotelFilters.rooms?.max}
@@ -669,7 +676,7 @@ export const FilterBar = ({
 
       {/* Hotel Amenities */}
       {filters.propertyType === "hotel" && (
-        <AccSection label={t("searchResults.filters.amenities")} isDark={isDark}>
+        <AccSection label={t("searchResults.filters.amenities")} headerColor={tk.headerText} dividerColor={tk.sidebarBorder} iconColor={themeTk.brand}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 9 }}>
             {[
               { id: "wifi", label: t("searchResults.filters.amenityWifi") },
@@ -693,7 +700,7 @@ export const FilterBar = ({
 
       {/* Apartment Rooms */}
       {filters.propertyType === "apartment" && (
-        <AccSection label={t("searchResults.filters.rooms")} isDark={isDark}>
+        <AccSection label={t("searchResults.filters.rooms")} headerColor={tk.headerText} dividerColor={tk.sidebarBorder} iconColor={themeTk.brand}>
           <MinMaxPair
             minVal={filters.apartmentFilters.rooms?.min || filters.rooms}
             maxVal={filters.apartmentFilters.rooms?.max}
@@ -705,7 +712,7 @@ export const FilterBar = ({
 
       {/* Apartment Beds */}
       {filters.propertyType === "apartment" && (
-        <AccSection label={t("searchResults.filters.beds")} isDark={isDark}>
+        <AccSection label={t("searchResults.filters.beds")} headerColor={tk.headerText} dividerColor={tk.sidebarBorder} iconColor={themeTk.brand}>
           <MinMaxPair
             minVal={filters.apartmentFilters.beds?.min}
             maxVal={filters.apartmentFilters.beds?.max}
@@ -717,7 +724,7 @@ export const FilterBar = ({
 
       {/* Apartment Bathrooms */}
       {filters.propertyType === "apartment" && (
-        <AccSection label={t("searchResults.filters.bathrooms")} isDark={isDark}>
+        <AccSection label={t("searchResults.filters.bathrooms")} headerColor={tk.headerText} dividerColor={tk.sidebarBorder} iconColor={themeTk.brand}>
           <MinMaxPair
             minVal={filters.apartmentFilters.bathrooms?.min}
             maxVal={filters.apartmentFilters.bathrooms?.max}
@@ -776,11 +783,11 @@ export const FilterBar = ({
             transition: 'background 0.2s, color 0.3s',
           }}
         >
-          <Filter style={{ width: 14, height: 14, color: '#E8192C' }} />
+          <Filter style={{ width: 14, height: 14, color: themeTk.brand }} />
           {t("searchResults.filters.filters")}
           {activeFiltersCount > 0 && (
             <span style={{
-              background: '#E8192C', color: '#fff',
+              background: themeTk.brand, color: '#fff',
               fontSize: '0.7rem', borderRadius: '50%',
               width: 18, height: 18,
               display: 'inline-flex', alignItems: 'center', justifyContent: 'center',

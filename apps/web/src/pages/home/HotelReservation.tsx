@@ -34,34 +34,24 @@ import Zoom from "yet-another-react-lightbox/plugins/zoom";
 import Fullscreen from "yet-another-react-lightbox/plugins/fullscreen";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@/context/ThemeContext";
+import { getBookingThemeTokens } from "./booking/bookingTheme";
+import { userService } from "@/services/api/userService";
+import { User } from "@/types/user.types";
 
 const HotelReservation = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const { isDark } = useTheme();
+  const { isDark, isBlue } = useTheme();
 
-  const tk = {
-    pageBg: isDark ? "#0d0d0d" : "#f5f4f1",
-    pageText: isDark ? "#ffffff" : "#111115",
-    cardBg: isDark ? "#111115" : "#ffffff",
-    cardBorder: isDark ? "rgba(255,255,255,0.07)" : "#ede9e5",
-    cardShadow: isDark ? "0 8px 32px rgba(0,0,0,0.5)" : "0 8px 32px rgba(15,23,42,0.08)",
-    mutedText: isDark ? "rgba(255,255,255,0.40)" : "#6b6663",
-    dimText: isDark ? "rgba(255,255,255,0.70)" : "#44403c",
-    statBg: isDark ? "rgba(255,255,255,0.04)" : "#f5f2ee",
-    statBorder: isDark ? "rgba(255,255,255,0.07)" : "#e5e2de",
-    thumbBg: isDark ? "#0a0a0a" : "#f0ece8",
-    amenityBg: isDark ? "rgba(255,255,255,0.04)" : "#f5f2ee",
-    backBg: isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.06)",
-    iconCircle: isDark ? "rgba(232,25,44,0.12)" : "#fef2f2",
-  };
+  const tk = getBookingThemeTokens({ isDark, isBlue });
 
   const [hotel, setHotel] = useState<Hotel | null>(null);
   const [loading, setLoading] = useState(true);
   const [images, setImages] = useState<string[]>([]);
   const [photoIndex, setPhotoIndex] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
     const fetchHotel = async () => {
@@ -81,15 +71,36 @@ const HotelReservation = () => {
         setLoading(false);
       }
     };
+
+    const fetchUser = async () => {
+      try {
+        const data = await userService.getCurrentUser();
+        setUser(data);
+      } catch (error) {
+        console.error("Error fetching user:", error);
+      }
+    };
+
     fetchHotel();
+    fetchUser();
   }, [id]);
 
   const handleReservation = () => {
-    Swal.fire({
-      icon: "info",
-      title: t("hotel.reservation"),
-      text: t("hotel.reservationComingSoon"),
-    });
+    if (!user) {
+      localStorage.setItem("redirectAfterLogin", `/hotelBilling/${id}`);
+      Swal.fire({
+        title: t("auth.loginRequired"),
+        text: t("auth.loginToBook"),
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: t("auth.login"),
+        cancelButtonText: t("common.cancel"),
+      }).then((result) => {
+        if (result.isConfirmed) navigate("/auth");
+      });
+      return;
+    }
+    navigate(`/hotelBilling/${id}`);
   };
 
   if (loading) {
@@ -128,7 +139,7 @@ const HotelReservation = () => {
         >
           <div
             className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4"
-            style={{ background: tk.iconCircle }}
+            style={{ background: tk.brandSoftStrong }}
           >
             <Home size={40} style={{ color: "#E8192C" }} />
           </div>
@@ -396,7 +407,7 @@ const HotelReservation = () => {
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="flex items-start gap-4 p-4 rounded-xl md:col-span-2" style={{ background: tk.statBg, border: `1px solid ${tk.statBorder}` }}>
-                  <div className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: tk.iconCircle }}>
+                  <div className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: tk.brandSoftStrong }}>
                     <Mail size={20} style={{ color: "#E8192C" }} />
                   </div>
                   <div>
@@ -412,7 +423,7 @@ const HotelReservation = () => {
                   </div>
                 </div>
                 <div className="flex items-start gap-4 p-4 rounded-xl md:col-span-2" style={{ background: tk.statBg, border: `1px solid ${tk.statBorder}` }}>
-                  <div className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: tk.iconCircle }}>
+                  <div className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: tk.brandSoftStrong }}>
                     <MapPin size={20} style={{ color: "#E8192C" }} />
                   </div>
                   <div>

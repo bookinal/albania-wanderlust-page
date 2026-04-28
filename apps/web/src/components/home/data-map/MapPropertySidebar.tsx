@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { useLocalized } from "@/hooks/useLocalized";
 import { useTheme } from "@/context/ThemeContext";
+import { getHomeThemeTokens } from "../homeTheme";
 
 type Selected =
   | { type: "hotel"; data: Hotel }
@@ -28,15 +29,16 @@ interface MapPropertySidebarProps {
 }
 
 /* ─── Hotel Panel ─────────────────────────────────────────── */
-function HotelPanel({ hotel, isDark }: { hotel: Hotel; isDark: boolean }) {
+function HotelPanel({ hotel, isDark, isBlue }: { hotel: Hotel; isDark: boolean; isBlue: boolean }) {
+  const homeTk = getHomeThemeTokens({ isDark, isBlue });
   const cardBg = isDark ? '#1a1a1e' : '#ffffff';
   const textMain = isDark ? '#f5f5f5' : '#111115';
   const textMuted = isDark ? 'rgba(255,255,255,0.5)' : '#6b6663';
   const statBg = isDark ? 'rgba(255,255,255,0.06)' : '#f5f2ee';
   const divider = isDark ? 'rgba(255,255,255,0.07)' : '#e5e2de';
-  const amenityBg = isDark ? 'rgba(232,25,44,0.10)' : '#fef2f2';
-  const amenityText = isDark ? '#f87171' : '#b91c1c';
-  const fallbackBg = isDark ? 'rgba(232,25,44,0.08)' : '#fef2f2';
+  const amenityBg = isDark ? homeTk.brandSoft : isBlue ? 'rgba(2,132,199,0.08)' : '#fef2f2';
+  const amenityText = isDark ? '#f87171' : isBlue ? '#0369a1' : '#b91c1c';
+  const fallbackBg = isDark ? homeTk.brandSoft : isBlue ? 'rgba(2,132,199,0.08)' : '#fef2f2';
 
   return (
     <>
@@ -45,12 +47,12 @@ function HotelPanel({ hotel, isDark }: { hotel: Hotel; isDark: boolean }) {
           <img src={hotel.imageUrls[0]} alt={hotel.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
         ) : (
           <div style={{ width: '100%', height: '100%', background: fallbackBg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <BedDouble className="w-12 h-12" style={{ color: '#E8192C', opacity: 0.3 }} />
+            <BedDouble className="w-12 h-12" style={{ color: homeTk.brand, opacity: 0.3 }} />
           </div>
         )}
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.55), transparent)' }} />
         <div style={{ position: 'absolute', bottom: '0.75rem', left: '1rem' }}>
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', padding: '0.25rem 0.625rem', borderRadius: '9999px', background: '#E8192C', color: '#fff', fontSize: '0.75rem', fontWeight: 600 }}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', padding: '0.25rem 0.625rem', borderRadius: '9999px', background: homeTk.brand, color: '#fff', fontSize: '0.75rem', fontWeight: 600 }}>
             Hotel
           </span>
         </div>
@@ -70,8 +72,8 @@ function HotelPanel({ hotel, isDark }: { hotel: Hotel; isDark: boolean }) {
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
           {hotel.price && (
             <div style={{ background: statBg, borderRadius: '0.75rem', padding: '0.75rem' }}>
-              <p style={{ fontSize: '0.75rem', color: '#E8192C', fontWeight: 500, margin: '0 0 0.25rem' }}>Price / night</p>
-              <p style={{ fontSize: '1.15rem', fontWeight: 700, color: '#E8192C', margin: 0 }}>€{hotel.price}</p>
+              <p style={{ fontSize: '0.75rem', color: homeTk.brand, fontWeight: 500, margin: '0 0 0.25rem' }}>Price / night</p>
+              <p style={{ fontSize: '1.15rem', fontWeight: 700, color: homeTk.brand, margin: 0 }}>€{hotel.price}</p>
             </div>
           )}
           {hotel.rating && (
@@ -131,7 +133,7 @@ function HotelPanel({ hotel, isDark }: { hotel: Hotel; isDark: boolean }) {
 
       <div style={{ padding: '1rem', borderTop: `1px solid ${divider}`, flexShrink: 0 }}>
         <Link to={`/hotelReservation/${hotel.id}`} style={{ display: 'block' }}>
-          <button style={{ width: '100%', background: '#E8192C', color: '#fff', fontWeight: 600, padding: '0.875rem 1rem', borderRadius: '0.75rem', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.25rem', fontSize: '0.95rem', boxShadow: '0 4px 16px rgba(232,25,44,0.35)' }}>
+          <button style={{ width: '100%', background: homeTk.brand, color: '#fff', fontWeight: 600, padding: '0.875rem 1rem', borderRadius: '0.75rem', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.25rem', fontSize: '0.95rem', boxShadow: `0 4px 16px ${homeTk.brandSoftStrong}` }}>
             Book Now
             <ChevronRight className="w-4 h-4" />
           </button>
@@ -142,14 +144,15 @@ function HotelPanel({ hotel, isDark }: { hotel: Hotel; isDark: boolean }) {
 }
 
 /* ─── Apartment Panel ─────────────────────────────────────── */
-function ApartmentPanel({ apartment, isDark }: { apartment: Apartment; isDark: boolean }) {
+function ApartmentPanel({ apartment, isDark, isBlue }: { apartment: Apartment; isDark: boolean; isBlue: boolean }) {
+  const homeTk = getHomeThemeTokens({ isDark, isBlue });
   const textMain = isDark ? '#f5f5f5' : '#111115';
   const textMuted = isDark ? 'rgba(255,255,255,0.5)' : '#6b6663';
   const statBg = isDark ? 'rgba(255,255,255,0.06)' : '#f5f2ee';
   const divider = isDark ? 'rgba(255,255,255,0.07)' : '#e5e2de';
-  const fallbackBg = isDark ? 'rgba(232,25,44,0.08)' : '#fef2f2';
-  const amenityBg = isDark ? 'rgba(232,25,44,0.10)' : '#fef2f2';
-  const amenityText = isDark ? '#f87171' : '#b91c1c';
+  const fallbackBg = isDark ? homeTk.brandSoft : isBlue ? 'rgba(2,132,199,0.08)' : '#fef2f2';
+  const amenityBg = isDark ? homeTk.brandSoft : isBlue ? 'rgba(2,132,199,0.08)' : '#fef2f2';
+  const amenityText = isDark ? '#f87171' : isBlue ? '#0369a1' : '#b91c1c';
 
   return (
     <>
@@ -158,12 +161,12 @@ function ApartmentPanel({ apartment, isDark }: { apartment: Apartment; isDark: b
           <img src={apartment.imageUrls[0]} alt={apartment.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
         ) : (
           <div style={{ width: '100%', height: '100%', background: fallbackBg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <BedDouble className="w-12 h-12" style={{ color: '#E8192C', opacity: 0.3 }} />
+            <BedDouble className="w-12 h-12" style={{ color: homeTk.brand, opacity: 0.3 }} />
           </div>
         )}
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.55), transparent)' }} />
         <div style={{ position: 'absolute', bottom: '0.75rem', left: '1rem' }}>
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', padding: '0.25rem 0.625rem', borderRadius: '9999px', background: '#E8192C', color: '#fff', fontSize: '0.75rem', fontWeight: 600 }}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', padding: '0.25rem 0.625rem', borderRadius: '9999px', background: homeTk.brand, color: '#fff', fontSize: '0.75rem', fontWeight: 600 }}>
             Apartment
           </span>
         </div>
@@ -183,8 +186,8 @@ function ApartmentPanel({ apartment, isDark }: { apartment: Apartment; isDark: b
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
           {apartment.price && (
             <div style={{ background: statBg, borderRadius: '0.75rem', padding: '0.75rem' }}>
-              <p style={{ fontSize: '0.75rem', color: '#E8192C', fontWeight: 500, margin: '0 0 0.25rem' }}>Price / night</p>
-              <p style={{ fontSize: '1.15rem', fontWeight: 700, color: '#E8192C', margin: 0 }}>€{apartment.price}</p>
+              <p style={{ fontSize: '0.75rem', color: homeTk.brand, fontWeight: 500, margin: '0 0 0.25rem' }}>Price / night</p>
+              <p style={{ fontSize: '1.15rem', fontWeight: 700, color: homeTk.brand, margin: 0 }}>€{apartment.price}</p>
             </div>
           )}
           {apartment.rating && (
@@ -234,7 +237,7 @@ function ApartmentPanel({ apartment, isDark }: { apartment: Apartment; isDark: b
 
       <div style={{ padding: '1rem', borderTop: `1px solid ${divider}`, flexShrink: 0 }}>
         <Link to={`/apartmentReservation/${apartment.id}`} style={{ display: 'block' }}>
-          <button style={{ width: '100%', background: '#E8192C', color: '#fff', fontWeight: 600, padding: '0.875rem 1rem', borderRadius: '0.75rem', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.25rem', fontSize: '0.95rem', boxShadow: '0 4px 16px rgba(232,25,44,0.35)' }}>
+          <button style={{ width: '100%', background: homeTk.brand, color: '#fff', fontWeight: 600, padding: '0.875rem 1rem', borderRadius: '0.75rem', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.25rem', fontSize: '0.95rem', boxShadow: `0 4px 16px ${homeTk.brandSoftStrong}` }}>
             View Details
             <ChevronRight className="w-4 h-4" />
           </button>
@@ -245,17 +248,18 @@ function ApartmentPanel({ apartment, isDark }: { apartment: Apartment; isDark: b
 }
 
 /* ─── Destination Panel ───────────────────────────────────── */
-function DestinationPanel({ destination, isDark }: { destination: Destination; isDark: boolean }) {
+function DestinationPanel({ destination, isDark, isBlue }: { destination: Destination; isDark: boolean; isBlue: boolean }) {
   const { localize } = useLocalized();
+  const homeTk = getHomeThemeTokens({ isDark, isBlue });
   const textMain = isDark ? '#f5f5f5' : '#111115';
   const textMuted = isDark ? 'rgba(255,255,255,0.5)' : '#6b6663';
   const statBg = isDark ? 'rgba(255,255,255,0.06)' : '#f5f2ee';
   const divider = isDark ? 'rgba(255,255,255,0.07)' : '#e5e2de';
-  const infoBg = isDark ? 'rgba(232,25,44,0.08)' : '#fef2f2';
-  const infoText = isDark ? '#f87171' : '#b91c1c';
+  const infoBg = isDark ? homeTk.brandSoft : isBlue ? 'rgba(2,132,199,0.08)' : '#fef2f2';
+  const infoText = isDark ? '#f87171' : isBlue ? '#0369a1' : '#b91c1c';
   const fallbackBg = isDark ? 'rgba(255,255,255,0.04)' : '#faf8f5';
-  const catBg = isDark ? 'rgba(232,25,44,0.12)' : '#fef2f2';
-  const catText = isDark ? '#f87171' : '#b91c1c';
+  const catBg = isDark ? homeTk.brandSoftStrong : isBlue ? 'rgba(2,132,199,0.12)' : '#fef2f2';
+  const catText = isDark ? '#f87171' : isBlue ? '#0369a1' : '#b91c1c';
 
   return (
     <>
@@ -264,12 +268,12 @@ function DestinationPanel({ destination, isDark }: { destination: Destination; i
           <img src={destination.imageUrls[0]} alt={localize(destination.name)} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
         ) : (
           <div style={{ width: '100%', height: '100%', background: fallbackBg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Compass className="w-12 h-12" style={{ color: '#E8192C', opacity: 0.3 }} />
+            <Compass className="w-12 h-12" style={{ color: homeTk.brand, opacity: 0.3 }} />
           </div>
         )}
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.65), transparent)' }} />
         <div style={{ position: 'absolute', bottom: '0.75rem', left: '1rem' }}>
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', padding: '0.25rem 0.625rem', borderRadius: '9999px', fontSize: '0.75rem', fontWeight: 600, background: catBg, color: catText, border: `1px solid ${isDark ? 'rgba(232,25,44,0.25)' : '#fecaca'}` }}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', padding: '0.25rem 0.625rem', borderRadius: '9999px', fontSize: '0.75rem', fontWeight: 600, background: catBg, color: catText, border: `1px solid ${homeTk.brandBorder}` }}>
             <Tag className="w-3 h-3" />
             {destination.category}
           </span>
@@ -296,8 +300,8 @@ function DestinationPanel({ destination, isDark }: { destination: Destination; i
           </div>
         )}
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '1rem', background: infoBg, borderRadius: '0.75rem', border: `1px solid ${isDark ? 'rgba(232,25,44,0.18)' : '#fecaca'}` }}>
-          <Compass className="w-6 h-6 flex-shrink-0" style={{ color: '#E8192C' }} />
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '1rem', background: infoBg, borderRadius: '0.75rem', border: `1px solid ${homeTk.brandBorder}` }}>
+          <Compass className="w-6 h-6 flex-shrink-0" style={{ color: homeTk.brand }} />
           <p style={{ fontSize: '0.875rem', color: infoText, fontWeight: 500, margin: 0 }}>
             Explore this {destination.category.toLowerCase()} destination in Albania
           </p>
@@ -312,13 +316,14 @@ export default function MapPropertySidebar({
   selected,
   onClose,
 }: MapPropertySidebarProps) {
-  const { isDark } = useTheme();
+  const { isDark, isBlue } = useTheme();
   const isOpen = !!selected;
+  const homeTk = getHomeThemeTokens({ isDark, isBlue });
 
-  const sidebarBg = isDark ? '#111115' : '#ffffff';
-  const closeBg = isDark ? 'rgba(255,255,255,0.10)' : 'rgba(255,255,255,0.92)';
-  const closeColor = isDark ? 'rgba(255,255,255,0.7)' : '#374151';
-  const shadowColor = isDark ? 'rgba(0,0,0,0.7)' : 'rgba(15,23,42,0.25)';
+  const sidebarBg = isDark ? '#111115' : isBlue ? 'rgba(255,255,255,0.9)' : '#ffffff';
+  const closeBg = isDark ? 'rgba(255,255,255,0.10)' : isBlue ? 'rgba(255,255,255,0.96)' : 'rgba(255,255,255,0.92)';
+  const closeColor = isDark ? 'rgba(255,255,255,0.7)' : isBlue ? '#0369a1' : '#374151';
+  const shadowColor = isDark ? 'rgba(0,0,0,0.7)' : isBlue ? 'rgba(3,37,65,0.25)' : 'rgba(15,23,42,0.25)';
 
   return (
     <>
@@ -359,13 +364,13 @@ export default function MapPropertySidebar({
         </button>
 
         {selected?.type === "hotel" && (
-          <HotelPanel hotel={selected.data as Hotel} isDark={isDark} />
+          <HotelPanel hotel={selected.data as Hotel} isDark={isDark} isBlue={isBlue} />
         )}
         {selected?.type === "apartment" && (
-          <ApartmentPanel apartment={selected.data as Apartment} isDark={isDark} />
+          <ApartmentPanel apartment={selected.data as Apartment} isDark={isDark} isBlue={isBlue} />
         )}
         {selected?.type === "destination" && (
-          <DestinationPanel destination={selected.data as Destination} isDark={isDark} />
+          <DestinationPanel destination={selected.data as Destination} isDark={isDark} isBlue={isBlue} />
         )}
       </div>
     </>
