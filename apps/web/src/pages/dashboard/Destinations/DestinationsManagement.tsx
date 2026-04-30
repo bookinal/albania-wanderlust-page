@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import {
   Search,
@@ -48,6 +49,7 @@ import {
   type SupportedLocale,
 } from "@/hooks/useLocalized";
 import { useTheme } from "@/context/ThemeContext";
+import { DESTINATIONS_QUERY_KEY } from "@/hooks/useDestinations";
 
 /* ============================== Types ============================== */
 
@@ -114,6 +116,7 @@ export default function DestinationsManagement() {
   const { t } = useTranslation();
   const { localize } = useLocalized();
   const { isDark } = useTheme();
+  const queryClient = useQueryClient();
 
   const [destinations, setDestinations] = useState<Destination[]>([]);
   const [loading, setLoading] = useState(true);
@@ -189,6 +192,7 @@ export default function DestinationsManagement() {
       setLoading(true);
       const data = await getAllDestinations();
       setDestinations(data);
+      queryClient.setQueryData(DESTINATIONS_QUERY_KEY, data);
       setError(null);
     } catch (err) {
       console.error("Error fetching destinations:", err);
@@ -253,6 +257,7 @@ export default function DestinationsManagement() {
       try {
         await deleteDestination(destination.id);
         setDestinations((prev) => prev.filter((d) => d.id !== destination.id));
+        await queryClient.invalidateQueries({ queryKey: DESTINATIONS_QUERY_KEY });
         Swal.fire(t("destinationsManagement.delete.successTitle"), t("destinationsManagement.delete.successMessage"), "success");
       } catch (err) {
         console.error("Error deleting destination:", err);
@@ -309,10 +314,12 @@ export default function DestinationsManagement() {
       if (dialogMode === "create") {
         const newDestination = await createDestination(destinationData);
         setDestinations((prev) => [newDestination, ...prev]);
+        await queryClient.invalidateQueries({ queryKey: DESTINATIONS_QUERY_KEY });
         Swal.fire(t("destinationsManagement.success.created"), t("destinationsManagement.success.createdMessage"), "success");
       } else if (dialogMode === "edit" && selectedDestination) {
         const updated = await updateDestination(selectedDestination.id, destinationData);
         setDestinations((prev) => prev.map((d) => (d.id === selectedDestination.id ? updated : d)));
+        await queryClient.invalidateQueries({ queryKey: DESTINATIONS_QUERY_KEY });
         Swal.fire(t("destinationsManagement.success.updated"), t("destinationsManagement.success.updatedMessage"), "success");
       }
 

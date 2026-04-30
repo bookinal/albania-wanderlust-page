@@ -2,9 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import { ArrowLeft, MapPin, Heart, Share2, Loader2 } from "lucide-react";
-import { Destination } from "@albania/shared-types";
 import {
-  getDestinationById,
   addDestinationToCurrentUserWishlist,
 } from "@albania/api-client";
 import { useToast } from "@/hooks/use-toast";
@@ -13,6 +11,9 @@ import L from "leaflet";
 import { useTranslation } from "react-i18next";
 import { useLocalized } from "@/hooks/useLocalized";
 import { useTheme } from "@/context/ThemeContext";
+import PrimarySearchAppBar from "@/components/home/AppBar";
+import { getHomeThemeTokens } from "@/components/home/homeTheme";
+import { useDestination } from "@/hooks/useDestinations";
 
 // Fix for default marker icon issue in React-Leaflet
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -31,49 +32,52 @@ const DestinationDetails = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { isDark } = useTheme();
-  const [destination, setDestination] = useState<Destination | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { isDark, isBlue } = useTheme();
+  const homeTk = getHomeThemeTokens({ isDark, isBlue });
   const [isAddingToWishlist, setIsAddingToWishlist] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const {
+    data: destination,
+    isLoading,
+    error,
+  } = useDestination(id);
 
   const tk = {
-    pageBg: isDark ? '#0d0d0d' : '#f5f4f1',
-    pageText: isDark ? '#ffffff' : '#111115',
-    headerBg: isDark ? '#111111' : '#ffffff',
-    headerBorder: isDark ? 'rgba(255,255,255,0.06)' : '#e5e2de',
-    cardBg: isDark ? 'rgba(255,255,255,0.025)' : '#ffffff',
-    cardBorder: isDark ? 'rgba(255,255,255,0.07)' : '#ede9e5',
-    cardShadow: isDark ? '0 8px 32px rgba(0,0,0,0.5)' : '0 8px 32px rgba(15,23,42,0.08)',
-    mutedText: isDark ? 'rgba(255,255,255,0.40)' : '#6b6663',
-    dimText: isDark ? 'rgba(255,255,255,0.70)' : '#44403c',
-    backBg: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
-    mapFallbackBg: isDark ? 'rgba(255,255,255,0.04)' : '#f0ece8',
-    btnOutlineBg: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)',
-    btnOutlineBorder: isDark ? 'rgba(255,255,255,0.14)' : '#d0ccc8',
-    thumbBorder: isDark ? 'rgba(255,255,255,0.10)' : '#e5e2de',
+    pageBg: isDark
+      ? "#0a0a0c"
+      : isBlue
+        ? "linear-gradient(180deg, hsl(205 55% 96%) 0%, hsl(204 60% 98%) 100%)"
+        : "#f5f4f1",
+    pageText: homeTk.textMain,
+    headerBg: isDark
+      ? "rgba(10,10,12,0.92)"
+      : isBlue
+        ? "rgba(240,249,255,0.88)"
+        : "rgba(255,255,255,0.92)",
+    headerBorder: homeTk.dividerColor,
+    cardBg: isDark ? "rgba(255,255,255,0.03)" : isBlue ? "rgba(255,255,255,0.86)" : "#ffffff",
+    cardBorder: isDark ? "rgba(255,255,255,0.08)" : isBlue ? "rgba(2,132,199,0.14)" : "#ede9e5",
+    cardShadow: isDark
+      ? "0 12px 36px rgba(0,0,0,0.42)"
+      : isBlue
+        ? "0 18px 48px rgba(3,37,65,0.12)"
+        : "0 8px 32px rgba(15,23,42,0.08)",
+    mutedText: homeTk.textMuted,
+    dimText: isDark ? "rgba(240,236,232,0.76)" : isBlue ? "hsl(211 22% 35%)" : "#44403c",
+    backBg: isDark ? "rgba(255,255,255,0.06)" : isBlue ? "rgba(2,132,199,0.08)" : "rgba(0,0,0,0.06)",
+    mapFallbackBg: isDark ? "rgba(255,255,255,0.04)" : isBlue ? "rgba(255,255,255,0.72)" : "#f0ece8",
+    btnOutlineBg: isDark ? "rgba(255,255,255,0.06)" : isBlue ? "rgba(255,255,255,0.72)" : "rgba(0,0,0,0.04)",
+    btnOutlineBorder: isDark ? "rgba(255,255,255,0.14)" : isBlue ? "rgba(2,132,199,0.18)" : "#d0ccc8",
+    thumbBorder: isDark ? "rgba(255,255,255,0.10)" : isBlue ? "rgba(2,132,199,0.16)" : "#e5e2de",
+    heroGradient: isBlue
+      ? "linear-gradient(135deg, rgba(8,47,73,0.94), rgba(3,105,161,0.76), rgba(56,189,248,0.34))"
+      : isDark
+        ? "linear-gradient(135deg, rgba(17,17,21,0.92), rgba(40,40,48,0.72), rgba(17,17,21,0.92))"
+        : "linear-gradient(135deg, rgba(232,25,44,0.88), rgba(127,29,29,0.72), rgba(17,17,21,0.5))",
+    brand: homeTk.brand,
+    brandSoft: homeTk.brandSoft,
+    pillText: "#ffffff",
   };
-
-  useEffect(() => {
-    const fetchDestination = async () => {
-      if (!id) return;
-
-      try {
-        setIsLoading(true);
-        const data = await getDestinationById(id);
-        setDestination(data);
-        setError(null);
-      } catch (err) {
-        console.error("Error fetching destination:", err);
-        setError("Failed to load destination details");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchDestination();
-  }, [id]);
 
   const handleAddToWishlist = async () => {
     if (!destination) return;
@@ -82,21 +86,21 @@ const DestinationDetails = () => {
       setIsAddingToWishlist(true);
       await addDestinationToCurrentUserWishlist(destination.id);
       toast({
-        title: "Success",
-        description: "Destination added to your wishlist.",
+        title: t("common.success"),
+        description: t("home.destinations.addedToWishlist"),
       });
     } catch (err: any) {
       console.error("Failed to add to wishlist:", err);
       if (err.code === "23505") {
         toast({
-          title: "Already in Wishlist",
-          description: "This destination is already in your wishlist.",
+          title: t("common.warning"),
+          description: t("home.destinations.alreadyInWishlist"),
           variant: "default",
         });
       } else {
         toast({
-          title: "Error",
-          description: "Please login to add to wishlist.",
+          title: t("common.error"),
+          description: t("home.destinations.loginToAddWishlist"),
           variant: "destructive",
         });
       }
@@ -121,33 +125,39 @@ const DestinationDetails = () => {
     } else {
       navigator.clipboard.writeText(window.location.href);
       toast({
-        title: "Link Copied",
-        description: "Destination link copied to clipboard!",
+        title: t("home.destinations.linkCopiedTitle"),
+        description: t("home.destinations.linkCopiedDescription"),
       });
     }
   };
 
   if (isLoading) {
     return (
-      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: tk.pageBg }}>
-        <Loader2 className="w-8 h-8 animate-spin" style={{ color: '#E8192C' }} />
+      <div style={{ minHeight: "100vh", background: tk.pageBg }}>
+        <PrimarySearchAppBar />
+        <div style={{ minHeight: "calc(100vh - 4rem)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <Loader2 className="w-8 h-8 animate-spin" style={{ color: tk.brand }} />
+        </div>
       </div>
     );
   }
 
   if (error || !destination) {
     return (
-      <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: tk.pageBg, padding: '0 1rem' }}>
-        <h2 style={{ fontSize: '1.5rem', fontWeight: 700, color: tk.pageText, marginBottom: '1rem' }}>
-          {error || "Destination not found"}
-        </h2>
-        <button
-          onClick={() => navigate("/")}
-          style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.625rem 1.25rem', background: '#E8192C', color: '#fff', border: 'none', borderRadius: '0.5rem', fontWeight: 600, cursor: 'pointer', fontSize: '0.9rem' }}
-        >
-          <ArrowLeft className="w-4 h-4" />
-          Back to Home
-        </button>
+      <div style={{ minHeight: "100vh", background: tk.pageBg }}>
+        <PrimarySearchAppBar />
+        <div style={{ minHeight: "calc(100vh - 4rem)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "0 1rem" }}>
+          <h2 style={{ fontSize: "1.5rem", fontWeight: 700, color: tk.pageText, marginBottom: "1rem" }}>
+            {error ? t("home.destinations.loadDetailsError") : t("home.destinations.notFound")}
+          </h2>
+          <button
+            onClick={() => navigate("/")}
+            style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem", padding: "0.625rem 1.25rem", background: tk.brand, color: "#fff", border: "none", borderRadius: "0.5rem", fontWeight: 600, cursor: "pointer", fontSize: "0.9rem" }}
+          >
+            <ArrowLeft className="w-4 h-4" />
+            {t("home.destinations.backToHome")}
+          </button>
+        </div>
       </div>
     );
   }
@@ -159,8 +169,10 @@ const DestinationDetails = () => {
 
   return (
     <div style={{ minHeight: '100vh', background: tk.pageBg, color: tk.pageText }}>
+      <PrimarySearchAppBar />
+
       {/* Header */}
-      <div style={{ background: tk.headerBg, borderBottom: `1px solid ${tk.headerBorder}`, position: 'sticky', top: 0, zIndex: 40 }}>
+      <div style={{ background: tk.headerBg, borderBottom: `1px solid ${tk.headerBorder}`, position: 'sticky', top: '4rem', zIndex: 40, backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)' }}>
         <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '1rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <button
@@ -168,9 +180,15 @@ const DestinationDetails = () => {
               style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 0.875rem', background: tk.backBg, border: `1px solid ${tk.btnOutlineBorder}`, borderRadius: '0.5rem', color: tk.pageText, cursor: 'pointer', fontSize: '0.875rem', fontWeight: 500 }}
             >
               <ArrowLeft className="w-5 h-5" />
-              Back
-            </button>
-            <div style={{ display: 'flex', gap: '0.5rem' }}>
+               {t("home.destinations.back")}
+             </button>
+             <button
+               onClick={() => navigate("/destinations")}
+               style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 0.875rem', background: tk.btnOutlineBg, border: `1px solid ${tk.btnOutlineBorder}`, borderRadius: '0.5rem', color: tk.pageText, cursor: 'pointer', fontSize: '0.875rem', fontWeight: 500, marginLeft: 'auto', marginRight: '0.5rem' }}
+             >
+               {t("home.destinations.seeAllDestinations")}
+             </button>
+             <div style={{ display: 'flex', gap: '0.5rem' }}>
               <button
                 onClick={handleShare}
                 style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '2.25rem', height: '2.25rem', background: tk.btnOutlineBg, border: `1px solid ${tk.btnOutlineBorder}`, borderRadius: '0.5rem', color: tk.dimText, cursor: 'pointer' }}
@@ -217,7 +235,7 @@ const DestinationDetails = () => {
                   <button
                     key={index}
                     onClick={() => setSelectedImageIndex(index)}
-                    style={{ position: 'relative', height: '5rem', borderRadius: '0.5rem', overflow: 'hidden', border: selectedImageIndex === index ? '3px solid #E8192C' : `2px solid ${tk.thumbBorder}`, cursor: 'pointer', transform: selectedImageIndex === index ? 'scale(1.05)' : 'scale(1)', transition: 'all 0.2s', padding: 0 }}
+                    style={{ position: 'relative', height: '5rem', borderRadius: '0.5rem', overflow: 'hidden', border: selectedImageIndex === index ? `3px solid ${tk.brand}` : `2px solid ${tk.thumbBorder}`, cursor: 'pointer', transform: selectedImageIndex === index ? 'scale(1.05)' : 'scale(1)', transition: 'all 0.2s', padding: 0, boxShadow: selectedImageIndex === index ? tk.cardShadow : 'none' }}
                   >
                     <img
                       src={url}
@@ -235,7 +253,7 @@ const DestinationDetails = () => {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
             <div>
               <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', marginBottom: '1rem' }}>
-                <MapPin className="w-6 h-6 flex-shrink-0 mt-1" style={{ color: '#E8192C' }} />
+                <MapPin className="w-6 h-6 flex-shrink-0 mt-1" style={{ color: tk.brand }} />
                 <h1 style={{ fontSize: '2.25rem', fontWeight: 700, color: tk.pageText, lineHeight: 1.2 }}>
                   {localize(destination.name)}
                 </h1>
@@ -246,7 +264,7 @@ const DestinationDetails = () => {
             </div>
 
             {/* Location Map */}
-            <div style={{ borderRadius: '0.75rem', overflow: 'hidden', border: `1px solid ${tk.cardBorder}`, boxShadow: tk.cardShadow }}>
+            <div style={{ borderRadius: '0.75rem', overflow: 'hidden', border: `1px solid ${tk.cardBorder}`, boxShadow: tk.cardShadow, background: tk.cardBg }}>
               <div style={{ height: '18rem' }}>
                 {destination.lat && destination.lng ? (
                   <MapContainer
@@ -263,14 +281,14 @@ const DestinationDetails = () => {
                       <Popup>
                         <div style={{ textAlign: 'center' }}>
                           <h3 style={{ fontWeight: 700, margin: 0 }}>{localize(destination.name)}</h3>
-                          <p style={{ fontSize: '0.875rem', color: '#6b6663', margin: '0.25rem 0 0' }}>{destination.category}</p>
+                           <p style={{ fontSize: '0.875rem', color: tk.mutedText, margin: '0.25rem 0 0' }}>{destination.category}</p>
                         </div>
                       </Popup>
                     </Marker>
                   </MapContainer>
                 ) : (
                   <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: tk.mapFallbackBg }}>
-                    <p style={{ color: tk.mutedText }}>Location not available</p>
+                    <p style={{ color: tk.mutedText }}>{t("home.destinations.locationNotAvailable")}</p>
                   </div>
                 )}
               </div>
@@ -281,14 +299,14 @@ const DestinationDetails = () => {
               <button
                 onClick={handleAddToWishlist}
                 disabled={isAddingToWishlist}
-                style={{ flex: 1, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', padding: '0.75rem 1.25rem', background: 'linear-gradient(135deg, #E8192C, #c0101f)', color: '#fff', border: 'none', borderRadius: '0.625rem', fontWeight: 600, cursor: isAddingToWishlist ? 'not-allowed' : 'pointer', opacity: isAddingToWishlist ? 0.7 : 1, fontSize: '0.9rem', boxShadow: '0 4px 16px rgba(232,25,44,0.35)' }}
+                style={{ flex: 1, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', padding: '0.75rem 1.25rem', background: isBlue ? 'linear-gradient(135deg, #0284c7, #0369a1)' : 'linear-gradient(135deg, #E8192C, #c0101f)', color: '#fff', border: 'none', borderRadius: '0.625rem', fontWeight: 600, cursor: isAddingToWishlist ? 'not-allowed' : 'pointer', opacity: isAddingToWishlist ? 0.7 : 1, fontSize: '0.9rem', boxShadow: isBlue ? '0 4px 16px rgba(2,132,199,0.32)' : '0 4px 16px rgba(232,25,44,0.35)' }}
               >
                 {isAddingToWishlist ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
                 ) : (
                   <Heart className="w-4 h-4" />
                 )}
-                Add to Wishlist
+                {t("home.destinations.addToWishlist")}
               </button>
               <button
                 onClick={() =>
@@ -304,6 +322,12 @@ const DestinationDetails = () => {
                 {t("map.openInGoogleMaps")}
               </button>
             </div>
+            <button
+              onClick={() => navigate("/destinations")}
+              style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', padding: '0.85rem 1.25rem', background: tk.btnOutlineBg, color: tk.pageText, border: `1px solid ${tk.btnOutlineBorder}`, borderRadius: '0.625rem', fontWeight: 600, cursor: 'pointer', fontSize: '0.9rem' }}
+            >
+              {t("home.destinations.seeAllDestinations")}
+            </button>
           </div>
         </div>
       </div>

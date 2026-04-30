@@ -8,6 +8,7 @@ import { useTranslation } from "react-i18next";
 import { useTheme } from "@/context/ThemeContext";
 import { useAuth } from "@/context/AuthContext";
 import { getHomeThemeTokens } from "./homeTheme";
+import { useDestinations } from "@/hooks/useDestinations";
 import {
   Heart,
   CalendarDays,
@@ -38,7 +39,6 @@ import {
   DropdownMenuSubContent,
   DropdownMenuPortal,
 } from "@/components/ui/dropdown-menu";
-import { getAllDestinations } from "@/services/api/destinationService";
 import { Destination } from "@albania/shared-types";
 
 export default function PrimarySearchAppBar() {
@@ -56,14 +56,8 @@ export default function PrimarySearchAppBar() {
   const [mobileExpandedCategory, setMobileExpandedCategory] = React.useState<string | null>(null);
 
   // Destinations data for the Dropdown
-  const [destinations, setDestinations] = React.useState<Destination[]>([]);
+  const { data: destinations = [] } = useDestinations();
   const DESTINATION_CATEGORIES = ["Adventure", "Historic", "Beach", "Cultural", "Nature", "City"];
-
-  React.useEffect(() => {
-    getAllDestinations()
-      .then((data) => setDestinations(data))
-      .catch((err) => console.error("Failed to fetch destinations for AppBar", err));
-  }, []);
 
   const groupedDestinations = React.useMemo(() => {
     const groups: Record<string, Destination[]> = {};
@@ -385,7 +379,7 @@ export default function PrimarySearchAppBar() {
                               return (
                                 <DropdownMenuItem
                                   key={dest.id}
-                                  onClick={() => navigate(`/destinations/${dest.id}`)}
+                                  onClick={() => navigate(`/destination/${dest.id}`)}
                                   className="rounded-xl mx-1 gap-4 py-3 cursor-pointer items-start"
                                   style={{ color: tk.dropdownText }}
                                 >

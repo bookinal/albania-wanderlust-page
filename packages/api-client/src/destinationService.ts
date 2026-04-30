@@ -5,7 +5,7 @@ import {
   Wishlist,
   WishlistDto,
 } from "@albania/shared-types";
-import { uploadImages } from "./storageService";
+import { deleteImagesByUrls, uploadImages } from "./storageService";
 import { authService } from "./authService";
 
 /**
@@ -81,6 +81,18 @@ export const updateDestination = async (
  * @param id - Destination UUID (string)
  */
 export const deleteDestination = async (id: string): Promise<void> => {
+  try {
+    const destination = await getDestinationById(id);
+    if (destination.imageUrls && destination.imageUrls.length > 0) {
+      await deleteImagesByUrls(destination.imageUrls);
+    }
+  } catch (err) {
+    console.warn(
+      `[Destination Service] Could not delete images for destination ID ${id}:`,
+      err,
+    );
+  }
+
   const { error } = await apiClient.from("destination").delete().eq("id", id);
   if (error) {
     console.error("[Destination Service] Error deleting destination:", error);

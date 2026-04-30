@@ -307,7 +307,7 @@ const Footer = () => {
                     color: isDark ? "rgba(255,255,255,0.5)" : "#64748b",
                   }}
                 >
-                  PayPal
+                  Stripe
                 </span>
               </div>
             </div>

@@ -11,11 +11,11 @@ interface ThemeContextValue {
 }
 
 const ThemeContext = React.createContext<ThemeContextValue>({
-  theme: "dark",
+  theme: "blue",
   toggleTheme: () => {},
-  isDark: true,
+  isDark: false,
   isLight: false,
-  isBlue: false,
+  isBlue: true,
 });
 
 export const useTheme = () => React.useContext(ThemeContext);
@@ -28,7 +28,7 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
         return stored;
       }
     } catch {}
-    return "dark";
+    return "blue";
   });
 
   const toggleTheme = React.useCallback(() => {
