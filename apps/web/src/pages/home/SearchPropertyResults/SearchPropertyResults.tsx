@@ -80,65 +80,6 @@ const SearchPropertyResults = () => {
     resetFilters,
   } = useSearchFilters(initialFilters);
 
-  // Set filters from navigation state
-  useEffect(() => {
-    if (state) {
-      if (state.destination) {
-        setHotelFilters({ searchTerm: state.destination });
-        setApartmentFilters({ searchTerm: state.destination });
-      }
-
-      if (
-        state.checkInDate ||
-        state.checkOutDate ||
-        state.adults !== undefined ||
-        state.children !== undefined ||
-        state.rooms !== undefined
-      ) {
-        setFilters({
-          checkInDate: state.checkInDate,
-          checkOutDate: state.checkOutDate,
-          adults: state.adults,
-          children: state.children,
-          rooms: state.rooms,
-        });
-
-        if (state.adults !== undefined || state.children !== undefined) {
-          const requiredBeds = (state.adults || 0) + (state.children || 0);
-          setApartmentFilters({
-            beds: {
-              min: requiredBeds,
-              max: filters.apartmentFilters.beds?.max,
-            },
-          });
-        }
-
-        if (state.rooms !== undefined) {
-          setHotelFilters({
-            rooms: {
-              min: state.rooms,
-              max: filters.hotelFilters.rooms?.max,
-            },
-          });
-          setApartmentFilters({
-            rooms: {
-              min: state.rooms,
-              max: filters.apartmentFilters.rooms?.max,
-            },
-          });
-        }
-      }
-    }
-  }, [
-    state,
-    setFilters,
-    setHotelFilters,
-    setApartmentFilters,
-    filters.hotelFilters.rooms?.max,
-    filters.apartmentFilters.beds?.max,
-    filters.apartmentFilters.rooms?.max,
-  ]);
-
   // Infinite Query
   const {
     data,
@@ -222,25 +163,31 @@ const SearchPropertyResults = () => {
     children?: number;
     rooms?: number;
   }) => {
+    const nextAdults = guests.adults ?? filters.adults ?? 0;
+    const nextChildren = guests.children ?? filters.children ?? 0;
+    const nextRooms = guests.rooms ?? filters.rooms;
+
     setFilters({
-      adults: guests.adults ?? filters.adults,
-      children: guests.children ?? filters.children,
-      rooms: guests.rooms ?? filters.rooms,
+      adults: nextAdults,
+      children: nextChildren,
+      rooms: nextRooms,
     });
+
     setApartmentFilters({
       beds: {
-        min: (guests.adults || 2) + (guests.children || 0),
+        min: nextAdults + nextChildren,
         max: filters.apartmentFilters.beds?.max,
       },
       rooms: {
-        min: guests.rooms || 1,
+        min: nextRooms,
         max: filters.apartmentFilters.rooms?.max,
       },
     });
+
     if (filters.propertyType === "hotel") {
       setHotelFilters({
         rooms: {
-          min: guests.rooms || 1,
+          min: nextRooms,
           max: filters.hotelFilters.rooms?.max,
         },
       });

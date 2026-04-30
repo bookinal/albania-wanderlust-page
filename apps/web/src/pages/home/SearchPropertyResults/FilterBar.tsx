@@ -9,6 +9,7 @@ import {
   ApartmentFiltersInput,
   DestinationFiltersInput,
   SearchFiltersState,
+  defaultSearchFilters,
 } from "@/types/search.types";
 
 interface FilterBarProps {
@@ -185,7 +186,11 @@ export const FilterBar = ({
     
     if (filters.propertyType !== "destination") {
       if (filters.checkInDate || filters.checkOutDate) count++;
-      if (filters.adults || filters.children || filters.rooms) count++;
+      if (
+        filters.adults !== defaultSearchFilters.adults ||
+        filters.children !== defaultSearchFilters.children ||
+        filters.rooms !== defaultSearchFilters.rooms
+      ) count++;
       
       if (filters.propertyType === "hotel") {
         if (hf.searchTerm) count++;
@@ -429,9 +434,10 @@ export const FilterBar = ({
                 : filters.destinationFilters?.searchTerm || ""
           }
           onChange={e => {
-            onHotelFiltersChange({ searchTerm: e.target.value });
-            onApartmentFiltersChange({ searchTerm: e.target.value });
-            onDestinationFiltersChange?.({ searchTerm: e.target.value });
+            const value = e.target.value;
+            if (filters.propertyType === "hotel") onHotelFiltersChange({ searchTerm: value });
+            else if (filters.propertyType === "apartment") onApartmentFiltersChange({ searchTerm: value });
+            else onDestinationFiltersChange?.({ searchTerm: value });
           }}
           onFocus={e => (e.currentTarget.style.borderColor = tk.focusBorder)}
           onBlur={e => (e.currentTarget.style.borderColor = tk.inputBorder)}
@@ -496,11 +502,9 @@ export const FilterBar = ({
                 min="1"
                 onChange={v => {
                   onGuestsChange({ adults: v, children: filters.children, rooms: filters.rooms });
-                  onApartmentFiltersChange({ beds: { min: v + (filters.children || 0), max: filters.apartmentFilters.beds?.max } });
                 }}
                 onClear={() => {
                   onGuestsChange({ adults: 0, children: filters.children, rooms: filters.rooms });
-                  onApartmentFiltersChange({ beds: { min: filters.children || 0, max: filters.apartmentFilters.beds?.max } });
                 }}
               />
             </div>
@@ -511,11 +515,9 @@ export const FilterBar = ({
                 min="0"
                 onChange={v => {
                   onGuestsChange({ adults: filters.adults, children: v, rooms: filters.rooms });
-                  onApartmentFiltersChange({ beds: { min: (filters.adults || 2) + v, max: filters.apartmentFilters.beds?.max } });
                 }}
                 onClear={() => {
                   onGuestsChange({ adults: filters.adults, children: 0, rooms: filters.rooms });
-                  onApartmentFiltersChange({ beds: { min: filters.adults || 2, max: filters.apartmentFilters.beds?.max } });
                 }}
               />
             </div>
@@ -526,11 +528,9 @@ export const FilterBar = ({
                 min="1"
                 onChange={v => {
                   onGuestsChange({ adults: filters.adults, children: filters.children, rooms: v });
-                  onApartmentFiltersChange({ rooms: { min: v, max: filters.apartmentFilters.rooms?.max } });
                 }}
                 onClear={() => {
                   onGuestsChange({ adults: filters.adults, children: filters.children, rooms: 0 });
-                  onApartmentFiltersChange({ rooms: { min: 0, max: filters.apartmentFilters.rooms?.max } });
                 }}
               />
             </div>
@@ -539,8 +539,8 @@ export const FilterBar = ({
                 <Filter style={{ width: 11, height: 11, color: tk.infoText }} />
                 <span style={{ fontFamily: 'Crimson Pro, Georgia, serif', fontSize: '0.82rem', color: tk.infoText }}>
                   {t("searchResults.filters.filteringApartments", {
-                    beds: (filters.adults || 2) + (filters.children || 0),
-                    rooms: filters.rooms || 1,
+                    beds: (filters.adults || 0) + (filters.children || 0),
+                    rooms: filters.rooms || 0,
                   })}
                 </span>
               </div>
@@ -595,8 +595,11 @@ export const FilterBar = ({
               : [filters.apartmentFilters.priceRange?.min || 0, filters.apartmentFilters.priceRange?.max || 500]
             }
             onValueChange={value => {
-              onHotelFiltersChange({ priceRange: { min: value[0], max: value[1] } });
-              onApartmentFiltersChange({ priceRange: { min: value[0], max: value[1] } });
+              if (filters.propertyType === "hotel") {
+                onHotelFiltersChange({ priceRange: { min: value[0], max: value[1] } });
+              } else {
+                onApartmentFiltersChange({ priceRange: { min: value[0], max: value[1] } });
+              }
             }}
             className="py-1"
           />
@@ -616,8 +619,8 @@ export const FilterBar = ({
             value={filters.propertyType === "hotel" ? filters.hotelFilters.rating || "all" : filters.apartmentFilters.rating || "all"}
             onChange={e => {
               const val = e.target.value as any;
-              onHotelFiltersChange({ rating: val });
-              onApartmentFiltersChange({ rating: val });
+              if (filters.propertyType === "hotel") onHotelFiltersChange({ rating: val });
+              else onApartmentFiltersChange({ rating: val });
             }}
             onFocus={e => (e.currentTarget.style.borderColor = tk.focusBorder)}
             onBlur={e => (e.currentTarget.style.borderColor = tk.inputBorder)}
@@ -702,7 +705,7 @@ export const FilterBar = ({
       {filters.propertyType === "apartment" && (
         <AccSection label={t("searchResults.filters.rooms")} headerColor={tk.headerText} dividerColor={tk.sidebarBorder} iconColor={themeTk.brand}>
           <MinMaxPair
-            minVal={filters.apartmentFilters.rooms?.min || filters.rooms}
+            minVal={filters.apartmentFilters.rooms?.min}
             maxVal={filters.apartmentFilters.rooms?.max}
             onMinChange={v => onApartmentFiltersChange({ rooms: { min: v, max: filters.apartmentFilters.rooms?.max } })}
             onMaxChange={v => onApartmentFiltersChange({ rooms: { min: filters.apartmentFilters.rooms?.min, max: v } })}
