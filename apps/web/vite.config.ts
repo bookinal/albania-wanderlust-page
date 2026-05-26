@@ -8,14 +8,10 @@ export default defineConfig(({ mode }) => {
   // Load env from monorepo root directory
   const env = loadEnv(mode, path.resolve(__dirname, "../.."), "");
 
-  // Helper to get package path - use dist in production, src in development
+  // Helper to get package path - always use src directly since packages don't have build scripts
   const getPackagePath = (packageName: string) => {
-    const isProduction = mode === "production";
     const basePath = `../../packages/${packageName}`;
-    return path.resolve(
-      __dirname,
-      isProduction ? `${basePath}/dist` : `${basePath}/src`,
-    );
+    return path.resolve(__dirname, `${basePath}/src`);
   };
 
   return {
