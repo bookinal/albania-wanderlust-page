@@ -188,7 +188,18 @@ export const getCurrentUserWishlist = async (): Promise<Wishlist | null> => {
           imageUrls,
           category,
           lat,
-          lng
+          lng,
+          location,
+          beachType,
+          water,
+          bestFor,
+          crowdLevel,
+          bestMonths,
+          priceLevel,
+          byCar,
+          byFoot,
+          byBoat,
+          visitorTips
         )
       )
     `,

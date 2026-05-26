@@ -115,7 +115,11 @@ export default function ReservationPickerValue() {
           },
         }}
       >
-        <Tab icon={<DirectionsCar />} iconPosition="start" label={t("common.car")} />
+        <Tab
+          icon={<DirectionsCar />}
+          iconPosition="start"
+          label={t("common.car")}
+        />
         <Tab icon={<Hotel />} iconPosition="start" label={t("common.stay")} />
       </Tabs>
 
@@ -123,39 +127,81 @@ export default function ReservationPickerValue() {
       <Box
         sx={{
           display: "flex",
-          flexDirection: { xs: "column", md: "row" },
-          alignItems: "center",
-          justifyContent: "center",
+          flexDirection: "column",
           gap: { xs: 1.25, sm: 2 },
           p: { xs: 1.25, sm: 2.5, md: 3 },
         }}
       >
-        <TextField
-          label={tabValue === 1 ? t("home.reservationPicker.Destination") : t("home.reservationPicker.carModel")}
-          value={destination}
-          onChange={(e) => setDestination(e.target.value)}
-          variant="outlined"
-          size="small"
-          sx={{ minWidth: { xs: "100%", sm: 100 } }}
-        />
-
-        <Box sx={{ width: { xs: "100%", sm: "auto" } }}>
-          <DateRangePicker
-            dateRange={dateRange}
-            onDateRangeChange={setDateRange}
-            placeholder={
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: { xs: "column", md: "row" },
+            alignItems: "center",
+            justifyContent: "center",
+            gap: { xs: 1.25, sm: 2 },
+            width: "100%",
+          }}
+        >
+          <TextField
+            label={
               tabValue === 1
-                ? t("home.reservationPicker.period")
-                : t("home.reservationPicker.carDate")
+                ? t("home.reservationPicker.Destination")
+                : t("home.reservationPicker.carModel")
             }
-            minDate={new Date()}
-            className="w-full sm:w-auto [&_button]:!text-gray-900 [&_button]:!bg-white [&_button]:border-gray-300 [&_button:hover]:!bg-gray-50"
+            value={destination}
+            onChange={(e) => setDestination(e.target.value)}
+            variant="outlined"
+            size="small"
+            sx={{ minWidth: { xs: "100%", sm: 200 } }}
           />
+
+          <Box sx={{ width: { xs: "100%", sm: "auto" } }}>
+            <DateRangePicker
+              dateRange={dateRange}
+              onDateRangeChange={setDateRange}
+              placeholder={
+                tabValue === 1
+                  ? t("home.reservationPicker.period")
+                  : t("home.reservationPicker.carDate")
+              }
+              minDate={new Date()}
+              className="w-full sm:w-auto [&_button]:!text-gray-900 [&_button]:!bg-white [&_button]:border-gray-300 [&_button:hover]:!bg-gray-50"
+            />
+          </Box>
+
+          {tabValue === 0 && (
+            <Button
+              variant="contained"
+              color="primary"
+              disabled={!dateRange?.from || !dateRange?.to || loading}
+              onClick={handleSearch}
+              sx={{
+                px: 4,
+                py: 1.5,
+                fontWeight: "bold",
+                width: { xs: "100%", sm: "auto" },
+              }}
+            >
+              {loading
+                ? t("common.loading")
+                : t("home.reservationPicker.search")}
+            </Button>
+          )}
         </Box>
 
         {/* Show guest/room fields only for Stay tab */}
         {tabValue === 1 && (
-          <>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: { xs: "column", md: "row" },
+              alignItems: "center",
+              justifyContent: "center",
+              gap: { xs: 2, sm: 3 },
+              width: "100%",
+              mt: { md: 1 },
+            }}
+          >
             <Box
               sx={{
                 display: "flex",
@@ -170,6 +216,7 @@ export default function ReservationPickerValue() {
                   color: "text.primary",
                   fontWeight: 500,
                   fontSize: { xs: "0.875rem", sm: "1rem" },
+                  mr: { sm: 1 },
                 }}
               >
                 {t("home.reservationPicker.adults")}
@@ -185,6 +232,8 @@ export default function ReservationPickerValue() {
                   color: "text.primary",
                   fontWeight: 500,
                   fontSize: { xs: "0.875rem", sm: "1rem" },
+                  minWidth: "20px",
+                  textAlign: "center",
                 }}
               >
                 {adults}
@@ -211,6 +260,7 @@ export default function ReservationPickerValue() {
                   color: "text.primary",
                   fontWeight: 500,
                   fontSize: { xs: "0.875rem", sm: "1rem" },
+                  mr: { sm: 1 },
                 }}
               >
                 {t("home.reservationPicker.children")}
@@ -226,6 +276,8 @@ export default function ReservationPickerValue() {
                   color: "text.primary",
                   fontWeight: 500,
                   fontSize: { xs: "0.875rem", sm: "1rem" },
+                  minWidth: "20px",
+                  textAlign: "center",
                 }}
               >
                 {children}
@@ -252,6 +304,7 @@ export default function ReservationPickerValue() {
                   color: "text.primary",
                   fontWeight: 500,
                   fontSize: { xs: "0.875rem", sm: "1rem" },
+                  mr: { sm: 1 },
                 }}
               >
                 {t("home.reservationPicker.rooms")}
@@ -267,6 +320,8 @@ export default function ReservationPickerValue() {
                   color: "text.primary",
                   fontWeight: 500,
                   fontSize: { xs: "0.875rem", sm: "1rem" },
+                  minWidth: "20px",
+                  textAlign: "center",
                 }}
               >
                 {rooms}
@@ -278,23 +333,26 @@ export default function ReservationPickerValue() {
                 <Add />
               </IconButton>
             </Box>
-          </>
-        )}
 
-        <Button
-          variant="contained"
-          color="primary"
-          disabled={!dateRange?.from || !dateRange?.to || loading}
-          onClick={handleSearch}
-          sx={{
-            px: 4,
-            py: 1.5,
-            fontWeight: "bold",
-            width: { xs: "100%", sm: "auto" },
-          }}
-        >
-          {loading ? t("common.loading") : t("home.reservationPicker.search")}
-        </Button>
+            <Button
+              variant="contained"
+              color="primary"
+              disabled={!dateRange?.from || !dateRange?.to || loading}
+              onClick={handleSearch}
+              sx={{
+                px: 4,
+                py: 1.5,
+                fontWeight: "bold",
+                width: { xs: "100%", sm: "auto" },
+                ml: { md: 2 },
+              }}
+            >
+              {loading
+                ? t("common.loading")
+                : t("home.reservationPicker.search")}
+            </Button>
+          </Box>
+        )}
       </Box>
     </Box>
   );

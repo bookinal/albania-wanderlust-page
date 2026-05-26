@@ -52,68 +52,99 @@ const Hero = () => {
             </div>
           ))}
         </Slide>
-        <div className="absolute inset-0" style={{ background: tk.heroOverlay }} />
+        <div
+          className="absolute inset-0"
+          style={{ background: tk.heroOverlay }}
+        />
       </div>
 
       {/* Content */}
       <div className="relative z-10 container mx-auto flex flex-1 flex-col items-center px-4 sm:px-6 lg:px-8 text-white">
         <div className="w-full xl:grid xl:grid-cols-[minmax(0,720px)_minmax(280px,1fr)_minmax(280px,1fr)] xl:items-stretch xl:gap-6">
-          
           <div className="animate-fade-in-up mx-auto max-w-4xl text-center xl:text-left xl:flex xl:min-h-[540px] xl:flex-col xl:justify-center xl:self-center xl:items-start">
-          {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6 border backdrop-blur-md" style={{ background: tk.glassCardBg, borderColor: tk.glassPanelBorder }}>
-            <MapPin className="w-4 h-4" style={{ color: tk.badgeText }} />
-            <span className="text-sm font-medium tracking-wide">
-              {t("home.hero.badge")}
-            </span>
-          </div>
+            {/* Badge */}
+            <div
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6 border backdrop-blur-md"
+              style={{
+                background: tk.glassCardBg,
+                borderColor: tk.glassPanelBorder,
+              }}
+            >
+              <MapPin className="w-4 h-4" style={{ color: tk.badgeText }} />
+              <span className="text-sm font-medium tracking-wide">
+                {t("home.hero.badge")}
+              </span>
+            </div>
 
-          {/* Main Heading */}
-          <h1 className="mb-4 text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight">
-            <span className="block">{t("home.hero.discover")}</span>
-            <span className="block bg-clip-text text-transparent" style={{ backgroundImage: isBlue ? "linear-gradient(to right, hsl(191 74% 60%), hsl(204 78% 52%), hsl(199 72% 60%))" : "linear-gradient(to right, rgb(185 28 28), rgb(239 68 68), rgb(185 28 28))" }}>
-              {t("home.hero.albania")}
-            </span>
-          </h1>
+            {/* Main Heading */}
+            <h1 className="mb-4 text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight">
+              <span className="block">{t("home.hero.discover")}</span>
+              <span
+                className="block bg-clip-text text-transparent"
+                style={{
+                  backgroundImage: isBlue
+                    ? "linear-gradient(to right, hsl(191 74% 60%), hsl(204 78% 52%), hsl(199 72% 60%))"
+                    : "linear-gradient(to right, rgb(185 28 28), rgb(239 68 68), rgb(185 28 28))",
+                }}
+              >
+                {t("home.hero.albania")}
+              </span>
+            </h1>
 
-          {/* Subheading */}
-          <p className="text-base sm:text-lg md:text-xl mb-8 max-w-2xl mx-auto xl:mx-0 text-white/85 leading-relaxed">
-            {t("home.hero.subheading")}
-          </p>
+            {/* Subheading */}
+            <p className="text-base sm:text-lg md:text-xl mb-8 max-w-2xl mx-auto xl:mx-0 text-white/85 leading-relaxed">
+              {t("home.hero.subheading")}
+            </p>
 
-          <div className="mb-4 w-full xl:hidden">
-            <HeroInventoryPreview layout="stacked" />
-          </div>
+            <div className="mb-4 w-full xl:hidden">
+              <HeroInventoryPreview layout="stacked" />
+            </div>
 
-          {/* Search Widget */}
-          <div className="mb-6 sm:mb-8 w-full">
-            <ReservationPickerValue />
-          </div>
+            {/* Search Widget */}
+            <div className="mb-6 sm:mb-8 w-full">
+              <ReservationPickerValue />
+            </div>
 
-          {/* Secondary Actions */}
-          <div className="flex flex-col sm:flex-row gap-3 justify-center xl:justify-start items-center">
-            <Link to="/properties-map">
+            {/* Secondary Actions */}
+            <div className="flex flex-col sm:flex-row gap-3 justify-center xl:justify-start items-center">
+              <Link to="/properties-map">
+                <Button
+                  size="lg"
+                  className="backdrop-blur-sm px-6 py-5 rounded-full transition-all duration-300 hover:scale-105 group"
+                  style={{
+                    background: tk.glassCardBg,
+                    border: `1px solid ${tk.glassPanelBorder}`,
+                    color: tk.textStrongOnMedia,
+                  }}
+                >
+                  <MapPin className="w-4 h-4 mr-2" />
+                  {t("home.hero.exploreMap")}
+                </Button>
+              </Link>
+              <Link to="/destinations">
+                <Button
+                  size="lg"
+                  className="backdrop-blur-sm px-6 py-5 rounded-full transition-all duration-300 hover:scale-105 group"
+                  style={{
+                    background: tk.glassCardBg,
+                    border: `1px solid ${tk.glassPanelBorder}`,
+                    color: tk.textStrongOnMedia,
+                  }}
+                >
+                  {t("home.hero.exploreDestinations")}
+                </Button>
+              </Link>
               <Button
                 size="lg"
-                className="backdrop-blur-sm px-6 py-5 rounded-full transition-all duration-300 hover:scale-105 group"
-                style={{ background: tk.glassCardBg, border: `1px solid ${tk.glassPanelBorder}`, color: tk.textStrongOnMedia }}
+                variant="ghost"
+                className="px-6 py-5 rounded-full transition-all group"
+                style={{ color: tk.textSoftOnMedia, background: "transparent" }}
+                onClick={() => scrollToSection("hotels")}
               >
-                <MapPin className="w-4 h-4 mr-2" />
-                {t("home.hero.exploreMap")}
+                {t("home.hero.browseProperties")}
+                <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </Button>
-            </Link>
-            <Button
-              size="lg"
-              variant="ghost"
-              className="px-6 py-5 rounded-full transition-all group"
-              style={{ color: tk.textSoftOnMedia, background: "transparent" }}
-              onClick={() => scrollToSection("hotels")}
-            >
-              {t("home.hero.browseProperties")}
-              <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
-            </Button>
-          </div>
-
+            </div>
           </div>
 
           <HeroInventoryPreview layout="split" side="stays" />

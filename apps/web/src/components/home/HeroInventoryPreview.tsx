@@ -1,7 +1,14 @@
 import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowRight, Building2, CarFront, Home, MapPin, Star } from "lucide-react";
+import {
+  ArrowRight,
+  Building2,
+  CarFront,
+  Home,
+  MapPin,
+  Star,
+} from "lucide-react";
 import { useTheme } from "@/context/ThemeContext";
 import { useTranslation } from "react-i18next";
 import { getAllHotels } from "@/services/api/hotelService";
@@ -121,7 +128,10 @@ const HeroInventoryPreview = ({
   }, [cars]);
 
   const mixedPreview = useMemo<MixedPreview[]>(() => {
-    const mixedStays = stays.map((stay) => ({ ...stay, kind: "stay" as const }));
+    const mixedStays = stays.map((stay) => ({
+      ...stay,
+      kind: "stay" as const,
+    }));
     const mixedCars = topCars.map((car) => ({ ...car, kind: "car" as const }));
 
     const interleaved: MixedPreview[] = [];
@@ -146,7 +156,7 @@ const HeroInventoryPreview = ({
 
   const staysPanel = (
     <div
-      className={`flex h-full w-full flex-col overflow-hidden rounded-[28px] border ${isStacked ? "p-3 sm:p-4" : "p-4 sm:p-5"}`}
+      className={`flex h-full w-full flex-col overflow-hidden rounded-[24px] border ${isStacked ? "p-2 sm:p-3" : "p-3 sm:p-4"}`}
       style={{
         ...panelBase,
         background: tk.glassPanelBg,
@@ -154,115 +164,135 @@ const HeroInventoryPreview = ({
         boxShadow: tk.glassPanelShadow,
       }}
     >
-          <div className={`flex items-center justify-between gap-4 ${isStacked ? "mb-3" : "mb-4"}`}>
-            <div>
-              <p
-                className={`uppercase tracking-[0.24em] ${isStacked ? "text-[10px]" : "text-[11px]"}`}
-                 style={{ color: tk.badgeText }}
-              >
-                {t("home.hero.staysEyebrow", "Stay Preview")}
-              </p>
-              <h3
-                className={`mt-1 font-semibold ${isStacked ? "text-lg sm:text-xl" : "text-xl sm:text-2xl"}`}
-               style={{ color: tk.textStrongOnMedia }}
-              >
-                {t("home.hero.staysTitle", "Stays for every trip")}
-              </h3>
-            </div>
-            <Link
-              to="/searchResults"
-              className={`inline-flex items-center gap-2 font-medium transition-opacity hover:opacity-80 ${isStacked ? "text-xs sm:text-sm" : "text-sm"}`}
-               style={{ color: tk.textSoftOnMedia }}
-            >
-              {t("home.hero.viewStays", "View stays")}
-              <ArrowRight className="h-4 w-4" />
-            </Link>
-          </div>
+      <div
+        className={`flex items-center justify-between gap-3 ${isStacked ? "mb-2" : "mb-3"}`}
+      >
+        <div>
+          <p
+            className={`uppercase tracking-[0.24em] ${isStacked ? "text-[9px]" : "text-[10px]"}`}
+            style={{ color: tk.badgeText }}
+          >
+            {t("home.hero.staysEyebrow", "Stay Preview")}
+          </p>
+          <h3
+            className={`mt-0.5 font-semibold ${isStacked ? "text-base sm:text-lg" : "text-lg sm:text-xl"}`}
+            style={{ color: tk.textStrongOnMedia }}
+          >
+            {t("home.hero.staysTitle", "Stays for every trip")}
+          </h3>
+        </div>
+        <Link
+          to="/searchResults"
+          className={`inline-flex items-center gap-1.5 font-medium transition-opacity hover:opacity-80 ${isStacked ? "text-[10px] sm:text-xs" : "text-xs"}`}
+          style={{ color: tk.textSoftOnMedia }}
+        >
+          {t("home.hero.viewStays", "View stays")}
+          <ArrowRight className="h-3.5 w-3.5" />
+        </Link>
+      </div>
 
-          <div className="grid gap-3">
-            {stays.map((stay, index) => (
-              <button
-                key={`${stay.type}-${stay.id}`}
-                onClick={() =>
-                  navigate(
-                    stay.type === "hotel"
-                      ? `/hotelReservation/${stay.id}`
-                      : `/apartmentReservation/${stay.id}`,
-                  )
-                }
-                className={`group w-full items-center gap-3 overflow-hidden rounded-[20px] border text-left transition-all hover:-translate-y-0.5 ${isStacked && index > 0 ? "hidden sm:flex" : "flex"} ${isStacked ? "p-2.5 sm:p-3" : "p-3"}`}
-                style={{
-                  background: tk.glassCardBg,
-                  borderColor: tk.glassCardBorder,
-                }}
-              >
-                <div
-                  className={`${isStacked ? "h-14 w-14 sm:h-16 sm:w-16" : "h-16 w-16"} shrink-0 overflow-hidden rounded-2xl`}
-                  style={{ background: tk.thumbBg }}
-                >
-                  {stay.image ? (
-                    <img
-                      src={stay.image}
-                      alt={stay.name}
-                      className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+      <div className="grid gap-2">
+        {stays.map((stay, index) => (
+          <button
+            key={`${stay.type}-${stay.id}`}
+            onClick={() =>
+              navigate(
+                stay.type === "hotel"
+                  ? `/hotelReservation/${stay.id}`
+                  : `/apartmentReservation/${stay.id}`,
+              )
+            }
+            className={`group w-full items-center gap-2.5 overflow-hidden rounded-[16px] border text-left transition-all hover:-translate-y-0.5 ${isStacked && index > 0 ? "hidden sm:flex" : "flex"} ${isStacked ? "p-2 sm:p-2.5" : "p-2.5"}`}
+            style={{
+              background: tk.glassCardBg,
+              borderColor: tk.glassCardBorder,
+            }}
+          >
+            <div
+              className={`${isStacked ? "h-11 w-11 sm:h-12 sm:w-12" : "h-12 w-12"} shrink-0 overflow-hidden rounded-xl`}
+              style={{ background: tk.thumbBg }}
+            >
+              {stay.image ? (
+                <img
+                  src={stay.image}
+                  alt={stay.name}
+                  className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                />
+              ) : (
+                <div className="flex h-full w-full items-center justify-center">
+                  {stay.type === "hotel" ? (
+                    <Building2
+                      className="h-5 w-5"
+                      style={{ color: tk.textMutedOnMedia }}
                     />
                   ) : (
-                    <div className="flex h-full w-full items-center justify-center">
-                      {stay.type === "hotel" ? (
-                        <Building2 className="h-7 w-7" style={{ color: tk.textMutedOnMedia }} />
-                      ) : (
-                        <Home className="h-7 w-7" style={{ color: tk.textMutedOnMedia }} />
-                      )}
-                    </div>
+                    <Home
+                      className="h-5 w-5"
+                      style={{ color: tk.textMutedOnMedia }}
+                    />
                   )}
                 </div>
+              )}
+            </div>
 
-                <div className="min-w-0 flex-1">
-                  <div className="mb-1 flex items-center gap-2 overflow-hidden">
-                    <span
-                      className={`inline-flex items-center gap-1 rounded-full border uppercase tracking-[0.18em] ${isStacked ? "px-1.5 py-0.5 text-[9px]" : "px-2 py-0.5 text-[10px]"}`}
-                      style={{
-                        background: tk.brandSoftStrong,
-                        borderColor: tk.brandBorder,
-                        color: tk.badgeText,
-                      }}
-                    >
-                      {stay.type === "hotel" ? "Hotel" : "Apartment"}
-                    </span>
-                    {typeof stay.rating === "number" && stay.rating > 0 && (
-                      <span className="inline-flex items-center gap-1 text-xs" style={{ color: tk.textSoftOnMedia }}>
-                        <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
-                        {stay.rating.toFixed(1)}
-                      </span>
-                    )}
-                  </div>
+            <div className="min-w-0 flex-1">
+              <div className="mb-0.5 flex items-center gap-1.5 overflow-hidden">
+                <span
+                  className={`inline-flex items-center gap-1 rounded-full border uppercase tracking-[0.18em] ${isStacked ? "px-1 py-0 text-[8px]" : "px-1.5 py-0 text-[9px]"}`}
+                  style={{
+                    background: tk.brandSoftStrong,
+                    borderColor: tk.brandBorder,
+                    color: tk.badgeText,
+                  }}
+                >
+                  {stay.type === "hotel" ? "Hotel" : "Apartment"}
+                </span>
+                {typeof stay.rating === "number" && stay.rating > 0 && (
+                  <span
+                    className="inline-flex items-center gap-0.5 text-[10px]"
+                    style={{ color: tk.textSoftOnMedia }}
+                  >
+                    <Star className="h-2.5 w-2.5 fill-amber-400 text-amber-400" />
+                    {stay.rating.toFixed(1)}
+                  </span>
+                )}
+              </div>
 
-                  <p className={`truncate font-semibold ${isStacked ? "text-sm" : "text-sm sm:text-base"}`} style={{ color: tk.textStrongOnMedia }}>
-                    {stay.name}
-                  </p>
-                  <p className={`mt-1 flex items-center gap-1 truncate ${isStacked ? "text-[11px] sm:text-sm" : "text-xs sm:text-sm"}`} style={{ color: tk.textMutedOnMedia }}>
-                    <MapPin className="h-3.5 w-3.5 shrink-0" />
-                    {stay.location || t("home.hero.flexibleStay", "Across Albania")}
-                  </p>
-                </div>
+              <p
+                className={`truncate font-semibold ${isStacked ? "text-xs" : "text-xs sm:text-sm"}`}
+                style={{ color: tk.textStrongOnMedia }}
+              >
+                {stay.name}
+              </p>
+              <p
+                className={`mt-0.5 flex items-center gap-1 truncate ${isStacked ? "text-[9px] sm:text-xs" : "text-[10px] sm:text-xs"}`}
+                style={{ color: tk.textMutedOnMedia }}
+              >
+                <MapPin className="h-3 w-3 shrink-0" />
+                {stay.location || t("home.hero.flexibleStay", "Across Albania")}
+              </p>
+            </div>
 
-                <div className="shrink-0 pl-2 text-right">
-                  <p className={`font-semibold ${isStacked ? "text-sm sm:text-base" : "text-base sm:text-lg"}`} style={{ color: tk.textStrongOnMedia }}>
-                    ${stay.price}
-                  </p>
-                  <p className="text-xs" style={{ color: tk.textMutedOnMedia }}>
-                    {t("home.hero.perNight", "per night")}
-                  </p>
-                </div>
-              </button>
-            ))}
-          </div>
+            <div className="shrink-0 pl-1 text-right">
+              <p
+                className={`font-semibold ${isStacked ? "text-xs sm:text-sm" : "text-sm sm:text-base"}`}
+                style={{ color: tk.textStrongOnMedia }}
+              >
+                ${stay.price}
+              </p>
+              <p className="text-[10px]" style={{ color: tk.textMutedOnMedia }}>
+                {t("home.hero.perNight", "per night")}
+              </p>
+            </div>
+          </button>
+        ))}
+      </div>
     </div>
   );
 
   const carsPanel = (
     <div
-      className={`flex h-full w-full flex-col overflow-hidden rounded-[28px] border ${isStacked ? "p-3 sm:p-4" : "p-4 sm:p-5"}`}
+      className={`flex h-full w-full flex-col overflow-hidden rounded-[24px] border ${isStacked ? "p-2 sm:p-3" : "p-3 sm:p-4"}`}
       style={{
         ...panelBase,
         background: tk.glassPanelBg,
@@ -270,92 +300,107 @@ const HeroInventoryPreview = ({
         boxShadow: tk.glassPanelShadow,
       }}
     >
-          <div className={`flex items-center justify-between gap-4 ${isStacked ? "mb-3" : "mb-4"}`}>
-            <div>
-              <p
-                className={`uppercase tracking-[0.24em] ${isStacked ? "text-[10px]" : "text-[11px]"}`}
-                style={{ color: tk.badgeText }}
-              >
-                {t("home.hero.carsEyebrow", "Drive Preview")}
-              </p>
-              <h3
-                className={`mt-1 font-semibold ${isStacked ? "text-lg sm:text-xl" : "text-xl sm:text-2xl"}`}
-               style={{ color: tk.textStrongOnMedia }}
-              >
-                {t("home.hero.carsTitle", "Cars ready when you land")}
-              </h3>
-            </div>
-            <Link
-              to="/searchCarResults"
-              className={`inline-flex items-center gap-2 font-medium transition-opacity hover:opacity-80 ${isStacked ? "text-xs sm:text-sm" : "text-sm"}`}
-               style={{ color: tk.textSoftOnMedia }}
+      <div
+        className={`flex items-center justify-between gap-3 ${isStacked ? "mb-2" : "mb-3"}`}
+      >
+        <div>
+          <p
+            className={`uppercase tracking-[0.24em] ${isStacked ? "text-[9px]" : "text-[10px]"}`}
+            style={{ color: tk.badgeText }}
+          >
+            {t("home.hero.carsEyebrow", "Drive Preview")}
+          </p>
+          <h3
+            className={`mt-0.5 font-semibold ${isStacked ? "text-base sm:text-lg" : "text-lg sm:text-xl"}`}
+            style={{ color: tk.textStrongOnMedia }}
+          >
+            {t("home.hero.carsTitle", "Cars ready when you land")}
+          </h3>
+        </div>
+        <Link
+          to="/searchCarResults"
+          className={`inline-flex items-center gap-1.5 font-medium transition-opacity hover:opacity-80 ${isStacked ? "text-[10px] sm:text-xs" : "text-xs"}`}
+          style={{ color: tk.textSoftOnMedia }}
+        >
+          {t("home.hero.viewCars", "View cars")}
+          <ArrowRight className="h-3.5 w-3.5" />
+        </Link>
+      </div>
+
+      <div className="grid gap-2">
+        {topCars.map((car, index) => (
+          <button
+            key={car.id}
+            onClick={() => navigate(`/carReservation/${car.id}`)}
+            className={`group w-full items-center gap-2.5 overflow-hidden rounded-[16px] border text-left transition-all hover:-translate-y-0.5 ${isStacked && index > 0 ? "hidden sm:flex" : "flex"} ${isStacked ? "p-2 sm:p-2.5" : "p-2.5"}`}
+            style={{
+              background: tk.glassCardBg,
+              borderColor: tk.glassCardBorder,
+            }}
+          >
+            <div
+              className={`${isStacked ? "h-11 w-11 sm:h-12 sm:w-12" : "h-12 w-12"} shrink-0 overflow-hidden rounded-xl`}
+              style={{ background: tk.thumbBg }}
             >
-              {t("home.hero.viewCars", "View cars")}
-              <ArrowRight className="h-4 w-4" />
-            </Link>
-          </div>
+              {car.image ? (
+                <img
+                  src={car.image}
+                  alt={`${car.brand} ${car.name}`}
+                  className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                />
+              ) : (
+                <div className="flex h-full w-full items-center justify-center">
+                  <CarFront
+                    className="h-5 w-5"
+                    style={{ color: tk.textMutedOnMedia }}
+                  />
+                </div>
+              )}
+            </div>
 
-          <div className="grid gap-3">
-            {topCars.map((car, index) => (
-              <button
-                key={car.id}
-                onClick={() => navigate(`/carReservation/${car.id}`)}
-                className={`group w-full items-center gap-3 overflow-hidden rounded-[20px] border text-left transition-all hover:-translate-y-0.5 ${isStacked && index > 0 ? "hidden sm:flex" : "flex"} ${isStacked ? "p-2.5 sm:p-3" : "p-3"}`}
-                style={{
-                  background: tk.glassCardBg,
-                  borderColor: tk.glassCardBorder,
-                }}
-              >
-                <div
-                  className={`${isStacked ? "h-14 w-14 sm:h-16 sm:w-16" : "h-16 w-16"} shrink-0 overflow-hidden rounded-2xl`}
-                  style={{ background: tk.thumbBg }}
+            <div className="min-w-0 flex-1">
+              <div className="mb-0.5 flex items-center gap-1.5">
+                <span
+                  className={`inline-flex items-center gap-1 rounded-full border uppercase tracking-[0.18em] ${isStacked ? "px-1 py-0 text-[8px]" : "px-1.5 py-0 text-[9px]"}`}
+                  style={{
+                    background: tk.brandSoftStrong,
+                    borderColor: tk.brandBorder,
+                    color: tk.badgeText,
+                  }}
                 >
-                  {car.image ? (
-                    <img
-                      src={car.image}
-                      alt={`${car.brand} ${car.name}`}
-                      className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                    />
-                  ) : (
-                    <div className="flex h-full w-full items-center justify-center">
-                      <CarFront className="h-7 w-7" style={{ color: tk.textMutedOnMedia }} />
-                    </div>
-                  )}
-                </div>
+                  {car.type}
+                </span>
+              </div>
 
-                <div className="min-w-0 flex-1">
-                  <div className="mb-1 flex items-center gap-2">
-                    <span
-                      className={`inline-flex items-center gap-1 rounded-full border uppercase tracking-[0.18em] ${isStacked ? "px-1.5 py-0.5 text-[9px]" : "px-2 py-0.5 text-[10px]"}`}
-                      style={{
-                         background: tk.brandSoftStrong,
-                         borderColor: tk.brandBorder,
-                         color: tk.badgeText,
-                      }}
-                    >
-                      {car.type}
-                    </span>
-                  </div>
+              <p
+                className={`truncate font-semibold ${isStacked ? "text-xs" : "text-xs sm:text-sm"}`}
+                style={{ color: tk.textStrongOnMedia }}
+              >
+                {car.brand} {car.name}
+              </p>
+              <p
+                className={`mt-0.5 truncate ${isStacked ? "text-[9px] sm:text-xs" : "text-[10px] sm:text-xs"}`}
+                style={{ color: tk.textMutedOnMedia }}
+              >
+                {car.seats} {t("home.hero.seats", "seats")} -{" "}
+                {car.pickUpLocation}
+              </p>
+            </div>
 
-                  <p className={`truncate font-semibold ${isStacked ? "text-sm" : "text-sm sm:text-base"}`} style={{ color: tk.textStrongOnMedia }}>
-                    {car.brand} {car.name}
-                  </p>
-                  <p className={`mt-1 truncate ${isStacked ? "text-[11px] sm:text-sm" : "text-xs sm:text-sm"}`} style={{ color: tk.textMutedOnMedia }}>
-                    {car.seats} {t("home.hero.seats", "seats")} - {car.pickUpLocation}
-                  </p>
-                </div>
-
-                <div className="shrink-0 pl-2 text-right">
-                  <p className={`font-semibold ${isStacked ? "text-sm sm:text-base" : "text-base sm:text-lg"}`} style={{ color: tk.textStrongOnMedia }}>
-                    ${car.pricePerDay}
-                  </p>
-                  <p className="text-xs" style={{ color: tk.textMutedOnMedia }}>
-                    {t("home.hero.perDay", "per day")}
-                  </p>
-                </div>
-              </button>
-            ))}
-          </div>
+            <div className="shrink-0 pl-1 text-right">
+              <p
+                className={`font-semibold ${isStacked ? "text-xs sm:text-sm" : "text-sm sm:text-base"}`}
+                style={{ color: tk.textStrongOnMedia }}
+              >
+                ${car.pricePerDay}
+              </p>
+              <p className="text-[10px]" style={{ color: tk.textMutedOnMedia }}>
+                {t("home.hero.perDay", "per day")}
+              </p>
+            </div>
+          </button>
+        ))}
+      </div>
     </div>
   );
 
@@ -387,20 +432,29 @@ const HeroInventoryPreview = ({
       <div className="mt-4 w-full max-w-6xl mx-auto xl:hidden">
         <div className="mb-2 flex items-center justify-between px-1">
           <div>
-            <p className="text-[10px] uppercase tracking-[0.24em]" style={{ color: tk.badgeText }}>
+            <p
+              className="text-[9px] uppercase tracking-[0.24em]"
+              style={{ color: tk.badgeText }}
+            >
               {t("home.hero.inventoryEyebrow", "Stays and Cars")}
             </p>
-            <h3 className="mt-1 text-base font-semibold" style={{ color: tk.textStrongOnMedia }}>
+            <h3
+              className="mt-0.5 text-sm font-semibold"
+              style={{ color: tk.textStrongOnMedia }}
+            >
               {t("home.hero.inventoryTitle", "Browse what you can book")}
             </h3>
           </div>
-          <div className="text-[11px] font-medium" style={{ color: tk.textSoftOnMedia }}>
+          <div
+            className="text-[10px] font-medium"
+            style={{ color: tk.textSoftOnMedia }}
+          >
             {t("home.hero.swipeHint", "Swipe")}
           </div>
         </div>
 
         <div className="-mx-4 overflow-x-auto px-4 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          <div className="flex gap-3 snap-x snap-mandatory">
+          <div className="flex gap-2.5 snap-x snap-mandatory">
             {mixedPreview.map((item) => {
               const isStay = item.kind === "stay";
               const href = isStay
@@ -413,7 +467,7 @@ const HeroInventoryPreview = ({
                 <button
                   key={`${item.kind}-${item.id}`}
                   onClick={() => navigate(href)}
-                  className="group snap-start flex min-h-[106px] w-[252px] shrink-0 items-center gap-3 overflow-hidden rounded-[22px] border p-2.5 text-left transition-all"
+                  className="group snap-start flex min-h-[85px] w-[202px] shrink-0 items-center gap-2.5 overflow-hidden rounded-[18px] border p-2 text-left transition-all"
                   style={{
                     ...panelBase,
                     background: tk.glassPanelBg,
@@ -421,7 +475,10 @@ const HeroInventoryPreview = ({
                     boxShadow: tk.glassPanelShadow,
                   }}
                 >
-                  <div className="h-16 w-16 shrink-0 overflow-hidden rounded-2xl" style={{ background: tk.thumbBg }}>
+                  <div
+                    className="h-12 w-12 shrink-0 overflow-hidden rounded-xl"
+                    style={{ background: tk.thumbBg }}
+                  >
                     {item.image ? (
                       <img
                         src={item.image}
@@ -432,52 +489,83 @@ const HeroInventoryPreview = ({
                       <div className="flex h-full w-full items-center justify-center">
                         {isStay ? (
                           item.type === "hotel" ? (
-                            <Building2 className="h-6 w-6" style={{ color: tk.textMutedOnMedia }} />
+                            <Building2
+                              className="h-4 w-4"
+                              style={{ color: tk.textMutedOnMedia }}
+                            />
                           ) : (
-                            <Home className="h-6 w-6" style={{ color: tk.textMutedOnMedia }} />
+                            <Home
+                              className="h-4 w-4"
+                              style={{ color: tk.textMutedOnMedia }}
+                            />
                           )
                         ) : (
-                          <CarFront className="h-6 w-6" style={{ color: tk.textMutedOnMedia }} />
+                          <CarFront
+                            className="h-4 w-4"
+                            style={{ color: tk.textMutedOnMedia }}
+                          />
                         )}
                       </div>
                     )}
                   </div>
 
                   <div className="min-w-0 flex-1">
-                    <div className="mb-1 flex items-center gap-2 overflow-hidden">
+                    <div className="mb-0.5 flex items-center gap-1.5 overflow-hidden">
                       <span
-                        className="inline-flex items-center gap-1 rounded-full border px-1.5 py-0.5 text-[9px] uppercase tracking-[0.18em]"
+                        className="inline-flex items-center gap-1 rounded-full border px-1 py-0 text-[8px] uppercase tracking-[0.18em]"
                         style={{
                           background: tk.brandSoftStrong,
                           borderColor: tk.brandBorder,
                           color: tk.badgeText,
                         }}
                       >
-                        {isStay ? (item.type === "hotel" ? "Hotel" : "Apartment") : item.type}
+                        {isStay
+                          ? item.type === "hotel"
+                            ? "Hotel"
+                            : "Apartment"
+                          : item.type}
                       </span>
-                      {isStay && typeof item.rating === "number" && item.rating > 0 && (
-                        <span className="inline-flex items-center gap-1 text-[11px]" style={{ color: tk.textSoftOnMedia }}>
-                          <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
-                          {item.rating.toFixed(1)}
-                        </span>
-                      )}
+                      {isStay &&
+                        typeof item.rating === "number" &&
+                        item.rating > 0 && (
+                          <span
+                            className="inline-flex items-center gap-0.5 text-[9px]"
+                            style={{ color: tk.textSoftOnMedia }}
+                          >
+                            <Star className="h-2.5 w-2.5 fill-amber-400 text-amber-400" />
+                            {item.rating.toFixed(1)}
+                          </span>
+                        )}
                     </div>
 
-                    <p className="truncate text-sm font-semibold" style={{ color: tk.textStrongOnMedia }}>
+                    <p
+                      className="truncate text-xs font-semibold"
+                      style={{ color: tk.textStrongOnMedia }}
+                    >
                       {isStay ? item.name : `${item.brand} ${item.name}`}
                     </p>
-                    <p className="mt-1 truncate text-[11px]" style={{ color: tk.textMutedOnMedia }}>
+                    <p
+                      className="mt-0.5 truncate text-[9px]"
+                      style={{ color: tk.textMutedOnMedia }}
+                    >
                       {isStay
-                        ? item.location || t("home.hero.flexibleStay", "Across Albania")
+                        ? item.location ||
+                          t("home.hero.flexibleStay", "Across Albania")
                         : `${item.seats} ${t("home.hero.seats", "seats")} - ${item.pickUpLocation}`}
                     </p>
                   </div>
 
-                  <div className="shrink-0 pl-2 text-right">
-                    <p className="text-sm font-semibold" style={{ color: tk.textStrongOnMedia }}>
+                  <div className="shrink-0 pl-1 text-right">
+                    <p
+                      className="text-xs font-semibold"
+                      style={{ color: tk.textStrongOnMedia }}
+                    >
                       ${isStay ? item.price : item.pricePerDay}
                     </p>
-                    <p className="text-[11px]" style={{ color: tk.textMutedOnMedia }}>
+                    <p
+                      className="text-[9px]"
+                      style={{ color: tk.textMutedOnMedia }}
+                    >
                       {isStay
                         ? t("home.hero.perNight", "per night")
                         : t("home.hero.perDay", "per day")}

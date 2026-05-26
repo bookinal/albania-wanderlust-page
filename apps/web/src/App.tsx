@@ -15,8 +15,11 @@ import OAuthSignInPage from "./pages/home/Auth";
 import NotFound from "./pages/NotFound";
 import Footer from "./components/home/Footer";
 import CultureDetails from "./pages/home/CultureDetails";
-import DestinationDetails from "./pages/home/DestinationDetails";
-import DestinationsPage from "./pages/home/DestinationsPage";
+import DestinationDetails from "./pages/home/Destinations/DestinationDetails";
+import DestinationsPage from "./pages/home/Destinations/DestinationsPage";
+import BeachDestinationsPage from "./pages/home/Destinations/BeachDestinationsPage";
+import AdventureDestinationsPage from "./pages/home/Destinations/AdventureDestinationsPage";
+import HistoricDestinationsPage from "./pages/home/Destinations/HistoricDestinationsPage";
 import PropertiesMapPage from "./pages/home/PropertiesMapPage";
 import Dashboard from "./pages/dashboard/dashboard";
 import AllHotels from "./pages/dashboard/Hotels/all-hotels";
@@ -97,6 +100,9 @@ const App = () => (
               <Route path="/myAccount" element={<MyAccount />} />
               <Route path="/CultureDetails" element={<CultureDetails />} />
               <Route path="/destinations" element={<DestinationsPage />} />
+              <Route path="/destinations/beach" element={<BeachDestinationsPage />} />
+              <Route path="/destinations/adventure" element={<AdventureDestinationsPage />} />
+              <Route path="/destinations/historic" element={<HistoricDestinationsPage />} />
               <Route path="/destination/:id" element={<DestinationDetails />} />
               <Route path="/wishlist" element={<Wishlist />} />
               <Route path="/properties-map" element={<PropertiesMapPage />} />
