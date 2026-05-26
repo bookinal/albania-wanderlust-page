@@ -55,6 +55,7 @@ import SupportChat from "./pages/dashboard/SupportChat";
 import { UserChatWidget } from "./components/chat/UserChatWidget";
 import DashboardLayout from "./components/dashboard/DashboardLayout";
 import RentalTerms from "./pages/home/RentalTerms";
+import { Analytics } from "@vercel/analytics/react";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -78,128 +79,158 @@ const paypalClientId = import.meta.env.VITE_PAYPAL_CLIENT_ID || "";
 
 const App = () => (
   <ThemeProvider>
-  <AuthProvider>
-  <I18nextProvider i18n={i18n}>
-    <PayPalScriptProvider
-      options={{
-        clientId: paypalClientId,
-        currency: "USD",
-        intent: "capture",
-      }}
-    >
-      <QueryClientProvider client={queryClient}>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
+    <AuthProvider>
+      <I18nextProvider i18n={i18n}>
+        <PayPalScriptProvider
+          options={{
+            clientId: paypalClientId,
+            currency: "USD",
+            intent: "capture",
+          }}
+        >
+          <QueryClientProvider client={queryClient}>
+            <TooltipProvider>
+              <Toaster />
+              <Sonner />
+              <Analytics />
+              <BrowserRouter>
+                <ScrollToTop />
+                <Routes>
+                  <Route path="/" element={<Index />} />
+                  <Route path="/auth" element={<OAuthSignInPage />} />
+                  <Route path="/myAccount" element={<MyAccount />} />
+                  <Route path="/CultureDetails" element={<CultureDetails />} />
+                  <Route path="/destinations" element={<DestinationsPage />} />
+                  <Route
+                    path="/destinations/beach"
+                    element={<BeachDestinationsPage />}
+                  />
+                  <Route
+                    path="/destinations/adventure"
+                    element={<AdventureDestinationsPage />}
+                  />
+                  <Route
+                    path="/destinations/historic"
+                    element={<HistoricDestinationsPage />}
+                  />
+                  <Route
+                    path="/destination/:id"
+                    element={<DestinationDetails />}
+                  />
+                  <Route path="/wishlist" element={<Wishlist />} />
+                  <Route
+                    path="/properties-map"
+                    element={<PropertiesMapPage />}
+                  />
+                  <Route
+                    path="/searchResults"
+                    element={<SearchPropertyResults />}
+                  />
+                  <Route
+                    path="/searchCarResults"
+                    element={<SearchCarResults />}
+                  />
+                  <Route
+                    path="/hotelReservation/:id"
+                    element={<HotelReservation />}
+                  />
+                  <Route
+                    path="/apartmentReservation/:id"
+                    element={<ApartmentReservation />}
+                  />
+                  <Route
+                    path="/carReservation/:id"
+                    element={<CarReservation />}
+                  />
+                  <Route path="/carBilling/:id" element={<CarBilling />} />
+                  <Route
+                    path="/apartmentBilling/:id"
+                    element={<ApartmentBilling />}
+                  />
+                  <Route path="/hotelBilling/:id" element={<HotelBilling />} />
+                  <Route path="/myBookings" element={<BookingsSummary />} />
+                  <Route
+                    path="/ProviderRequest"
+                    element={<ProviderRequest />}
+                  />
+                  <Route path="/rental-terms" element={<RentalTerms />} />
 
-          <BrowserRouter>
-            <ScrollToTop />
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/auth" element={<OAuthSignInPage />} />
-              <Route path="/myAccount" element={<MyAccount />} />
-              <Route path="/CultureDetails" element={<CultureDetails />} />
-              <Route path="/destinations" element={<DestinationsPage />} />
-              <Route path="/destinations/beach" element={<BeachDestinationsPage />} />
-              <Route path="/destinations/adventure" element={<AdventureDestinationsPage />} />
-              <Route path="/destinations/historic" element={<HistoricDestinationsPage />} />
-              <Route path="/destination/:id" element={<DestinationDetails />} />
-              <Route path="/wishlist" element={<Wishlist />} />
-              <Route path="/properties-map" element={<PropertiesMapPage />} />
-              <Route
-                path="/searchResults"
-                element={<SearchPropertyResults />}
-              />
-              <Route path="/searchCarResults" element={<SearchCarResults />} />
-              <Route
-                path="/hotelReservation/:id"
-                element={<HotelReservation />}
-              />
-              <Route
-                path="/apartmentReservation/:id"
-                element={<ApartmentReservation />}
-              />
-              <Route path="/carReservation/:id" element={<CarReservation />} />
-              <Route path="/carBilling/:id" element={<CarBilling />} />
-              <Route
-                path="/apartmentBilling/:id"
-                element={<ApartmentBilling />}
-              />
-              <Route
-                path="/hotelBilling/:id"
-                element={<HotelBilling />}
-              />
-              <Route path="/myBookings" element={<BookingsSummary />} />
-              <Route path="/ProviderRequest" element={<ProviderRequest />} />
-              <Route path="/rental-terms" element={<RentalTerms />} />
-
-              <Route element={<ProtectedRoute />}>
-                <Route element={<DashboardLayout />}>
-                  <Route path="/dashboard" element={<Dashboard />} />
-                  <Route path="/dashboard/HotelsList" element={<AllHotels />} />
-                  <Route
-                    path="/dashboard/hotels/:id"
-                    element={<HotelDetails />}
-                  />
-                  <Route
-                    path="/dashboard/ApartmentsList"
-                    element={<AllApartments />}
-                  />
-                  <Route
-                    path="/dashboard/apartments/:id"
-                    element={<ApartmentDetails />}
-                  />
-                  <Route path="/dashboard/carsList" element={<AllCars />} />
-                  <Route path="/dashboard/carInfo/:id" element={<CarDetails />} />
-                  <Route
-                    path="/dashboard/userManagement"
-                    element={<UserManagement />}
-                  />
-                  <Route
-                    path="/dashboard/requestsManagement"
-                    element={<RequestsManagement />}
-                  />
-                  <Route
-                    path="/dashboard/propertyRequestsManagement"
-                    element={<PropertyRequestsManagement />}
-                  />
-                  <Route
-                    path="/dashboard/user-details/:userId"
-                    element={<UserDetails />}
-                  />
-                  <Route
-                    path="/dashboard/bookings"
-                    element={<BookingsManagement />}
-                  />
-                  <Route
-                    path="/dashboard/bookings/providers"
-                    element={<AdminProvidersList />}
-                  />
-                  <Route
-                    path="/dashboard/bookings/provider/:providerId"
-                    element={<AdminProviderBookings />}
-                  />
-                  <Route
-                    path="/dashboard/destinations"
-                    element={<DestinationsManagement />}
-                  />
-                  <Route path="/dashboard/support" element={<SupportChat />} />
-                </Route>
-              </Route>
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
-              <Route path="unauthorized" element={<Unauthorized />} />
-              <Route path="/suspended" element={<SuspendedPage />} />
-            </Routes>
-            <UserChatWidget />
-            <Footer />
-          </BrowserRouter>
-        </TooltipProvider>
-        <SpeedInsights />
-      </QueryClientProvider>
-    </PayPalScriptProvider>
-  </I18nextProvider>
-  </AuthProvider>
+                  <Route element={<ProtectedRoute />}>
+                    <Route element={<DashboardLayout />}>
+                      <Route path="/dashboard" element={<Dashboard />} />
+                      <Route
+                        path="/dashboard/HotelsList"
+                        element={<AllHotels />}
+                      />
+                      <Route
+                        path="/dashboard/hotels/:id"
+                        element={<HotelDetails />}
+                      />
+                      <Route
+                        path="/dashboard/ApartmentsList"
+                        element={<AllApartments />}
+                      />
+                      <Route
+                        path="/dashboard/apartments/:id"
+                        element={<ApartmentDetails />}
+                      />
+                      <Route path="/dashboard/carsList" element={<AllCars />} />
+                      <Route
+                        path="/dashboard/carInfo/:id"
+                        element={<CarDetails />}
+                      />
+                      <Route
+                        path="/dashboard/userManagement"
+                        element={<UserManagement />}
+                      />
+                      <Route
+                        path="/dashboard/requestsManagement"
+                        element={<RequestsManagement />}
+                      />
+                      <Route
+                        path="/dashboard/propertyRequestsManagement"
+                        element={<PropertyRequestsManagement />}
+                      />
+                      <Route
+                        path="/dashboard/user-details/:userId"
+                        element={<UserDetails />}
+                      />
+                      <Route
+                        path="/dashboard/bookings"
+                        element={<BookingsManagement />}
+                      />
+                      <Route
+                        path="/dashboard/bookings/providers"
+                        element={<AdminProvidersList />}
+                      />
+                      <Route
+                        path="/dashboard/bookings/provider/:providerId"
+                        element={<AdminProviderBookings />}
+                      />
+                      <Route
+                        path="/dashboard/destinations"
+                        element={<DestinationsManagement />}
+                      />
+                      <Route
+                        path="/dashboard/support"
+                        element={<SupportChat />}
+                      />
+                    </Route>
+                  </Route>
+                  {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                  <Route path="*" element={<NotFound />} />
+                  <Route path="unauthorized" element={<Unauthorized />} />
+                  <Route path="/suspended" element={<SuspendedPage />} />
+                </Routes>
+                <UserChatWidget />
+                <Footer />
+              </BrowserRouter>
+            </TooltipProvider>
+            <SpeedInsights />
+          </QueryClientProvider>
+        </PayPalScriptProvider>
+      </I18nextProvider>
+    </AuthProvider>
   </ThemeProvider>
 );
 
