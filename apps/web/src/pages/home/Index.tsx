@@ -6,10 +6,10 @@ import HotelsPreview from "@/components/home/HotelsPreview";
 import ApartmentsPreview from "@/components/home/ApartmentsPreview";
 import CarsPreview from "@/components/home/CarsPreview";
 import LoadingScreen from "@/components/home/LoadingScreen";
-import { Building2, Car, Star, Users, Shield } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@/context/ThemeContext";
 import { getHomeThemeTokens } from "@/components/home/homeTheme";
+import TrustIndicators from "@/components/home/TrustIndicators";
 
 const Index = () => {
   const { t } = useTranslation();
@@ -18,92 +18,11 @@ const Index = () => {
 
   return (
     <div style={{ minHeight: "100vh", background: tk.sectionMain }}>
-      <LoadingScreen />
+      {/* <LoadingScreen /> */}
       <PrimarySearchAppBar />
       <Hero />
 
-       {/* Trust Indicators Section */}
-      <section
-        style={{
-          padding: "2rem 0",
-          background: tk.trustGradient,
-        }}
-      >
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-            {[
-              {
-                Icon: Building2,
-                value: "500+",
-                labelKey: "home.trustIndicators.propertiesListed",
-                iconColor: "white",
-              },
-              {
-                Icon: Users,
-                value: "10K+",
-                labelKey: "home.trustIndicators.happyGuests",
-                iconColor: "white",
-              },
-              {
-                Icon: Star,
-                value: "4.8",
-                labelKey: "home.trustIndicators.averageRating",
-                iconColor: "#fbbf24",
-              },
-              {
-                Icon: Shield,
-                value: "100%",
-                labelKey: "home.trustIndicators.secureBooking",
-                iconColor: "white",
-              },
-            ].map(({ Icon, value, labelKey, iconColor }) => (
-              <div
-                key={labelKey}
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  textAlign: "center",
-                  padding: "0.75rem",
-                }}
-              >
-                <div
-                  style={{
-                    width: "3rem",
-                    height: "3rem",
-                    borderRadius: "9999px",
-                    background: "rgba(255,255,255,0.10)",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    marginBottom: "0.5rem",
-                  }}
-                >
-                  <Icon className="w-6 h-6" style={{ color: iconColor }} />
-                </div>
-                <span
-                  style={{
-                    fontSize: "1.75rem",
-                    fontWeight: 700,
-                    color: "#ffffff",
-                  }}
-                >
-                  {value}
-                </span>
-                <span
-                  style={{
-                    fontSize: "0.875rem",
-                    color: "rgba(255,255,255,0.7)",
-                    marginTop: "0.25rem",
-                  }}
-                >
-                  {t(labelKey)}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <TrustIndicators />
 
       {/* Cars Section */}
       <section
@@ -135,8 +54,8 @@ const Index = () => {
               style={{
                 display: "inline-block",
                 padding: "0.375rem 1rem",
-                 background: tk.badgeBg,
-                 color: tk.badgeText,
+                background: tk.badgeBg,
+                color: tk.badgeText,
                 fontWeight: 600,
                 letterSpacing: "0.1em",
                 textTransform: "uppercase",
@@ -151,7 +70,7 @@ const Index = () => {
               style={{
                 fontSize: "clamp(1.75rem, 4vw, 3rem)",
                 fontWeight: 700,
-                 color: tk.textMain,
+                color: tk.textMain,
                 marginBottom: "0.75rem",
               }}
             >
@@ -160,7 +79,7 @@ const Index = () => {
             <p
               style={{
                 fontSize: "1.05rem",
-                 color: tk.textMuted,
+                color: tk.textMuted,
                 maxWidth: "40rem",
                 margin: "0 auto",
               }}
@@ -183,9 +102,9 @@ const Index = () => {
             <div
               id="apartments"
               style={{
-                 borderLeft: `1px solid ${tk.dividerColor}`,
-                 paddingLeft: "1.5rem",
-               }}
+                borderLeft: `1px solid ${tk.dividerColor}`,
+                paddingLeft: "1.5rem",
+              }}
             >
               <ApartmentsPreview />
             </div>

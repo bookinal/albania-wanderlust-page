@@ -15,6 +15,7 @@ export interface Destination {
   description: TranslatedField;
   imageUrls: string[];
   category: string;
+  subcategory?: string;
   lat?: number;
   lng?: number;
   location?: string;
@@ -36,6 +37,7 @@ export interface DestinationDto {
   description: TranslatedField;
   imageUrls: string[];
   category: string;
+  subcategory?: string;
   lat?: number;
   lng?: number;
   location?: string;

@@ -2,9 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowRight, Loader2 } from "lucide-react";
 import { Destination } from "@/types/destination.types";
-import {
-  addDestinationToCurrentUserWishlist,
-} from "@/services/api/destinationService";
+import { addDestinationToCurrentUserWishlist } from "@/services/api/destinationService";
 import { useToast } from "@/hooks/use-toast";
 import { getCurrentUserWishlist } from "@/services/api/destinationService";
 import { useTranslation } from "react-i18next";
@@ -13,7 +11,8 @@ import { useTheme } from "@/context/ThemeContext";
 import { getHomeThemeTokens } from "./homeTheme";
 import { DestinationFilterBar } from "./destinations/DestinationFilterBar";
 import { DestinationListItem } from "./destinations/DestinationListItem";
-import { useDestinations } from "@/hooks/useDestinations";
+import { useQuery } from "@tanstack/react-query";
+import { getTopDestinationsByCategory } from "@/services/api/destinationService";
 
 const Destinations = () => {
   const { t } = useTranslation();
@@ -23,14 +22,24 @@ const Destinations = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const [wishlistLoadingId, setWishlistLoadingId] = useState<string | null>(null);
+  const [wishlistLoadingId, setWishlistLoadingId] = useState<string | null>(
+    null,
+  );
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const {
-    data: destinations = [],
+    data: topDestinationsMap = {},
     isLoading,
     error,
-  } = useDestinations();
+  } = useQuery({
+    queryKey: ["topDestinationsByCategory"],
+    queryFn: getTopDestinationsByCategory,
+    staleTime: 10 * 60 * 1000,
+  });
+
+  const destinations = useMemo(() => {
+    return Object.values(topDestinationsMap).flat();
+  }, [topDestinationsMap]);
 
   const tk = {
     sectionBg: isDark ? "#0a0a0c" : isBlue ? "hsl(205 55% 96%)" : "#f8fafc",
@@ -38,15 +47,31 @@ const Destinations = () => {
     textMuted: homeTk.textMuted,
     brand: homeTk.brand,
     brandSoft: homeTk.brandSoft,
-    panelBg: isDark ? "rgba(20,20,23,0.92)" : isBlue ? "rgba(255,255,255,0.86)" : "rgba(255,255,255,0.96)",
-    panelBorder: isDark ? "rgba(255,255,255,0.08)" : isBlue ? "rgba(2,132,199,0.16)" : "rgba(15,23,42,0.08)",
+    panelBg: isDark
+      ? "rgba(20,20,23,0.92)"
+      : isBlue
+        ? "rgba(255,255,255,0.86)"
+        : "rgba(255,255,255,0.96)",
+    panelBorder: isDark
+      ? "rgba(255,255,255,0.08)"
+      : isBlue
+        ? "rgba(2,132,199,0.16)"
+        : "rgba(15,23,42,0.08)",
     panelShadow: isDark
       ? "0 20px 50px rgba(0,0,0,0.35)"
       : isBlue
         ? "0 18px 40px rgba(3,37,65,0.12)"
         : "0 18px 40px rgba(15,23,42,0.08)",
-    buttonGhostBg: isDark ? "rgba(255,255,255,0.05)" : isBlue ? "rgba(255,255,255,0.74)" : "rgba(255,255,255,0.8)",
-    buttonGhostBorder: isDark ? "rgba(255,255,255,0.12)" : isBlue ? "rgba(2,132,199,0.18)" : "rgba(15,23,42,0.08)",
+    buttonGhostBg: isDark
+      ? "rgba(255,255,255,0.05)"
+      : isBlue
+        ? "rgba(255,255,255,0.74)"
+        : "rgba(255,255,255,0.8)",
+    buttonGhostBorder: isDark
+      ? "rgba(255,255,255,0.12)"
+      : isBlue
+        ? "rgba(2,132,199,0.18)"
+        : "rgba(15,23,42,0.08)",
   };
 
   useEffect(() => {
@@ -62,15 +87,24 @@ const Destinations = () => {
   }, []);
 
   const categories = useMemo(() => {
-    return [...new Set(destinations.map((destination) => destination.category).filter(Boolean))].sort();
+    return [
+      ...new Set(
+        destinations.map((destination) => destination.category).filter(Boolean),
+      ),
+    ].sort();
   }, [destinations]);
 
   const filteredDestinations = useMemo(() => {
     const query = search.trim().toLowerCase();
 
     return destinations.filter((destination) => {
-      const matchesCategory = !selectedCategory || destination.category === selectedCategory;
-      const haystack = [localize(destination.name), localize(destination.description), destination.category]
+      const matchesCategory =
+        !selectedCategory || destination.category === selectedCategory;
+      const haystack = [
+        localize(destination.name),
+        localize(destination.description),
+        destination.category,
+      ]
         .filter(Boolean)
         .join(" ")
         .toLowerCase();
@@ -80,7 +114,8 @@ const Destinations = () => {
     });
   }, [destinations, localize, search, selectedCategory]);
 
-  const hasActiveFilters = search.trim().length > 0 || selectedCategory.length > 0;
+  const hasActiveFilters =
+    search.trim().length > 0 || selectedCategory.length > 0;
 
   const handleAddToWishlist = async (destinationId: string) => {
     try {
@@ -126,7 +161,10 @@ const Destinations = () => {
             >
               {t("home.destinations.title")}
             </h2>
-            <p className="text-lg leading-relaxed" style={{ color: tk.textMuted }}>
+            <p
+              className="text-lg leading-relaxed"
+              style={{ color: tk.textMuted }}
+            >
               {t("home.destinations.description")}
             </p>
           </div>
@@ -181,7 +219,10 @@ const Destinations = () => {
 
         {isLoading && (
           <div className="flex items-center justify-center py-20">
-            <Loader2 className="w-8 h-8 animate-spin" style={{ color: tk.brand }} />
+            <Loader2
+              className="w-8 h-8 animate-spin"
+              style={{ color: tk.brand }}
+            />
           </div>
         )}
 
@@ -195,7 +236,15 @@ const Destinations = () => {
               padding: "3rem 1rem",
             }}
           >
-            <p style={{ color: tk.textMain, fontSize: "1.1rem", marginBottom: "1rem" }}>{t("home.destinations.loadError")}</p>
+            <p
+              style={{
+                color: tk.textMain,
+                fontSize: "1.1rem",
+                marginBottom: "1rem",
+              }}
+            >
+              {t("home.destinations.loadError")}
+            </p>
             <button
               onClick={() => window.location.reload()}
               style={{
@@ -224,10 +273,21 @@ const Destinations = () => {
               color: tk.textMuted,
             }}
           >
-            <div style={{ color: tk.textMain, fontSize: "1.25rem", fontWeight: 700, marginBottom: "0.55rem" }}>
-              {hasActiveFilters ? t("home.destinations.noResultsTitle") : t("home.destinations.noDestinations")}
+            <div
+              style={{
+                color: tk.textMain,
+                fontSize: "1.25rem",
+                fontWeight: 700,
+                marginBottom: "0.55rem",
+              }}
+            >
+              {hasActiveFilters
+                ? t("home.destinations.noResultsTitle")
+                : t("home.destinations.noDestinations")}
             </div>
-            {hasActiveFilters && <div>{t("home.destinations.noResultsDescription")}</div>}
+            {hasActiveFilters && (
+              <div>{t("home.destinations.noResultsDescription")}</div>
+            )}
           </div>
         )}
 

@@ -20,6 +20,31 @@ export const getAllDestinations = async (): Promise<Destination[]> => {
   return data;
 };
 
+export const getTopDestinationsByCategory = async (): Promise<{
+  [category: string]: Destination[];
+}> => {
+  const { data, error } = await apiClient.rpc(
+    "get_top_destinations_by_category",
+  );
+
+  if (error) {
+    console.error(
+      "[Destination Service] Error fetching top destinations:",
+      error,
+    );
+    throw error;
+  }
+
+  const grouped: { [category: string]: Destination[] } = {};
+  for (const destination of data) {
+    if (!grouped[destination.category]) grouped[destination.category] = [];
+    grouped[destination.category].push(destination);
+  }
+
+  return grouped;
+};
+
+
 /**
  * Get a destination by ID
  */
