@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   ArrowLeft,
@@ -8,23 +8,27 @@ import {
   Loader2,
   Waves,
 } from "lucide-react";
-import type { LucideIcon } from "lucide-react";
 import PrimarySearchAppBar from "@/components/home/AppBar";
 import { useTheme } from "@/context/ThemeContext";
 import { getHomeThemeTokens } from "@/components/home/homeTheme";
 import { useTranslation } from "react-i18next";
 import { useDestinations } from "@/hooks/useDestinations";
+import { DestinationCard } from "./DestinationCard";
+import { addDestinationToCurrentUserWishlist } from "@/services/api/destinationService";
+import { useToast } from "@/hooks/use-toast";
+import { CATEGORIES } from "@/lib/destinationManagement";
 
 const DestinationsPage = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { toast } = useToast();
   const { isDark, isBlue } = useTheme();
   const homeTk = getHomeThemeTokens({ isDark, isBlue });
-  const {
-    data: destinations = [],
-    isLoading,
-    error,
-  } = useDestinations();
+  const { data: destinations = [], isLoading, error } = useDestinations();
+
+  const [wishlistLoadingId, setWishlistLoadingId] = useState<string | null>(
+    null,
+  );
 
   const tk = {
     pageBg: isDark
@@ -56,99 +60,69 @@ const DestinationsPage = () => {
       : isBlue
         ? "0 18px 40px rgba(3,37,65,0.12)"
         : "0 18px 40px rgba(15,23,42,0.08)",
+    buttonGhostBg: isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.04)",
+    buttonGhostBorder: isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.08)",
   };
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
-  const categoryCards = useMemo<
-    Array<{
-      id: string;
-      title: string;
-      eyebrow: string;
-      description: string;
-      slug: string;
-      icon: LucideIcon;
-      image?: string;
-      accent: string;
-      count: number;
-    }>
-  >(() => {
-    const buildCard = (
-      id: string,
-      title: string,
-      eyebrow: string,
-      description: string,
-      slug: string,
-      icon: LucideIcon,
-      accent: string,
-    ) => {
-      const matches = destinations.filter((destination) => destination.category === id);
-
-      return {
-        id,
-        title,
-        eyebrow,
-        description,
-        slug,
-        icon,
-        image: matches[0]?.imageUrls?.[0],
-        accent,
-        count: matches.length,
-      };
-    };
-
-    return [
-      buildCard(
-        "Adventure",
-        "Adventure",
-        "Cliffs, trails, canyons",
-        "For places that move faster: hikes, hidden routes, rugged viewpoints, and the wild side of Albania.",
-        "adventure",
-        Compass,
-        "linear-gradient(135deg, rgba(17,94,89,0.94), rgba(13,148,136,0.82), rgba(110,231,183,0.4))",
-      ),
-      buildCard(
-        "Historic",
-        "Historic",
-        "Castles, ruins, old towns",
-        "Step into stone alleys, layered histories, and destinations shaped by memory, empire, and legend.",
-        "historic",
-        Landmark,
-        "linear-gradient(135deg, rgba(120,53,15,0.94), rgba(180,83,9,0.8), rgba(251,191,36,0.34))",
-      ),
-      buildCard(
-        "Beach",
-        "Beaches",
-        "Coves, coastlines, clear water",
-        "Browse Albania's shoreline through sunlit bays, dramatic Riviera stops, and easy summer escapes.",
-        "beach",
-        Waves,
-        "linear-gradient(135deg, rgba(12,74,110,0.94), rgba(2,132,199,0.82), rgba(103,232,249,0.4))",
-      ),
-    ];
-  }, [destinations]);
+  const handleAddToWishlist = async (destinationId: string) => {
+    try {
+      setWishlistLoadingId(destinationId);
+      await addDestinationToCurrentUserWishlist(destinationId);
+      toast({
+        title: t("common.success"),
+        description: t("home.destinations.addedToWishlist"),
+      });
+    } catch (err: any) {
+      console.error("Failed to add to wishlist:", err);
+      toast({
+        title: err?.code === "23505" ? t("common.warning") : t("common.error"),
+        description:
+          err?.code === "23505"
+            ? t("home.destinations.alreadyInWishlist")
+            : t("home.destinations.loginToAddWishlist"),
+        variant: err?.code === "23505" ? "default" : "destructive",
+      });
+    } finally {
+      setWishlistLoadingId(null);
+    }
+  };
 
   return (
-    <div style={{ minHeight: "100vh", background: tk.pageBg, color: tk.textMain }}>
+    <div
+      style={{ minHeight: "100vh", background: tk.pageBg, color: tk.textMain }}
+    >
       <PrimarySearchAppBar />
 
-      <section style={{ background: tk.heroGradient, position: "relative", overflow: "hidden" }}>
+      <section
+        style={{
+          position: "relative",
+          overflow: "hidden",
+          backgroundImage: `url(https://images.unsplash.com/photo-1529592767881-c6bb394eb83d?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D)`,
+          backgroundSize: "cover",
+          backgroundPosition: "center 30%",
+          backgroundRepeat: "no-repeat",
+        }}
+      >
         <div
           style={{
             position: "absolute",
             inset: 0,
             background:
-              "radial-gradient(circle at top right, rgba(255,255,255,0.14), transparent 32%), radial-gradient(circle at bottom left, rgba(255,255,255,0.08), transparent 28%)",
+              "linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.6) 100%)",
           }}
         />
+
         <div
           style={{
             maxWidth: "1280px",
             margin: "0 auto",
             padding: "4rem 1rem 3rem",
             position: "relative",
+            zIndex: 2,
           }}
         >
           <button
@@ -159,214 +133,154 @@ const DestinationsPage = () => {
               gap: "0.5rem",
               padding: "0.65rem 1rem",
               borderRadius: "9999px",
-              border: "1px solid rgba(255,255,255,0.2)",
-              background: "rgba(255,255,255,0.08)",
+              border: "1px solid rgba(255,255,255,0.3)",
+              background: "rgba(0,0,0,0.4)",
+              backdropFilter: "blur(8px)",
               color: "#ffffff",
               cursor: "pointer",
               marginBottom: "1.25rem",
+              transition: "all 0.2s ease",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = "rgba(0,0,0,0.6)";
+              e.currentTarget.style.borderColor = "rgba(255,255,255,0.5)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = "rgba(0,0,0,0.4)";
+              e.currentTarget.style.borderColor = "rgba(255,255,255,0.3)";
             }}
           >
             <ArrowLeft className="w-4 h-4" />
             {t("home.destinations.backToHome")}
           </button>
 
-          <div className="destinations-hero-grid" style={{ display: "grid", gap: "1rem", alignItems: "end" }}>
+          <div
+            className="destinations-hero-grid"
+            style={{ display: "grid", gap: "1rem", alignItems: "end" }}
+          >
             <div style={{ maxWidth: "760px" }}>
-              <p style={{ color: "rgba(255,255,255,0.75)", textTransform: "uppercase", letterSpacing: "0.18em", fontSize: "0.78rem", fontWeight: 700, marginBottom: "0.9rem" }}>
+              <p
+                style={{
+                  color: "rgba(255,255,255,0.9)",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.18em",
+                  fontSize: "0.78rem",
+                  fontWeight: 700,
+                  marginBottom: "0.9rem",
+                  textShadow: "0 1px 2px rgba(0,0,0,0.3)",
+                }}
+              >
                 {t("common.destinations")}
               </p>
-              <h1 style={{ color: "#ffffff", fontSize: "clamp(2.35rem, 5vw, 4.7rem)", lineHeight: 0.98, fontWeight: 900, marginBottom: "1rem" }}>
-                Discover Albania by mood, not by list.
+              <h1
+                style={{
+                  color: "#ffffff",
+                  fontSize: "clamp(2.35rem, 5vw, 4.7rem)",
+                  lineHeight: 0.98,
+                  fontWeight: 900,
+                  marginBottom: "1rem",
+                  textShadow: "0 2px 4px rgba(0,0,0,0.3)",
+                }}
+              >
+                Explore the best of Albania
               </h1>
-              <p style={{ color: tk.heroSoft, fontSize: "1.05rem", lineHeight: 1.8, maxWidth: "56rem" }}>
-                Choose a direction first: wild adventure, layered history, or beach days along the coast. Each path opens its own destination world.
+              <p
+                style={{
+                  color: "rgba(255,255,255,0.92)",
+                  fontSize: "1.05rem",
+                  lineHeight: 1.8,
+                  maxWidth: "56rem",
+                  textShadow: "0 1px 2px rgba(0,0,0,0.2)",
+                }}
+              >
+                From crystal clear beaches to majestic mountains, discover the
+                most beautiful places in Albania.
               </p>
-            </div>
-
-            <div
-              style={{
-                background: "rgba(255,255,255,0.1)",
-                border: "1px solid rgba(255,255,255,0.16)",
-                borderRadius: "1.25rem",
-                padding: "1rem 1.25rem",
-                color: "#ffffff",
-                minWidth: "190px",
-                justifySelf: "start",
-              }}
-            >
-              <div style={{ fontSize: "0.8rem", opacity: 0.76, marginBottom: "0.25rem" }}>
-                {t("home.destinations.availableNow")}
-              </div>
-              <div style={{ fontSize: "2rem", fontWeight: 800, lineHeight: 1.1 }}>{destinations.length}</div>
-              <div style={{ fontSize: "0.92rem", opacity: 0.86 }}>{t("home.destinations.countLabel")}</div>
             </div>
           </div>
         </div>
       </section>
 
-      <section style={{ maxWidth: "1280px", margin: "0 auto", padding: "2rem 1rem 4rem" }}>
-        {isLoading && (
-          <div style={{ minHeight: "40vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <Loader2 className="w-8 h-8 animate-spin" style={{ color: tk.brand }} />
+      {/* Categories Content */}
+      <section
+        style={{ padding: "4rem 1rem", maxWidth: "1280px", margin: "0 auto" }}
+      >
+        {isLoading ? (
+          <div className="flex justify-center items-center py-20">
+            <Loader2
+              className="w-8 h-8 animate-spin"
+              style={{ color: tk.brand }}
+            />
           </div>
-        )}
-
-        {!isLoading && error && (
-          <div
-            style={{
-              textAlign: "center",
-              padding: "5rem 1rem",
-              color: tk.textMuted,
-              border: `1px solid ${tk.panelBorder}`,
-              background: tk.panelBg,
-              borderRadius: "1.5rem",
-            }}
-          >
-            <p style={{ color: tk.textMain, fontSize: "1.1rem", marginBottom: "1rem" }}>{t("home.destinations.loadError")}</p>
-            <button
-              onClick={() => window.location.reload()}
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: "0.5rem",
-                padding: "0.8rem 1.1rem",
-                borderRadius: "0.8rem",
-                border: `1px solid ${tk.panelBorder}`,
-                background: tk.panelBg,
-                color: tk.textMain,
-                cursor: "pointer",
-                fontWeight: 600,
-                marginTop: "1.5rem",
-              }}
-            >
-              {t("common.tryAgain")}
-            </button>
+        ) : error ? (
+          <div className="text-center py-20">
+            <p style={{ color: "rgba(239,68,68,0.9)", fontSize: "1.1rem" }}>
+              {t("common.errorLoading")}
+            </p>
           </div>
-        )}
+        ) : (
+          <div className="flex flex-col gap-16">
+            {CATEGORIES.map((cat) => {
+              const catDestinations = destinations.filter(
+                (d) => d.category === cat.id,
+              );
 
-        {!isLoading && !error && (
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 320px), 1fr))",
-              gap: "1.25rem",
-            }}
-          >
-            {categoryCards.map((card) => {
-              const Icon = card.icon;
+              if (catDestinations.length === 0) return null;
 
               return (
-                <button
-                  key={card.id}
-                  onClick={() => navigate(`/destinations/${card.slug}`)}
-                  style={{
-                    position: "relative",
-                    minHeight: "26rem",
-                    borderRadius: "1.75rem",
-                    overflow: "hidden",
-                    border: `1px solid ${tk.panelBorder}`,
-                    padding: 0,
-                    cursor: "pointer",
-                    background: tk.panelBg,
-                    boxShadow: tk.panelShadow,
-                    textAlign: "left",
-                  }}
-                >
-                  {card.image ? (
-                    <img
-                      src={card.image}
-                      alt={card.title}
-                      style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
-                    />
-                  ) : (
-                    <div style={{ position: "absolute", inset: 0, background: card.accent }} />
-                  )}
-
-                  <div
-                    style={{
-                      position: "absolute",
-                      inset: 0,
-                      background: `${card.accent}, linear-gradient(180deg, rgba(15,23,42,0.04) 0%, rgba(15,23,42,0.76) 100%)`,
-                      mixBlendMode: card.image ? "multiply" : "normal",
-                    }}
-                  />
-
-                  <div
-                    style={{
-                      position: "relative",
-                      zIndex: 1,
-                      height: "100%",
-                      display: "flex",
-                      flexDirection: "column",
-                      justifyContent: "space-between",
-                      padding: "1.5rem",
-                      color: "#ffffff",
-                    }}
-                  >
-                    <div style={{ display: "flex", justifyContent: "space-between", gap: "1rem", alignItems: "flex-start" }}>
-                      <div
-                        style={{
-                          width: "3rem",
-                          height: "3rem",
-                          borderRadius: "1rem",
-                          display: "inline-flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          background: "rgba(255,255,255,0.14)",
-                          border: "1px solid rgba(255,255,255,0.18)",
-                          backdropFilter: "blur(10px)",
-                          WebkitBackdropFilter: "blur(10px)",
-                        }}
-                      >
-                        <Icon className="w-5 h-5" />
-                      </div>
-                      <div
-                        style={{
-                          display: "inline-flex",
-                          alignItems: "center",
-                          gap: "0.4rem",
-                          padding: "0.5rem 0.8rem",
-                          borderRadius: "9999px",
-                          background: "rgba(255,255,255,0.12)",
-                          border: "1px solid rgba(255,255,255,0.18)",
-                          fontSize: "0.85rem",
-                          fontWeight: 700,
-                        }}
-                      >
-                        {card.count}
-                      </div>
-                    </div>
-
-                    <div>
-                      <p style={{ margin: 0, opacity: 0.74, textTransform: "uppercase", letterSpacing: "0.16em", fontSize: "0.75rem", fontWeight: 700 }}>
-                        {card.eyebrow}
-                      </p>
-                      <h2 style={{ margin: "0.8rem 0 0", fontSize: "clamp(2rem, 4vw, 3rem)", lineHeight: 0.98, fontWeight: 900 }}>
-                        {card.title}
-                      </h2>
-                      <p style={{ margin: "0.9rem 0 0", maxWidth: "28rem", fontSize: "1rem", lineHeight: 1.75, color: "rgba(255,255,255,0.86)" }}>
-                        {card.description}
-                      </p>
-                      <div style={{ marginTop: "1.2rem", display: "inline-flex", alignItems: "center", gap: "0.55rem", fontWeight: 700 }}>
-                        Explore collection
-                        <ArrowRight className="w-4 h-4" />
-                      </div>
-                    </div>
+                <div key={cat.id}>
+                  <div className="flex items-center justify-between mb-6">
+                    <h2
+                      style={{
+                        fontSize: "2rem",
+                        fontWeight: 800,
+                        color: tk.textMain,
+                        letterSpacing: "-0.02em",
+                      }}
+                    >
+                      {cat.label}
+                    </h2>
+                    <button
+                      onClick={() =>
+                        navigate(
+                          `/destinations/${cat.id
+                            .toLowerCase()
+                            .replace(/[^a-z0-9]+/g, "-")
+                            .replace(/(^-|-$)/g, "")}`,
+                        )
+                      }
+                      className="inline-flex items-center gap-2 text-sm font-bold transition-all"
+                      style={{ color: tk.brand }}
+                    >
+                      See more
+                      <ArrowRight className="w-4 h-4" />
+                    </button>
                   </div>
-                </button>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    {catDestinations.map((destination) => (
+                      <DestinationCard
+                        key={destination.id}
+                        destination={destination}
+                        tk={tk}
+                        onAddToWishlist={handleAddToWishlist}
+                        isLoadingWishlist={wishlistLoadingId === destination.id}
+                      />
+                    ))}
+                  </div>
+                </div>
               );
             })}
+
+            {destinations.length === 0 && (
+              <div className="text-center py-20">
+                <p style={{ color: tk.textMuted, fontSize: "1.1rem" }}>
+                  No destinations found.
+                </p>
+              </div>
+            )}
           </div>
         )}
       </section>
-
-      <style>{`
-        @media (min-width: 960px) {
-          .destinations-hero-grid {
-            grid-template-columns: minmax(0, 1fr) auto;
-          }
-        }
-      `}</style>
     </div>
   );
 };

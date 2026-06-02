@@ -18,8 +18,8 @@ import { useTheme } from "@/context/ThemeContext";
 import { getHomeThemeTokens } from "@/components/home/homeTheme";
 import { useTranslation } from "react-i18next";
 import { useDestinations } from "@/hooks/useDestinations";
-import { DestinationCard } from "./DestinationCard";
-import DestinationMap from "./DestinationMap";
+import { DestinationCard } from "../DestinationCard";
+import DestinationMap from "../DestinationMap";
 
 const BeachDestinationsPage = () => {
   const { t } = useTranslation();
@@ -72,7 +72,9 @@ const BeachDestinationsPage = () => {
 
   const beaches = useMemo(
     () =>
-      destinations.filter((destination) => destination.category === "Beach"),
+      destinations.filter(
+        (destination) => destination.category === "Destinations",
+      ),
     [destinations],
   );
 
@@ -190,7 +192,7 @@ const BeachDestinationsPage = () => {
                 marginBottom: "0.85rem",
               }}
             >
-              Beaches of Albania
+              Landscapes of Albania
             </h1>
             <p
               style={{

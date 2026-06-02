@@ -135,7 +135,7 @@ export const DestinationCard = ({
             fontSize: "0.82rem",
           }}
         >
-          {destination.category || "Destination"}
+          {destination.subcategory || "Destination"}
         </div>
       </div>
 
@@ -162,8 +162,7 @@ export const DestinationCard = ({
           {localize(destination.description).length > 140 ? "..." : ""}
         </p>
 
-        {typeof destination.lat === "number" &&
-          typeof destination.lng === "number" && (
+        { destination.location && (
             <div
               style={{
                 display: "inline-flex",
@@ -175,7 +174,7 @@ export const DestinationCard = ({
               }}
             >
               <MapPin className="w-4 h-4" />
-              {destination.lat.toFixed(4)}, {destination.lng.toFixed(4)}
+              {destination.location}
             </div>
           )}
 

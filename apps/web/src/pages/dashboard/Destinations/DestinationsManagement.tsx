@@ -62,6 +62,7 @@ import {
 import { useTheme } from "@/context/ThemeContext";
 import { DESTINATIONS_QUERY_KEY } from "@/hooks/useDestinations";
 import { ALBANIAN_CITIES } from "@/lib/albanianCities";
+import { CATEGORIES, SUBCATEGORIES } from "@/lib/destinationManagement";
 
 /* ============================== Types ============================== */
 
@@ -69,6 +70,7 @@ interface DestinationFormData {
   name: TranslatedField;
   description: TranslatedField;
   category: string;
+  subcategory: string;
   lat?: number;
   lng?: number;
   location?: string;
@@ -106,14 +108,7 @@ function emptyTranslatedField(): TranslatedField {
 
 /* ============================== Constants ============================== */
 
-const CATEGORIES = [
-  { id: "Adventure", label: "Adventure" },
-  { id: "Historic", label: "Historic" },
-  { id: "Beach", label: "Beach" },
-  { id: "Cultural", label: "Cultural" },
-  { id: "Nature", label: "Nature" },
-  { id: "City", label: "City" },
-];
+
 
 const QUICK_FACT_FIELDS: Array<{
   key: keyof Pick<
@@ -199,6 +194,7 @@ function createEmptyDestinationFormData(): DestinationFormData {
     name: emptyTranslatedField(),
     description: emptyTranslatedField(),
     category: "",
+    subcategory: "",
     lat: undefined,
     lng: undefined,
     location: undefined,
@@ -380,6 +376,7 @@ export default function DestinationsManagement() {
           : { en: destination.description }),
       },
       category: destination.category,
+      subcategory: destination.subcategory || "",
       lat: destination.lat,
       lng: destination.lng,
       location: destination.location,
@@ -419,6 +416,7 @@ export default function DestinationsManagement() {
           : { en: destination.description }),
       },
       category: destination.category,
+      subcategory: destination.subcategory || "",
       lat: destination.lat,
       lng: destination.lng,
       location: destination.location,
@@ -485,7 +483,13 @@ export default function DestinationsManagement() {
     >,
   ) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData((prev) => {
+      // If category changes, reset subcategory
+      if (name === "category") {
+        return { ...prev, [name]: value, subcategory: "" };
+      }
+      return { ...prev, [name]: value };
+    });
   };
 
   const handleTranslatedChange = (
@@ -568,6 +572,7 @@ export default function DestinationsManagement() {
         name: formData.name,
         description: formData.description,
         category: formData.category,
+        subcategory: formData.subcategory,
         lat: formData.lat,
         lng: formData.lng,
         location: formData.location,
@@ -712,24 +717,28 @@ export default function DestinationsManagement() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {[
           {
-            label: t("destinationsManagement.stats.total"),
+            label: t("destinationsManagement.stats.total", "Total"),
             value: destinations.length,
             color: "#E8192C",
           },
           {
-            label: t("destinationsManagement.stats.adventure"),
-            value: destinations.filter((d) => d.category === "Adventure")
+            label: "Destinations",
+            value: destinations.filter((d) => d.category === "Destinations")
               .length,
             color: "#16a34a",
           },
           {
-            label: t("destinationsManagement.stats.historic"),
-            value: destinations.filter((d) => d.category === "Historic").length,
+            label: "Eat, drink & dance",
+            value: destinations.filter(
+              (d) => d.category === "Eat, drink & dance",
+            ).length,
             color: "#7c3aed",
           },
           {
-            label: t("destinationsManagement.stats.beach"),
-            value: destinations.filter((d) => d.category === "Beach").length,
+            label: "History & culture",
+            value: destinations.filter(
+              (d) => d.category === "History & culture",
+            ).length,
             color: "#ea580c",
           },
         ].map(({ label, value, color }) => (
@@ -914,30 +923,62 @@ export default function DestinationsManagement() {
             </div>
 
             {/* Category */}
-            <div className="space-y-2">
-              <label
-                className="text-sm font-medium"
-                style={{ color: tk.labelText }}
-              >
-                {t("destinationsManagement.form.category")}{" "}
-                <span className="text-red-500">*</span>
-              </label>
-              <select
-                name="category"
-                value={formData.category}
-                onChange={handleInputChange}
-                disabled={dialogMode === "view"}
-                style={inputStyle}
-              >
-                <option value="">
-                  {t("destinationsManagement.form.categoryPlaceholder")}
-                </option>
-                {CATEGORIES.map((cat) => (
-                  <option key={cat.id} value={cat.id}>
-                    {cat.label}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label
+                  className="text-sm font-medium"
+                  style={{ color: tk.labelText }}
+                >
+                  {t("destinationsManagement.form.category")}{" "}
+                  <span className="text-red-500">*</span>
+                </label>
+                <select
+                  name="category"
+                  value={formData.category}
+                  onChange={handleInputChange}
+                  disabled={dialogMode === "view"}
+                  style={inputStyle}
+                >
+                  <option value="">
+                    {t("destinationsManagement.form.categoryPlaceholder")}
                   </option>
-                ))}
-              </select>
+                  {CATEGORIES.map((cat) => (
+                    <option key={cat.id} value={cat.id}>
+                      {cat.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Subcategory */}
+              <div className="space-y-2">
+                <label
+                  className="text-sm font-medium"
+                  style={{ color: tk.labelText }}
+                >
+                  Subcategory
+                </label>
+                <select
+                  name="subcategory"
+                  value={formData.subcategory}
+                  onChange={handleInputChange}
+                  disabled={dialogMode === "view" || !formData.category}
+                  style={{
+                    ...inputStyle,
+                    opacity:
+                      !formData.category && dialogMode !== "view" ? 0.5 : 1,
+                  }}
+                >
+                  <option value="">Select a subcategory...</option>
+                  {SUBCATEGORIES.filter(
+                    (sub) => sub.parent === formData.category,
+                  ).map((sub) => (
+                    <option key={sub.id} value={sub.id}>
+                      {sub.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
 
             {/* Language Tabs */}
@@ -1476,29 +1517,21 @@ function DestinationCard({
         light: { bg: string; text: string };
       }
     > = {
-      Adventure: {
+      Destinations: {
         dark: { bg: "rgba(34,197,94,0.15)", text: "#4ade80" },
         light: { bg: "#dcfce7", text: "#166534" },
       },
-      Historic: {
+      "Eat, drink & dance": {
         dark: { bg: "rgba(139,92,246,0.15)", text: "#c4b5fd" },
         light: { bg: "#f5f3ff", text: "#6d28d9" },
       },
-      Beach: {
+      "History & culture": {
         dark: { bg: "rgba(59,130,246,0.15)", text: "#93c5fd" },
         light: { bg: "#eff6ff", text: "#1d4ed8" },
       },
-      Cultural: {
+      Experiences: {
         dark: { bg: "rgba(236,72,153,0.15)", text: "#f9a8d4" },
         light: { bg: "#fdf2f8", text: "#be185d" },
-      },
-      Nature: {
-        dark: { bg: "rgba(16,185,129,0.15)", text: "#6ee7b7" },
-        light: { bg: "#ecfdf5", text: "#065f46" },
-      },
-      City: {
-        dark: { bg: "rgba(249,115,22,0.15)", text: "#fdba74" },
-        light: { bg: "#fff7ed", text: "#c2410c" },
       },
     };
     const s = styles[category];
@@ -1537,11 +1570,32 @@ function DestinationCard({
             <MapPin size={48} style={{ color: tk.iconMuted }} />
           </div>
         )}
-        <div
-          className="absolute top-2 right-2 px-3 py-1 rounded-full text-xs font-medium"
-          style={{ background: catStyle.bg, color: catStyle.text }}
-        >
-          {destination.category}
+        <div className="absolute top-2 right-2 px-3 py-1 rounded-full text-xs font-medium flex flex-col gap-1 items-end">
+          <span
+            style={{
+              background: catStyle.bg,
+              color: catStyle.text,
+              padding: "2px 8px",
+              borderRadius: "9999px",
+            }}
+          >
+            {destination.category}
+          </span>
+          {destination.subcategory && (
+            <span
+              style={{
+                background: catStyle.bg,
+                color: catStyle.text,
+                padding: "2px 8px",
+                borderRadius: "9999px",
+                opacity: 0.9,
+              }}
+            >
+              {destination.subcategory
+                .replace(" (History)", "")
+                .replace(" (Experiences)", "")}
+            </span>
+          )}
         </div>
       </div>
 

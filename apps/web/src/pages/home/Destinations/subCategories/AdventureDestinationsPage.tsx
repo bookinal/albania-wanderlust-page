@@ -5,7 +5,7 @@ import {
   Heart,
   Loader2,
   MapPin,
-  Landmark,
+  Compass,
   Map as MapIcon,
   List,
 } from "lucide-react";
@@ -18,10 +18,10 @@ import { useTheme } from "@/context/ThemeContext";
 import { getHomeThemeTokens } from "@/components/home/homeTheme";
 import { useTranslation } from "react-i18next";
 import { useDestinations } from "@/hooks/useDestinations";
-import { DestinationCard } from "./DestinationCard";
-import DestinationMap from "./DestinationMap";
+import { DestinationCard } from "../DestinationCard";
+import DestinationMap from "../DestinationMap";
 
-const HistoricDestinationsPage = () => {
+const AdventureDestinationsPage = () => {
   const { t } = useTranslation();
   const { localize } = useLocalized();
   const navigate = useNavigate();
@@ -42,7 +42,7 @@ const HistoricDestinationsPage = () => {
         ? "linear-gradient(180deg, hsl(205 55% 96%) 0%, hsl(204 60% 98%) 100%)"
         : "#f5f4f1",
     heroGradient:
-      "linear-gradient(135deg, #78350f 0%, #b45309 42%, #fcd34d 100%)",
+      "linear-gradient(135deg, #134e4a 0%, #0f766e 42%, #99f6e4 100%)",
     heroSoft: homeTk.textSoftOnMedia,
     textMain: homeTk.textMain,
     textMuted: homeTk.textMuted,
@@ -70,14 +70,16 @@ const HistoricDestinationsPage = () => {
     window.scrollTo(0, 0);
   }, []);
 
-  const historicSpots = useMemo(
+  const adventureSpots = useMemo(
     () =>
-      destinations.filter((destination) => destination.category === "Historic"),
+      destinations.filter(
+        (destination) => destination.category === "Adventure",
+      ),
     [destinations],
   );
 
   const heroImage =
-    "https://plus.unsplash.com/premium_photo-1661936697264-84cc3925cf5c?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
+    "https://images.unsplash.com/photo-1733413182592-b0e7a489256d?q=80&w=1331&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
 
   const handleAddToWishlist = async (destinationId: string) => {
     try {
@@ -114,7 +116,7 @@ const HistoricDestinationsPage = () => {
         {heroImage ? (
           <img
             src={heroImage}
-            alt="Historic Albania"
+            alt="Adventure in Albania"
             style={{
               position: "absolute",
               inset: 0,
@@ -179,7 +181,7 @@ const HistoricDestinationsPage = () => {
                 marginBottom: "0.9rem",
               }}
             >
-              Heritage Collection
+              Wild Collection
             </p>
             <h1
               style={{
@@ -190,7 +192,7 @@ const HistoricDestinationsPage = () => {
                 marginBottom: "0.85rem",
               }}
             >
-              Historic Albania
+              Adventure Albania
             </h1>
             <p
               style={{
@@ -200,8 +202,8 @@ const HistoricDestinationsPage = () => {
                 maxWidth: "42rem",
               }}
             >
-              Step back in time to discover centuries-old castles, ancient
-              ruins, intricate architecture, and towns where history lives on.
+              Explore the rugged peaks, hike the cursed mountains, raft through
+              deep canyons, and find adrenaline-filled experiences outdoors.
             </p>
           </div>
         </div>
@@ -253,7 +255,7 @@ const HistoricDestinationsPage = () => {
           </div>
         )}
 
-        {!isLoading && !error && historicSpots.length === 0 && (
+        {!isLoading && !error && adventureSpots.length === 0 && (
           <div
             style={{
               textAlign: "center",
@@ -272,13 +274,13 @@ const HistoricDestinationsPage = () => {
                 marginBottom: "0.55rem",
               }}
             >
-              No historic destinations available yet.
+              No adventure destinations available yet.
             </div>
             <div>Once destinations are added, they will appear here.</div>
           </div>
         )}
 
-        {!isLoading && !error && historicSpots.length > 0 && (
+        {!isLoading && !error && adventureSpots.length > 0 && (
           <div
             style={{
               display: "flex",
@@ -334,7 +336,7 @@ const HistoricDestinationsPage = () => {
                   width: "100%",
                 }}
               >
-                {historicSpots.map((destination) => (
+                {adventureSpots.map((destination) => (
                   <DestinationCard
                     key={destination.id}
                     destination={destination}
@@ -357,7 +359,7 @@ const HistoricDestinationsPage = () => {
                   top: isMobile ? "auto" : "6rem",
                 }}
               >
-                <DestinationMap destinations={historicSpots} />
+                <DestinationMap destinations={adventureSpots} />
               </div>
             )}
           </div>
@@ -367,4 +369,4 @@ const HistoricDestinationsPage = () => {
   );
 };
 
-export default HistoricDestinationsPage;
+export default AdventureDestinationsPage;

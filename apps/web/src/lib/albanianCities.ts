@@ -21,4 +21,5 @@ export const ALBANIAN_CITIES = [
   "Permet",
   "Himarë",
   "Ksamil",
+  "Theth",
 ] as const;

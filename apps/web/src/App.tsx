@@ -17,9 +17,9 @@ import Footer from "./components/home/Footer";
 import CultureDetails from "./pages/home/CultureDetails";
 import DestinationDetails from "./pages/home/Destinations/DestinationDetails";
 import DestinationsPage from "./pages/home/Destinations/DestinationsPage";
-import BeachDestinationsPage from "./pages/home/Destinations/BeachDestinationsPage";
-import AdventureDestinationsPage from "./pages/home/Destinations/AdventureDestinationsPage";
-import HistoricDestinationsPage from "./pages/home/Destinations/HistoricDestinationsPage";
+import BeachDestinationsPage from "./pages/home/Destinations/subCategories/BeachDestinationsPage";
+import AdventureDestinationsPage from "./pages/home/Destinations/subCategories/AdventureDestinationsPage";
+import HistoricDestinationsPage from "./pages/home/Destinations/subCategories/HistoricDestinationsPage";
 import PropertiesMapPage from "./pages/home/PropertiesMapPage";
 import Dashboard from "./pages/dashboard/dashboard";
 import AllHotels from "./pages/dashboard/Hotels/all-hotels";
@@ -102,7 +102,7 @@ const App = () => (
                   <Route path="/CultureDetails" element={<CultureDetails />} />
                   <Route path="/destinations" element={<DestinationsPage />} />
                   <Route
-                    path="/destinations/beach"
+                    path="/destinations/destinations"
                     element={<BeachDestinationsPage />}
                   />
                   <Route
@@ -110,7 +110,7 @@ const App = () => (
                     element={<AdventureDestinationsPage />}
                   />
                   <Route
-                    path="/destinations/historic"
+                    path="/destinations/history-culture"
                     element={<HistoricDestinationsPage />}
                   />
                   <Route
