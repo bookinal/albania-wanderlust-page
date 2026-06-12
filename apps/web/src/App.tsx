@@ -17,8 +17,10 @@ import Footer from "./components/home/Footer";
 import CultureDetails from "./pages/home/CultureDetails";
 import DestinationDetails from "./pages/home/Destinations/DestinationDetails";
 import DestinationsPage from "./pages/home/Destinations/DestinationsPage";
-import BeachDestinationsPage from "./pages/home/Destinations/subCategories/BeachDestinationsPage";
+import BeachDestinationsPage from "./pages/home/Destinations/subCategories/LDestinationsPage";
 import AdventureDestinationsPage from "./pages/home/Destinations/subCategories/AdventureDestinationsPage";
+import EatDrinkDancePage from "./pages/home/Destinations/subCategories/EatDrink&Dance";
+import ExperiencesPage from "./pages/home/Destinations/subCategories/experiencesPage";
 import HistoricDestinationsPage from "./pages/home/Destinations/subCategories/HistoricDestinationsPage";
 import PropertiesMapPage from "./pages/home/PropertiesMapPage";
 import Dashboard from "./pages/dashboard/dashboard";
@@ -112,6 +114,14 @@ const App = () => (
                   <Route
                     path="/destinations/history-culture"
                     element={<HistoricDestinationsPage />}
+                  />
+                  <Route
+                    path="/destinations/eat-drink-dance"
+                    element={<EatDrinkDancePage />}
+                  />
+                  <Route
+                    path="/destinations/experiences"
+                    element={<ExperiencesPage />}
                   />
                   <Route
                     path="/destination/:id"

@@ -19,6 +19,7 @@ import { getHomeThemeTokens } from "@/components/home/homeTheme";
 import { useTranslation } from "react-i18next";
 import { useDestinations } from "@/hooks/useDestinations";
 import { DestinationCard } from "../DestinationCard";
+import { DestinationFilterBar } from "../../../../components/home/destinations/DestinationFilterBar";
 import DestinationMap from "../DestinationMap";
 
 const AdventureDestinationsPage = () => {

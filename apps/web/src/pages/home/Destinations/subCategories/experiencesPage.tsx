@@ -1,4 +1,3 @@
-// this page is for the "History & culture" category, showcasing historic destinations across Albania with a more immersive design and a map view
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -6,7 +5,7 @@ import {
   Heart,
   Loader2,
   MapPin,
-  Landmark,
+  Compass,
   Map as MapIcon,
   List,
 } from "lucide-react";
@@ -23,7 +22,7 @@ import { DestinationCard } from "../DestinationCard";
 import { DestinationFilterBar } from "../../../../components/home/destinations/DestinationFilterBar";
 import DestinationMap from "../DestinationMap";
 
-const HistoricDestinationsPage = () => {
+const ExperiencesPage = () => {
   const { t } = useTranslation();
   const { localize } = useLocalized();
   const navigate = useNavigate();
@@ -47,7 +46,7 @@ const HistoricDestinationsPage = () => {
         ? "linear-gradient(180deg, hsl(205 55% 96%) 0%, hsl(204 60% 98%) 100%)"
         : "#f5f4f1",
     heroGradient:
-      "linear-gradient(135deg, #78350f 0%, #b45309 42%, #fcd34d 100%)",
+      "linear-gradient(135deg, #065f46 0%, #059669 42%, #6ee7b7 100%)",
     heroSoft: homeTk.textSoftOnMedia,
     textMain: homeTk.textMain,
     textMuted: homeTk.textMuted,
@@ -76,25 +75,25 @@ const HistoricDestinationsPage = () => {
     window.scrollTo(0, 0);
   }, []);
 
-  const historicSpots = useMemo(
+  const experiences = useMemo(
     () =>
       destinations.filter(
-        (destination) => destination.category === "History & culture",
+        (destination) => destination.category === "Experiences",
       ),
     [destinations],
   );
 
   const subcategories = useMemo(() => {
-    return [...new Set(historicSpots.map((d) => d.subcategory).filter(Boolean))].sort();
-  }, [historicSpots]);
+    return [...new Set(experiences.map((d) => d.subcategory).filter(Boolean))].sort();
+  }, [experiences]);
 
   const locations = useMemo(() => {
-    return [...new Set(historicSpots.map((d) => d.location).filter(Boolean))].sort();
-  }, [historicSpots]);
+    return [...new Set(experiences.map((d) => d.location).filter(Boolean))].sort();
+  }, [experiences]);
 
-  const filteredHistoricSpots = useMemo(() => {
+  const filteredExperiences = useMemo(() => {
     const query = search.trim().toLowerCase();
-    return historicSpots.filter((destination) => {
+    return experiences.filter((destination) => {
       const matchesSubcategory =
         !selectedSubcategory || destination.subcategory === selectedSubcategory;
       const matchesLocation =
@@ -111,7 +110,7 @@ const HistoricDestinationsPage = () => {
       const matchesSearch = !query || haystack.includes(query);
       return matchesSubcategory && matchesLocation && matchesSearch;
     });
-  }, [historicSpots, localize, search, selectedSubcategory, selectedLocation]);
+  }, [experiences, localize, search, selectedSubcategory, selectedLocation]);
 
   const hasActiveFilters =
     search.trim().length > 0 ||
@@ -119,7 +118,7 @@ const HistoricDestinationsPage = () => {
     selectedLocation.length > 0;
 
   const heroImage =
-    "https://plus.unsplash.com/premium_photo-1661936697264-84cc3925cf5c?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
+    "https://images.unsplash.com/photo-1469474968028-56623f02e42e?q=80&w=1174&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
 
   const handleAddToWishlist = async (destinationId: string) => {
     try {
@@ -156,7 +155,7 @@ const HistoricDestinationsPage = () => {
         {heroImage ? (
           <img
             src={heroImage}
-            alt="Historic Albania"
+            alt="Experiences in Albania"
             style={{
               position: "absolute",
               inset: 0,
@@ -221,7 +220,7 @@ const HistoricDestinationsPage = () => {
                 marginBottom: "0.9rem",
               }}
             >
-              Heritage Collection
+              Adventure Awaits
             </p>
             <h1
               style={{
@@ -232,7 +231,7 @@ const HistoricDestinationsPage = () => {
                 marginBottom: "0.85rem",
               }}
             >
-              Historic Albania
+              Experiences
             </h1>
             <p
               style={{
@@ -242,8 +241,8 @@ const HistoricDestinationsPage = () => {
                 maxWidth: "42rem",
               }}
             >
-              Step back in time to discover centuries-old castles, ancient
-              ruins, intricate architecture, and towns where history lives on.
+              Dive into unforgettable adventures — from hiking rugged peaks and
+              exploring ancient trails to kayaking crystal-clear waters.
             </p>
           </div>
         </div>
@@ -295,7 +294,7 @@ const HistoricDestinationsPage = () => {
           </div>
         )}
 
-        {!isLoading && !error && historicSpots.length === 0 && (
+        {!isLoading && !error && experiences.length === 0 && (
           <div
             style={{
               textAlign: "center",
@@ -314,13 +313,13 @@ const HistoricDestinationsPage = () => {
                 marginBottom: "0.55rem",
               }}
             >
-              No historic destinations available yet.
+              No experiences available yet.
             </div>
-            <div>Once destinations are added, they will appear here.</div>
+            <div>Once experiences are added, they will appear here.</div>
           </div>
         )}
 
-        {!isLoading && !error && historicSpots.length > 0 && (
+        {!isLoading && !error && experiences.length > 0 && (
           <>
             <DestinationFilterBar
               search={search}
@@ -345,8 +344,8 @@ const HistoricDestinationsPage = () => {
                 setSelectedLocation("");
               }}
               resultsLabel={t("home.destinations.resultsCount", {
-                count: filteredHistoricSpots.length,
-                total: historicSpots.length,
+                count: filteredExperiences.length,
+                total: experiences.length,
               })}
               background={tk.panelBg}
               borderColor={tk.panelBorder}
@@ -356,7 +355,7 @@ const HistoricDestinationsPage = () => {
               accentSoft={tk.brandSoft}
             />
 
-            {filteredHistoricSpots.length === 0 && (
+            {filteredExperiences.length === 0 && (
               <div
                 style={{
                   textAlign: "center",
@@ -375,13 +374,13 @@ const HistoricDestinationsPage = () => {
                     marginBottom: "0.55rem",
                   }}
                 >
-                  No historic destinations match your filters.
+                  No experiences match your filters.
                 </div>
                 <div>Try adjusting your search or clear filters.</div>
               </div>
             )}
 
-            {filteredHistoricSpots.length > 0 && (
+            {filteredExperiences.length > 0 && (
               <div
                 style={{
                   display: "flex",
@@ -437,7 +436,7 @@ const HistoricDestinationsPage = () => {
                       width: "100%",
                     }}
                   >
-                    {filteredHistoricSpots.map((destination) => (
+                    {filteredExperiences.map((destination) => (
                       <DestinationCard
                         key={destination.id}
                         destination={destination}
@@ -460,7 +459,7 @@ const HistoricDestinationsPage = () => {
                       top: isMobile ? "auto" : "6rem",
                     }}
                   >
-                    <DestinationMap destinations={filteredHistoricSpots} />
+                    <DestinationMap destinations={filteredExperiences} />
                   </div>
                 )}
               </div>
@@ -472,4 +471,4 @@ const HistoricDestinationsPage = () => {
   );
 };
 
-export default HistoricDestinationsPage;
+export default ExperiencesPage;

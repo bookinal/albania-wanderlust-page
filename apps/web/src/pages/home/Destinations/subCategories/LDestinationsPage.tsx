@@ -1,4 +1,3 @@
-// this page is for the "History & culture" category, showcasing historic destinations across Albania with a more immersive design and a map view
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -6,7 +5,7 @@ import {
   Heart,
   Loader2,
   MapPin,
-  Landmark,
+  Waves,
   Map as MapIcon,
   List,
 } from "lucide-react";
@@ -23,7 +22,7 @@ import { DestinationCard } from "../DestinationCard";
 import { DestinationFilterBar } from "../../../../components/home/destinations/DestinationFilterBar";
 import DestinationMap from "../DestinationMap";
 
-const HistoricDestinationsPage = () => {
+const LDestinationsPage = () => {
   const { t } = useTranslation();
   const { localize } = useLocalized();
   const navigate = useNavigate();
@@ -35,8 +34,8 @@ const HistoricDestinationsPage = () => {
   );
   const [showMapMobile, setShowMapMobile] = useState(false);
   const [search, setSearch] = useState("");
-  const [selectedSubcategory, setSelectedSubcategory] = useState("");
-  const [selectedLocation, setSelectedLocation] = useState("");
+const [selectedSubcategory, setSelectedSubcategory] = useState("");
+const [selectedLocation, setSelectedLocation] = useState("");
   const isMobile = useIsMobile();
   const { data: destinations = [], isLoading, error } = useDestinations();
 
@@ -47,7 +46,7 @@ const HistoricDestinationsPage = () => {
         ? "linear-gradient(180deg, hsl(205 55% 96%) 0%, hsl(204 60% 98%) 100%)"
         : "#f5f4f1",
     heroGradient:
-      "linear-gradient(135deg, #78350f 0%, #b45309 42%, #fcd34d 100%)",
+      "linear-gradient(135deg, rgba(8,47,73,0.95) 0%, rgba(3,105,161,0.84) 46%, rgba(34,211,238,0.34) 100%)",
     heroSoft: homeTk.textSoftOnMedia,
     textMain: homeTk.textMain,
     textMuted: homeTk.textMuted,
@@ -76,50 +75,50 @@ const HistoricDestinationsPage = () => {
     window.scrollTo(0, 0);
   }, []);
 
-  const historicSpots = useMemo(
+  const beaches = useMemo(
     () =>
       destinations.filter(
-        (destination) => destination.category === "History & culture",
+        (destination) => destination.category === "Destinations",
       ),
     [destinations],
   );
 
   const subcategories = useMemo(() => {
-    return [...new Set(historicSpots.map((d) => d.subcategory).filter(Boolean))].sort();
-  }, [historicSpots]);
+    return [...new Set(beaches.map((d) => d.subcategory).filter(Boolean))].sort();
+  }, [beaches]);
 
   const locations = useMemo(() => {
-    return [...new Set(historicSpots.map((d) => d.location).filter(Boolean))].sort();
-  }, [historicSpots]);
+    return [...new Set(beaches.map((d) => d.location).filter(Boolean))].sort();
+  }, [beaches]);
 
-  const filteredHistoricSpots = useMemo(() => {
-    const query = search.trim().toLowerCase();
-    return historicSpots.filter((destination) => {
-      const matchesSubcategory =
-        !selectedSubcategory || destination.subcategory === selectedSubcategory;
-      const matchesLocation =
-        !selectedLocation || destination.location === selectedLocation;
-      const haystack = [
-        localize(destination.name),
-        localize(destination.description),
-        destination.subcategory,
-        destination.location,
-      ]
-        .filter(Boolean)
-        .join(" ")
-        .toLowerCase();
-      const matchesSearch = !query || haystack.includes(query);
-      return matchesSubcategory && matchesLocation && matchesSearch;
-    });
-  }, [historicSpots, localize, search, selectedSubcategory, selectedLocation]);
+const filteredBeaches = useMemo(() => {
+  const query = search.trim().toLowerCase();
+  return beaches.filter((destination) => {
+    const matchesSubcategory =
+      !selectedSubcategory || destination.subcategory === selectedSubcategory;
+    const matchesLocation =
+      !selectedLocation || destination.location === selectedLocation;
+    const haystack = [
+      localize(destination.name),
+      localize(destination.description),
+      destination.subcategory,
+      destination.location,
+    ]
+      .filter(Boolean)
+      .join(" ")
+      .toLowerCase();
+    const matchesSearch = !query || haystack.includes(query);
+    return matchesSubcategory && matchesLocation && matchesSearch;
+  });
+}, [beaches, localize, search, selectedSubcategory, selectedLocation]);
 
-  const hasActiveFilters =
-    search.trim().length > 0 ||
-    selectedSubcategory.length > 0 ||
-    selectedLocation.length > 0;
+const hasActiveFilters =
+  search.trim().length > 0 ||
+  selectedSubcategory.length > 0 ||
+  selectedLocation.length > 0;
 
   const heroImage =
-    "https://plus.unsplash.com/premium_photo-1661936697264-84cc3925cf5c?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
+    "https://images.unsplash.com/photo-1738675326308-f4097c3405a7?q=80&w=1172&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
 
   const handleAddToWishlist = async (destinationId: string) => {
     try {
@@ -156,7 +155,7 @@ const HistoricDestinationsPage = () => {
         {heroImage ? (
           <img
             src={heroImage}
-            alt="Historic Albania"
+            alt="Beaches in Albania"
             style={{
               position: "absolute",
               inset: 0,
@@ -221,7 +220,7 @@ const HistoricDestinationsPage = () => {
                 marginBottom: "0.9rem",
               }}
             >
-              Heritage Collection
+              Coastal collection
             </p>
             <h1
               style={{
@@ -232,7 +231,7 @@ const HistoricDestinationsPage = () => {
                 marginBottom: "0.85rem",
               }}
             >
-              Historic Albania
+              Landscapes of Albania
             </h1>
             <p
               style={{
@@ -242,8 +241,8 @@ const HistoricDestinationsPage = () => {
                 maxWidth: "42rem",
               }}
             >
-              Step back in time to discover centuries-old castles, ancient
-              ruins, intricate architecture, and towns where history lives on.
+              Discover the Riviera through bright coves, long swimming days,
+              hidden bays, and shoreline escapes collected in one place.
             </p>
           </div>
         </div>
@@ -295,7 +294,7 @@ const HistoricDestinationsPage = () => {
           </div>
         )}
 
-        {!isLoading && !error && historicSpots.length === 0 && (
+        {!isLoading && !error && beaches.length === 0 && (
           <div
             style={{
               textAlign: "center",
@@ -314,13 +313,13 @@ const HistoricDestinationsPage = () => {
                 marginBottom: "0.55rem",
               }}
             >
-              No historic destinations available yet.
+              No beaches available yet.
             </div>
-            <div>Once destinations are added, they will appear here.</div>
+            <div>Once beach destinations are added, they will appear here.</div>
           </div>
         )}
 
-        {!isLoading && !error && historicSpots.length > 0 && (
+        {!isLoading && !error && beaches.length > 0 && (
           <>
             <DestinationFilterBar
               search={search}
@@ -345,8 +344,8 @@ const HistoricDestinationsPage = () => {
                 setSelectedLocation("");
               }}
               resultsLabel={t("home.destinations.resultsCount", {
-                count: filteredHistoricSpots.length,
-                total: historicSpots.length,
+                count: filteredBeaches.length,
+                total: beaches.length,
               })}
               background={tk.panelBg}
               borderColor={tk.panelBorder}
@@ -356,7 +355,7 @@ const HistoricDestinationsPage = () => {
               accentSoft={tk.brandSoft}
             />
 
-            {filteredHistoricSpots.length === 0 && (
+            {filteredBeaches.length === 0 && (
               <div
                 style={{
                   textAlign: "center",
@@ -375,13 +374,13 @@ const HistoricDestinationsPage = () => {
                     marginBottom: "0.55rem",
                   }}
                 >
-                  No historic destinations match your filters.
+                  No beaches match your filters.
                 </div>
                 <div>Try adjusting your search or clear filters.</div>
               </div>
             )}
 
-            {filteredHistoricSpots.length > 0 && (
+            {filteredBeaches.length > 0 && (
               <div
                 style={{
                   display: "flex",
@@ -437,7 +436,7 @@ const HistoricDestinationsPage = () => {
                       width: "100%",
                     }}
                   >
-                    {filteredHistoricSpots.map((destination) => (
+                    {filteredBeaches.map((destination) => (
                       <DestinationCard
                         key={destination.id}
                         destination={destination}
@@ -460,7 +459,7 @@ const HistoricDestinationsPage = () => {
                       top: isMobile ? "auto" : "6rem",
                     }}
                   >
-                    <DestinationMap destinations={filteredHistoricSpots} />
+                    <DestinationMap destinations={filteredBeaches} />
                   </div>
                 )}
               </div>
@@ -472,4 +471,4 @@ const HistoricDestinationsPage = () => {
   );
 };
 
-export default HistoricDestinationsPage;
+export default LDestinationsPage;

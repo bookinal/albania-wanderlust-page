@@ -5,7 +5,7 @@ import {
   Heart,
   Loader2,
   MapPin,
-  Waves,
+  UtensilsCrossed,
   Map as MapIcon,
   List,
 } from "lucide-react";
@@ -19,9 +19,10 @@ import { getHomeThemeTokens } from "@/components/home/homeTheme";
 import { useTranslation } from "react-i18next";
 import { useDestinations } from "@/hooks/useDestinations";
 import { DestinationCard } from "../DestinationCard";
+import { DestinationFilterBar } from "../../../../components/home/destinations/DestinationFilterBar";
 import DestinationMap from "../DestinationMap";
 
-const BeachDestinationsPage = () => {
+const EatDrinkDancePage = () => {
   const { t } = useTranslation();
   const { localize } = useLocalized();
   const navigate = useNavigate();
@@ -32,6 +33,9 @@ const BeachDestinationsPage = () => {
     null,
   );
   const [showMapMobile, setShowMapMobile] = useState(false);
+  const [search, setSearch] = useState("");
+  const [selectedSubcategory, setSelectedSubcategory] = useState("");
+  const [selectedLocation, setSelectedLocation] = useState("");
   const isMobile = useIsMobile();
   const { data: destinations = [], isLoading, error } = useDestinations();
 
@@ -42,11 +46,12 @@ const BeachDestinationsPage = () => {
         ? "linear-gradient(180deg, hsl(205 55% 96%) 0%, hsl(204 60% 98%) 100%)"
         : "#f5f4f1",
     heroGradient:
-      "linear-gradient(135deg, rgba(8,47,73,0.95) 0%, rgba(3,105,161,0.84) 46%, rgba(34,211,238,0.34) 100%)",
+      "linear-gradient(135deg, #701a75 0%, #db2777 42%, #fda4af 100%)",
     heroSoft: homeTk.textSoftOnMedia,
     textMain: homeTk.textMain,
     textMuted: homeTk.textMuted,
     brand: homeTk.brand,
+    brandSoft: homeTk.brandSoft,
     panelBg: isDark
       ? "rgba(20,20,23,0.92)"
       : isBlue
@@ -70,16 +75,50 @@ const BeachDestinationsPage = () => {
     window.scrollTo(0, 0);
   }, []);
 
-  const beaches = useMemo(
+  const eatDrinkSpots = useMemo(
     () =>
       destinations.filter(
-        (destination) => destination.category === "Destinations",
+        (destination) => destination.category === "Eat, drink & dance",
       ),
     [destinations],
   );
 
+  const subcategories = useMemo(() => {
+    return [...new Set(eatDrinkSpots.map((d) => d.subcategory).filter(Boolean))].sort();
+  }, [eatDrinkSpots]);
+
+  const locations = useMemo(() => {
+    return [...new Set(eatDrinkSpots.map((d) => d.location).filter(Boolean))].sort();
+  }, [eatDrinkSpots]);
+
+  const filteredEatDrinkSpots = useMemo(() => {
+    const query = search.trim().toLowerCase();
+    return eatDrinkSpots.filter((destination) => {
+      const matchesSubcategory =
+        !selectedSubcategory || destination.subcategory === selectedSubcategory;
+      const matchesLocation =
+        !selectedLocation || destination.location === selectedLocation;
+      const haystack = [
+        localize(destination.name),
+        localize(destination.description),
+        destination.subcategory,
+        destination.location,
+      ]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
+      const matchesSearch = !query || haystack.includes(query);
+      return matchesSubcategory && matchesLocation && matchesSearch;
+    });
+  }, [eatDrinkSpots, localize, search, selectedSubcategory, selectedLocation]);
+
+  const hasActiveFilters =
+    search.trim().length > 0 ||
+    selectedSubcategory.length > 0 ||
+    selectedLocation.length > 0;
+
   const heroImage =
-    "https://images.unsplash.com/photo-1738675326308-f4097c3405a7?q=80&w=1172&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
+    "https://images.unsplash.com/photo-1559339352-11d035aa65de?q=80&w=1174&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
 
   const handleAddToWishlist = async (destinationId: string) => {
     try {
@@ -116,7 +155,7 @@ const BeachDestinationsPage = () => {
         {heroImage ? (
           <img
             src={heroImage}
-            alt="Beaches in Albania"
+            alt="Eat, drink & dance in Albania"
             style={{
               position: "absolute",
               inset: 0,
@@ -181,7 +220,7 @@ const BeachDestinationsPage = () => {
                 marginBottom: "0.9rem",
               }}
             >
-              Coastal collection
+              Flavours & Nights
             </p>
             <h1
               style={{
@@ -192,7 +231,7 @@ const BeachDestinationsPage = () => {
                 marginBottom: "0.85rem",
               }}
             >
-              Landscapes of Albania
+              Eat, Drink & Dance
             </h1>
             <p
               style={{
@@ -202,8 +241,8 @@ const BeachDestinationsPage = () => {
                 maxWidth: "42rem",
               }}
             >
-              Discover the Riviera through bright coves, long swimming days,
-              hidden bays, and shoreline escapes collected in one place.
+              Savor Albania's vibrant culinary scene, sip through bustling bars,
+              and dance the night away at the country's best spots.
             </p>
           </div>
         </div>
@@ -255,7 +294,7 @@ const BeachDestinationsPage = () => {
           </div>
         )}
 
-        {!isLoading && !error && beaches.length === 0 && (
+        {!isLoading && !error && eatDrinkSpots.length === 0 && (
           <div
             style={{
               textAlign: "center",
@@ -274,99 +313,162 @@ const BeachDestinationsPage = () => {
                 marginBottom: "0.55rem",
               }}
             >
-              No beaches available yet.
+              No eat, drink & dance spots available yet.
             </div>
-            <div>Once beach destinations are added, they will appear here.</div>
+            <div>Once destinations are added, they will appear here.</div>
           </div>
         )}
 
-        {!isLoading && !error && beaches.length > 0 && (
-          <div
-            style={{
-              display: "flex",
-              gap: "2rem",
-              flexDirection: isMobile ? "column" : "row",
-              alignItems: "flex-start",
-            }}
-          >
-            {isMobile && (
+        {!isLoading && !error && eatDrinkSpots.length > 0 && (
+          <>
+            <DestinationFilterBar
+              search={search}
+              onSearchChange={setSearch}
+              categories={[]}
+              selectedCategory=""
+              onCategoryChange={() => {}}
+              subcategories={subcategories}
+              selectedSubcategory={selectedSubcategory}
+              onSubcategoryChange={setSelectedSubcategory}
+              location={locations}
+              selectedLocation={selectedLocation}
+              onLocationChange={setSelectedLocation}
+              allCategoriesLabel={t("home.destinations.allCategories")}
+              allSubcategoriesLabel="All types"
+              searchPlaceholder={t("home.destinations.searchPlaceholder")}
+              clearFiltersLabel={t("home.destinations.clearFilters")}
+              hasActiveFilters={hasActiveFilters}
+              onClearFilters={() => {
+                setSearch("");
+                setSelectedSubcategory("");
+                setSelectedLocation("");
+              }}
+              resultsLabel={t("home.destinations.resultsCount", {
+                count: filteredEatDrinkSpots.length,
+                total: eatDrinkSpots.length,
+              })}
+              background={tk.panelBg}
+              borderColor={tk.panelBorder}
+              textColor={tk.textMain}
+              mutedColor={tk.textMuted}
+              accentColor={tk.brand}
+              accentSoft={tk.brandSoft}
+            />
+
+            {filteredEatDrinkSpots.length === 0 && (
+              <div
+                style={{
+                  textAlign: "center",
+                  padding: "5rem 1rem",
+                  color: tk.textMuted,
+                  border: `1px solid ${tk.panelBorder}`,
+                  background: tk.panelBg,
+                  borderRadius: "1.5rem",
+                }}
+              >
+                <div
+                  style={{
+                    color: tk.textMain,
+                    fontSize: "1.25rem",
+                    fontWeight: 700,
+                    marginBottom: "0.55rem",
+                  }}
+                >
+                  No eat, drink & dance spots match your filters.
+                </div>
+                <div>Try adjusting your search or clear filters.</div>
+              </div>
+            )}
+
+            {filteredEatDrinkSpots.length > 0 && (
               <div
                 style={{
                   display: "flex",
-                  justifyContent: "flex-end",
-                  width: "100%",
-                  marginBottom: "-1rem",
+                  gap: "2rem",
+                  flexDirection: isMobile ? "column" : "row",
+                  alignItems: "flex-start",
                 }}
               >
-                <button
-                  onClick={() => setShowMapMobile(!showMapMobile)}
-                  style={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: "0.5rem",
-                    padding: "0.6rem 1rem",
-                    borderRadius: "0.5rem",
-                    background: tk.panelBg,
-                    border: `1px solid ${tk.panelBorder}`,
-                    color: tk.textMain,
-                    cursor: "pointer",
-                    fontWeight: 600,
-                    boxShadow: tk.panelShadow,
-                    zIndex: 10,
-                  }}
-                >
-                  {showMapMobile ? (
-                    <List className="w-4 h-4" />
-                  ) : (
-                    <MapIcon className="w-4 h-4" />
-                  )}
-                  {showMapMobile ? "Show List" : "Show Map"}
-                </button>
-              </div>
-            )}
+                {isMobile && (
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "flex-end",
+                      width: "100%",
+                      marginBottom: "-1rem",
+                    }}
+                  >
+                    <button
+                      onClick={() => setShowMapMobile(!showMapMobile)}
+                      style={{
+                        display: "inline-flex",
+                        alignItems: "center",
+                        gap: "0.5rem",
+                        padding: "0.6rem 1rem",
+                        borderRadius: "0.5rem",
+                        background: tk.panelBg,
+                        border: `1px solid ${tk.panelBorder}`,
+                        color: tk.textMain,
+                        cursor: "pointer",
+                        fontWeight: 600,
+                        boxShadow: tk.panelShadow,
+                        zIndex: 10,
+                      }}
+                    >
+                      {showMapMobile ? (
+                        <List className="w-4 h-4" />
+                      ) : (
+                        <MapIcon className="w-4 h-4" />
+                      )}
+                      {showMapMobile ? "Show List" : "Show Map"}
+                    </button>
+                  </div>
+                )}
 
-            {(!isMobile || !showMapMobile) && (
-              <div
-                style={{
-                  flex: 1,
-                  display: "grid",
-                  gridTemplateColumns:
-                    "repeat(auto-fit, minmax(min(100%, 280px), 1fr))",
-                  gap: "1.25rem",
-                  width: "100%",
-                }}
-              >
-                {beaches.map((destination) => (
-                  <DestinationCard
-                    key={destination.id}
-                    destination={destination}
-                    tk={tk}
-                    onAddToWishlist={handleAddToWishlist}
-                    isLoadingWishlist={wishlistLoadingId === destination.id}
-                  />
-                ))}
-              </div>
-            )}
+                {(!isMobile || !showMapMobile) && (
+                  <div
+                    style={{
+                      flex: 1,
+                      display: "grid",
+                      gridTemplateColumns:
+                        "repeat(auto-fit, minmax(min(100%, 280px), 1fr))",
+                      gap: "1.25rem",
+                      width: "100%",
+                    }}
+                  >
+                    {filteredEatDrinkSpots.map((destination) => (
+                      <DestinationCard
+                        key={destination.id}
+                        destination={destination}
+                        tk={tk}
+                        onAddToWishlist={handleAddToWishlist}
+                        isLoadingWishlist={wishlistLoadingId === destination.id}
+                      />
+                    ))}
+                  </div>
+                )}
 
-            {(!isMobile || showMapMobile) && (
-              <div
-                style={{
-                  width: isMobile ? "100%" : "300px",
-                  height: isMobile
-                    ? "calc(100vh - 20rem)"
-                    : "calc(100vh - 12rem)",
-                  position: isMobile ? "relative" : "sticky",
-                  top: isMobile ? "auto" : "6rem",
-                }}
-              >
-                <DestinationMap destinations={beaches} />
+                {(!isMobile || showMapMobile) && (
+                  <div
+                    style={{
+                      width: isMobile ? "100%" : "300px",
+                      height: isMobile
+                        ? "calc(100vh - 20rem)"
+                        : "calc(100vh - 12rem)",
+                      position: isMobile ? "relative" : "sticky",
+                      top: isMobile ? "auto" : "6rem",
+                    }}
+                  >
+                    <DestinationMap destinations={filteredEatDrinkSpots} />
+                  </div>
+                )}
               </div>
             )}
-          </div>
+          </>
         )}
       </section>
     </div>
   );
 };
 
-export default BeachDestinationsPage;
+export default EatDrinkDancePage;
