@@ -117,6 +117,16 @@ const ExperiencesPage = () => {
     selectedSubcategory.length > 0 ||
     selectedLocation.length > 0;
 
+  const groupedBySubcategory = useMemo(() => {
+    const groups: Record<string, typeof filteredExperiences> = {};
+    for (const dest of filteredExperiences) {
+      const key = dest.subcategory || "Other";
+      if (!groups[key]) groups[key] = [];
+      groups[key].push(dest);
+    }
+    return groups;
+  }, [filteredExperiences]);
+
   const heroImage =
     "https://images.unsplash.com/photo-1469474968028-56623f02e42e?q=80&w=1174&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
 
@@ -426,24 +436,39 @@ const ExperiencesPage = () => {
                 )}
 
                 {(!isMobile || !showMapMobile) && (
-                  <div
-                    style={{
-                      flex: 1,
-                      display: "grid",
-                      gridTemplateColumns:
-                        "repeat(auto-fit, minmax(min(100%, 280px), 1fr))",
-                      gap: "1.25rem",
-                      width: "100%",
-                    }}
-                  >
-                    {filteredExperiences.map((destination) => (
-                      <DestinationCard
-                        key={destination.id}
-                        destination={destination}
-                        tk={tk}
-                        onAddToWishlist={handleAddToWishlist}
-                        isLoadingWishlist={wishlistLoadingId === destination.id}
-                      />
+                  <div style={{ flex: 1, width: "100%" }}>
+                    {Object.entries(groupedBySubcategory).map(([subcategory, dests]) => (
+                      <div key={subcategory} style={{ marginBottom: "2.5rem" }}>
+                        <h2
+                          style={{
+                            fontSize: "1.35rem",
+                            fontWeight: 700,
+                            marginBottom: "1rem",
+                            color: tk.textMain,
+                            textTransform: "capitalize",
+                          }}
+                        >
+                          {subcategory}
+                        </h2>
+                        <div
+                          style={{
+                            display: "grid",
+                            gridTemplateColumns:
+                              "repeat(auto-fill, minmax(min(100%, 210px), 1fr))",
+                            gap: "1.25rem",
+                          }}
+                        >
+                          {dests.map((destination) => (
+                            <DestinationCard
+                              key={destination.id}
+                              destination={destination}
+                              tk={tk}
+                              onAddToWishlist={handleAddToWishlist}
+                              isLoadingWishlist={wishlistLoadingId === destination.id}
+                            />
+                          ))}
+                        </div>
+                      </div>
                     ))}
                   </div>
                 )}

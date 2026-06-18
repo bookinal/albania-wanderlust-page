@@ -332,7 +332,7 @@ const AdventureDestinationsPage = () => {
                   flex: 1,
                   display: "grid",
                   gridTemplateColumns:
-                    "repeat(auto-fit, minmax(min(100%, 280px), 1fr))",
+                    "repeat(auto-fill, minmax(min(100%, 210px), 1fr))",
                   gap: "1.25rem",
                   width: "100%",
                 }}
