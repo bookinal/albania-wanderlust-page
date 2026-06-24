@@ -9,6 +9,17 @@ export interface DestinationVisitorTip {
   description: string;
 }
 
+export interface DestinationContact {
+  instagram?: string;
+  facebook?: string;
+  website?: string;
+  phone?: string;
+  email?: string;
+  whatsapp?: string;
+  tripadvisor?: string;
+  bookingUrl?: string;
+}
+
 export interface Destination {
   id: string;
   name: TranslatedField;
@@ -30,6 +41,8 @@ export interface Destination {
   byBoat?: string;
   rating?: number;
   visitorTips?: DestinationVisitorTip[];
+  contact?: DestinationContact;
+  nearbyDestinations?: Destination[];
 }
 
 export interface DestinationDto {
@@ -52,6 +65,8 @@ export interface DestinationDto {
   byBoat?: string;
   rating?: number;
   visitorTips?: DestinationVisitorTip[];
+  contact?: DestinationContact;
+  nearbyDestinationIds?: string[];
 }
 
 export interface Wishlist {

@@ -23,6 +23,12 @@ import {
   Sailboat,
   Plus,
   Minus,
+  Phone,
+  Mail,
+  Globe,
+  MessageCircle,
+  Camera,
+  ExternalLink,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { addDestinationToCurrentUserWishlist } from "@albania/api-client";
@@ -34,7 +40,8 @@ import { useLocalized } from "@/hooks/useLocalized";
 import { useTheme } from "@/context/ThemeContext";
 import PrimarySearchAppBar from "@/components/home/AppBar";
 import { getHomeThemeTokens } from "@/components/home/homeTheme";
-import { useDestination } from "@/hooks/useDestinations";
+import { useDestination, useDestinations } from "@/hooks/useDestinations";
+import { DestinationCard } from "./DestinationCard";
 
 const visitorTipIcons: Record<string, LucideIcon> = {
   Sunrise,
@@ -65,8 +72,45 @@ const DestinationDetails = () => {
   const homeTk = getHomeThemeTokens({ isDark, isBlue });
   const [isAddingToWishlist, setIsAddingToWishlist] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [descriptionExpanded, setDescriptionExpanded] = useState(false);
   const [mapZoom, setMapZoom] = useState(13);
   const { data: destination, isLoading, error } = useDestination(id);
+  const { data: allDestinations = [] } = useDestinations();
+
+  const nearbyIds = destination
+    ? ((destination as unknown as Record<string, unknown>).nearbyDestinationIds as string[] | undefined) || []
+    : [];
+  const nearbyDestinations = allDestinations.filter(
+    (d) => nearbyIds.includes(d.id) && d.id !== destination?.id,
+  );
+
+  const [nearbyWishlistLoading, setNearbyWishlistLoading] = useState<string | null>(null);
+
+  const handleNearbyAddToWishlist = async (destId: string) => {
+    setNearbyWishlistLoading(destId);
+    try {
+      await addDestinationToCurrentUserWishlist(destId);
+      toast({
+        title: t("common.success"),
+        description: t("home.destinations.addedToWishlist"),
+      });
+    } catch (err: any) {
+      if (err.code === "23505") {
+        toast({
+          title: t("common.warning"),
+          description: t("home.destinations.alreadyInWishlist"),
+        });
+      } else {
+        toast({
+          title: t("common.error"),
+          description: t("home.destinations.loginToAddWishlist"),
+          variant: "destructive",
+        });
+      }
+    } finally {
+      setNearbyWishlistLoading(null);
+    }
+  };
 
   const tk = {
     pageBg: isDark
@@ -135,6 +179,18 @@ const DestinationDetails = () => {
     brand: homeTk.brand,
     brandSoft: homeTk.brandSoft,
     pillText: "#ffffff",
+  };
+
+  const cardTk = {
+    panelBg: tk.cardBg,
+    panelBorder: tk.cardBorder,
+    panelShadow: tk.cardShadow,
+    heroGradient: tk.heroGradient,
+    textMain: tk.pageText,
+    textMuted: tk.mutedText,
+    brand: tk.brand,
+    buttonGhostBg: tk.btnOutlineBg,
+    buttonGhostBorder: tk.btnOutlineBorder,
   };
 
   const handleAddToWishlist = async () => {
@@ -552,8 +608,37 @@ const DestinationDetails = () => {
                       color: "rgba(255,255,255,0.88)",
                     }}
                   >
-                    {localize(destination.description)}
+                    {(() => {
+                      const desc = localize(destination.description);
+                      const limit = 400;
+                      const needsTruncation = desc.length > limit;
+                      return (
+                        <>
+                          {needsTruncation && !descriptionExpanded
+                            ? desc.slice(0, limit) + "..."
+                            : desc}
+                        </>
+                      );
+                    })()}
                   </p>
+                  {localize(destination.description).length > 400 && (
+                    <button
+                      onClick={() => setDescriptionExpanded(!descriptionExpanded)}
+                      style={{
+                        background: "none",
+                        border: "none",
+                        color: "rgba(255,255,255,0.75)",
+                        cursor: "pointer",
+                        fontWeight: 600,
+                        fontSize: "0.9rem",
+                        padding: 0,
+                        textDecoration: "underline",
+                        textUnderlineOffset: "2px",
+                      }}
+                    >
+                      {descriptionExpanded ? "Show less" : "Read more"}
+                    </button>
+                  )}
                 </div>
               </div>
               <button
@@ -720,8 +805,35 @@ const DestinationDetails = () => {
                   lineHeight: 1.7,
                 }}
               >
-                {localize(destination.description)}
+                {(() => {
+                  const desc = localize(destination.description);
+                  const limit = 1000;
+                  const needsTruncation = desc.length > limit;
+                  return (
+                    <>
+                      {needsTruncation && !descriptionExpanded ? desc.slice(0, limit) + "..." : desc}
+                    </>
+                  );
+                })()}
               </p>
+              {localize(destination.description).length > 1000 && (
+                <button
+                  onClick={() => setDescriptionExpanded(!descriptionExpanded)}
+                  style={{
+                    background: "none",
+                    border: "none",
+                    color: tk.brand,
+                    cursor: "pointer",
+                    fontWeight: 600,
+                    fontSize: "0.9rem",
+                    padding: 0,
+                    textDecoration: "underline",
+                    textUnderlineOffset: "2px",
+                  }}
+                >
+                  {descriptionExpanded ? "Show less" : "Read more"}
+                </button>
+              )}
             </div>
 
             {/* Action Buttons */}
@@ -963,6 +1075,97 @@ const DestinationDetails = () => {
           })}
         </div>
       </div>
+
+      {/* Contact */}
+      {destination.contact && (
+        <div style={{ width: "100%", padding: "0 1.5rem 2.5rem" }}>
+          <div style={{ marginBottom: "1rem" }}>
+            <h2
+              style={{
+                margin: 0,
+                fontSize: "1.6rem",
+                fontWeight: 800,
+                color: tk.pageText,
+              }}
+            >
+              Contact & Links
+            </h2>
+            <p
+              style={{
+                margin: "0.5rem 0 0",
+                fontSize: "0.98rem",
+                lineHeight: 1.7,
+                color: tk.dimText,
+              }}
+            >
+              Reach out or explore more about this destination online.
+            </p>
+          </div>
+          <div
+            style={{
+              display: "flex",
+              flexWrap: "wrap",
+              gap: "0.75rem",
+            }}
+          >
+            {([
+              { key: "instagram", icon: Camera, prefix: "" },
+              { key: "facebook", icon: Users, prefix: "" },
+              { key: "website", icon: Globe, prefix: null },
+              { key: "phone", icon: Phone, prefix: "tel:" },
+              { key: "email", icon: Mail, prefix: "mailto:" },
+              { key: "whatsapp", icon: MessageCircle, prefix: "" },
+              { key: "tripadvisor", icon: Star, prefix: null },
+              { key: "bookingUrl", icon: ExternalLink, prefix: null },
+            ] as const).map(({ key, icon: Icon, prefix }) => {
+              const val = destination.contact![key];
+              if (!val) return null;
+              const href = prefix ? `${prefix}${val}` : val;
+              return (
+                <a
+                  key={key}
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "0.5rem",
+                    padding: "0.6rem 1.1rem",
+                    borderRadius: "9999px",
+                    background: "#ffffff",
+                    border: "1px solid rgba(15,23,42,0.06)",
+                    color: tk.pageText,
+                    fontSize: "0.9rem",
+                    fontWeight: 600,
+                    textDecoration: "none",
+                    boxShadow: "0 4px 14px rgba(15,23,42,0.06)",
+                    transition: "box-shadow 0.2s, transform 0.2s",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.boxShadow = "0 8px 24px rgba(15,23,42,0.12)";
+                    e.currentTarget.style.transform = "translateY(-1px)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.boxShadow = "0 4px 14px rgba(15,23,42,0.06)";
+                    e.currentTarget.style.transform = "translateY(0)";
+                  }}
+                >
+                  <Icon className="w-4 h-4" style={{ color: tk.brand }} />
+                  {key === "instagram" && "Instagram"}
+                  {key === "facebook" && "Facebook"}
+                  {key === "website" && "Website"}
+                  {key === "phone" && val}
+                  {key === "email" && val}
+                  {key === "whatsapp" && "WhatsApp"}
+                  {key === "tripadvisor" && "TripAdvisor"}
+                  {key === "bookingUrl" && "Book Now"}
+                </a>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* How To Reach */}
       <div style={{ width: "100%", padding: "0 1.5rem 3rem" }}>
@@ -1413,6 +1616,52 @@ const DestinationDetails = () => {
           ))}
         </div>
       </div>
+
+      {/* Nearby Destinations */}
+      {nearbyDestinations.length > 0 && (
+        <div style={{ width: "100%", padding: "0 1.5rem 3rem" }}>
+          <div style={{ marginBottom: "1rem" }}>
+            <h2
+              style={{
+                margin: 0,
+                fontSize: "1.6rem",
+                fontWeight: 800,
+                color: tk.pageText,
+              }}
+            >
+              Nearby Destinations
+            </h2>
+            <p
+              style={{
+                margin: "0.5rem 0 0",
+                fontSize: "0.98rem",
+                lineHeight: 1.7,
+                color: tk.dimText,
+              }}
+            >
+              Other destinations close to {localize(destination.name)}.
+            </p>
+          </div>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns:
+                "repeat(auto-fill, minmax(min(100%, 210px), 1fr))",
+              gap: "1.25rem",
+            }}
+          >
+            {nearbyDestinations.map((d) => (
+              <DestinationCard
+                key={d.id}
+                destination={d}
+                tk={cardTk}
+                onAddToWishlist={handleNearbyAddToWishlist}
+                isLoadingWishlist={nearbyWishlistLoading === d.id}
+              />
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

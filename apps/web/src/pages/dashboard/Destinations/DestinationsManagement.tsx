@@ -37,6 +37,7 @@ import {
 } from "@/components/ui/dialog";
 import {
   Destination,
+  DestinationContact,
   DestinationDto,
   TranslatedField,
 } from "@/types/destination.types";
@@ -86,6 +87,8 @@ interface DestinationFormData {
   rating?: number | string;
   visitorTips: VisitorTipFormItem[];
   imageUrls: string[];
+  contact?: DestinationContact;
+  nearbyDestinationIds: string[];
 }
 
 type VisitorTipIconName =
@@ -189,6 +192,14 @@ function createEmptyVisitorTip(): VisitorTipFormItem {
   };
 }
 
+function extractNearbyIds(dest: Destination): string[] {
+  if (dest.nearbyDestinations && dest.nearbyDestinations.length > 0) {
+    return dest.nearbyDestinations.map((d) => d.id);
+  }
+  const raw = (dest as unknown as Record<string, unknown>).nearbyDestinationIds;
+  return Array.isArray(raw) ? (raw as string[]) : [];
+}
+
 function createEmptyDestinationFormData(): DestinationFormData {
   return {
     name: emptyTranslatedField(),
@@ -210,6 +221,8 @@ function createEmptyDestinationFormData(): DestinationFormData {
     rating: undefined,
     visitorTips: [],
     imageUrls: [],
+    contact: undefined,
+    nearbyDestinationIds: [],
   };
 }
 
@@ -286,6 +299,11 @@ export default function DestinationsManagement() {
   );
   const [selectedImageFiles, setSelectedImageFiles] = useState<File[]>([]);
   const [saving, setSaving] = useState(false);
+
+  const otherDestinations = React.useMemo(
+    () => destinations.filter((d) => d.id !== selectedDestination?.id),
+    [destinations, selectedDestination?.id],
+  );
 
   const tk: TkMap = {
     pageBg: isDark ? "#0d0d0d" : "#f5f4f1",
@@ -392,6 +410,8 @@ export default function DestinationsManagement() {
       rating: destination.rating,
       visitorTips: normalizeVisitorTips(destination.visitorTips),
       imageUrls: destination.imageUrls || [],
+      contact: destination.contact,
+      nearbyDestinationIds: extractNearbyIds(destination),
     });
     setSelectedImageFiles([]);
     setActiveLocaleTab("en");
@@ -432,6 +452,8 @@ export default function DestinationsManagement() {
       rating: destination.rating,
       visitorTips: normalizeVisitorTips(destination.visitorTips),
       imageUrls: destination.imageUrls || [],
+      contact: destination.contact,
+      nearbyDestinationIds: extractNearbyIds(destination),
     });
     setActiveLocaleTab("en");
     setDialogOpen(true);
@@ -596,6 +618,8 @@ export default function DestinationsManagement() {
           }))
           .filter((tip) => tip.title && tip.description),
         imageUrls,
+        contact: formData.contact,
+        nearbyDestinationIds: formData.nearbyDestinationIds,
       };
 
       if (dialogMode === "create") {
@@ -1434,6 +1458,119 @@ export default function DestinationsManagement() {
                   })}
                 </div>
               )}
+            </div>
+
+            {/* Contact */}
+            <div className="space-y-3">
+              <div>
+                <h3
+                  className="text-sm font-semibold"
+                  style={{ color: tk.dialogText }}
+                >
+                  Contact
+                </h3>
+                <p className="text-sm mt-1" style={{ color: tk.mutedText }}>
+                  Social links, phone, email, and booking URLs for this destination.
+                </p>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {([
+                  { key: "instagram", label: "Instagram", placeholder: "https://instagram.com/..." },
+                  { key: "facebook", label: "Facebook", placeholder: "https://facebook.com/..." },
+                  { key: "website", label: "Website", placeholder: "https://..." },
+                  { key: "phone", label: "Phone", placeholder: "+355 XX XXX XXXX" },
+                  { key: "email", label: "Email", placeholder: "example@email.com" },
+                  { key: "whatsapp", label: "WhatsApp", placeholder: "+355 XX XXX XXXX" },
+                  { key: "tripadvisor", label: "TripAdvisor", placeholder: "https://tripadvisor.com/..." },
+                  { key: "bookingUrl", label: "Booking URL", placeholder: "https://booking.com/..." },
+                ] as const).map(({ key, label, placeholder }) => (
+                  <div key={key} className="space-y-2">
+                    <label
+                      className="text-sm font-medium"
+                      style={{ color: tk.labelText }}
+                    >
+                      {label}
+                    </label>
+                    <input
+                      value={formData.contact?.[key] || ""}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          contact: { ...prev.contact, [key]: e.target.value || undefined },
+                        }))
+                      }
+                      placeholder={placeholder}
+                      disabled={dialogMode === "view"}
+                      style={inputStyle}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Nearby Destinations */}
+            <div className="space-y-3">
+              <div>
+                <h3
+                  className="text-sm font-semibold"
+                  style={{ color: tk.dialogText }}
+                >
+                  Nearby Destinations
+                </h3>
+                <p className="text-sm mt-1" style={{ color: tk.mutedText }}>
+                  Select other destinations that are nearby this one.
+                </p>
+              </div>
+              <div
+                className="rounded-xl border p-3 max-h-48 overflow-y-auto"
+                style={{
+                  background: tk.cardBg,
+                  borderColor: tk.cardBorder,
+                }}
+              >
+                {otherDestinations.map((d) => {
+                    const checked = formData.nearbyDestinationIds.includes(d.id);
+                    return (
+                      <label
+                        key={d.id}
+                        className="flex items-center gap-3 px-2 py-1.5 rounded-lg cursor-pointer hover:opacity-80"
+                        style={{
+                          color: tk.dimText,
+                          opacity: dialogMode === "view" ? 0.7 : 1,
+                        }}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={checked}
+                          disabled={dialogMode === "view"}
+                          onChange={() =>
+                            setFormData((prev) => ({
+                              ...prev,
+                              nearbyDestinationIds: checked
+                                ? prev.nearbyDestinationIds.filter((id) => id !== d.id)
+                                : [...prev.nearbyDestinationIds, d.id],
+                            }))
+                          }
+                          style={{ accentColor: "#E8192C" }}
+                        />
+                        <span className="text-sm font-medium">
+                          {localize(d.name)}
+                        </span>
+                        <span
+                          className="text-xs ml-auto opacity-60"
+                          style={{ color: tk.mutedText }}
+                        >
+                          {d.category}
+                        </span>
+                      </label>
+                    );
+                  })}
+                {otherDestinations.length === 0 && (
+                  <p className="text-sm text-center py-4" style={{ color: tk.mutedText }}>
+                    No other destinations available.
+                  </p>
+                )}
+              </div>
             </div>
           </div>
 

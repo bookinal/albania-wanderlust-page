@@ -158,8 +158,8 @@ export const DestinationCard = ({
             fontSize: "0.95rem",
           }}
         >
-          {localize(destination.description).slice(0, 140)}
-          {localize(destination.description).length > 140 ? "..." : ""}
+          {localize(destination.description).slice(0, 50)}
+          {localize(destination.description).length > 50 ? "..." : ""}
         </p>
 
         { destination.location && (

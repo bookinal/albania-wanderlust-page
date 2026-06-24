@@ -1,14 +1,10 @@
 import * as React from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
-import { authService } from "@/services/api/authService";
-import { userService } from "@/services/api/userService";
-import { User } from "@/types/user.types";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@/context/ThemeContext";
 import { useAuth } from "@/context/AuthContext";
 import { getHomeThemeTokens } from "./homeTheme";
-import { useDestinations } from "@/hooks/useDestinations";
 import {
   Heart,
   CalendarDays,
@@ -34,15 +30,10 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-  DropdownMenuSub,
-  DropdownMenuSubTrigger,
-  DropdownMenuSubContent,
-  DropdownMenuPortal,
 } from "@/components/ui/dropdown-menu";
-import { Destination } from "@albania/shared-types";
 
 export default function PrimarySearchAppBar() {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const { theme, isDark, isBlue, toggleTheme } = useTheme();
@@ -53,23 +44,13 @@ export default function PrimarySearchAppBar() {
   const [scrolled, setScrolled] = React.useState(false);
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [mobileDestinationsOpen, setMobileDestinationsOpen] = React.useState(false);
-  const [mobileExpandedCategory, setMobileExpandedCategory] = React.useState<string | null>(null);
 
-  // Destinations data for the Dropdown
-  const { data: destinations = [] } = useDestinations();
-  const DESTINATION_CATEGORIES = ["Adventure", "Historic", "Beach", "Cultural", "Nature", "City"];
-
-  const groupedDestinations = React.useMemo(() => {
-    const groups: Record<string, Destination[]> = {};
-    DESTINATION_CATEGORIES.forEach((cat) => (groups[cat] = []));
-    destinations.forEach((dest) => {
-      const cat = DESTINATION_CATEGORIES.find(c => c.toLowerCase() === dest.category?.toLowerCase()) || "Other";
-      if (groups[cat]) {
-        groups[cat].push(dest);
-      }
-    });
-    return groups;
-  }, [destinations]);
+  const DESTINATION_CATEGORIES = [
+    { label: "Destinations", slug: "destinations" },
+    { label: "Eat, drink & dance", slug: "eat-drink-dance" },
+    { label: "History & culture", slug: "history-culture" },
+    { label: "Experiences", slug: "experiences" },
+  ];
 
   // Scroll-aware transparency
   React.useEffect(() => {
@@ -362,46 +343,25 @@ export default function PrimarySearchAppBar() {
                     <ChevronDown className="w-3.5 h-3.5 opacity-70" />
                   </button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="start" className="w-64 mt-2 rounded-xl shadow-xl p-1" style={{ background: tk.dropdownBg, borderColor: tk.dropdownBorder }}>
-                  {DESTINATION_CATEGORIES.map((cat) => {
-                    const dests = groupedDestinations[cat] || [];
-                    if (dests.length === 0) return null;
-                    return (
-                      <DropdownMenuSub key={cat}>
-                        <DropdownMenuSubTrigger className="rounded-lg mx-1 gap-2.5 py-2.5 text-base cursor-pointer" style={{ color: tk.dropdownText }}>
-                          {cat}
-                        </DropdownMenuSubTrigger>
-                        <DropdownMenuPortal>
-                          <DropdownMenuSubContent className="w-[400px] rounded-xl shadow-xl p-2" style={{ background: tk.dropdownBg, borderColor: tk.dropdownBorder }}>
-                            {dests.map(dest => {
-                              const name = dest.name?.[i18n.language] || dest.name?.["en"] || "Unknown";
-                              const desc = dest.description?.[i18n.language] || dest.description?.["en"] || "";
-                              return (
-                                <DropdownMenuItem
-                                  key={dest.id}
-                                  onClick={() => navigate(`/destination/${dest.id}`)}
-                                  className="rounded-xl mx-1 gap-4 py-3 cursor-pointer items-start"
-                                  style={{ color: tk.dropdownText }}
-                                >
-                                  <img
-                                    src={dest.imageUrls?.[0] || "/placeholder-destination.jpg"}
-                                    alt={name}
-                                    className="w-16 h-16 rounded-md object-cover flex-shrink-0 bg-gray-100 shadow-sm"
-                                  />
-                                  <div className="flex flex-col min-w-0 pt-0.5">
-                                    <span className="font-semibold text-base truncate" style={{ fontFamily: 'Crimson Pro, Georgia, serif' }}>{name}</span>
-                                    <span className="text-sm opacity-75 line-clamp-2 leading-snug mt-1" style={{ color: tk.dropdownMuted }}>
-                                      {desc}
-                                    </span>
-                                  </div>
-                                </DropdownMenuItem>
-                              );
-                            })}
-                          </DropdownMenuSubContent>
-                        </DropdownMenuPortal>
-                      </DropdownMenuSub>
-                    );
-                  })}
+                <DropdownMenuContent align="start" className="w-56 mt-2 rounded-xl shadow-xl p-1.5" style={{ background: tk.dropdownBg, borderColor: tk.dropdownBorder }}>
+                  {DESTINATION_CATEGORIES.map((cat) => (
+                    <DropdownMenuItem
+                      key={cat.slug}
+                      onClick={() => navigate(`/destinations/${cat.slug}`)}
+                      className="rounded-lg cursor-pointer py-2.5 px-3"
+                      style={{ color: tk.dropdownText }}
+                    >
+                      {cat.label}
+                    </DropdownMenuItem>
+                  ))}
+                  <DropdownMenuSeparator className="mx-2 my-1" />
+                  <DropdownMenuItem
+                    onClick={() => navigate("/destinations")}
+                    className="rounded-lg cursor-pointer py-2.5 px-3 font-semibold"
+                    style={{ color: tk.brand }}
+                  >
+                    See all
+                  </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             </nav>
@@ -707,82 +667,54 @@ export default function PrimarySearchAppBar() {
               </button>
 
               {mobileDestinationsOpen && (
-                <div className="pl-12 pr-4 py-2 space-y-2" style={{ borderLeft: `2px solid ${tk.mobilePanelBorder}`, marginLeft: '24px' }}>
-                  {DESTINATION_CATEGORIES.map((cat) => {
-                    const dests = groupedDestinations[cat] || [];
-                    if (dests.length === 0) return null;
-                    const isExpanded = mobileExpandedCategory === cat;
-
-                    return (
-                      <div key={cat} className="space-y-1">
-                        <button
-                          onClick={() => setMobileExpandedCategory(isExpanded ? null : cat)}
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'space-between',
-                            width: '100%',
-                            padding: '6px 0',
-                            fontFamily: 'Crimson Pro, Georgia, serif',
-                            fontSize: '0.9rem',
-                            color: isExpanded ? tk.brand : tk.mobileInactive,
-                            background: 'transparent',
-                            border: 'none',
-                            cursor: 'pointer',
-                          }}
-                        >
-                          {cat}
-                          <ChevronDown
-                            className="w-3.5 h-3.5 transition-transform"
-                            style={{ transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)" }}
-                          />
-                        </button>
-
-                        {isExpanded && (
-                          <div className="pl-4 py-2 space-y-3 flex flex-col items-start" style={{ borderLeft: `1px solid ${tk.mobilePanelBorder}` }}>
-                            {dests.map(dest => {
-                              const name = dest.name?.[i18n.language] || dest.name?.["en"] || "Unknown";
-                              const desc = dest.description?.[i18n.language] || dest.description?.["en"] || "";
-                              return (
-                                <button
-                                  key={dest.id}
-                                  onClick={() => {
-                                    navigate(`/destinations/${dest.id}`);
-                                    setMobileOpen(false);
-                                  }}
-                                  style={{
-                                    display: 'flex',
-                                    alignItems: 'flex-start',
-                                    gap: '14px',
-                                    width: '100%',
-                                    background: 'transparent',
-                                    border: 'none',
-                                    cursor: 'pointer',
-                                    textAlign: 'left',
-                                    padding: '8px 0',
-                                  }}
-                                >
-                                  <img
-                                    src={dest.imageUrls?.[0] || "/placeholder-destination.jpg"}
-                                    alt={name}
-                                    className="w-14 h-14 rounded-lg object-cover flex-shrink-0 bg-gray-100 shadow-sm"
-                                  />
-                                  <div className="flex flex-col min-w-0 pt-0.5">
-                                    <span style={{ fontFamily: 'Crimson Pro, Georgia, serif', fontSize: '1.05rem', color: tk.mobileInactive, fontWeight: 600 }} className="truncate">
-                                      {name}
-                                    </span>
-                                    <span style={{ fontFamily: 'Crimson Pro, Georgia, serif', fontSize: '0.9rem', color: tk.mobileIconInactive }} className="line-clamp-2 leading-snug mt-1">
-                                      {desc}
-                                    </span>
-                                  </div>
-                                </button>
-                              );
-                            })}
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
+                <div className="pl-12 pr-4 py-2 space-y-1" style={{ borderLeft: `2px solid ${tk.mobilePanelBorder}`, marginLeft: '24px' }}>
+                  {DESTINATION_CATEGORIES.map((cat) => (
+                    <button
+                      key={cat.slug}
+                      onClick={() => {
+                        navigate(`/destinations/${cat.slug}`);
+                        setMobileOpen(false);
+                      }}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        width: '100%',
+                        padding: '8px 0',
+                        fontFamily: 'Crimson Pro, Georgia, serif',
+                        fontSize: '0.9rem',
+                        color: tk.mobileInactive,
+                        background: 'transparent',
+                        border: 'none',
+                        cursor: 'pointer',
+                        textAlign: 'left',
+                      }}
+                    >
+                      {cat.label}
+                    </button>
+                  ))}
+                  <div style={{ borderTop: `1px solid ${tk.mobilePanelBorder}`, margin: '6px 0' }} />
+                  <button
+                    onClick={() => {
+                      navigate("/destinations");
+                      setMobileOpen(false);
+                    }}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      width: '100%',
+                      padding: '8px 0',
+                      fontFamily: 'Crimson Pro, Georgia, serif',
+                      fontSize: '0.9rem',
+                      fontWeight: 600,
+                      color: tk.brand,
+                      background: 'transparent',
+                      border: 'none',
+                      cursor: 'pointer',
+                      textAlign: 'left',
+                    }}
+                  >
+                    See all
+                  </button>
                 </div>
               )}
             </div>
