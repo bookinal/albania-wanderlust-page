@@ -29,6 +29,7 @@ import {
   MessageCircle,
   Camera,
   ExternalLink,
+  ChefHat,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { addDestinationToCurrentUserWishlist } from "@albania/api-client";
@@ -328,17 +329,14 @@ const DestinationDetails = () => {
       value: destination.location,
     },
     {
-      icon: Navigation,
-      label: "Coordinates",
-      value:
-        typeof destination.lat === "number" && typeof destination.lng === "number"
-          ? `${destination.lat.toFixed(4)}, ${destination.lng.toFixed(4)}`
-          : undefined,
-    },
-    {
       icon: Waves,
       label: "Beach Type",
       value: destination.beachType,
+    },
+    {
+      icon: ChefHat,
+      label: "Cuisine Type",
+      value: destination.cuisineType,
     },
     {
       icon: Droplets,
@@ -1617,7 +1615,7 @@ const DestinationDetails = () => {
         </div>
       </div>
 
-      {/* Nearby Destinations */}
+      {/* Nearby Attractions */}
       {nearbyDestinations.length > 0 && (
         <div style={{ width: "100%", padding: "0 1.5rem 3rem" }}>
           <div style={{ marginBottom: "1rem" }}>
@@ -1629,7 +1627,7 @@ const DestinationDetails = () => {
                 color: tk.pageText,
               }}
             >
-              Nearby Destinations
+              Nearby Attractions
             </h2>
             <p
               style={{
@@ -1639,7 +1637,7 @@ const DestinationDetails = () => {
                 color: tk.dimText,
               }}
             >
-              Other destinations close to {localize(destination.name)}.
+              Other attractions close to {localize(destination.name)}.
             </p>
           </div>
           <div

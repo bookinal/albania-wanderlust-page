@@ -1,11 +1,11 @@
 import Hero from "@/components/home/Hero";
-import Destinations from "@/components/home/Destinations";
+import Destinations from "@/components/home/DestinationsHomePreview";
 import Culture from "@/components/home/Culture";
 import PrimarySearchAppBar from "@/components/home/AppBar";
 import HotelsPreview from "@/components/home/HotelsPreview";
 import ApartmentsPreview from "@/components/home/ApartmentsPreview";
 import CarsPreview from "@/components/home/CarsPreview";
-import LoadingScreen from "@/components/home/LoadingScreen";
+//import LoadingScreen from "@/components/home/LoadingScreen";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@/context/ThemeContext";
 import { getHomeThemeTokens } from "@/components/home/homeTheme";
@@ -24,8 +24,11 @@ const Index = () => {
 
       <TrustIndicators />
 
+      {/* Destinations Section */}
+      <Destinations />
+
       {/* Cars Section */}
-      <section
+      {/* <section
         style={{
           padding: "3rem 0",
           background: tk.sectionAlt,
@@ -35,7 +38,7 @@ const Index = () => {
         <div className="container mx-auto px-4">
           <CarsPreview />
         </div>
-      </section>
+      </section> */}
 
       {/* Accommodations Section */}
       <section
@@ -97,7 +100,8 @@ const Index = () => {
             }}
           >
             <div id="hotels">
-              <HotelsPreview />
+              {/* <HotelsPreview /> */}
+              <CarsPreview />
             </div>
             <div
               id="apartments"
@@ -111,9 +115,6 @@ const Index = () => {
           </div>
         </div>
       </section>
-
-      {/* Destinations Section */}
-      <Destinations />
 
       {/* Culture Section */}
       <Culture />

@@ -4,15 +4,18 @@ import { useQuery } from "@tanstack/react-query";
 import { getAllCars } from "@/services/api/carService";
 import { getMonthlyPrices } from "@/services/api/monthlyPriceService";
 import { Month, MONTHS } from "@/types/price.type";
+import { useKeenSlider } from "keen-slider/react";
+import "keen-slider/keen-slider.min.css";
 import { ClipLoader } from "react-spinners";
-import { useNavigate, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { CarCard } from "./CarCard";
 import { Button } from "@/components/ui/button";
-import { Car } from "lucide-react";
+import { Car, ArrowRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { getHomeThemeTokens } from "./homeTheme";
 
-// Helper to get current month as Month type
+const animation = { duration: 50000, easing: (t: number) => t };
+
 const getCurrentMonth = (): Month => {
   const monthIndex = new Date().getMonth();
   return MONTHS[monthIndex];
@@ -25,9 +28,9 @@ const override: CSSProperties = {
 
 const CarsPreview = () => {
   const { t } = useTranslation();
-  const navigate = useNavigate();
   const currentMonth = getCurrentMonth();
   const { isDark, isBlue } = useTheme();
+  const tk = getHomeThemeTokens({ isDark, isBlue });
   const [carMonthlyPrices, setCarMonthlyPrices] = useState<
     Record<number, number | null>
   >({});
@@ -35,23 +38,18 @@ const CarsPreview = () => {
   const { data: cars = [], isLoading } = useQuery({
     queryKey: ["cars"],
     queryFn: getAllCars,
-    // Cache cars data for 10 minutes before refetching
     staleTime: 10 * 60 * 1000,
-    // Keep data in cache for 15 minutes even when unused
     gcTime: 15 * 60 * 1000,
-    // Refetch when window regains focus for fresh car availability
     refetchOnWindowFocus: true,
   });
 
   const availableTopCars = useMemo(() => {
-    return cars.filter((car) => car.status === "available").slice(0, 4);
+    return cars.filter((car) => car.status === "available").slice(0, 8);
   }, [cars]);
 
-  // Fetch monthly prices for displayed cars
   useEffect(() => {
     const fetchMonthlyPrices = async () => {
       if (availableTopCars.length === 0) return;
-
       const pricesMap: Record<number, number | null> = {};
       await Promise.all(
         availableTopCars.map(async (car) => {
@@ -61,68 +59,84 @@ const CarsPreview = () => {
               (p) => p.month === currentMonth,
             );
             pricesMap[car.id] = currentMonthPrice?.pricePerDay ?? null;
-          } catch (err) {
-            console.error(
-              `Error fetching monthly prices for car ${car.id}:`,
-              err,
-            );
+          } catch {
             pricesMap[car.id] = null;
           }
         }),
       );
       setCarMonthlyPrices(pricesMap);
     };
-
     fetchMonthlyPrices();
   }, [availableTopCars, currentMonth]);
 
-  const handleCarClick = (carId: number) => {
-    navigate(`/carReservation/${carId}`);
-  };
-
-  const tk = getHomeThemeTokens({ isDark, isBlue });
+  const [sliderRef] = useKeenSlider({
+    loop: true,
+    renderMode: "performance",
+    drag: true,
+    slides: {
+      perView: 1.1,
+      spacing: 16,
+    },
+    breakpoints: {
+      "(min-width: 640px)": {
+        slides: { perView: 1.3, spacing: 20 },
+      },
+    },
+    created(s) {
+      s.moveToIdx(5, true, animation);
+    },
+    updated(s) {
+      if (s.track.details) {
+        s.moveToIdx(s.track.details.abs + 5, true, animation);
+      }
+    },
+    animationEnded(s) {
+      s.moveToIdx(s.track.details.abs + 5, true, animation);
+    },
+  });
 
   return (
-    <div className="flex flex-col w-full">
-      {/* Section Header */}
-      <div className="text-center mb-8 md:mb-10 animate-fade-in">
-        <span
-          className="inline-block px-4 py-1.5 font-semibold tracking-wider uppercase text-xs rounded-full mb-3"
-          style={{ background: tk.badgeBg, color: tk.badgeText }}
-        >
-          {t("home.carsPreview.chip")}
-        </span>
-        <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-3" style={{ color: tk.textMain }}>
-          {t("home.carsPreview.title")}
-        </h2>
-        <p className="text-base md:text-lg max-w-2xl mx-auto leading-relaxed" style={{ color: tk.textMuted }}>
+    <div className="flex flex-col h-full">
+      <div className="mb-6 animate-fade-in">
+        <div className="flex items-center gap-3 mb-2">
+          <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: tk.badgeIconBg }}>
+            <Car className="w-5 h-5" style={{ color: tk.badgeIconText }} />
+          </div>
+          <h3 className="text-2xl md:text-3xl font-bold" style={{ color: tk.textMain }}>
+            {t("home.carsPreview.title")}
+          </h3>
+        </div>
+        <p className="leading-relaxed text-sm" style={{ color: tk.textMuted }}>
           {t("home.carsPreview.description")}
         </p>
       </div>
 
       {isLoading ? (
-        <div className="flex items-center justify-center py-16">
-            <ClipLoader
-             color={tk.loader}
-             loading={isLoading}
-             cssOverride={override}
-             size={50}
+        <div className="flex-grow flex items-center justify-center py-12">
+          <ClipLoader
+            color={tk.loader}
+            loading={isLoading}
+            cssOverride={override}
+            size={45}
           />
         </div>
       ) : availableTopCars.length === 0 ? (
-<div className="flex flex-col items-center justify-center p-10 rounded-2xl border border-dashed" style={{ background: tk.emptyBg, borderColor: tk.emptyBorder }}>
+        <div className="flex-grow flex flex-col items-center justify-center p-10 rounded-2xl border border-dashed" style={{ background: tk.emptyBg, borderColor: tk.emptyBorder }}>
           <Car className="w-10 h-10 mb-3" style={{ color: tk.emptyIcon }} />
-          <p className="text-base" style={{ color: tk.emptyText }}>
+          <p style={{ color: tk.emptyText }}>
             {t("home.carsPreview.noCars")}
           </p>
         </div>
       ) : (
         <>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+          <div
+            ref={sliderRef}
+            className="keen-slider flex-grow rounded-2xl overflow-hidden"
+          >
             {availableTopCars.map((car, index) => (
               <div
                 key={car.id}
-                className="animate-fade-in-up"
+                className="keen-slider__slide"
                 style={{ animationDelay: `${index * 100}ms` }}
               >
                 <CarCard
@@ -143,20 +157,21 @@ const CarsPreview = () => {
                   features={car.features}
                   imageUrls={car.imageUrls}
                   pickUpLocation={car.pickUpLocation}
-                  onClick={handleCarClick}
+                  onClick={() => {}}
                 />
               </div>
             ))}
           </div>
 
-          <div className="mt-8 flex justify-center">
+          <div className="mt-5">
             <Link to="/searchCarResults">
               <Button
-                size="lg"
-                className="px-6 py-3 rounded-full font-semibold transition inline-block text-center"
-                style={{ background: tk.ctaBg, color: tk.ctaText }}
+                variant="ghost"
+                className="group p-0 hover:bg-transparent font-semibold gap-2"
+                style={{ color: tk.actionText }}
               >
                 {t("home.carsPreview.viewAll")}
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </Button>
             </Link>
           </div>

@@ -8,15 +8,56 @@ import {
 import { deleteImagesByUrls, uploadImages } from "./storageService";
 import { authService } from "./authService";
 
+const CACHE_KEY = "albania_destinations_cache";
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
+interface CacheEntry {
+  data: Destination[];
+  timestamp: number;
+}
+
 /**
- * Get all destinations
+ * Invalidate the destinations cache (call after create/update/delete)
+ */
+export const invalidateDestinationsCache = (): void => {
+  if (typeof localStorage !== "undefined") {
+    localStorage.removeItem(CACHE_KEY);
+  }
+};
+
+/**
+ * Get all destinations (cached in localStorage with 5-minute TTL)
  */
 export const getAllDestinations = async (): Promise<Destination[]> => {
+  if (typeof localStorage !== "undefined") {
+    try {
+      const raw = localStorage.getItem(CACHE_KEY);
+      if (raw) {
+        const entry: CacheEntry = JSON.parse(raw);
+        if (Date.now() - entry.timestamp < CACHE_TTL) {
+          return entry.data;
+        }
+      }
+    } catch {
+      localStorage.removeItem(CACHE_KEY);
+    }
+  }
+
   const { data, error } = await apiClient.from("destination").select("*");
   if (error) {
     console.error("[Destination Service] Error fetching destinations:", error);
     throw error;
   }
+
+  if (typeof localStorage !== "undefined") {
+    try {
+      const entry: CacheEntry = { data, timestamp: Date.now() };
+      localStorage.setItem(CACHE_KEY, JSON.stringify(entry));
+    } catch {
+      // storage full or unavailable — silently ignore
+    }
+  }
+
   return data;
 };
 
@@ -76,6 +117,7 @@ export const createDestination = async (
     console.error("[Destination Service] Error creating destination:", error);
     throw error;
   }
+  invalidateDestinationsCache();
   return newDestination;
 };
 
@@ -98,6 +140,7 @@ export const updateDestination = async (
     console.error("[Destination Service] Error updating destination:", error);
     throw error;
   }
+  invalidateDestinationsCache();
   return updatedDestination;
 };
 
@@ -123,6 +166,7 @@ export const deleteDestination = async (id: string): Promise<void> => {
     console.error("[Destination Service] Error deleting destination:", error);
     throw error;
   }
+  invalidateDestinationsCache();
 };
 
 export const addDestinationToCurrentUserWishlist = async (
@@ -216,6 +260,7 @@ export const getCurrentUserWishlist = async (): Promise<Wishlist | null> => {
           lng,
           location,
           beachType,
+          cuisineType,
           water,
           bestFor,
           crowdLevel,

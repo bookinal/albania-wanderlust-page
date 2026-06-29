@@ -32,6 +32,7 @@ export interface Destination {
   location?: string;
   beachType?: string;
   water?: string;
+  cuisineType?: string;
   bestFor?: string;
   crowdLevel?: string;
   bestMonths?: string;
@@ -56,6 +57,7 @@ export interface DestinationDto {
   location?: string;
   beachType?: string;
   water?: string;
+  cuisineType?: string;
   bestFor?: string;
   crowdLevel?: string;
   bestMonths?: string;

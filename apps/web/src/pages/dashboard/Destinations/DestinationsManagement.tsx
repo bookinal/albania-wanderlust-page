@@ -76,6 +76,7 @@ interface DestinationFormData {
   lng?: number;
   location?: string;
   beachType?: string;
+  cuisineType?: string;
   water?: string;
   bestFor?: string;
   crowdLevel?: string;
@@ -118,6 +119,7 @@ const QUICK_FACT_FIELDS: Array<{
     DestinationFormData,
     | "location"
     | "beachType"
+    | "cuisineType"
     | "water"
     | "bestFor"
     | "crowdLevel"
@@ -156,6 +158,11 @@ const QUICK_FACT_FIELDS: Array<{
     key: "bestFor",
     label: "Best For",
     placeholder: "Families, couples, snorkeling...",
+  },
+  {
+    key: "cuisineType",
+    label: "Cuisine Type",
+    placeholder: "Local, Mediterranean, international...",
   },
   {
     key: "crowdLevel",
@@ -210,6 +217,7 @@ function createEmptyDestinationFormData(): DestinationFormData {
     lng: undefined,
     location: undefined,
     beachType: undefined,
+    cuisineType: undefined,
     water: undefined,
     bestFor: undefined,
     crowdLevel: undefined,
@@ -399,6 +407,7 @@ export default function DestinationsManagement() {
       lng: destination.lng,
       location: destination.location,
       beachType: destination.beachType,
+      cuisineType: destination.cuisineType,
       water: destination.water,
       bestFor: destination.bestFor,
       crowdLevel: destination.crowdLevel,
@@ -441,6 +450,7 @@ export default function DestinationsManagement() {
       lng: destination.lng,
       location: destination.location,
       beachType: destination.beachType,
+      cuisineType: destination.cuisineType,
       water: destination.water,
       bestFor: destination.bestFor,
       crowdLevel: destination.crowdLevel,
@@ -599,6 +609,7 @@ export default function DestinationsManagement() {
         lng: formData.lng,
         location: formData.location,
         beachType: formData.beachType,
+        cuisineType: formData.cuisineType,
         water: formData.water,
         bestFor: formData.bestFor,
         crowdLevel: formData.crowdLevel,
@@ -1508,14 +1519,14 @@ export default function DestinationsManagement() {
               </div>
             </div>
 
-            {/* Nearby Destinations */}
+            {/* Nearby Attractions */}
             <div className="space-y-3">
               <div>
                 <h3
                   className="text-sm font-semibold"
                   style={{ color: tk.dialogText }}
                 >
-                  Nearby Destinations
+                  Nearby Attractions
                 </h3>
                 <p className="text-sm mt-1" style={{ color: tk.mutedText }}>
                   Select other destinations that are nearby this one.
