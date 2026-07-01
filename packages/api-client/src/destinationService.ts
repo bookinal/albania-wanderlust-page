@@ -261,6 +261,7 @@ export const getCurrentUserWishlist = async (): Promise<Wishlist | null> => {
           location,
           beachType,
           cuisineType,
+          howToBook,
           water,
           bestFor,
           crowdLevel,

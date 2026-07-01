@@ -77,6 +77,7 @@ interface DestinationFormData {
   location?: string;
   beachType?: string;
   cuisineType?: string;
+  howToBook?: string;
   water?: string;
   bestFor?: string;
   crowdLevel?: string;
@@ -120,6 +121,7 @@ const QUICK_FACT_FIELDS: Array<{
     | "location"
     | "beachType"
     | "cuisineType"
+    | "howToBook"
     | "water"
     | "bestFor"
     | "crowdLevel"
@@ -163,6 +165,11 @@ const QUICK_FACT_FIELDS: Array<{
     key: "cuisineType",
     label: "Cuisine Type",
     placeholder: "Local, Mediterranean, international...",
+  },
+  {
+    key: "howToBook",
+    label: "How to Book",
+    placeholder: "Steps to book this destination...",
   },
   {
     key: "crowdLevel",
@@ -218,6 +225,7 @@ function createEmptyDestinationFormData(): DestinationFormData {
     location: undefined,
     beachType: undefined,
     cuisineType: undefined,
+    howToBook: undefined,
     water: undefined,
     bestFor: undefined,
     crowdLevel: undefined,
@@ -408,6 +416,7 @@ export default function DestinationsManagement() {
       location: destination.location,
       beachType: destination.beachType,
       cuisineType: destination.cuisineType,
+      howToBook: destination.howToBook,
       water: destination.water,
       bestFor: destination.bestFor,
       crowdLevel: destination.crowdLevel,
@@ -451,6 +460,7 @@ export default function DestinationsManagement() {
       location: destination.location,
       beachType: destination.beachType,
       cuisineType: destination.cuisineType,
+      howToBook: destination.howToBook,
       water: destination.water,
       bestFor: destination.bestFor,
       crowdLevel: destination.crowdLevel,
@@ -610,6 +620,7 @@ export default function DestinationsManagement() {
         location: formData.location,
         beachType: formData.beachType,
         cuisineType: formData.cuisineType,
+        howToBook: formData.howToBook,
         water: formData.water,
         bestFor: formData.bestFor,
         crowdLevel: formData.crowdLevel,

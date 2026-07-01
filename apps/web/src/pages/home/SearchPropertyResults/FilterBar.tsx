@@ -554,9 +554,10 @@ export const FilterBar = ({
         <AccSection label={t("searchResults.filters.categories", "Categories")} defaultOpen headerColor={tk.headerText} dividerColor={tk.sidebarBorder} iconColor={themeTk.brand}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 9 }}>
             {[
-              { id: "Adventure", label: t("searchResults.filters.catAdventure", "Adventure") },
-              { id: "Historic", label: t("searchResults.filters.catHistoric", "Historic") },
-              { id: "Beach", label: t("searchResults.filters.catBeach", "Beach") },
+              { id: "Destinations", label: t("searchResults.filters.catDestinations", "Destinations") },
+              { id: "Eat, drink & dance", label: t("searchResults.filters.catEatDrinkDance", "Eat, drink & dance") },
+              { id: "History & culture", label: t("searchResults.filters.catHistoryCulture", "History & culture") },
+              { id: "Experiences", label: t("searchResults.filters.catExperiences", "Experiences") },
             ].map(cat => (
               <CheckRow
                 key={cat.id}

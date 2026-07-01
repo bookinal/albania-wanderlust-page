@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, Loader2 } from "lucide-react";
 import { addDestinationToCurrentUserWishlist, getCurrentUserWishlist } from "@/services/api/destinationService";
@@ -14,6 +14,13 @@ import { Button } from "@/components/ui/button";
 
 const animation = { duration: 50000, easing: (t: number) => t };
 
+const DESTINATION_CATEGORIES = [
+  { label: "Destinations", slug: "destinations" },
+  { label: "Eat, drink & dance", slug: "eat-drink-dance" },
+  { label: "History & culture", slug: "history-culture" },
+  { label: "Experiences", slug: "experiences" },
+];
+
 const DestinationsHomePreview = () => {
   const { t } = useTranslation();
   const { isDark, isBlue } = useTheme();
@@ -24,37 +31,15 @@ const DestinationsHomePreview = () => {
 
   const { data: destinations = [], isLoading } = useDestinations();
 
-  const [sliderRef] = useKeenSlider({
-    loop: true,
-    renderMode: "performance",
-    drag: true,
-    slides: {
-      perView: 1.1,
-      spacing: 16,
-    },
-    breakpoints: {
-      "(min-width: 640px)": {
-        slides: { perView: 1.3, spacing: 20 },
-      },
-      "(min-width: 1024px)": {
-        slides: { perView: 2.2, spacing: 24 },
-      },
-      "(min-width: 1280px)": {
-        slides: { perView: 3.2, spacing: 24 },
-      },
-    },
-    created(s) {
-      s.moveToIdx(5, true, animation);
-    },
-    updated(s) {
-      if (s.track.details) {
-        s.moveToIdx(s.track.details.abs + 5, true, animation);
-      }
-    },
-    animationEnded(s) {
-      s.moveToIdx(s.track.details.abs + 5, true, animation);
-    },
-  });
+  const grouped = useMemo(() => {
+    const groups: Record<string, typeof destinations> = {};
+    for (const cat of DESTINATION_CATEGORIES) {
+      groups[cat.label] = destinations.filter(
+        (d) => d.category?.toLowerCase() === cat.label.toLowerCase(),
+      );
+    }
+    return groups;
+  }, [destinations]);
 
   const tk = {
     sectionBg: isDark ? "#0a0a0c" : isBlue ? "hsl(205 55% 96%)" : "#f8fafc",
@@ -189,26 +174,93 @@ const DestinationsHomePreview = () => {
           </div>
         )}
 
-        {!isLoading && destinations.length > 0 && (
-          <div ref={sliderRef} className="keen-slider rounded-2xl overflow-hidden">
-            {destinations.map((destination, index) => (
-              <div
-                key={destination.id}
-                className="keen-slider__slide"
-                style={{ animationDelay: `${index * 100}ms` }}
-              >
-                <DestinationCard
-                  destination={destination}
-                  tk={cardTk}
-                  onAddToWishlist={handleAddToWishlist}
-                  isLoadingWishlist={wishlistLoadingId === destination.id}
-                />
-              </div>
-            ))}
-          </div>
+        {!isLoading && destinations.length === 0 && (
+          <p className="text-center py-20" style={{ color: tk.textMuted }}>
+            {t("home.destinations.noDestinations")}
+          </p>
         )}
+
+        {!isLoading &&
+          DESTINATION_CATEGORIES.map((cat) => {
+            const items = grouped[cat.label];
+            if (!items || items.length === 0) return null;
+            return <CategoryRow key={cat.label} category={cat.label} destinations={items} cardTk={cardTk} wishlistLoadingId={wishlistLoadingId} onAddToWishlist={handleAddToWishlist} />;
+          })}
       </div>
     </section>
+  );
+};
+
+const CategoryRow = ({
+  category,
+  destinations,
+  cardTk,
+  wishlistLoadingId,
+  onAddToWishlist,
+}: {
+  category: string;
+  destinations: any[];
+  cardTk: any;
+  wishlistLoadingId: string | null;
+  onAddToWishlist: (id: string) => Promise<void>;
+}) => {
+  const [sliderRef] = useKeenSlider<HTMLDivElement>({
+    loop: true,
+    renderMode: "performance",
+    drag: true,
+    slides: {
+      perView: 1.1,
+      spacing: 16,
+    },
+    breakpoints: {
+      "(min-width: 640px)": {
+        slides: { perView: 1.3, spacing: 20 },
+      },
+      "(min-width: 1024px)": {
+        slides: { perView: 2.2, spacing: 24 },
+      },
+      "(min-width: 1280px)": {
+        slides: { perView: 3.2, spacing: 24 },
+      },
+    },
+    created(s) {
+      s.moveToIdx(5, true, animation);
+    },
+    updated(s) {
+      if (s.track.details) {
+        s.moveToIdx(s.track.details.abs + 5, true, animation);
+      }
+    },
+    animationEnded(s) {
+      s.moveToIdx(s.track.details.abs + 5, true, animation);
+    },
+  });
+
+  return (
+    <div className="mb-10 last:mb-0">
+      <h3
+        className="text-xl md:text-2xl font-bold mb-4"
+        style={{ color: cardTk.textMain }}
+      >
+        {category}
+      </h3>
+      <div ref={sliderRef} className="keen-slider rounded-2xl overflow-hidden">
+        {destinations.map((destination, index) => (
+          <div
+            key={destination.id}
+            className="keen-slider__slide"
+            style={{ animationDelay: `${index * 100}ms` }}
+          >
+            <DestinationCard
+              destination={destination}
+              tk={cardTk}
+              onAddToWishlist={onAddToWishlist}
+              isLoadingWishlist={wishlistLoadingId === destination.id}
+            />
+          </div>
+        ))}
+      </div>
+    </div>
   );
 };
 

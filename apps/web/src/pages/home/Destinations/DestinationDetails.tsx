@@ -30,6 +30,7 @@ import {
   Camera,
   ExternalLink,
   ChefHat,
+  CalendarCheck,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { addDestinationToCurrentUserWishlist } from "@albania/api-client";
@@ -337,6 +338,11 @@ const DestinationDetails = () => {
       icon: ChefHat,
       label: "Cuisine Type",
       value: destination.cuisineType,
+    },
+    {
+      icon: CalendarCheck,
+      label: "How to Book",
+      value: destination.howToBook,
     },
     {
       icon: Droplets,

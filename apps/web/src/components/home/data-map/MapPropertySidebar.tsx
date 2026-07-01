@@ -305,10 +305,17 @@ function DestinationPanel({ destination, isDark, isBlue }: { destination: Destin
           <p style={{ fontSize: '0.875rem', color: infoText, fontWeight: 500, margin: 0 }}>
             Explore this {destination.category.toLowerCase()} destination in Albania
           </p>
+          {/* add button to view more details about the destination */}
+          <Link to={`/destination/${destination.id}`} style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '0.25rem', color: homeTk.brand, fontSize: '0.875rem', fontWeight: 500 }}>
+            View Details
+            <ChevronRight className="w-4 h-4" />
+          </Link>
         </div>
       </div>
     </>
   );
+
+
 }
 
 /* ─── Main Sidebar ────────────────────────────────────────── */
