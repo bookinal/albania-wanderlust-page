@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef, useCallback, Children } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import {
@@ -31,6 +31,8 @@ import {
   ExternalLink,
   ChefHat,
   CalendarCheck,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { addDestinationToCurrentUserWishlist } from "@albania/api-client";
@@ -52,6 +54,139 @@ const visitorTipIcons: Record<string, LucideIcon> = {
   Leaf,
   WifiOff,
 };
+
+function useMediaQuery(query: string): boolean {
+  const [matches, setMatches] = useState(() => window.matchMedia(query).matches);
+  useEffect(() => {
+    const mq = window.matchMedia(query);
+    const handler = (e: MediaQueryListEvent) => setMatches(e.matches);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, [query]);
+  return matches;
+}
+
+function Carousel({ children }: { children: React.ReactNode[] }) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [scrollIndex, setScrollIndex] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const dragStartX = useRef(0);
+  const dragScrollLeft = useRef(0);
+  const slides = Children.toArray(children);
+  const totalSlides = slides.length;
+
+  const updateIndex = useCallback(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const idx = Math.round(el.scrollLeft / (el.clientWidth * 0.7));
+    setScrollIndex(Math.min(idx, totalSlides - 1));
+  }, [totalSlides]);
+
+  const scrollTo = (idx: number) => {
+    const el = containerRef.current;
+    if (!el) return;
+    const target = Math.max(0, Math.min(idx, totalSlides - 1));
+    el.scrollTo({ left: target * (el.clientWidth * 0.7), behavior: "smooth" });
+    setScrollIndex(target);
+  };
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    setIsDragging(true);
+    dragStartX.current = e.clientX;
+    dragScrollLeft.current = containerRef.current?.scrollLeft ?? 0;
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging || !containerRef.current) return;
+    const dx = e.clientX - dragStartX.current;
+    containerRef.current.scrollLeft = dragScrollLeft.current - dx;
+  };
+
+  const handleMouseUp = () => {
+    if (isDragging) {
+      setIsDragging(false);
+      updateIndex();
+    }
+  };
+
+  return (
+    <div style={{ position: "relative" }}>
+      <div
+        ref={containerRef}
+        onScroll={updateIndex}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseUp}
+        onTouchStart={(e) => {
+          dragStartX.current = e.touches[0].clientX;
+          dragScrollLeft.current = containerRef.current?.scrollLeft ?? 0;
+        }}
+        onTouchMove={(e) => {
+          if (!containerRef.current) return;
+          const dx = e.touches[0].clientX - dragStartX.current;
+          containerRef.current.scrollLeft = dragScrollLeft.current - dx;
+        }}
+        onTouchEnd={updateIndex}
+        style={{
+          display: "flex",
+          gap: "1rem",
+          overflowX: "auto",
+          scrollSnapType: "x mandatory",
+          WebkitOverflowScrolling: "touch",
+          scrollbarWidth: "none",
+          msOverflowStyle: "none",
+          padding: "0.25rem 0",
+          cursor: isDragging ? "grabbing" : "grab",
+          userSelect: "none",
+        }}
+      >
+        <style>{`
+          .carousel-scroll::-webkit-scrollbar { display: none; }
+        `}</style>
+        {slides.map((slide, i) => (
+          <div
+            key={i}
+            className="carousel-scroll"
+            style={{
+              flex: "0 0 75%",
+              scrollSnapAlign: "start",
+              maxWidth: 280,
+            }}
+          >
+            {slide}
+          </div>
+        ))}
+      </div>
+      {totalSlides > 1 && (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            gap: "0.4rem",
+            marginTop: "1rem",
+          }}
+        >
+          {Array.from({ length: totalSlides }).map((_, i) => (
+            <button
+              key={i}
+              onClick={() => scrollTo(i)}
+              style={{
+                width: scrollIndex === i ? 24 : 8,
+                height: 8,
+                borderRadius: 4,
+                border: "none",
+                background: scrollIndex === i ? "#E8192C" : "rgba(0,0,0,0.15)",
+                cursor: "pointer",
+                transition: "all 0.2s",
+              }}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 // Fix for default marker icon issue in React-Leaflet
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -76,6 +211,7 @@ const DestinationDetails = () => {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [descriptionExpanded, setDescriptionExpanded] = useState(false);
   const [mapZoom, setMapZoom] = useState(13);
+  const isMobile = useMediaQuery("(max-width: 639px)");
   const { data: destination, isLoading, error } = useDestination(id);
   const { data: allDestinations = [] } = useDestinations();
 
@@ -1571,24 +1707,38 @@ const DestinationDetails = () => {
               Other attractions close to {localize(destination.name)}.
             </p>
           </div>
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns:
-                "repeat(auto-fill, minmax(min(100%, 210px), 1fr))",
-              gap: "1.25rem",
-            }}
-          >
-            {nearbyDestinations.map((d) => (
-              <DestinationCard
-                key={d.id}
-                destination={d}
-                tk={cardTk}
-                onAddToWishlist={handleNearbyAddToWishlist}
-                isLoadingWishlist={nearbyWishlistLoading === d.id}
-              />
-            ))}
-          </div>
+          {isMobile ? (
+            <Carousel>
+              {nearbyDestinations.map((d) => (
+                <DestinationCard
+                  key={d.id}
+                  destination={d}
+                  tk={cardTk}
+                  onAddToWishlist={handleNearbyAddToWishlist}
+                  isLoadingWishlist={nearbyWishlistLoading === d.id}
+                />
+              ))}
+            </Carousel>
+          ) : (
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns:
+                  "repeat(auto-fill, minmax(min(100%, 210px), 1fr))",
+                gap: "1.25rem",
+              }}
+            >
+              {nearbyDestinations.map((d) => (
+                <DestinationCard
+                  key={d.id}
+                  destination={d}
+                  tk={cardTk}
+                  onAddToWishlist={handleNearbyAddToWishlist}
+                  isLoadingWishlist={nearbyWishlistLoading === d.id}
+                />
+              ))}
+            </div>
+          )}
         </div>
       )}
 
@@ -1618,65 +1768,116 @@ const DestinationDetails = () => {
           </p>
         </div>
 
-        <div style={{ columnWidth: "260px", columnGap: "0.9rem" }}>
-          {destination.imageUrls.map((url, index) => (
-            <button
-              key={`${url}-${index}`}
-              onClick={() => setSelectedImageIndex(index)}
-              style={{
-                display: "block",
-                width: "100%",
-                marginBottom: "0.9rem",
-                padding: 0,
-                border:
-                  selectedImageIndex === index
-                    ? `3px solid ${tk.brand}`
-                    : "none",
-                borderRadius: "1.25rem",
-                overflow: "hidden",
-                background: "transparent",
-                cursor: "pointer",
-                breakInside: "avoid",
-                boxShadow:
-                  selectedImageIndex === index
-                    ? tk.cardShadow
-                    : "0 14px 32px rgba(15,23,42,0.08)",
-              }}
-            >
-              <div
+        {isMobile ? (
+          <Carousel>
+            {destination.imageUrls.map((url, index) => (
+              <button
+                key={`${url}-${index}`}
+                onClick={() => setSelectedImageIndex(index)}
                 style={{
-                  position: "relative",
-                  aspectRatio:
-                    index % 5 === 0
-                      ? "4 / 5"
-                      : index % 3 === 0
-                        ? "1 / 1"
-                        : index % 2 === 0
-                          ? "4 / 3"
-                          : "3 / 4",
-                  background: tk.mapFallbackBg,
+                  display: "block",
+                  width: "100%",
+                  padding: 0,
+                  border: selectedImageIndex === index ? `3px solid ${tk.brand}` : "none",
+                  borderRadius: "1.25rem",
+                  overflow: "hidden",
+                  background: "transparent",
+                  cursor: "pointer",
+                  boxShadow: selectedImageIndex === index ? tk.cardShadow : "0 14px 32px rgba(15,23,42,0.08)",
                 }}
               >
-                <img
-                  src={url}
-                  alt={`${localize(destination.name)} gallery ${index + 1}`}
-                  style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                  onError={(e) => {
-                    e.currentTarget.src = "/placeholder.svg";
-                  }}
-                />
                 <div
                   style={{
-                    position: "absolute",
-                    inset: 0,
-                    background:
-                      "linear-gradient(180deg, rgba(15,23,42,0) 45%, rgba(15,23,42,0.18) 100%)",
+                    position: "relative",
+                    aspectRatio: "4 / 3",
+                    background: tk.mapFallbackBg,
                   }}
-                />
-              </div>
-            </button>
-          ))}
-        </div>
+                >
+                  <img
+                    src={url}
+                    alt={`${localize(destination.name)} gallery ${index + 1}`}
+                    style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                    onError={(e) => { e.currentTarget.src = "/placeholder.svg"; }}
+                  />
+                  <div
+                    style={{
+                      position: "absolute",
+                      bottom: 0,
+                      left: 0,
+                      right: 0,
+                      padding: "0.5rem 1rem",
+                      background: "linear-gradient(to top, rgba(0,0,0,0.5), transparent)",
+                    }}
+                  >
+                    <span style={{ color: "#fff", fontSize: "0.8rem", fontWeight: 600 }}>
+                      {index + 1} / {destination.imageUrls.length}
+                    </span>
+                  </div>
+                </div>
+              </button>
+            ))}
+          </Carousel>
+        ) : (
+          <div style={{ columnWidth: "260px", columnGap: "0.9rem" }}>
+            {destination.imageUrls.map((url, index) => (
+              <button
+                key={`${url}-${index}`}
+                onClick={() => setSelectedImageIndex(index)}
+                style={{
+                  display: "block",
+                  width: "100%",
+                  marginBottom: "0.9rem",
+                  padding: 0,
+                  border:
+                    selectedImageIndex === index
+                      ? `3px solid ${tk.brand}`
+                      : "none",
+                  borderRadius: "1.25rem",
+                  overflow: "hidden",
+                  background: "transparent",
+                  cursor: "pointer",
+                  breakInside: "avoid",
+                  boxShadow:
+                    selectedImageIndex === index
+                      ? tk.cardShadow
+                      : "0 14px 32px rgba(15,23,42,0.08)",
+                }}
+              >
+                <div
+                  style={{
+                    position: "relative",
+                    aspectRatio:
+                      index % 5 === 0
+                        ? "4 / 5"
+                        : index % 3 === 0
+                          ? "1 / 1"
+                          : index % 2 === 0
+                            ? "4 / 3"
+                            : "3 / 4",
+                    background: tk.mapFallbackBg,
+                  }}
+                >
+                  <img
+                    src={url}
+                    alt={`${localize(destination.name)} gallery ${index + 1}`}
+                    style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                    onError={(e) => {
+                      e.currentTarget.src = "/placeholder.svg";
+                    }}
+                  />
+                  <div
+                    style={{
+                      position: "absolute",
+                      inset: 0,
+                      background:
+                        "linear-gradient(180deg, rgba(15,23,42,0) 45%, rgba(15,23,42,0.18) 100%)",
+                    }}
+                  />
+                </div>
+              </button>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
