@@ -439,6 +439,10 @@
     "accountSuspended": "Oops! Looks like your account has been suspended for some reasons by an Admin",
     "unauthorizedAccess": "Oops! You are not authorized to access this page"
   },
+  "letUsInspireYou":{
+    "title": "Let Us Inspire You",
+    "description": "Discover amazing destinations and experiences tailored just for you."
+  },
   "wishlist": {
     "savedForLater": "Saved for later",
     "destinationsCount": "You have {{count}} destinations saved in your wishlist.",

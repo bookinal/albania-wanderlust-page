@@ -11,18 +11,37 @@ const Culture = () => {
   const { isDark } = useTheme();
 
   return (
-    <section id="culture" className="py-24" style={{ background: isDark ? '#111115' : 'hsl(var(--background))' }}>
+    <section
+      id="culture"
+      className="py-24"
+      style={{ background: isDark ? "#111115" : "hsl(var(--background))" }}
+    >
       <div className="container mx-auto px-4">
         <div className="text-center mb-16 animate-fade-in">
-<h2 className="mb-4" style={{ color: isDark ? '#ffffff' : 'hsl(var(--foreground))' }}>{t("home.culture.title")}</h2>
-          <p className="text-lg md:text-xl max-w-2xl mx-auto" style={{ color: isDark ? 'rgba(255,255,255,0.7)' : 'hsl(var(--muted-foreground))' }}>
+          <h2
+            className="mb-4"
+            style={{ color: isDark ? "#ffffff" : "hsl(var(--foreground))" }}
+          >
+            {t("home.culture.title")}
+          </h2>
+          <p
+            className="text-lg md:text-xl max-w-2xl mx-auto"
+            style={{
+              color: isDark
+                ? "rgba(255,255,255,0.7)"
+                : "hsl(var(--muted-foreground))",
+            }}
+          >
             {t("home.culture.description")}
           </p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
           {/* Cuisine Card */}
-          <Card className="group overflow-hidden border-0 shadow-xl hover:shadow-2xl transition-all duration-500 animate-fade-in-up" style={{ background: isDark ? '#1a1a1d' : 'hsl(var(--card))' }}>
+          <Card
+            className="group overflow-hidden border-0 shadow-xl hover:shadow-2xl transition-all duration-500 animate-fade-in-up"
+            style={{ background: isDark ? "#1a1a1d" : "hsl(var(--card))" }}
+          >
             <div className="relative h-80 overflow-hidden">
               <img
                 src={foodImage}
@@ -37,11 +56,24 @@ const Culture = () => {
               </div>
             </div>
 
-<CardContent className="p-8" style={{ background: isDark ? '#1a1a1d' : 'hsl(var(--card))' }}>
-              <h3 className="text-3xl mb-4" style={{ color: isDark ? '#ffffff' : 'hsl(var(--foreground))' }}>
+            <CardContent
+              className="p-8"
+              style={{ background: isDark ? "#1a1a1d" : "hsl(var(--card))" }}
+            >
+              <h3
+                className="text-3xl mb-4"
+                style={{ color: isDark ? "#ffffff" : "hsl(var(--foreground))" }}
+              >
                 {t("home.culture.traditionalCuisine")}
               </h3>
-              <p className="mb-6 leading-relaxed" style={{ color: isDark ? 'rgba(255,255,255,0.7)' : 'hsl(var(--muted-foreground))' }}>
+              <p
+                className="mb-6 leading-relaxed"
+                style={{
+                  color: isDark
+                    ? "rgba(255,255,255,0.7)"
+                    : "hsl(var(--muted-foreground))",
+                }}
+              >
                 Savor the flavors of Albania with dishes like Tavë Kosi (baked
                 lamb with yogurt), Byrek (savory pastries), and fresh
                 Mediterranean ingredients. Albanian cuisine blends Ottoman,
@@ -65,9 +97,12 @@ const Culture = () => {
           </Card>
 
           {/* Culture Card */}
-<Card
+          <Card
             className="group overflow-hidden border-0 shadow-xl hover:shadow-2xl transition-all duration-500 animate-fade-in-up"
-            style={{ animationDelay: "200ms", background: isDark ? '#1a1a1d' : 'hsl(var(--card))' }}
+            style={{
+              animationDelay: "200ms",
+              background: isDark ? "#1a1a1d" : "hsl(var(--card))",
+            }}
           >
             <div className="relative h-80 overflow-hidden">
               <img
@@ -83,11 +118,24 @@ const Culture = () => {
               </div>
             </div>
 
-<CardContent className="p-8" style={{ background: isDark ? '#1a1a1d' : 'hsl(var(--card))' }}>
-              <h3 className="text-3xl mb-4" style={{ color: isDark ? '#ffffff' : 'hsl(var(--foreground))' }}>
+            <CardContent
+              className="p-8"
+              style={{ background: isDark ? "#1a1a1d" : "hsl(var(--card))" }}
+            >
+              <h3
+                className="text-3xl mb-4"
+                style={{ color: isDark ? "#ffffff" : "hsl(var(--foreground))" }}
+              >
                 {t("home.culture.festivalsAndTraditions")}
               </h3>
-              <p className="mb-6 leading-relaxed" style={{ color: isDark ? 'rgba(255,255,255,0.7)' : 'hsl(var(--muted-foreground))' }}>
+              <p
+                className="mb-6 leading-relaxed"
+                style={{
+                  color: isDark
+                    ? "rgba(255,255,255,0.7)"
+                    : "hsl(var(--muted-foreground))",
+                }}
+              >
                 Experience Albania's vibrant culture through traditional folk
                 dances, colorful festivals, and ancient customs. The Albanian
                 people are known for their warm hospitality and pride in
@@ -113,7 +161,7 @@ const Culture = () => {
         {/* ✅ Centered Button */}
         <div className="flex justify-center mt-10">
           <Link
-            to="/CultureDetails"
+            to="/LetUsInspireYou"
             className="px-6 py-3 bg-foreground text-background rounded-full font-semibold hover:bg-foreground/90 transition inline-block text-center"
           >
             {t("common.explore")}

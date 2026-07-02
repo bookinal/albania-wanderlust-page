@@ -30,6 +30,8 @@ import AllCars from "./pages/dashboard/Cars/AllCars";
 import UserManagement from "./pages/dashboard/Users/users-management";
 import UserDetails from "./pages/dashboard/Users/user-details";
 import MyAccount from "./pages/home/MyAccount";
+import LetUsInspireYou from "./pages/home/LetUsInspireYou";
+import ArticleDetails from "./pages/home/ArticleDetails";
 import Unauthorized from "./pages/Unauthorized";
 import ProtectedRoute from "./components/ProtectedRoute";
 import CarDetails from "./pages/dashboard/Cars/CarDetails";
@@ -53,6 +55,7 @@ import RequestsManagement from "./pages/dashboard/Requests/RequestsManagement";
 import PropertyRequestsManagement from "./pages/dashboard/Requests/PropertyRequestsManagement";
 import Wishlist from "./pages/home/Wishlist";
 import DestinationsManagement from "./pages/dashboard/Destinations/DestinationsManagement";
+import ArticlesManagement from "./pages/dashboard/Articles/ArticlesManagement";
 import SupportChat from "./pages/dashboard/SupportChat";
 import { UserChatWidget } from "./components/chat/UserChatWidget";
 import DashboardLayout from "./components/dashboard/DashboardLayout";
@@ -126,6 +129,14 @@ const App = () => (
                   <Route
                     path="/destination/:id"
                     element={<DestinationDetails />}
+                  />
+                  <Route
+                    path="/LetUsInspireYou"
+                    element={<LetUsInspireYou />}
+                  />
+                  <Route
+                    path="/article/:id"
+                    element={<ArticleDetails />}
                   />
                   <Route path="/wishlist" element={<Wishlist />} />
                   <Route
@@ -224,6 +235,10 @@ const App = () => (
                       <Route
                         path="/dashboard/support"
                         element={<SupportChat />}
+                      />
+                      <Route
+                        path="/dashboard/articles"
+                        element={<ArticlesManagement />}
                       />
                     </Route>
                   </Route>

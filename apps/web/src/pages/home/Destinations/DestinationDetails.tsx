@@ -627,7 +627,9 @@ const DestinationDetails = () => {
                   </p>
                   {localize(destination.description).length > 400 && (
                     <button
-                      onClick={() => setDescriptionExpanded(!descriptionExpanded)}
+                      onClick={() =>
+                        setDescriptionExpanded(!descriptionExpanded)
+                      }
                       style={{
                         background: "none",
                         border: "none",
@@ -815,7 +817,9 @@ const DestinationDetails = () => {
                   const needsTruncation = desc.length > limit;
                   return (
                     <>
-                      {needsTruncation && !descriptionExpanded ? desc.slice(0, limit) + "..." : desc}
+                      {needsTruncation && !descriptionExpanded
+                        ? desc.slice(0, limit) + "..."
+                        : desc}
                     </>
                   );
                 })()}
@@ -1112,16 +1116,18 @@ const DestinationDetails = () => {
               gap: "0.75rem",
             }}
           >
-            {([
-              { key: "instagram", icon: Camera, prefix: "" },
-              { key: "facebook", icon: Users, prefix: "" },
-              { key: "website", icon: Globe, prefix: null },
-              { key: "phone", icon: Phone, prefix: "tel:" },
-              { key: "email", icon: Mail, prefix: "mailto:" },
-              { key: "whatsapp", icon: MessageCircle, prefix: "" },
-              { key: "tripadvisor", icon: Star, prefix: null },
-              { key: "bookingUrl", icon: ExternalLink, prefix: null },
-            ] as const).map(({ key, icon: Icon, prefix }) => {
+            {(
+              [
+                { key: "instagram", icon: Camera, prefix: "" },
+                { key: "facebook", icon: Users, prefix: "" },
+                { key: "website", icon: Globe, prefix: null },
+                { key: "phone", icon: Phone, prefix: "tel:" },
+                { key: "email", icon: Mail, prefix: "mailto:" },
+                { key: "whatsapp", icon: MessageCircle, prefix: "" },
+                { key: "tripadvisor", icon: Star, prefix: null },
+                { key: "bookingUrl", icon: ExternalLink, prefix: null },
+              ] as const
+            ).map(({ key, icon: Icon, prefix }) => {
               const val = destination.contact![key];
               if (!val) return null;
               const href = prefix ? `${prefix}${val}` : val;
@@ -1147,11 +1153,13 @@ const DestinationDetails = () => {
                     transition: "box-shadow 0.2s, transform 0.2s",
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.boxShadow = "0 8px 24px rgba(15,23,42,0.12)";
+                    e.currentTarget.style.boxShadow =
+                      "0 8px 24px rgba(15,23,42,0.12)";
                     e.currentTarget.style.transform = "translateY(-1px)";
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.boxShadow = "0 4px 14px rgba(15,23,42,0.06)";
+                    e.currentTarget.style.boxShadow =
+                      "0 4px 14px rgba(15,23,42,0.06)";
                     e.currentTarget.style.transform = "translateY(0)";
                   }}
                 >
@@ -1538,6 +1546,52 @@ const DestinationDetails = () => {
         </div>
       </div>
 
+      {/* Nearby Attractions */}
+      {nearbyDestinations.length > 0 && (
+        <div style={{ width: "100%", padding: "0 1.5rem 3rem" }}>
+          <div style={{ marginBottom: "1rem" }}>
+            <h2
+              style={{
+                margin: 0,
+                fontSize: "1.6rem",
+                fontWeight: 800,
+                color: tk.pageText,
+              }}
+            >
+              Nearby Attractions
+            </h2>
+            <p
+              style={{
+                margin: "0.5rem 0 0",
+                fontSize: "0.98rem",
+                lineHeight: 1.7,
+                color: tk.dimText,
+              }}
+            >
+              Other attractions close to {localize(destination.name)}.
+            </p>
+          </div>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns:
+                "repeat(auto-fill, minmax(min(100%, 210px), 1fr))",
+              gap: "1.25rem",
+            }}
+          >
+            {nearbyDestinations.map((d) => (
+              <DestinationCard
+                key={d.id}
+                destination={d}
+                tk={cardTk}
+                onAddToWishlist={handleNearbyAddToWishlist}
+                isLoadingWishlist={nearbyWishlistLoading === d.id}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Photo Gallery */}
       <div style={{ width: "100%", padding: "0 1.5rem 3rem" }}>
         <div style={{ marginBottom: "1rem" }}>
@@ -1559,7 +1613,8 @@ const DestinationDetails = () => {
               color: tk.dimText,
             }}
           >
-            Explore the destination through a rich, scrollable collection of moments.
+            Explore the destination through a rich, scrollable collection of
+            moments.
           </p>
         </div>
 
@@ -1573,7 +1628,10 @@ const DestinationDetails = () => {
                 width: "100%",
                 marginBottom: "0.9rem",
                 padding: 0,
-                border: selectedImageIndex === index ? `3px solid ${tk.brand}` : "none",
+                border:
+                  selectedImageIndex === index
+                    ? `3px solid ${tk.brand}`
+                    : "none",
                 borderRadius: "1.25rem",
                 overflow: "hidden",
                 background: "transparent",
@@ -1620,52 +1678,6 @@ const DestinationDetails = () => {
           ))}
         </div>
       </div>
-
-      {/* Nearby Attractions */}
-      {nearbyDestinations.length > 0 && (
-        <div style={{ width: "100%", padding: "0 1.5rem 3rem" }}>
-          <div style={{ marginBottom: "1rem" }}>
-            <h2
-              style={{
-                margin: 0,
-                fontSize: "1.6rem",
-                fontWeight: 800,
-                color: tk.pageText,
-              }}
-            >
-              Nearby Attractions
-            </h2>
-            <p
-              style={{
-                margin: "0.5rem 0 0",
-                fontSize: "0.98rem",
-                lineHeight: 1.7,
-                color: tk.dimText,
-              }}
-            >
-              Other attractions close to {localize(destination.name)}.
-            </p>
-          </div>
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns:
-                "repeat(auto-fill, minmax(min(100%, 210px), 1fr))",
-              gap: "1.25rem",
-            }}
-          >
-            {nearbyDestinations.map((d) => (
-              <DestinationCard
-                key={d.id}
-                destination={d}
-                tk={cardTk}
-                onAddToWishlist={handleNearbyAddToWishlist}
-                isLoadingWishlist={nearbyWishlistLoading === d.id}
-              />
-            ))}
-          </div>
-        </div>
-      )}
     </div>
   );
 };

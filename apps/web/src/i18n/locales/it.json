@@ -439,6 +439,10 @@
     "accountSuspended": "Oops! Sembra che il tuo account sia stato sospeso per qualche motivo da un Amministratore",
     "unauthorizedAccess": "Oops! Non sei autorizzato ad accedere a questa pagina"
   },
+  "letUsInspireYou": {
+    "title": "Lasciati Ispirare",
+    "description": "Scopri destinazioni e esperienze incredibili pensate apposta per te."
+  },
   "wishlist": {
     "savedForLater": "Salvato per dopo",
     "destinationsCount": "Hai {{count}} destinazioni salvate nella tua lista dei desideri.",

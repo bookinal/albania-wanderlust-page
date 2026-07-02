@@ -104,8 +104,8 @@ export default function PrimarySearchAppBar() {
       icon: <Car className="w-4 h-4" />,
     },
     {
-      label: t("common.culture") || "Culture",
-      href: "/CultureDetails",
+      label: t("letUsInspireYou.title") || "Let Us Inspire You",
+      href: "/LetUsInspireYou",
       icon: <BookOpen className="w-4 h-4" />,
     },
     {

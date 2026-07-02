@@ -72,6 +72,7 @@ const ICONS = {
   documentation: <FileText size={20} />,
   settings: <Settings size={20} />,
   bookings: <Calendar size={20} />,
+  articles: <FileText size={20} />,
 };
 
 // Route paths configuration
@@ -100,6 +101,9 @@ const ROUTES = {
   },
   support: {
     chat: "/dashboard/support",
+  },
+  articles: {
+    management: "/dashboard/articles",
   },
 };
 
@@ -208,6 +212,18 @@ const Hsidebar = ({ children }) => {
           {
             label: t("sidebar.bookings.supervision"),
             route: ROUTES.bookings.supervision,
+            roles: ["admin"],
+          },
+        ],
+      },
+      {
+        label: "Articles",
+        icon: ICONS.articles,
+        roles: ["admin"],
+        items: [
+          {
+            label: "All Articles",
+            route: ROUTES.articles.management,
             roles: ["admin"],
           },
         ],

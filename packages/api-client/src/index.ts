@@ -1,6 +1,7 @@
 // API Client & Services
 export { apiClient } from "./apiClient";
 export * from "./apartmentService";
+export * from "./articleService";
 export * from "./authService";
 export * from "./bookingService";
 export * from "./carService";

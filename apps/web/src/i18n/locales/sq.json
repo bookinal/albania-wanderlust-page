@@ -447,6 +447,10 @@
     "accountSuspended": "Oops! Duket se llogaria juaj është pezulluar për disa arsye nga një Admin",
     "unauthorizedAccess": "Oops! Ju nuk jeni të autorizuar të hyni në këtë faqe"
   },
+  "letUsInspireYou": {
+    "title": "Lëreni të jemi të inspiruar",
+    "description": "Zbuloni destinacione dhe përvoja të mrekullshme të përshtatura vetëm për ju."
+  },
   "wishlist": {
     "savedForLater": "Ruajtur për më vonë",
     "destinationsCount": "Ju keni {{count}} destinacione të ruajtura në listën e dëshirave.",
