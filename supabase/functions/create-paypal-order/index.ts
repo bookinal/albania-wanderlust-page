@@ -284,6 +284,8 @@ Deno.serve(async (req: Request) => {
       });
     }
 
+    const feeAmount = Math.round(Number(booking.totalPrice) * 0.07 * 100) / 100;
+
     // Log booking details for debugging
     console.log("[Create PayPal Order] Booking found:", {
       id: booking.id,
@@ -291,6 +293,7 @@ Deno.serve(async (req: Request) => {
       status: booking.status,
       payment_status: booking.payment_status,
       totalPrice: booking.totalPrice,
+      feeAmount,
       type: typeof booking.totalPrice,
     });
 
@@ -371,7 +374,7 @@ Deno.serve(async (req: Request) => {
     try {
       paypalOrder = await createPayPalOrder(
         accessToken,
-        Number(booking.totalPrice),
+        feeAmount,
         "USD",
       );
     } catch (error) {
@@ -414,7 +417,7 @@ Deno.serve(async (req: Request) => {
       .insert({
         booking_id: bookingId,
         paypal_order_id: paypalOrder.id,
-        amount: Number(booking.totalPrice),
+        amount: feeAmount,
         currency: "USD",
         status: "pending",
       });

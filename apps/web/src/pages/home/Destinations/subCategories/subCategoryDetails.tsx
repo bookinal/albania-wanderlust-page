@@ -1,11 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   ArrowLeft,
   Heart,
   Loader2,
-  MapPin,
-  UtensilsCrossed,
   Map as MapIcon,
   List,
 } from "lucide-react";
@@ -22,16 +20,24 @@ import { DestinationCard } from "../DestinationCard";
 import { DestinationFilterBar } from "../../../../components/home/destinations/DestinationFilterBar";
 import DestinationMap from "../DestinationMap";
 
-const EatDrinkDancePage = () => {
+const SUB_HERO: Record<string, { gradient: string; description: string }> = {
+  default: {
+    gradient:
+      "linear-gradient(135deg, #1e3a5f 0%, #3b82f6 50%, #93c5fd 100%)",
+    description: "Discover amazing destinations across Albania.",
+  },
+};
+
+const subCategoryDetails = () => {
   const { t } = useTranslation();
   const { localize } = useLocalized();
   const navigate = useNavigate();
   const { toast } = useToast();
   const { isDark, isBlue } = useTheme();
   const homeTk = getHomeThemeTokens({ isDark, isBlue });
-  const [wishlistLoadingId, setWishlistLoadingId] = useState<string | null>(
-    null,
-  );
+  const { subcategory } = useParams<{ subcategory: string }>();
+  const decodedSubcategory = decodeURIComponent(subcategory || "");
+  const [wishlistLoadingId, setWishlistLoadingId] = useState<string | null>(null);
   const [showMapMobile, setShowMapMobile] = useState(false);
   const [search, setSearch] = useState("");
   const [selectedSubcategory, setSelectedSubcategory] = useState("");
@@ -39,14 +45,15 @@ const EatDrinkDancePage = () => {
   const isMobile = useIsMobile();
   const { data: destinations = [], isLoading, error } = useDestinations();
 
+  const heroConfig = SUB_HERO[decodedSubcategory] || SUB_HERO.default;
+
   const tk = {
     pageBg: isDark
       ? "#0a0a0c"
       : isBlue
         ? "linear-gradient(180deg, hsl(205 55% 96%) 0%, hsl(204 60% 98%) 100%)"
         : "#f5f4f1",
-    heroGradient:
-      "linear-gradient(135deg, #701a75 0%, #db2777 42%, #fda4af 100%)",
+    heroGradient: heroConfig.gradient,
     heroSoft: homeTk.textSoftOnMedia,
     textMain: homeTk.textMain,
     textMuted: homeTk.textMuted,
@@ -75,25 +82,26 @@ const EatDrinkDancePage = () => {
     window.scrollTo(0, 0);
   }, []);
 
-  const eatDrinkSpots = useMemo(
+  const filteredDestinations = useMemo(
     () =>
       destinations.filter(
-        (destination) => destination.category === "Eat, drink & dance",
+        (d) =>
+          (d.subcategory || "").toLowerCase() === decodedSubcategory.toLowerCase(),
       ),
-    [destinations],
+    [destinations, decodedSubcategory],
   );
 
   const subcategories = useMemo(() => {
-    return [...new Set(eatDrinkSpots.map((d) => d.subcategory).filter(Boolean))].sort();
-  }, [eatDrinkSpots]);
+    return [...new Set(filteredDestinations.map((d) => d.subcategory).filter(Boolean))].sort();
+  }, [filteredDestinations]);
 
   const locations = useMemo(() => {
-    return [...new Set(eatDrinkSpots.map((d) => d.location).filter(Boolean))].sort();
-  }, [eatDrinkSpots]);
+    return [...new Set(filteredDestinations.map((d) => d.location).filter(Boolean))].sort();
+  }, [filteredDestinations]);
 
-  const filteredEatDrinkSpots = useMemo(() => {
+  const filtered = useMemo(() => {
     const query = search.trim().toLowerCase();
-    return eatDrinkSpots.filter((destination) => {
+    return filteredDestinations.filter((destination) => {
       const matchesSubcategory =
         !selectedSubcategory || destination.subcategory === selectedSubcategory;
       const matchesLocation =
@@ -110,7 +118,7 @@ const EatDrinkDancePage = () => {
       const matchesSearch = !query || haystack.includes(query);
       return matchesSubcategory && matchesLocation && matchesSearch;
     });
-  }, [eatDrinkSpots, localize, search, selectedSubcategory, selectedLocation]);
+  }, [filteredDestinations, localize, search, selectedSubcategory, selectedLocation]);
 
   const hasActiveFilters =
     search.trim().length > 0 ||
@@ -118,17 +126,14 @@ const EatDrinkDancePage = () => {
     selectedLocation.length > 0;
 
   const groupedBySubcategory = useMemo(() => {
-    const groups: Record<string, typeof filteredEatDrinkSpots> = {};
-    for (const dest of filteredEatDrinkSpots) {
+    const groups: Record<string, typeof filtered> = {};
+    for (const dest of filtered) {
       const key = dest.subcategory || "Other";
       if (!groups[key]) groups[key] = [];
       groups[key].push(dest);
     }
     return groups;
-  }, [filteredEatDrinkSpots]);
-
-  const heroImage =
-    "https://images.unsplash.com/photo-1559339352-11d035aa65de?q=80&w=1174&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
+  }, [filtered]);
 
   const handleAddToWishlist = async (destinationId: string) => {
     try {
@@ -162,27 +167,13 @@ const EatDrinkDancePage = () => {
       <section
         style={{ position: "relative", minHeight: "26rem", overflow: "hidden" }}
       >
-        {heroImage ? (
-          <img
-            src={heroImage}
-            alt="Eat, drink & dance in Albania"
-            style={{
-              position: "absolute",
-              inset: 0,
-              width: "100%",
-              height: "100%",
-              objectFit: "cover",
-            }}
-          />
-        ) : (
-          <div
-            style={{
-              position: "absolute",
-              inset: 0,
-              background: tk.heroGradient,
-            }}
-          />
-        )}
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            background: tk.heroGradient,
+          }}
+        />
         <div
           style={{
             position: "absolute",
@@ -220,18 +211,6 @@ const EatDrinkDancePage = () => {
           </button>
 
           <div style={{ maxWidth: "52rem" }}>
-            <p
-              style={{
-                color: "rgba(255,255,255,0.76)",
-                textTransform: "uppercase",
-                letterSpacing: "0.18em",
-                fontSize: "0.78rem",
-                fontWeight: 700,
-                marginBottom: "0.9rem",
-              }}
-            >
-              Flavours & Nights
-            </p>
             <h1
               style={{
                 color: "#ffffff",
@@ -239,9 +218,10 @@ const EatDrinkDancePage = () => {
                 lineHeight: 0.98,
                 fontWeight: 900,
                 marginBottom: "0.85rem",
+                textTransform: "capitalize",
               }}
             >
-              Eat, Drink & Dance
+              {decodedSubcategory}
             </h1>
             <p
               style={{
@@ -251,8 +231,7 @@ const EatDrinkDancePage = () => {
                 maxWidth: "42rem",
               }}
             >
-              Savor Albania's vibrant culinary scene, sip through bustling bars,
-              and dance the night away at the country's best spots.
+              {heroConfig.description}
             </p>
           </div>
         </div>
@@ -304,7 +283,7 @@ const EatDrinkDancePage = () => {
           </div>
         )}
 
-        {!isLoading && !error && eatDrinkSpots.length === 0 && (
+        {!isLoading && !error && filteredDestinations.length === 0 && (
           <div
             style={{
               textAlign: "center",
@@ -323,13 +302,13 @@ const EatDrinkDancePage = () => {
                 marginBottom: "0.55rem",
               }}
             >
-              No eat, drink & dance spots available yet.
+              No {decodedSubcategory.toLowerCase()} destinations available yet.
             </div>
             <div>Once destinations are added, they will appear here.</div>
           </div>
         )}
 
-        {!isLoading && !error && eatDrinkSpots.length > 0 && (
+        {!isLoading && !error && filteredDestinations.length > 0 && (
           <>
             <DestinationFilterBar
               search={search}
@@ -354,8 +333,8 @@ const EatDrinkDancePage = () => {
                 setSelectedLocation("");
               }}
               resultsLabel={t("home.destinations.resultsCount", {
-                count: filteredEatDrinkSpots.length,
-                total: eatDrinkSpots.length,
+                count: filtered.length,
+                total: filteredDestinations.length,
               })}
               background={tk.panelBg}
               borderColor={tk.panelBorder}
@@ -365,7 +344,7 @@ const EatDrinkDancePage = () => {
               accentSoft={tk.brandSoft}
             />
 
-            {filteredEatDrinkSpots.length === 0 && (
+            {filtered.length === 0 && (
               <div
                 style={{
                   textAlign: "center",
@@ -384,13 +363,13 @@ const EatDrinkDancePage = () => {
                     marginBottom: "0.55rem",
                   }}
                 >
-                  No eat, drink & dance spots match your filters.
+                  No {decodedSubcategory.toLowerCase()} destinations match your filters.
                 </div>
                 <div>Try adjusting your search or clear filters.</div>
               </div>
             )}
 
-            {filteredEatDrinkSpots.length > 0 && (
+            {filtered.length > 0 && (
               <div
                 style={{
                   display: "flex",
@@ -437,8 +416,8 @@ const EatDrinkDancePage = () => {
 
                 {(!isMobile || !showMapMobile) && (
                   <div style={{ flex: 1, width: "100%" }}>
-                    {Object.entries(groupedBySubcategory).map(([subcategory, dests]) => (
-                      <div key={subcategory} style={{ marginBottom: "2.5rem" }}>
+                    {Object.entries(groupedBySubcategory).map(([sub, dests]) => (
+                      <div key={sub} style={{ marginBottom: "2.5rem" }}>
                         <h2
                           style={{
                             fontSize: "1.35rem",
@@ -448,7 +427,7 @@ const EatDrinkDancePage = () => {
                             textTransform: "capitalize",
                           }}
                         >
-                          {subcategory}
+                          {sub}
                         </h2>
                         <div
                           style={{
@@ -458,7 +437,7 @@ const EatDrinkDancePage = () => {
                             gap: "1.25rem",
                           }}
                         >
-                          {dests.slice(0, 4).map((destination) => (
+                          {dests.map((destination) => (
                             <DestinationCard
                               key={destination.id}
                               destination={destination}
@@ -468,36 +447,6 @@ const EatDrinkDancePage = () => {
                             />
                           ))}
                         </div>
-                        {dests.length > 4 && (
-                          <div
-                            style={{
-                              display: "flex",
-                              justifyContent: "center",
-                              marginTop: "0.75rem",
-                            }}
-                          >
-                            <button
-                              onClick={() =>
-                                navigate(`/destinations/subcategory/${encodeURIComponent(subcategory)}`)
-                              }
-                              style={{
-                                display: "inline-flex",
-                                alignItems: "center",
-                                gap: "0.5rem",
-                                padding: "0.6rem 1.5rem",
-                                borderRadius: "0.5rem",
-                                background: tk.brand,
-                                color: "#fff",
-                                border: "none",
-                                cursor: "pointer",
-                                fontWeight: 600,
-                                fontSize: "0.9rem",
-                              }}
-                            >
-                              See All ({dests.length})
-                            </button>
-                          </div>
-                        )}
                       </div>
                     ))}
                   </div>
@@ -514,7 +463,7 @@ const EatDrinkDancePage = () => {
                       top: isMobile ? "auto" : "6rem",
                     }}
                   >
-                    <DestinationMap destinations={filteredEatDrinkSpots} />
+                    <DestinationMap destinations={filtered} />
                   </div>
                 )}
               </div>
@@ -526,4 +475,4 @@ const EatDrinkDancePage = () => {
   );
 };
 
-export default EatDrinkDancePage;
+export default subCategoryDetails;

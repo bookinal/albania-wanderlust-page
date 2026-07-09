@@ -56,6 +56,7 @@ import PropertyRequestsManagement from "./pages/dashboard/Requests/PropertyReque
 import Wishlist from "./pages/home/Wishlist";
 import DestinationsManagement from "./pages/dashboard/Destinations/DestinationsManagement";
 import ArticlesManagement from "./pages/dashboard/Articles/ArticlesManagement";
+import SubCategoryDetails from "./pages/home/Destinations/subCategories/subCategoryDetails";
 import SupportChat from "./pages/dashboard/SupportChat";
 import { UserChatWidget } from "./components/chat/UserChatWidget";
 import DashboardLayout from "./components/dashboard/DashboardLayout";
@@ -125,6 +126,10 @@ const App = () => (
                   <Route
                     path="/destinations/experiences"
                     element={<ExperiencesPage />}
+                  />
+                  <Route
+                    path="/destinations/subcategory/:subcategory"
+                    element={<SubCategoryDetails />}
                   />
                   <Route
                     path="/destination/:id"

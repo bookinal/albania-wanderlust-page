@@ -310,9 +310,9 @@ Deno.serve(async (req: Request) => {
 
     const captureId = capture.id;
     const capturedAmount = parseFloat(capture.amount.value);
-    const expectedAmount = Number(booking.totalPrice);
+    const expectedAmount = Math.round(Number(booking.totalPrice) * 0.07 * 100) / 100;
 
-    // Verify amount matches (price integrity check)
+    // Verify amount matches (7% booking fee integrity check)
     if (Math.abs(capturedAmount - expectedAmount) > 0.01) {
       console.error("[Capture PayPal Order] Amount mismatch:", {
         captured: capturedAmount,
@@ -321,7 +321,7 @@ Deno.serve(async (req: Request) => {
       return new Response(
         JSON.stringify({
           error:
-            "Amount mismatch. Payment amount does not match booking price.",
+            "Amount mismatch. Payment amount does not match the booking fee.",
         }),
         { status: 400, headers: { "Content-Type": "application/json" } },
       );

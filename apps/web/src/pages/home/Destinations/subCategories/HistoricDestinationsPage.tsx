@@ -459,7 +459,7 @@ const HistoricDestinationsPage = () => {
                             gap: "1.25rem",
                           }}
                         >
-                          {dests.map((destination) => (
+                          {dests.slice(0, 4).map((destination) => (
                             <DestinationCard
                               key={destination.id}
                               destination={destination}
@@ -469,6 +469,36 @@ const HistoricDestinationsPage = () => {
                             />
                           ))}
                         </div>
+                        {dests.length > 4 && (
+                          <div
+                            style={{
+                              display: "flex",
+                              justifyContent: "center",
+                              marginTop: "0.75rem",
+                            }}
+                          >
+                            <button
+                              onClick={() =>
+                                navigate(`/destinations/subcategory/${encodeURIComponent(subcategory)}`)
+                              }
+                              style={{
+                                display: "inline-flex",
+                                alignItems: "center",
+                                gap: "0.5rem",
+                                padding: "0.6rem 1.5rem",
+                                borderRadius: "0.5rem",
+                                background: tk.brand,
+                                color: "#fff",
+                                border: "none",
+                                cursor: "pointer",
+                                fontWeight: 600,
+                                fontSize: "0.9rem",
+                              }}
+                            >
+                              See All ({dests.length})
+                            </button>
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>

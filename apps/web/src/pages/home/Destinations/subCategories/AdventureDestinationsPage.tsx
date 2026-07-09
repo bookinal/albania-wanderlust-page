@@ -48,6 +48,7 @@ const AdventureDestinationsPage = () => {
     textMain: homeTk.textMain,
     textMuted: homeTk.textMuted,
     brand: homeTk.brand,
+    brandSoft: homeTk.brandSoft,
     panelBg: isDark
       ? "rgba(20,20,23,0.92)"
       : isBlue
@@ -78,6 +79,16 @@ const AdventureDestinationsPage = () => {
       ),
     [destinations],
   );
+
+  const groupedBySubcategory = useMemo(() => {
+    const groups: Record<string, typeof adventureSpots> = {};
+    for (const dest of adventureSpots) {
+      const key = dest.subcategory || "Other";
+      if (!groups[key]) groups[key] = [];
+      groups[key].push(dest);
+    }
+    return groups;
+  }, [adventureSpots]);
 
   const heroImage =
     "https://images.unsplash.com/photo-1733413182592-b0e7a489256d?q=80&w=1331&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
@@ -326,28 +337,73 @@ const AdventureDestinationsPage = () => {
               </div>
             )}
 
-            {(!isMobile || !showMapMobile) && (
-              <div
-                style={{
-                  flex: 1,
-                  display: "grid",
-                  gridTemplateColumns:
-                    "repeat(auto-fill, minmax(min(100%, 210px), 1fr))",
-                  gap: "1.25rem",
-                  width: "100%",
-                }}
-              >
-                {adventureSpots.map((destination) => (
-                  <DestinationCard
-                    key={destination.id}
-                    destination={destination}
-                    tk={tk}
-                    onAddToWishlist={handleAddToWishlist}
-                    isLoadingWishlist={wishlistLoadingId === destination.id}
-                  />
-                ))}
-              </div>
-            )}
+                {(!isMobile || !showMapMobile) && (
+                  <div style={{ flex: 1, width: "100%" }}>
+                    {Object.entries(groupedBySubcategory).map(([subcategory, dests]) => (
+                      <div key={subcategory} style={{ marginBottom: "2.5rem" }}>
+                        <h2
+                          style={{
+                            fontSize: "1.35rem",
+                            fontWeight: 700,
+                            marginBottom: "1rem",
+                            color: tk.textMain,
+                            textTransform: "capitalize",
+                          }}
+                        >
+                          {subcategory}
+                        </h2>
+                        <div
+                          style={{
+                            display: "grid",
+                            gridTemplateColumns:
+                              "repeat(auto-fill, minmax(min(100%, 210px), 1fr))",
+                            gap: "1.25rem",
+                          }}
+                        >
+                          {dests.slice(0, 4).map((destination) => (
+                            <DestinationCard
+                              key={destination.id}
+                              destination={destination}
+                              tk={tk}
+                              onAddToWishlist={handleAddToWishlist}
+                              isLoadingWishlist={wishlistLoadingId === destination.id}
+                            />
+                          ))}
+                        </div>
+                        {dests.length > 4 && (
+                          <div
+                            style={{
+                              display: "flex",
+                              justifyContent: "center",
+                              marginTop: "0.75rem",
+                            }}
+                          >
+                            <button
+                              onClick={() =>
+                                navigate(`/destinations/subcategory/${encodeURIComponent(subcategory)}`)
+                              }
+                              style={{
+                                display: "inline-flex",
+                                alignItems: "center",
+                                gap: "0.5rem",
+                                padding: "0.6rem 1.5rem",
+                                borderRadius: "0.5rem",
+                                background: tk.brand,
+                                color: "#fff",
+                                border: "none",
+                                cursor: "pointer",
+                                fontWeight: 600,
+                                fontSize: "0.9rem",
+                              }}
+                            >
+                              See All ({dests.length})
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
 
             {(!isMobile || showMapMobile) && (
               <div

@@ -260,10 +260,11 @@ Deno.serve(async (req) => {
       }
     }
 
-    // Create Stripe PaymentIntent
-    const amountInCents = Math.round(bookingData.totalPrice * 100);
+    // Charge only the 7% booking fee; full rental is paid in person
+    const feeAmount = Math.round(bookingData.totalPrice * 0.07 * 100) / 100;
+    const amountInCents = Math.round(feeAmount * 100);
 
-    console.log("[Stripe] Creating PaymentIntent for amount:", amountInCents);
+    console.log("[Stripe] Creating PaymentIntent for fee amount:", amountInCents, "(full price:", bookingData.totalPrice, ")");
 
     const paymentIntent = await stripe.paymentIntents.create({
       amount: amountInCents,
@@ -289,7 +290,7 @@ Deno.serve(async (req) => {
       .insert({
         booking_id: bookingId,
         stripe_payment_intent_id: paymentIntent.id,
-        amount: bookingData.totalPrice,
+        amount: feeAmount,
         currency: "USD",
         status: "pending",
         payment_provider: "stripe",

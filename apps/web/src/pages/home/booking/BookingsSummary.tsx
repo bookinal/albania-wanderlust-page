@@ -1313,6 +1313,7 @@ export default function BookingsSummary() {
                                   <span>{t("booking.paymentRequired")}</span>
                                 </div>
                                 <StripePaymentButton booking={booking} />
+                                <PayPalPaymentButton booking={booking} />
                                 <button
                                   onClick={() =>
                                     handlePendingBookingCancel(booking)
