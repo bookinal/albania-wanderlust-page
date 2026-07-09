@@ -85,7 +85,6 @@ export const getTopDestinationsByCategory = async (): Promise<{
   return grouped;
 };
 
-
 /**
  * Get a destination by ID
  */
@@ -172,7 +171,6 @@ export const deleteDestination = async (id: string): Promise<void> => {
 export const addDestinationToCurrentUserWishlist = async (
   destinationId: string,
 ): Promise<Wishlist> => {
-
   const userId = await authService.getCurrentUserId();
   if (!userId) throw new Error("User not authenticated");
 
@@ -214,7 +212,6 @@ export const addDestinationToCurrentUserWishlist = async (
 export const removeDestinationFromCurrentUserWishlist = async (
   destinationId: string,
 ): Promise<void> => {
-
   const userId = await authService.getCurrentUserId();
   if (!userId) throw new Error("User not authenticated");
 
@@ -263,6 +260,16 @@ export const getCurrentUserWishlist = async (): Promise<Wishlist | null> => {
           cuisineType,
           howToBook,
           water,
+          region,
+          destinationType,
+          founded,
+          population,
+          elevation,
+          heritageStatus,
+          duration,
+          activities,
+          highlight,
+          difficultyLevel,
           bestFor,
           crowdLevel,
           bestMonths,

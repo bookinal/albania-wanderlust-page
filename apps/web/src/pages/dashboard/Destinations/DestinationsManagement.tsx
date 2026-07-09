@@ -86,6 +86,16 @@ interface DestinationFormData {
   byCar?: string;
   byFoot?: string;
   byBoat?: string;
+  region?: string;
+  destinationType?: string;
+  founded?: string;
+  population?: string;
+  elevation?: string;
+  heritageStatus?: string;
+  duration?: string;
+  activities?: string;
+  highlight?: string;
+  difficultyLevel?: string;
   rating?: number | string;
   visitorTips: VisitorTipFormItem[];
   imageUrls: string[];
@@ -128,6 +138,16 @@ const QUICK_FACT_FIELDS: Array<{
     | "bestMonths"
     | "priceLevel"
     | "rating"
+    | "region"
+    | "destinationType"
+    | "founded"
+    | "population"
+    | "elevation"
+    | "heritageStatus"
+    | "duration"
+    | "activities"
+    | "highlight"
+    | "difficultyLevel"
   >;
   label: string;
   placeholder: string;
@@ -182,6 +202,16 @@ const QUICK_FACT_FIELDS: Array<{
     label: "Price Level",
     placeholder: "Budget, mid-range, premium...",
   },
+  { key: "region", label: "Region", placeholder: "e.g. Southern Albania, Albanian Riviera..." },
+  { key: "destinationType", label: "Destination Type", placeholder: "e.g. Beach, Mountain, City..." },
+  { key: "founded", label: "Founded", placeholder: "e.g. 6th century BC, 1920..." },
+  { key: "population", label: "Population", placeholder: "e.g. 85,000" },
+  { key: "elevation", label: "Elevation", placeholder: "e.g. 1,200 m" },
+  { key: "heritageStatus", label: "Heritage Status", placeholder: "e.g. UNESCO World Heritage..." },
+  { key: "duration", label: "Duration", placeholder: "e.g. 2-3 hours, Full day..." },
+  { key: "activities", label: "Activities", placeholder: "e.g. Hiking, swimming, birdwatching..." },
+  { key: "highlight", label: "Highlight", placeholder: "e.g. Panoramic views, ancient mosaics..." },
+  { key: "difficultyLevel", label: "Difficulty Level", placeholder: "e.g. Easy, Moderate, Hard..." },
 ];
 
 const VISITOR_TIP_ICON_OPTIONS: Array<{
@@ -422,6 +452,16 @@ export default function DestinationsManagement() {
       crowdLevel: destination.crowdLevel,
       bestMonths: destination.bestMonths,
       priceLevel: destination.priceLevel,
+      region: destination.region,
+      destinationType: destination.destinationType,
+      founded: destination.founded,
+      population: destination.population,
+      elevation: destination.elevation,
+      heritageStatus: destination.heritageStatus,
+      duration: destination.duration,
+      activities: destination.activities,
+      highlight: destination.highlight,
+      difficultyLevel: destination.difficultyLevel,
       byCar: destination.byCar,
       byFoot: destination.byFoot,
       byBoat: destination.byBoat,
@@ -466,6 +506,16 @@ export default function DestinationsManagement() {
       crowdLevel: destination.crowdLevel,
       bestMonths: destination.bestMonths,
       priceLevel: destination.priceLevel,
+      region: destination.region,
+      destinationType: destination.destinationType,
+      founded: destination.founded,
+      population: destination.population,
+      elevation: destination.elevation,
+      heritageStatus: destination.heritageStatus,
+      duration: destination.duration,
+      activities: destination.activities,
+      highlight: destination.highlight,
+      difficultyLevel: destination.difficultyLevel,
       byCar: destination.byCar,
       byFoot: destination.byFoot,
       byBoat: destination.byBoat,
@@ -626,6 +676,16 @@ export default function DestinationsManagement() {
         crowdLevel: formData.crowdLevel,
         bestMonths: formData.bestMonths,
         priceLevel: formData.priceLevel,
+        region: formData.region,
+        destinationType: formData.destinationType,
+        founded: formData.founded,
+        population: formData.population,
+        elevation: formData.elevation,
+        heritageStatus: formData.heritageStatus,
+        duration: formData.duration,
+        activities: formData.activities,
+        highlight: formData.highlight,
+        difficultyLevel: formData.difficultyLevel,
         byCar: formData.byCar,
         byFoot: formData.byFoot,
         byBoat: formData.byBoat,

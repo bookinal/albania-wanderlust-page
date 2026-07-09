@@ -31,6 +31,8 @@ import {
   ExternalLink,
   ChefHat,
   CalendarCheck,
+  Compass,
+  Zap,
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
@@ -504,6 +506,56 @@ const DestinationDetails = () => {
       icon: Wallet,
       label: "Price Level",
       value: destination.priceLevel,
+    },
+    {
+      icon: MapPin,
+      label: "Region",
+      value: destination.region,
+    },
+    {
+      icon: Compass,
+      label: "Type",
+      value: destination.destinationType,
+    },
+    {
+      icon: CalendarRange,
+      label: "Founded",
+      value: destination.founded,
+    },
+    {
+      icon: Users,
+      label: "Population",
+      value: destination.population,
+    },
+    {
+      icon: Navigation,
+      label: "Elevation",
+      value: destination.elevation,
+    },
+    {
+      icon: Star,
+      label: "Heritage Status",
+      value: destination.heritageStatus,
+    },
+    {
+      icon: CalendarCheck,
+      label: "Duration",
+      value: destination.duration,
+    },
+    {
+      icon: Footprints,
+      label: "Activities",
+      value: destination.activities,
+    },
+    {
+      icon: Star,
+      label: "Highlight",
+      value: destination.highlight,
+    },
+    {
+      icon: Zap,
+      label: "Difficulty",
+      value: destination.difficultyLevel,
     },
   ].filter(
     (fact): fact is { icon: LucideIcon; label: string; value: string } =>
