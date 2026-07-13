@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   ArrowLeft,
@@ -7,6 +7,8 @@ import {
   Landmark,
   Loader2,
   Waves,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import PrimarySearchAppBar from "@/components/home/AppBar";
 import { useTheme } from "@/context/ThemeContext";
@@ -16,7 +18,199 @@ import { useDestinations } from "@/hooks/useDestinations";
 import { DestinationCard } from "./DestinationCard";
 import { addDestinationToCurrentUserWishlist } from "@/services/api/destinationService";
 import { useToast } from "@/hooks/use-toast";
-import { CATEGORIES } from "@/lib/destinationManagement";
+import { CATEGORIES, SUBCATEGORIES } from "@/lib/destinationManagement";
+
+const selectDiverseDestinations = (destinationsList: any[], limit = 7) => {
+  if (destinationsList.length <= limit) return destinationsList;
+
+  const bySubcategory: Record<string, any[]> = {};
+  destinationsList.forEach((d) => {
+    const sub = d.subcategory || "Other";
+    if (!bySubcategory[sub]) {
+      bySubcategory[sub] = [];
+    }
+    bySubcategory[sub].push(d);
+  });
+
+  const selected: any[] = [];
+  const subcategoryKeys = Object.keys(bySubcategory);
+  
+  let index = 0;
+  while (selected.length < limit) {
+    let addedAny = false;
+    for (const key of subcategoryKeys) {
+      if (selected.length >= limit) break;
+      const list = bySubcategory[key];
+      if (index < list.length) {
+        selected.push(list[index]);
+        addedAny = true;
+      }
+    }
+    if (!addedAny) break;
+    index++;
+  }
+
+  return selected;
+};
+
+interface DestinationRowProps {
+  destinations: any[];
+  tk: any;
+  onAddToWishlist: (id: string) => Promise<void>;
+  wishlistLoadingId: string | null;
+}
+
+const DestinationRow = ({
+  destinations,
+  tk,
+  onAddToWishlist,
+  wishlistLoadingId,
+}: DestinationRowProps) => {
+  const rowRef = useRef<HTMLDivElement>(null);
+  const [showLeftArrow, setShowLeftArrow] = useState(false);
+  const [showRightArrow, setShowRightArrow] = useState(true);
+
+  const checkScroll = () => {
+    const el = rowRef.current;
+    if (!el) return;
+    setShowLeftArrow(el.scrollLeft > 10);
+    setShowRightArrow(el.scrollLeft < el.scrollWidth - el.clientWidth - 10);
+  };
+
+  useEffect(() => {
+    const el = rowRef.current;
+    if (el) {
+      el.addEventListener("scroll", checkScroll);
+      checkScroll();
+      window.addEventListener("resize", checkScroll);
+      const timer = setTimeout(checkScroll, 100);
+      return () => {
+        el.removeEventListener("scroll", checkScroll);
+        window.removeEventListener("resize", checkScroll);
+        clearTimeout(timer);
+      };
+    }
+  }, [destinations]);
+
+  const handleScroll = (direction: "left" | "right") => {
+    const el = rowRef.current;
+    if (!el) return;
+    const scrollAmount = el.clientWidth * 0.75;
+    el.scrollBy({
+      left: direction === "left" ? -scrollAmount : scrollAmount,
+      behavior: "smooth",
+    });
+  };
+
+  return (
+    <div style={{ position: "relative", width: "100%" }}>
+      <style>{`
+        .hide-scrollbar::-webkit-scrollbar {
+          display: none;
+        }
+      `}</style>
+      
+      {showLeftArrow && (
+        <button
+          onClick={() => handleScroll("left")}
+          style={{
+            position: "absolute",
+            left: "-1.25rem",
+            top: "50%",
+            transform: "translateY(-50%)",
+            zIndex: 10,
+            width: "2.75rem",
+            height: "2.75rem",
+            borderRadius: "50%",
+            background: tk.panelBg,
+            border: `1px solid ${tk.panelBorder}`,
+            color: tk.brand,
+            boxShadow: tk.panelShadow,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            cursor: "pointer",
+            transition: "all 0.2s ease-in-out",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = "translateY(-50%) scale(1.1)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = "translateY(-50%) scale(1)";
+          }}
+        >
+          <ChevronLeft className="w-5 h-5" />
+        </button>
+      )}
+
+      {showRightArrow && (
+        <button
+          onClick={() => handleScroll("right")}
+          style={{
+            position: "absolute",
+            right: "-1.25rem",
+            top: "50%",
+            transform: "translateY(-50%)",
+            zIndex: 10,
+            width: "2.75rem",
+            height: "2.75rem",
+            borderRadius: "50%",
+            background: tk.panelBg,
+            border: `1px solid ${tk.panelBorder}`,
+            color: tk.brand,
+            boxShadow: tk.panelShadow,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            cursor: "pointer",
+            transition: "all 0.2s ease-in-out",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = "translateY(-50%) scale(1.1)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = "translateY(-50%) scale(1)";
+          }}
+        >
+          <ChevronRight className="w-5 h-5" />
+        </button>
+      )}
+
+      <div
+        ref={rowRef}
+        onScroll={checkScroll}
+        style={{
+          display: "flex",
+          gap: "1.5rem",
+          overflowX: "auto",
+          padding: "0.5rem 0.25rem 1.5rem",
+          scrollbarWidth: "none",
+          msOverflowStyle: "none",
+          scrollBehavior: "smooth",
+          WebkitOverflowScrolling: "touch",
+        }}
+        className="hide-scrollbar"
+      >
+        {destinations.map((destination) => (
+          <div
+            key={destination.id}
+            style={{
+              flex: "0 0 280px",
+              minWidth: "280px",
+            }}
+          >
+            <DestinationCard
+              destination={destination}
+              tk={tk}
+              onAddToWishlist={onAddToWishlist}
+              isLoadingWishlist={wishlistLoadingId === destination.id}
+            />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
 
 const DestinationsPage = () => {
   const { t } = useTranslation();
@@ -227,46 +421,80 @@ const DestinationsPage = () => {
 
               if (catDestinations.length === 0) return null;
 
+              const diverseDestinations = selectDiverseDestinations(catDestinations, 7);
+              const catSubcats = SUBCATEGORIES.filter((sub) => sub.parent === cat.id);
+
               return (
                 <div key={cat.id}>
-                  <div className="flex items-center justify-between mb-6">
-                    <h2
-                      style={{
-                        fontSize: "2rem",
-                        fontWeight: 800,
-                        color: tk.textMain,
-                        letterSpacing: "-0.02em",
-                      }}
-                    >
-                      {cat.label}
-                    </h2>
-                    <button
-                      onClick={() =>
-                        navigate(
-                          `/destinations/${cat.id
-                            .toLowerCase()
-                            .replace(/[^a-z0-9]+/g, "-")
-                            .replace(/(^-|-$)/g, "")}`,
-                        )
-                      }
-                      className="inline-flex items-center gap-2 text-sm font-bold transition-all"
-                      style={{ color: tk.brand }}
-                    >
-                      See more
-                      <ArrowRight className="w-4 h-4" />
-                    </button>
+                  <div className="flex flex-col gap-3 mb-6">
+                    <div className="flex items-center justify-between">
+                      <h2
+                        style={{
+                          fontSize: "2rem",
+                          fontWeight: 800,
+                          color: tk.textMain,
+                          letterSpacing: "-0.02em",
+                        }}
+                      >
+                        {cat.label}
+                      </h2>
+                      <button
+                        onClick={() =>
+                          navigate(
+                            `/destinations/${cat.id
+                              .toLowerCase()
+                              .replace(/[^a-z0-9]+/g, "-")
+                              .replace(/(^-|-$)/g, "")}`,
+                          )
+                        }
+                        className="inline-flex items-center gap-2 text-sm font-bold transition-all"
+                        style={{ color: tk.brand }}
+                      >
+                        See more
+                        <ArrowRight className="w-4 h-4" />
+                      </button>
+                    </div>
+
+                    {catSubcats.length > 0 && (
+                      <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
+                        {catSubcats.map((sub) => (
+                          <button
+                            key={sub.id}
+                            onClick={() =>
+                              navigate(`/destinations/subcategory/${encodeURIComponent(sub.id)}`)
+                            }
+                            style={{
+                              padding: "0.4rem 0.9rem",
+                              borderRadius: "9999px",
+                              border: `1px solid ${tk.panelBorder}`,
+                              background: tk.panelBg,
+                              color: tk.textMuted,
+                              fontSize: "0.85rem",
+                              fontWeight: 600,
+                              cursor: "pointer",
+                              transition: "all 0.2s ease",
+                            }}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.color = tk.brand;
+                              e.currentTarget.style.borderColor = tk.brand;
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.color = tk.textMuted;
+                              e.currentTarget.style.borderColor = tk.panelBorder;
+                            }}
+                          >
+                            {sub.label}
+                          </button>
+                        ))}
+                      </div>
+                    )}
                   </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    {catDestinations.map((destination) => (
-                      <DestinationCard
-                        key={destination.id}
-                        destination={destination}
-                        tk={tk}
-                        onAddToWishlist={handleAddToWishlist}
-                        isLoadingWishlist={wishlistLoadingId === destination.id}
-                      />
-                    ))}
-                  </div>
+                  <DestinationRow
+                    destinations={diverseDestinations}
+                    tk={tk}
+                    onAddToWishlist={handleAddToWishlist}
+                    wishlistLoadingId={wishlistLoadingId}
+                  />
                 </div>
               );
             })}

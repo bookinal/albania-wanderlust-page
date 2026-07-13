@@ -1,45 +1,17 @@
-import { useEffect, useState, useMemo } from "react";
-import { Link } from "react-router-dom";
-import { ArrowRight, Loader2 } from "lucide-react";
-import { addDestinationToCurrentUserWishlist, getCurrentUserWishlist } from "@/services/api/destinationService";
-import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
+import { ArrowRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@/context/ThemeContext";
 import { getHomeThemeTokens } from "./homeTheme";
-import { useDestinations } from "@/hooks/useDestinations";
-import { DestinationCard } from "@/pages/home/Destinations/DestinationCard";
-import { useKeenSlider } from "keen-slider/react";
-import "keen-slider/keen-slider.min.css";
 import { Button } from "@/components/ui/button";
-
-const animation = { duration: 50000, easing: (t: number) => t };
-
-const DESTINATION_CATEGORIES = [
-  { label: "Destinations", slug: "destinations" },
-  { label: "Eat, drink & dance", slug: "eat-drink-dance" },
-  { label: "History & culture", slug: "history-culture" },
-  { label: "Experiences", slug: "experiences" },
-];
+import { CATEGORIES, SUBCATEGORIES } from "@/lib/destinationManagement";
+import { Link } from "react-router-dom";
 
 const DestinationsHomePreview = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const { isDark, isBlue } = useTheme();
   const homeTk = getHomeThemeTokens({ isDark, isBlue });
-  const { toast } = useToast();
-
-  const [wishlistLoadingId, setWishlistLoadingId] = useState<string | null>(null);
-
-  const { data: destinations = [], isLoading } = useDestinations();
-
-  const grouped = useMemo(() => {
-    const groups: Record<string, typeof destinations> = {};
-    for (const cat of DESTINATION_CATEGORIES) {
-      groups[cat.label] = destinations.filter(
-        (d) => d.category?.toLowerCase() === cat.label.toLowerCase(),
-      );
-    }
-    return groups;
-  }, [destinations]);
 
   const tk = {
     sectionBg: isDark ? "#0a0a0c" : isBlue ? "hsl(205 55% 96%)" : "#f8fafc",
@@ -62,65 +34,44 @@ const DestinationsHomePreview = () => {
       : isBlue
         ? "0 18px 40px rgba(3,37,65,0.12)"
         : "0 18px 40px rgba(15,23,42,0.08)",
-    heroGradient: isDark
-      ? "linear-gradient(135deg, rgba(17,17,21,0.92), rgba(40,40,48,0.72), rgba(17,17,21,0.92))"
-      : isBlue
-        ? "linear-gradient(135deg, rgba(8,47,73,0.94), rgba(3,105,161,0.76), rgba(56,189,248,0.34))"
-        : "linear-gradient(135deg, rgba(232,25,44,0.88), rgba(127,29,29,0.72), rgba(17,17,21,0.5))",
-    buttonGhostBg: isDark
-      ? "rgba(255,255,255,0.05)"
-      : isBlue
-        ? "rgba(255,255,255,0.74)"
-        : "rgba(255,255,255,0.8)",
-    buttonGhostBorder: isDark
-      ? "rgba(255,255,255,0.12)"
-      : isBlue
-        ? "rgba(2,132,199,0.18)"
-        : "rgba(15,23,42,0.08)",
   };
 
-  const cardTk = {
-    panelBg: tk.panelBg,
-    panelBorder: tk.panelBorder,
-    panelShadow: tk.panelShadow,
-    heroGradient: tk.heroGradient,
-    textMain: tk.textMain,
-    textMuted: tk.textMuted,
-    brand: tk.brand,
-    buttonGhostBg: tk.buttonGhostBg,
-    buttonGhostBorder: tk.buttonGhostBorder,
+  const subcategoryImages: Record<string, string> = {
+    Beach:
+      "https://images.unsplash.com/photo-1723445734447-208cc4e0d959?q=80&w=1074&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    "Top cities & villages":
+      "https://images.unsplash.com/photo-1655990419850-f9a5851603e3?q=80&w=1074&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+
+    Mountains:
+      "https://plus.unsplash.com/premium_photo-1676231363849-1c17858d41b2?q=80&w=1074&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    "Lakes & canyons":
+      "https://plus.unsplash.com/premium_photo-1720886184649-ad1bb7792ece?q=80&w=736&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    Restaurants:
+      "https://fr-bucket-com.s3.eu-north-1.amazonaws.com/public/blogs/20-traditional-albanian-foods-every-tourist-should-try_107.jpg",
+    Bars: "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/06/a9/c4/59/hemingway-tirana.jpg?w=500&h=500&s=1",
+    Pubs: "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/2f/9c/bf/2f/caption.jpg?w=500&h=500&s=1",
+    Clubs:
+      "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/2a/bd/9e/11/magic-club-tirana.jpg?w=500&h=500&s=1",
+    "Museums & galleries":
+      "https://images.unsplash.com/photo-1617196038825-7c6b2a5c6e7b?q=80&w=1074&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    "Historical & archeological sites":
+      "https://images.unsplash.com/photo-1617196038825-7c6b2a5c6e7b?q=80&w=1074&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    "UNESCO sites":
+      "https://images.unsplash.com/photo-1617196038825-7c6b2a5c6e7b?q=80&w=1074&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    "Breathtaking/Adventure":
+      "https://images.unsplash.com/photo-1617196038825-7c6b2a5c6e7b?q=80&w=1074&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    "Sea activities":
+      "https://images.unsplash.com/photo-1617196038825-7c6b2a5c6e7b?q=80&w=1074&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    "On high altitude":
+      "https://images.unsplash.com/photo-1617196038825-7c6b2a5c6e7b?q=80&w=1074&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
   };
 
-  useEffect(() => {
-    const fetchWishlist = async () => {
-      try {
-        await getCurrentUserWishlist();
-      } catch (_err) {}
-    };
-    fetchWishlist();
-  }, []);
 
-  const handleAddToWishlist = async (destinationId: string) => {
-    try {
-      setWishlistLoadingId(destinationId);
-      await addDestinationToCurrentUserWishlist(destinationId);
-      toast({
-        title: t("common.success"),
-        description: t("home.destinations.addedToWishlist"),
-      });
-    } catch (err: any) {
-      console.error("Failed to add to wishlist:", err);
-      toast({
-        title: err?.code === 23505 ? t("common.warning") : t("common.error"),
-        description:
-          err?.code === 23505
-            ? t("home.destinations.alreadyInWishlist")
-            : t("home.destinations.loginToAddWishlist"),
-        variant: err?.code === 23505 ? "default" : "destructive",
-      });
-    } finally {
-      setWishlistLoadingId(null);
-    }
+  const categoryGradients: Record<string, string> = {
+    Destinations: "linear-gradient(135deg, #0f766e, #14b8a6)",
+    "Eat, drink & dance": "linear-gradient(135deg, #be185d, #ec4899)",
+    "History & culture": "linear-gradient(135deg, #92400e, #d97706)",
+    Experiences: "linear-gradient(135deg, #065f46, #059669)",
   };
 
   return (
@@ -165,27 +116,26 @@ const DestinationsHomePreview = () => {
           </Button>
         </div>
 
-        {isLoading && (
-          <div className="flex items-center justify-center py-20">
-            <Loader2
-              className="w-8 h-8 animate-spin"
-              style={{ color: tk.brand }}
+        {CATEGORIES.map((cat) => {
+          const subcategories = SUBCATEGORIES.filter(
+            (sub) => sub.parent === cat.id,
+          );
+          if (subcategories.length === 0) return null;
+          return (
+            <CategoryRow
+              key={cat.id}
+              category={cat}
+              subcategories={subcategories}
+              tk={tk}
+              gradient={
+                categoryGradients[cat.id] ||
+                "linear-gradient(135deg, #1e3a5f, #3b82f6)"
+              }
+              subcategoryImages={subcategoryImages}
+              navigate={navigate}
             />
-          </div>
-        )}
-
-        {!isLoading && destinations.length === 0 && (
-          <p className="text-center py-20" style={{ color: tk.textMuted }}>
-            {t("home.destinations.noDestinations")}
-          </p>
-        )}
-
-        {!isLoading &&
-          DESTINATION_CATEGORIES.map((cat) => {
-            const items = grouped[cat.label];
-            if (!items || items.length === 0) return null;
-            return <CategoryRow key={cat.label} category={cat.label} destinations={items} cardTk={cardTk} wishlistLoadingId={wishlistLoadingId} onAddToWishlist={handleAddToWishlist} />;
-          })}
+          );
+        })}
       </div>
     </section>
   );
@@ -193,70 +143,105 @@ const DestinationsHomePreview = () => {
 
 const CategoryRow = ({
   category,
-  destinations,
-  cardTk,
-  wishlistLoadingId,
-  onAddToWishlist,
+  subcategories,
+  tk,
+  gradient,
+  subcategoryImages,
+  navigate,
 }: {
-  category: string;
-  destinations: any[];
-  cardTk: any;
-  wishlistLoadingId: string | null;
-  onAddToWishlist: (id: string) => Promise<void>;
+  category: { id: string; label: string };
+  subcategories: { id: string; label: string; parent: string }[];
+  tk: Record<string, string>;
+  gradient: string;
+  subcategoryImages: Record<string, string>;
+  navigate: ReturnType<typeof useNavigate>;
 }) => {
-  const [sliderRef] = useKeenSlider<HTMLDivElement>({
-    loop: true,
-    renderMode: "performance",
-    drag: true,
-    slides: {
-      perView: 1.1,
-      spacing: 16,
-    },
-    breakpoints: {
-      "(min-width: 640px)": {
-        slides: { perView: 1.3, spacing: 20 },
-      },
-      "(min-width: 1024px)": {
-        slides: { perView: 2.2, spacing: 24 },
-      },
-      "(min-width: 1280px)": {
-        slides: { perView: 3.2, spacing: 24 },
-      },
-    },
-    created(s) {
-      s.moveToIdx(5, true, animation);
-    },
-    updated(s) {
-      if (s.track.details) {
-        s.moveToIdx(s.track.details.abs + 5, true, animation);
-      }
-    },
-    animationEnded(s) {
-      s.moveToIdx(s.track.details.abs + 5, true, animation);
-    },
-  });
-
   return (
     <div className="mb-10 last:mb-0">
       <h3
         className="text-xl md:text-2xl font-bold mb-4"
-        style={{ color: cardTk.textMain }}
+        style={{ color: tk.textMain }}
       >
-        {category}
+        {category.label}
       </h3>
-      <div ref={sliderRef} className="keen-slider rounded-2xl overflow-hidden">
-        {destinations.map((destination, index) => (
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+        {subcategories.map((sub) => (
           <div
-            key={destination.id}
-            className="keen-slider__slide"
-            style={{ animationDelay: `${index * 100}ms` }}
+            key={sub.id}
+            onClick={() =>
+              navigate(
+                `/destinations/subcategory/${encodeURIComponent(sub.id)}`,
+              )
+            }
+            style={{
+              cursor: "pointer",
+              borderRadius: "1rem",
+              overflow: "hidden",
+              background: tk.panelBg,
+              border: `1px solid ${tk.panelBorder}`,
+              boxShadow: tk.panelShadow,
+              transition: "transform 0.2s, box-shadow 0.2s",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = "translateY(-4px)";
+              e.currentTarget.style.boxShadow =
+                "0 24px 48px rgba(0,0,0,0.15)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = "translateY(0)";
+              e.currentTarget.style.boxShadow = tk.panelShadow;
+            }}
           >
-            <DestinationCard
-              destination={destination}
-              tk={cardTk}
-              onAddToWishlist={onAddToWishlist}
-              isLoadingWishlist={wishlistLoadingId === destination.id}
-            />
+            <div
+              style={{
+                height: 140,
+                background: gradient,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                position: "relative",
+                overflow: "hidden",
+              }}
+            >
+              {subcategoryImages[sub.id] ? (
+                <img
+                  src={subcategoryImages[sub.id]}
+                  alt={sub.label}
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                    position: "absolute",
+                    inset: 0,
+                  }}
+                />
+              ) : (
+                /* TODO: ADD IMG URL */
+                <span
+                  style={{
+                    color: "#fff",
+                    fontSize: "2.5rem",
+                    fontWeight: 900,
+                    opacity: 0.25,
+                    textTransform: "uppercase",
+                  }}
+                >
+                  {sub.label.charAt(0)}
+                </span>
+              )}
+            </div>
+            <div style={{ padding: "0.85rem 1rem" }}>
+              <h4
+                style={{
+                  margin: 0,
+                  fontSize: "0.95rem",
+                  fontWeight: 700,
+                  color: tk.textMain,
+                }}
+              >
+                {sub.label}
+              </h4>
+            </div>
           </div>
         ))}
       </div>

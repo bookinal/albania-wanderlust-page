@@ -217,6 +217,10 @@ const DestinationDetails = () => {
   const { data: destination, isLoading, error } = useDestination(id);
   const { data: allDestinations = [] } = useDestinations();
 
+  const backTarget = destination?.subcategory
+    ? `/destinations/subcategory/${encodeURIComponent(destination.subcategory)}`
+    : "/destinations";
+
   const nearbyIds = destination
     ? ((destination as unknown as Record<string, unknown>).nearbyDestinationIds as string[] | undefined) || []
     : [];
@@ -595,7 +599,8 @@ const DestinationDetails = () => {
     >
       <PrimarySearchAppBar />
 
-      {/* Top Hero */}
+      <div style={{ maxWidth: "1280px", margin: "0 auto", width: "100%" }}>
+        {/* Top Hero */}
       <div style={{ width: "100%", padding: "1.25rem 1.5rem 0" }}>
         <div
           style={{
@@ -642,7 +647,7 @@ const DestinationDetails = () => {
               }}
             >
               <button
-                onClick={() => navigate("/destinations")}
+                onClick={() => navigate(backTarget)}
                 style={{
                   display: "inline-flex",
                   alignItems: "center",
@@ -836,7 +841,7 @@ const DestinationDetails = () => {
                 </div>
               </div>
               <button
-                onClick={() => navigate("/destinations")}
+                onClick={() => navigate(backTarget)}
                 style={{
                   display: "inline-flex",
                   alignItems: "center",
@@ -1068,7 +1073,7 @@ const DestinationDetails = () => {
               </button>
             </div>
             <button
-              onClick={() => navigate("/destinations")}
+              onClick={() => navigate(backTarget)}
               style={{
                 display: "inline-flex",
                 alignItems: "center",
@@ -1930,6 +1935,7 @@ const DestinationDetails = () => {
             ))}
           </div>
         )}
+      </div>
       </div>
     </div>
   );
