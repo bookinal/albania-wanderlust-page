@@ -35,6 +35,18 @@ import {
   Zap,
   ChevronLeft,
   ChevronRight,
+  Map,
+  Sun,
+  Shield,
+  Clock,
+  Info,
+  Lightbulb,
+  Utensils,
+  Mountain,
+  AlertTriangle,
+  Tent,
+  Umbrella,
+  Bus,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { addDestinationToCurrentUserWishlist } from "@albania/api-client";
@@ -55,6 +67,23 @@ const visitorTipIcons: Record<string, LucideIcon> = {
   Backpack,
   Leaf,
   WifiOff,
+  Camera,
+  Compass,
+  Map,
+  Waves,
+  Sun,
+  Shield,
+  Wallet,
+  Clock,
+  Info,
+  Lightbulb,
+  Utensils,
+  Mountain,
+  AlertTriangle,
+  Tent,
+  Umbrella,
+  Car,
+  Bus,
 };
 
 function useMediaQuery(query: string): boolean {
@@ -560,6 +589,46 @@ const DestinationDetails = () => {
       icon: Zap,
       label: "Difficulty",
       value: destination.difficultyLevel,
+    },
+    {
+      icon: CalendarRange,
+      label: "Historical Period",
+      value: destination.historicalPeriod,
+    },
+    {
+      icon: Compass,
+      label: "Site Type",
+      value: destination.siteType,
+    },
+    {
+      icon: Compass,
+      label: "Museum Type",
+      value: destination.museumType,
+    },
+    {
+      icon: CalendarRange,
+      label: "Established",
+      value: destination.established ? String(destination.established) : "",
+    },
+    {
+      icon: Wallet,
+      label: "Admission",
+      value: destination.admission,
+    },
+    {
+      icon: CalendarRange,
+      label: "UNESCO Year Inscribed",
+      value: destination.yearInscribed ? String(destination.yearInscribed) : "",
+    },
+    {
+      icon: Footprints,
+      label: "Activity Type",
+      value: destination.activityType,
+    },
+    {
+      icon: CalendarCheck,
+      label: "Event Type",
+      value: destination.eventType,
     },
   ].filter(
     (fact): fact is { icon: LucideIcon; label: string; value: string } =>

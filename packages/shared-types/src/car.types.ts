@@ -11,6 +11,7 @@ export interface Car {
   seats: number;
   mileage: number;
   pricePerDay: number; // Base/default price (can be used as fallback)
+  insurance: number; // Fixed insurance price for a car booking
   status: "available" | "rented" | "maintenance" | "review";
   providerId: string;
   color: string;
@@ -33,6 +34,7 @@ export interface CreateCarDto {
   seats: number;
   mileage: number;
   pricePerDay: number; // Base/default price
+  insurance: number; // Fixed insurance price for a car booking
   status: "available" | "rented" | "maintenance" | "review";
   providerId?: string;
   color: string;
@@ -55,6 +57,7 @@ export interface UpdateCarDto {
   seats?: number;
   mileage?: number;
   pricePerDay?: number;
+  insurance?: number; // Fixed insurance price for a car booking
   imageUrls?: string[];
   status?: "available" | "rented" | "maintenance" | "review";
   color?: string;

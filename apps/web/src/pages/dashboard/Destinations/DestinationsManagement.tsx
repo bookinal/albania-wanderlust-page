@@ -25,6 +25,22 @@ import {
   Car,
   Sailboat,
   Star,
+  Camera,
+  Compass,
+  Map,
+  Waves,
+  Sun,
+  Shield,
+  Wallet,
+  Clock,
+  Info,
+  Lightbulb,
+  Utensils,
+  Mountain,
+  AlertTriangle,
+  Tent,
+  Umbrella,
+  Bus,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import {
@@ -101,6 +117,14 @@ interface DestinationFormData {
   imageUrls: string[];
   contact?: DestinationContact;
   nearbyDestinationIds: string[];
+  historicalPeriod?: string;
+  siteType?: string;
+  museumType?: string;
+  established?: number | string;
+  admission?: string;
+  yearInscribed?: number | string;
+  activityType?: string;
+  eventType?: string;
 }
 
 type VisitorTipIconName =
@@ -108,7 +132,24 @@ type VisitorTipIconName =
   | "Footprints"
   | "Backpack"
   | "Leaf"
-  | "WifiOff";
+  | "WifiOff"
+  | "Camera"
+  | "Compass"
+  | "Map"
+  | "Waves"
+  | "Sun"
+  | "Shield"
+  | "Wallet"
+  | "Clock"
+  | "Info"
+  | "Lightbulb"
+  | "Utensils"
+  | "Mountain"
+  | "AlertTriangle"
+  | "Tent"
+  | "Umbrella"
+  | "Car"
+  | "Bus";
 
 interface VisitorTipFormItem {
   icon: VisitorTipIconName;
@@ -148,6 +189,14 @@ const QUICK_FACT_FIELDS: Array<{
     | "activities"
     | "highlight"
     | "difficultyLevel"
+    | "historicalPeriod"
+    | "siteType"
+    | "museumType"
+    | "established"
+    | "admission"
+    | "yearInscribed"
+    | "activityType"
+    | "eventType"
   >;
   label: string;
   placeholder: string;
@@ -212,7 +261,74 @@ const QUICK_FACT_FIELDS: Array<{
   { key: "activities", label: "Activities", placeholder: "e.g. Hiking, swimming, birdwatching..." },
   { key: "highlight", label: "Highlight", placeholder: "e.g. Panoramic views, ancient mosaics..." },
   { key: "difficultyLevel", label: "Difficulty Level", placeholder: "e.g. Easy, Moderate, Hard..." },
+  {
+    key: "historicalPeriod",
+    label: "Historical Period",
+    placeholder: "e.g. Ottoman, Roman, Byzantine..."
+  },
+  {
+    key: "siteType",
+    label: "Site Type",
+    placeholder: "e.g. Archaeological, castle, ruins..."
+  },
+  {
+    key: "museumType",
+    label: "Museum Type",
+    placeholder: "e.g. Ethnographic, history, art..."
+  },
+  {
+    key: "established",
+    label: "Established Year",
+    placeholder: "e.g. 1982",
+    type: "number"
+  },
+  {
+    key: "admission",
+    label: "Admission Info",
+    placeholder: "e.g. Free, 500 LEK..."
+  },
+  {
+    key: "yearInscribed",
+    label: "UNESCO Year Inscribed",
+    placeholder: "e.g. 2005",
+    type: "number"
+  },
+  {
+    key: "activityType",
+    label: "Activity Type",
+    placeholder: "e.g. Hiking, kayaking, rafting..."
+  },
+  {
+    key: "eventType",
+    label: "Event Type",
+    placeholder: "e.g. Festival, pilgrimage, market..."
+  },
 ];
+
+const visitorTipEmojis: Record<VisitorTipIconName, string> = {
+  Sunrise: "🌅",
+  Footprints: "👣",
+  Backpack: "🎒",
+  Leaf: "🍃",
+  WifiOff: "📴",
+  Camera: "📷",
+  Compass: "🧭",
+  Map: "🗺️",
+  Waves: "🌊",
+  Sun: "☀️",
+  Shield: "🛡️",
+  Wallet: "💵",
+  Clock: "⏰",
+  Info: "ℹ️",
+  Lightbulb: "💡",
+  Utensils: "🍴",
+  Mountain: "🏔️",
+  AlertTriangle: "⚠️",
+  Tent: "⛺",
+  Umbrella: "🌂",
+  Car: "🚗",
+  Bus: "🚌",
+};
 
 const VISITOR_TIP_ICON_OPTIONS: Array<{
   value: VisitorTipIconName;
@@ -224,6 +340,23 @@ const VISITOR_TIP_ICON_OPTIONS: Array<{
   { value: "Backpack", label: "Backpack", icon: Backpack },
   { value: "Leaf", label: "Leaf", icon: Leaf },
   { value: "WifiOff", label: "WifiOff", icon: WifiOff },
+  { value: "Camera", label: "Camera", icon: Camera },
+  { value: "Compass", label: "Compass", icon: Compass },
+  { value: "Map", label: "Map", icon: Map },
+  { value: "Waves", label: "Waves", icon: Waves },
+  { value: "Sun", label: "Sun", icon: Sun },
+  { value: "Shield", label: "Shield/Safety", icon: Shield },
+  { value: "Wallet", label: "Wallet/Cash", icon: Wallet },
+  { value: "Clock", label: "Clock/Time", icon: Clock },
+  { value: "Info", label: "Info", icon: Info },
+  { value: "Lightbulb", label: "Lightbulb/Tip", icon: Lightbulb },
+  { value: "Utensils", label: "Utensils/Food", icon: Utensils },
+  { value: "Mountain", label: "Mountain/Hiking", icon: Mountain },
+  { value: "AlertTriangle", label: "Warning", icon: AlertTriangle },
+  { value: "Tent", label: "Tent/Camping", icon: Tent },
+  { value: "Umbrella", label: "Umbrella/Weather", icon: Umbrella },
+  { value: "Car", label: "Car/Driving", icon: Car },
+  { value: "Bus", label: "Bus/Transit", icon: Bus },
 ];
 
 const ITEMS_PER_PAGE = 12;
@@ -269,6 +402,14 @@ function createEmptyDestinationFormData(): DestinationFormData {
     imageUrls: [],
     contact: undefined,
     nearbyDestinationIds: [],
+    historicalPeriod: undefined,
+    siteType: undefined,
+    museumType: undefined,
+    established: undefined,
+    admission: undefined,
+    yearInscribed: undefined,
+    activityType: undefined,
+    eventType: undefined,
   };
 }
 
@@ -470,6 +611,14 @@ export default function DestinationsManagement() {
       imageUrls: destination.imageUrls || [],
       contact: destination.contact,
       nearbyDestinationIds: extractNearbyIds(destination),
+      historicalPeriod: destination.historicalPeriod,
+      siteType: destination.siteType,
+      museumType: destination.museumType,
+      established: destination.established,
+      admission: destination.admission,
+      yearInscribed: destination.yearInscribed,
+      activityType: destination.activityType,
+      eventType: destination.eventType,
     });
     setSelectedImageFiles([]);
     setActiveLocaleTab("en");
@@ -524,6 +673,14 @@ export default function DestinationsManagement() {
       imageUrls: destination.imageUrls || [],
       contact: destination.contact,
       nearbyDestinationIds: extractNearbyIds(destination),
+      historicalPeriod: destination.historicalPeriod,
+      siteType: destination.siteType,
+      museumType: destination.museumType,
+      established: destination.established,
+      admission: destination.admission,
+      yearInscribed: destination.yearInscribed,
+      activityType: destination.activityType,
+      eventType: destination.eventType,
     });
     setActiveLocaleTab("en");
     setDialogOpen(true);
@@ -702,6 +859,18 @@ export default function DestinationsManagement() {
         imageUrls,
         contact: formData.contact,
         nearbyDestinationIds: formData.nearbyDestinationIds,
+        historicalPeriod: formData.historicalPeriod,
+        siteType: formData.siteType,
+        museumType: formData.museumType,
+        established: formData.established
+          ? parseInt(formData.established.toString(), 10)
+          : undefined,
+        admission: formData.admission,
+        yearInscribed: formData.yearInscribed
+          ? parseInt(formData.yearInscribed.toString(), 10)
+          : undefined,
+        activityType: formData.activityType,
+        eventType: formData.eventType,
       };
 
       if (dialogMode === "create") {
@@ -1469,24 +1638,40 @@ export default function DestinationsManagement() {
                             >
                               Icon
                             </label>
-                            <select
-                              value={tip.icon}
-                              onChange={(e) =>
-                                handleVisitorTipChange(
-                                  index,
-                                  "icon",
-                                  e.target.value,
-                                )
-                              }
-                              disabled={dialogMode === "view"}
-                              style={inputStyle}
-                            >
-                              {VISITOR_TIP_ICON_OPTIONS.map((option) => (
-                                <option key={option.value} value={option.value}>
-                                  {option.label}
-                                </option>
-                              ))}
-                            </select>
+                            <div className="relative flex items-center">
+                              <div
+                                className="absolute left-3 pointer-events-none flex items-center justify-center"
+                                style={{
+                                  color: isDark ? "#10b981" : "#0f766e",
+                                }}
+                              >
+                                <TipIcon size={16} />
+                              </div>
+                              <select
+                                value={tip.icon}
+                                onChange={(e) =>
+                                  handleVisitorTipChange(
+                                    index,
+                                    "icon",
+                                    e.target.value,
+                                  )
+                                }
+                                disabled={dialogMode === "view"}
+                                style={{
+                                  ...inputStyle,
+                                  paddingLeft: "2.5rem",
+                                }}
+                              >
+                                {VISITOR_TIP_ICON_OPTIONS.map((option) => {
+                                  const emoji = visitorTipEmojis[option.value] || "📍";
+                                  return (
+                                    <option key={option.value} value={option.value}>
+                                      {emoji} {option.label}
+                                    </option>
+                                  );
+                                })}
+                              </select>
+                            </div>
                           </div>
 
                           <div className="space-y-4">

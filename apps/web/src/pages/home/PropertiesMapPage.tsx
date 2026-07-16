@@ -112,6 +112,7 @@ const PropertiesMapPage = () => {
               onApplyFilters={() => setIsMobileFilterOpen(false)}
               loading={false}
               availableTypes={["hotel", "apartment", "destination"]}
+              alwaysOpen
             />
           </div>
         </div>

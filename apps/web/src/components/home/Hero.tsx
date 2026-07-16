@@ -1,16 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, MapPin, ChevronDown } from "lucide-react";
 import slide1 from "@/assets/home/slide1.jpg";
-import slide2 from "@/assets/home/slide2.jpg";
-import slide3 from "@/assets/home/slide3.jpg";
 import ReservationPickerValue from "./reservationPicker";
 import HeroInventoryPreview from "./HeroInventoryPreview";
 import { useTheme } from "@/context/ThemeContext";
 import { getHomeThemeTokens } from "./homeTheme";
 import { Link } from "react-router";
-import { Slide } from "react-slideshow-image";
 import { useTranslation } from "react-i18next";
-import "react-slideshow-image/dist/styles.css";
 
 const Hero = () => {
   const { t } = useTranslation();
@@ -20,38 +16,15 @@ const Hero = () => {
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
   };
 
-  const slideImages = [
-    {
-      image: slide1,
-    },
-    {
-      image: slide2,
-    },
-    {
-      image: slide3,
-    },
-  ];
-
   return (
     <section className="relative min-h-screen flex items-start justify-center overflow-hidden pt-24 sm:pt-12 lg:pt-12">
       {/* Background Image with Overlay */}
       <div className="absolute inset-0 z-0">
-        <Slide
-          duration={4000}
-          transitionDuration={1000}
-          arrows={false}
-          pauseOnHover={false}
-        >
-          {slideImages.map((slideImage, index) => (
-            <div key={index} className="w-full h-screen">
-              <img
-                src={slideImage.image}
-                className="w-full h-full object-cover"
-                alt={`Albania slide ${index + 1}`}
-              />
-            </div>
-          ))}
-        </Slide>
+        <img
+          src={slide1}
+          className="w-full h-full object-cover"
+          alt="Albania"
+        />
         <div
           className="absolute inset-0"
           style={{ background: tk.heroOverlay }}

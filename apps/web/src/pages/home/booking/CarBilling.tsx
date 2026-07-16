@@ -246,7 +246,8 @@ export default function CarBilling() {
   };
 
   const serviceFee = totalPrice * 0.07;
-  const finalTotal = totalPrice + serviceFee;
+  const insuranceFee = car?.insurance ?? 0;
+  const finalTotal = totalPrice + serviceFee + insuranceFee;
 
   function handlePhoneChange(value?: string): void {
     setFormData((prev) => ({ ...prev, phone: value || "" }));
@@ -719,6 +720,26 @@ export default function CarBilling() {
                         {t("billing.serviceFeeDescription")}
                       </p>
                     </div>
+
+                    {insuranceFee > 0 && (
+                      <div>
+                        <div
+                          className="flex justify-between"
+                          style={{ color: tk.dimText }}
+                        >
+                          <span>{t("billing.insurance")}</span>
+                          <span className="font-medium">
+                            ${insuranceFee.toFixed(2)}
+                          </span>
+                        </div>
+                        <p
+                          style={{ color: tk.mutedText }}
+                          className="text-xs mt-1"
+                        >
+                          {t("billing.insuranceDescription", "Fixed insurance fee for this booking.")}
+                        </p>
+                      </div>
+                    )}
 
 
                   </div>

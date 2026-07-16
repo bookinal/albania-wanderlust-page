@@ -55,6 +55,14 @@ export interface Destination {
   visitorTips?: DestinationVisitorTip[];
   contact?: DestinationContact;
   nearbyDestinations?: Destination[];
+  historicalPeriod?: string;
+  siteType?: string;
+  museumType?: string;
+  established?: number;
+  admission?: string;
+  yearInscribed?: number;
+  activityType?: string;
+  eventType?: string;
 }
 
 export interface DestinationDto {
@@ -91,6 +99,14 @@ export interface DestinationDto {
   visitorTips?: DestinationVisitorTip[];
   contact?: DestinationContact;
   nearbyDestinationIds?: string[];
+  historicalPeriod?: string;
+  siteType?: string;
+  museumType?: string;
+  established?: number;
+  admission?: string;
+  yearInscribed?: number;
+  activityType?: string;
+  eventType?: string;
 }
 
 export interface Wishlist {

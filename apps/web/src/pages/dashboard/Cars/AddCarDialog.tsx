@@ -44,6 +44,7 @@ export const AddCarDialog: React.FC<AddCarDialogProps> = ({ onCarAdded }) => {
     seats: 5,
     mileage: 0,
     pricePerDay: 10,
+    insurance: 0,
     status: "review" as "available" | "rented" | "maintenance" | "review",
     color: "",
     plateNumber: "",
@@ -108,7 +109,7 @@ export const AddCarDialog: React.FC<AddCarDialogProps> = ({ onCarAdded }) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: name === "year" || name === "seats" || name === "mileage" || name === "pricePerDay"
+      [name]: name === "year" || name === "seats" || name === "mileage" || name === "pricePerDay" || name === "insurance"
         ? parseFloat(value) || 0
         : value,
     }));
@@ -119,7 +120,7 @@ export const AddCarDialog: React.FC<AddCarDialogProps> = ({ onCarAdded }) => {
   };
 
   const handleSubmit = async () => {
-    if (!formData.name || !formData.brand || !formData.plateNumber || formData.pricePerDay <= 0) {
+    if (!formData.name || !formData.brand || !formData.plateNumber || formData.pricePerDay <= 0 || formData.insurance < 0) {
       alert(t("cars.addCarDialog.validation.requiredFields"));
       return;
     }
@@ -146,6 +147,7 @@ export const AddCarDialog: React.FC<AddCarDialogProps> = ({ onCarAdded }) => {
         seats: formData.seats,
         mileage: formData.mileage,
         pricePerDay: formData.pricePerDay,
+        insurance: formData.insurance,
         status: "review",
         color: formData.color,
         plateNumber: formData.plateNumber,
@@ -164,7 +166,7 @@ export const AddCarDialog: React.FC<AddCarDialogProps> = ({ onCarAdded }) => {
       );
       onCarAdded(newCar);
       setSubmissionSuccess(true);
-      setFormData({ name: "", brand: "", type: "Sedan", year: new Date().getFullYear(), transmission: "Manual", fuelType: "Petrol", seats: 5, mileage: 0, pricePerDay: 10, status: "review", color: "", plateNumber: "", features: [], imageUrls: [], pickUpLocation: "", lat: undefined, lng: undefined });
+      setFormData({ name: "", brand: "", type: "Sedan", year: new Date().getFullYear(), transmission: "Manual", fuelType: "Petrol", seats: 5, mileage: 0, pricePerDay: 10, insurance: 0, status: "review", color: "", plateNumber: "", features: [], imageUrls: [], pickUpLocation: "", lat: undefined, lng: undefined });
       setSelectedImageFiles([]);
       setMonthlyPrices([]);
     } catch (error) {
@@ -284,6 +286,12 @@ export const AddCarDialog: React.FC<AddCarDialogProps> = ({ onCarAdded }) => {
                   <p style={{ fontSize: 13, fontWeight: 500, color: tk.labelText, marginBottom: 6 }}>{t("cars.addCarDialog.form.basePrice")} <span style={{ color: '#E8192C' }}>*</span></p>
                   <input id="pricePerDay" name="pricePerDay" type="number" min="10" value={formData.pricePerDay} onChange={handleChange} placeholder="89" style={inputStyle} />
                   <p style={{ fontSize: 12, color: tk.mutedText, marginTop: 4 }}>{t("cars.addCarDialog.form.priceHelp")}</p>
+                </div>
+                {/* Insurance */}
+                <div>
+                  <p style={{ fontSize: 13, fontWeight: 500, color: tk.labelText, marginBottom: 6 }}>{t("cars.addCarDialog.form.insurance", "Insurance Price")} <span style={{ color: '#E8192C' }}>*</span></p>
+                  <input id="insurance" name="insurance" type="number" min="0" value={formData.insurance} onChange={handleChange} placeholder="15" style={inputStyle} />
+                  <p style={{ fontSize: 12, color: tk.mutedText, marginTop: 4 }}>{t("cars.addCarDialog.form.insuranceHelp", "Fixed insurance price per booking")}</p>
                 </div>
                 {/* Status */}
                 <div>

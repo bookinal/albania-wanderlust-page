@@ -1176,6 +1176,19 @@ export default function BookingsSummary() {
                           >
                             ${booking.totalPrice.toFixed(2)}
                           </p>
+                          {booking.propertyType === "car" && (booking.propertyData as any)?.insurance > 0 && (
+                            <p
+                              style={{
+                                fontSize: 14,
+                                fontWeight: 900,
+                                color: tk.pageText,
+                                lineHeight: 1,
+                                marginBottom: 4,
+                              }}
+                            >
+                              + ${(booking.propertyData as any).insurance.toFixed(2)} {t("billing.insurance")}
+                            </p>
+                          )}
                           <p
                             style={{
                               fontSize: 14,

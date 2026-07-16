@@ -18,6 +18,7 @@ import {
   Calendar,
   Palette,
   Image as ImageIcon,
+  ShieldCheck,
 } from "lucide-react";
 import { Car, UpdateCarDto } from "@/types/car.types";
 import { MonthlyPriceInput, MONTHS, MONTH_NAMES } from "@/types/price.type";
@@ -122,7 +123,7 @@ const CarDetails = () => {
     setFormData((prev) => ({
       ...prev,
       [name]:
-        name === "year" || name === "seats" || name === "pricePerDay" || name === "lat" || name === "lng"
+        name === "year" || name === "seats" || name === "pricePerDay" || name === "insurance" || name === "lat" || name === "lng"
           ? parseFloat(value) || 0
           : value,
     }));
@@ -407,6 +408,18 @@ const CarDetails = () => {
                         <p style={{ fontSize: 12, color: tk.mutedText, marginTop: 4 }}>{t("cars.carDetails.fields.priceHelp")}</p>
                       </>
                     ) : <p style={{ fontSize: 18, fontWeight: 700, color: tk.pageText }}>${car.pricePerDay}</p>}
+                  </div>
+                  {/* Insurance */}
+                  <div>
+                    <p style={{ fontSize: 13, color: tk.labelText, marginBottom: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <ShieldCheck size={14} style={{ color: '#3b82f6' }} /> {t("cars.carDetails.fields.insurance", "Insurance Price")}
+                    </p>
+                    {isEditing ? (
+                      <>
+                        <input name="insurance" type="number" min="0" value={formData.insurance ?? 0} onChange={handleChange} style={inputStyle} />
+                        <p style={{ fontSize: 12, color: tk.mutedText, marginTop: 4 }}>{t("cars.carDetails.fields.insuranceHelp", "Fixed insurance price per booking")}</p>
+                      </>
+                    ) : <p style={{ fontSize: 18, fontWeight: 700, color: tk.pageText }}>${car.insurance ?? 0}</p>}
                   </div>
                 </div>
               </div>

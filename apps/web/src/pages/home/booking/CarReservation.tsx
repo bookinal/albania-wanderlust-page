@@ -352,7 +352,7 @@ const CarReservation = () => {
                     {hasSeasonalPrice && (
                       <p style={{ color: tk.mutedText }} className="text-sm mt-1 line-through">Base: ${car.pricePerDay}/day</p>
                     )}
-                    <p style={{ color: tk.mutedText }} className="text-sm mt-2">+ {t("billing.insurance")}</p>
+                    <p style={{ color: tk.mutedText }} className="text-sm mt-2">+ {car.insurance ? `$${car.insurance} ` : ""}{t("billing.insurance")}</p>
                   </div>
                 );
               })()}

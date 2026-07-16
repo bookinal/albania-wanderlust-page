@@ -104,11 +104,6 @@ export default function PrimarySearchAppBar() {
       icon: <Car className="w-4 h-4" />,
     },
     {
-      label: t("letUsInspireYou.title") || "Let Us Inspire You",
-      href: "/LetUsInspireYou",
-      icon: <BookOpen className="w-4 h-4" />,
-    },
-    {
       label: t("common.map") || "Map",
       href: "/properties-map",
       icon: <MapPin className="w-4 h-4" />,

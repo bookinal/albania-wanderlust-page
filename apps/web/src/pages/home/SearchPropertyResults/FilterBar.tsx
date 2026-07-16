@@ -32,6 +32,7 @@ interface FilterBarProps {
   loading: boolean;
   hideMapButton?: boolean;
   availableTypes?: Array<"hotel" | "apartment" | "destination">;
+  alwaysOpen?: boolean;
 }
 
 const AccSection = ({
@@ -105,6 +106,7 @@ export const FilterBar = ({
   loading,
   hideMapButton,
   availableTypes = ["hotel", "apartment"],
+  alwaysOpen = false,
 }: FilterBarProps) => {
   const { t } = useTranslation();
   const { isDark, isBlue } = useTheme();
@@ -768,39 +770,41 @@ export const FilterBar = ({
   return (
     <>
       {/* Mobile toggle */}
-      <div className="lg:hidden mb-4">
-        <button
-          onClick={() => setIsOpen(!isOpen)}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8,
-            background: tk.mobileBtnBg,
-            border: `1px solid ${tk.mobileBtnBorder}`,
-            borderRadius: 3,
-            padding: '8px 16px',
-            color: tk.mobileBtnText,
-            fontFamily: 'Bebas Neue, Impact, sans-serif',
-            fontSize: '0.95rem',
-            letterSpacing: '0.1em',
-            cursor: 'pointer',
-            transition: 'background 0.2s, color 0.3s',
-          }}
-        >
-          <Filter style={{ width: 14, height: 14, color: themeTk.brand }} />
-          {t("searchResults.filters.filters")}
-          {activeFiltersCount > 0 && (
-            <span style={{
-              background: themeTk.brand, color: '#fff',
-              fontSize: '0.7rem', borderRadius: '50%',
-              width: 18, height: 18,
-              display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-            }}>
-              {activeFiltersCount}
-            </span>
-          )}
-        </button>
-      </div>
+      {!alwaysOpen && (
+        <div className="lg:hidden mb-4">
+          <button
+            onClick={() => setIsOpen(!isOpen)}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+              background: tk.mobileBtnBg,
+              border: `1px solid ${tk.mobileBtnBorder}`,
+              borderRadius: 3,
+              padding: '8px 16px',
+              color: tk.mobileBtnText,
+              fontFamily: 'Bebas Neue, Impact, sans-serif',
+              fontSize: '0.95rem',
+              letterSpacing: '0.1em',
+              cursor: 'pointer',
+              transition: 'background 0.2s, color 0.3s',
+            }}
+          >
+            <Filter style={{ width: 14, height: 14, color: themeTk.brand }} />
+            {t("searchResults.filters.filters")}
+            {activeFiltersCount > 0 && (
+              <span style={{
+                background: themeTk.brand, color: '#fff',
+                fontSize: '0.7rem', borderRadius: '50%',
+                width: 18, height: 18,
+                display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+              }}>
+                {activeFiltersCount}
+              </span>
+            )}
+          </button>
+        </div>
+      )}
 
       {/* Sidebar */}
       <aside
@@ -818,7 +822,7 @@ export const FilterBar = ({
           overflowY: 'auto',
           transition: 'background 0.3s, border-color 0.3s',
         }}
-        className={`${isOpen ? 'block' : 'hidden'} lg:block alb-filter-scrollbar`}
+        className={`${(alwaysOpen || isOpen) ? 'block' : 'hidden'} lg:block alb-filter-scrollbar`}
       >
         <style>{`
           .alb-filter-scrollbar::-webkit-scrollbar {

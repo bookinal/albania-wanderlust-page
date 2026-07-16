@@ -117,7 +117,7 @@ const Index = () => {
       </section>
 
       {/* Culture Section */}
-      <Culture />
+      {/* <Culture /> */}
     </div>
   );
 };
