@@ -11,6 +11,7 @@ import {
   SearchFiltersState,
   defaultSearchFilters,
 } from "@/types/search.types";
+import { SUBCATEGORIES } from "@/lib/destinationManagement";
 
 interface FilterBarProps {
   filters: SearchFiltersState;
@@ -213,7 +214,8 @@ export const FilterBar = ({
       }
     } else {
       if (df?.searchTerm) count++;
-      if (df?.categories && df.categories.length > 0) count++;
+      if (df?.categories && df.categories.length < 4) count++;
+      if (df?.subcategories && df.subcategories.length < SUBCATEGORIES.length) count++;
     }
     
     return count;
@@ -574,6 +576,54 @@ export const FilterBar = ({
                 }}
               />
             ))}
+          </div>
+        </AccSection>
+      )}
+
+      {/* Destination Subcategories (Advanced Filters) */}
+      {filters.propertyType === "destination" && (
+        <AccSection
+          label={t("searchResults.filters.subcategories", "Subcategories (Advanced)")}
+          defaultOpen={!!(filters.destinationFilters?.subcategories && filters.destinationFilters.subcategories.length > 0)}
+          headerColor={tk.headerText}
+          dividerColor={tk.sidebarBorder}
+          iconColor={themeTk.brand}
+        >
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+            {["Destinations", "Eat, drink & dance", "History & culture", "Experiences"].map(parentCat => {
+              const subs = SUBCATEGORIES.filter(s => s.parent === parentCat);
+              if (!subs.length) return null;
+              return (
+                <div key={parentCat} style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  <span style={{
+                    fontFamily: 'Crimson Pro, Georgia, serif',
+                    fontSize: '0.75rem',
+                    letterSpacing: '0.12em',
+                    textTransform: 'uppercase',
+                    color: themeTk.brand,
+                    fontWeight: 600,
+                  }}>
+                    {parentCat}
+                  </span>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8, paddingLeft: 6 }}>
+                    {subs.map(sub => (
+                      <CheckRow
+                        key={sub.id}
+                        checked={filters.destinationFilters?.subcategories?.includes(sub.id) || false}
+                        label={sub.label}
+                        onChange={checked => {
+                          const current = filters.destinationFilters?.subcategories || [];
+                          const next = checked
+                            ? [...current, sub.id]
+                            : current.filter(s => s !== sub.id);
+                          onDestinationFiltersChange?.({ subcategories: next });
+                        }}
+                      />
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </AccSection>
       )}

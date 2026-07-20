@@ -3,25 +3,17 @@ import { MapPin, Compass } from "lucide-react";
 import { useLocalized } from "@/hooks/useLocalized";
 import { useTheme } from "@/context/ThemeContext";
 import { getHomeThemeTokens } from "../homeTheme";
+import { getDestinationCategoryColor } from "@/utils/destinationColors";
 
 interface DestinationPopupProps {
   destination: Destination;
 }
 
-const categoryColors: Record<string, { bg: string; text: string }> = {
-  Adventure: { bg: "bg-orange-100", text: "text-orange-800" },
-  Historic: { bg: "bg-amber-100", text: "text-amber-800" },
-  Beach: { bg: "bg-cyan-100", text: "text-cyan-800" },
-};
-
 export function DestinationPopup({ destination }: DestinationPopupProps) {
   const { localize } = useLocalized();
   const { isDark, isBlue } = useTheme();
   const homeTk = getHomeThemeTokens({ isDark, isBlue });
-  const categoryStyle = categoryColors[destination.category] || {
-    bg: "bg-gray-100",
-    text: "text-gray-800",
-  };
+  const categoryStyle = getDestinationCategoryColor(destination.category, isDark);
 
   return (
     <div className="w-64 space-y-3" style={{ color: isDark ? '#f5f5f5' : isBlue ? 'hsl(212 48% 18%)' : '#111115' }}>
@@ -31,7 +23,12 @@ export function DestinationPopup({ destination }: DestinationPopupProps) {
             {localize(destination.name)}
           </h3>
           <span
-            className={`text-xs px-2 py-1 rounded-full font-medium ${categoryStyle.bg} ${categoryStyle.text}`}
+            className="text-xs px-2.5 py-0.5 rounded-full font-semibold border"
+            style={{
+              backgroundColor: categoryStyle.bg,
+              color: categoryStyle.text,
+              borderColor: categoryStyle.border,
+            }}
           >
             {destination.category}
           </span>

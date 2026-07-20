@@ -1,6 +1,7 @@
 import { Hotel } from "@/types/hotel.types";
 import { Apartment } from "@/types/apartment.type";
 import { Destination } from "@/types/destination.types";
+import { getDestinationCategoryColor } from "@/utils/destinationColors";
 import { Link } from "react-router-dom";
 import {
   X,
@@ -258,8 +259,7 @@ function DestinationPanel({ destination, isDark, isBlue }: { destination: Destin
   const infoBg = isDark ? homeTk.brandSoft : isBlue ? 'rgba(2,132,199,0.08)' : '#fef2f2';
   const infoText = isDark ? '#f87171' : isBlue ? '#0369a1' : '#b91c1c';
   const fallbackBg = isDark ? 'rgba(255,255,255,0.04)' : '#faf8f5';
-  const catBg = isDark ? homeTk.brandSoftStrong : isBlue ? 'rgba(2,132,199,0.12)' : '#fef2f2';
-  const catText = isDark ? '#f87171' : isBlue ? '#0369a1' : '#b91c1c';
+  const categoryStyle = getDestinationCategoryColor(destination.category, isDark);
 
   return (
     <>
@@ -273,7 +273,7 @@ function DestinationPanel({ destination, isDark, isBlue }: { destination: Destin
         )}
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.65), transparent)' }} />
         <div style={{ position: 'absolute', bottom: '0.75rem', left: '1rem' }}>
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', padding: '0.25rem 0.625rem', borderRadius: '9999px', fontSize: '0.75rem', fontWeight: 600, background: catBg, color: catText, border: `1px solid ${homeTk.brandBorder}` }}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', padding: '0.25rem 0.625rem', borderRadius: '9999px', fontSize: '0.75rem', fontWeight: 600, background: categoryStyle.bg, color: categoryStyle.text, border: `1px solid ${categoryStyle.border}` }}>
             <Tag className="w-3 h-3" />
             {destination.category}
           </span>

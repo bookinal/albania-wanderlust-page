@@ -12,6 +12,7 @@ import { useState, useEffect } from "react";
 import { useLocalized } from "@/hooks/useLocalized";
 import { useTheme } from "@/context/ThemeContext";
 import { getHomeThemeTokens } from "../homeTheme";
+import { getDestinationCategoryColor, getSubcategoryIconSvg } from "@/utils/destinationColors";
 
 type Selected =
   | { type: "hotel"; data: Hotel }
@@ -31,13 +32,13 @@ interface PropertiesMapProps {
  * map coordinate regardless of text width, so iconAnchor can stay [0, 0].
  */
 function createPriceMarker(
-  type: "hotel" | "apartment" | "destination",
+  type: "hotel" | "apartment",
   label: string,
-  accent: { brand: string; destinationBorder: string; hover: string; text: string; bg: string },
+  accent: { brand: string; hover: string; text: string; bg: string },
 ): L.DivIcon {
-  const emoji = type === "hotel" ? "🏨" : type === "apartment" ? "🏠" : "📍";
-  const borderColor = type === "destination" ? accent.destinationBorder : accent.brand;
-  const bgHover = type === "destination" ? accent.destinationBorder : accent.hover;
+  const emoji = type === "hotel" ? "🏨" : "🏠";
+  const borderColor = accent.brand;
+  const bgHover = accent.hover;
 
   const html = `
     <div style="
@@ -78,6 +79,52 @@ function createPriceMarker(
         border-top:8px solid ${borderColor};
         margin-top:-1px;
       "></div>
+    </div>
+  `;
+
+  return L.divIcon({
+    html,
+    className: "",
+    iconAnchor: [0, 0],
+  });
+}
+
+/**
+ * Creates an icon-only circular badge for Destination markers based on destination subcategories.
+ * Each subcategory displays its dedicated icon and unique color theme.
+ */
+function createDestinationMarker(destination: Destination, isDark: boolean): L.DivIcon {
+  const subcategoryKey = destination.subcategory || destination.category || "";
+  const style = getDestinationCategoryColor(subcategoryKey, isDark);
+  const iconSvg = getSubcategoryIconSvg(destination.subcategory, destination.category);
+
+  const html = `
+    <div style="
+      transform: translate(-50%, -50%);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    ">
+      <div style="
+        width: 36px;
+        height: 36px;
+        background: ${style.bg};
+        border: 2px solid ${style.border};
+        border-radius: 50%;
+        color: ${style.text};
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.28);
+        backdrop-filter: blur(6px);
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      "
+        onmouseover="this.style.background='${style.hoverBg}';this.style.color='${style.hoverText}';this.style.borderColor='${style.hoverBg}';this.style.transform='scale(1.18)';this.style.boxShadow='0 6px 18px rgba(0,0,0,0.4)';"
+        onmouseout="this.style.background='${style.bg}';this.style.color='${style.text}';this.style.borderColor='${style.border}';this.style.transform='scale(1)';this.style.boxShadow='0 4px 12px rgba(0,0,0,0.28)';"
+      >
+        ${iconSvg}
+      </div>
     </div>
   `;
 
@@ -197,8 +244,15 @@ export default function PropertiesMap({ onSelect, filters }: PropertiesMapProps)
     
     if (destinationFilters) {
       if (destinationFilters.searchTerm && !localize(destination.name).toLowerCase().includes(destinationFilters.searchTerm.toLowerCase())) return false;
-      if (destinationFilters.categories && destinationFilters.categories.length > 0) {
+      
+      if (Array.isArray(destinationFilters.categories)) {
+        if (destinationFilters.categories.length === 0) return false;
         if (!destinationFilters.categories.includes(destination.category)) return false;
+      }
+      
+      if (Array.isArray(destinationFilters.subcategories)) {
+        if (destinationFilters.subcategories.length === 0) return false;
+        if (!destination.subcategory || !destinationFilters.subcategories.includes(destination.subcategory)) return false;
       }
     }
     return true;
@@ -264,14 +318,15 @@ export default function PropertiesMap({ onSelect, filters }: PropertiesMapProps)
             <Marker
               key={`destination-${destination.id}`}
               position={[destination.lat || 0, destination.lng || 0]}
-              icon={createPriceMarker("destination", destination.category, tk.markerAccent)}
+              icon={createDestinationMarker(destination, isDark)}
               eventHandlers={{
                 click: () =>
                   onSelect?.({ type: "destination", data: destination }),
               }}
             >
-              <Tooltip direction="top" offset={[0, -8]} opacity={0.92}>
-                {localize(destination.name)}
+              <Tooltip direction="top" offset={[0, -18]} opacity={0.95}>
+                <div className="font-semibold text-xs">{localize(destination.name)}</div>
+                <div className="text-[10px] opacity-75">{destination.subcategory || destination.category}</div>
               </Tooltip>
             </Marker>
           ))}

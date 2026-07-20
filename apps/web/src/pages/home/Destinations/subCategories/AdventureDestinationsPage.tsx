@@ -20,7 +20,7 @@ import { useTranslation } from "react-i18next";
 import { useDestinations } from "@/hooks/useDestinations";
 import { DestinationCard } from "../DestinationCard";
 import { DestinationFilterBar } from "../../../../components/home/destinations/DestinationFilterBar";
-import DestinationMap from "../DestinationMap";
+// import DestinationMap from "../DestinationMap";
 
 const AdventureDestinationsPage = () => {
   const { t } = useTranslation();
@@ -360,7 +360,7 @@ const AdventureDestinationsPage = () => {
                             gap: "1.25rem",
                           }}
                         >
-                          {dests.slice(0, 4).map((destination) => (
+                          {dests.slice(0, 5).map((destination) => (
                             <DestinationCard
                               key={destination.id}
                               destination={destination}
@@ -370,7 +370,7 @@ const AdventureDestinationsPage = () => {
                             />
                           ))}
                         </div>
-                        {dests.length > 4 && (
+                        {dests.length > 5 && (
                           <div
                             style={{
                               display: "flex",
@@ -405,7 +405,8 @@ const AdventureDestinationsPage = () => {
                   </div>
                 )}
 
-            {(!isMobile || showMapMobile) && (
+            {/* DestinationMap commented out */}
+            {/* {(!isMobile || showMapMobile) && (
               <div
                 style={{
                   width: isMobile ? "100%" : "300px",
@@ -418,7 +419,7 @@ const AdventureDestinationsPage = () => {
               >
                 <DestinationMap destinations={adventureSpots} />
               </div>
-            )}
+            )} */}
           </div>
         )}
       </section>

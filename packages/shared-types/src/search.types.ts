@@ -59,6 +59,7 @@ export interface ApartmentFiltersInput {
 export interface DestinationFiltersInput {
   searchTerm?: string;
   categories?: string[];
+  subcategories?: string[];
 }
 
 /**
@@ -78,11 +79,35 @@ export interface SearchFiltersState {
   rooms?: number;
 }
 
+export const ALL_DESTINATION_CATEGORIES = [
+  "Destinations",
+  "Eat, drink & dance",
+  "History & culture",
+  "Experiences",
+];
+
+export const ALL_DESTINATION_SUBCATEGORIES = [
+  "Top cities & villages",
+  "Mountains",
+  "Beach",
+  "Lakes & canyons",
+  "Restaurants",
+  "Bars",
+  "Pubs",
+  "Clubs",
+  "Historical & archeological sites",
+  "Museums & galleries",
+  "UNESCO sites",
+  "Breathtaking/Adventure",
+  "Sea activities",
+  "On high altitude",
+];
+
 /**
  * Default filter values
  */
 export const defaultSearchFilters: SearchFiltersState = {
-  propertyType: "hotel",
+  propertyType: "destination",
   hotelFilters: {
     searchTerm: "",
     priceRange: { min: 0, max: 500 },
@@ -111,7 +136,8 @@ export const defaultSearchFilters: SearchFiltersState = {
   },
   destinationFilters: {
     searchTerm: "",
-    categories: ["Adventure", "Historic", "Beach"],
+    categories: ALL_DESTINATION_CATEGORIES,
+    subcategories: ALL_DESTINATION_SUBCATEGORIES,
   },
   destination: "",
   checkInDate: null,

@@ -5,6 +5,7 @@ import { userService } from "@/services/api/userService";
 import Swal from "sweetalert2";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@/context/ThemeContext";
+import { Hotel, Home, Car, ArrowLeft, Loader2, KeyRound, MapPin, Mail, User, ShieldCheck } from "lucide-react";
 
 const PageMotionStyles = () => (
   <style>{`
@@ -23,10 +24,9 @@ const PageMotionStyles = () => (
 
 export default function AuthPage() {
   const { t } = useTranslation();
-  const { isDark } = useTheme();
+  const { theme, isDark, isBlue } = useTheme();
   const navigate = useNavigate();
   const [isSignUp, setIsSignUp] = useState(false);
-  const [showManualAuth, setShowManualAuth] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -171,381 +171,226 @@ export default function AuthPage() {
     setSuccess("");
   };
 
-  const cardBg = isDark ? '#111115' : '#ffffff';
-  const cardBorder = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)';
-  const inputBg = isDark ? 'rgba(255,255,255,0.06)' : '#ffffff';
-  const inputBorder = isDark ? 'rgba(255,255,255,0.12)' : '#e2e8f0';
-  const inputText = isDark ? '#ffffff' : '#1e293b';
-  const inputPlaceholder = isDark ? 'rgba(255,255,255,0.30)' : undefined;
-  const labelText = isDark ? 'rgba(255,255,255,0.80)' : '#1e293b';
-  const mutedText = isDark ? 'rgba(255,255,255,0.45)' : '#64748b';
-  const dividerBg = isDark ? 'rgba(255,255,255,0.10)' : '#e2e8f0';
+  // --- Dynamic Theme Styling Tokens ---
+  const primaryBg = isDark
+    ? "#0a0a0c"
+    : isBlue
+    ? "#eff6ff"
+    : "#fdf9f7";
+
+  const overlayGradient = isDark
+    ? "linear-gradient(to bottom right, rgba(127, 29, 29, 0.15), rgba(15, 23, 42, 0.95), #0a0a0c)"
+    : isBlue
+    ? "linear-gradient(to bottom right, #dbeafe, #f0f9ff, #ffffff)"
+    : "linear-gradient(to bottom right, #fee2e2, #fffafb, #ffffff)";
+
+  const vignetteBg = isDark
+    ? "radial-gradient(ellipse at center, transparent 35%, rgba(0,0,0,0.85) 100%)"
+    : isBlue
+    ? "radial-gradient(ellipse at center, transparent 35%, rgba(2,132,199,0.04) 100%)"
+    : "radial-gradient(ellipse at center, transparent 35%, rgba(232,25,44,0.02) 100%)";
+
+  const crossHatchOpacity = isDark ? 0.02 : isBlue ? 0.03 : 0.04;
+  const crossHatchColor = isDark ? "#ffffff" : isBlue ? "#0284c7" : "#dc2626";
+
   const fadeBottomGradient = isDark
-    ? 'linear-gradient(to top, #0a0a0c, transparent)'
-    : 'linear-gradient(to top, #ffffff, transparent)';
-  const googleBtnBg = isDark ? 'rgba(255,255,255,0.06)' : '#ffffff';
-  const googleBtnBorder = isDark ? 'rgba(255,255,255,0.12)' : '#e2e8f0';
-  const googleBtnText = isDark ? '#ffffff' : '#1e293b';
-  const createAccountBtnBg = isDark ? 'transparent' : '#ffffff';
-  const createAccountBtnBorder = isDark ? '#E8192C' : '#b91c1c';
-  const createAccountBtnText = isDark ? '#fca5a5' : '#991b1b';
+    ? "linear-gradient(to top, #0a0a0c, transparent)"
+    : "linear-gradient(to top, #ffffff, transparent)";
 
-  if (showManualAuth) {
-    return (
-      <div className="min-h-screen relative overflow-hidden" style={{ background: isDark ? '#0a0a0c' : '#ffffff' }}>
-        {/* Albania flag gradient — red to black */}
-        <div className="absolute inset-0 bg-gradient-to-br from-red-700 via-red-950 to-black" />
+  // Brand Panel (Left Panel) Styling
+  const brandPanelBorder = isDark
+    ? "rgba(255, 255, 255, 0.08)"
+    : isBlue
+    ? "rgba(2, 132, 199, 0.12)"
+    : "rgba(232, 25, 44, 0.08)";
 
-        {/* Decorative cross-hatched overlay for texture */}
-        <div
-          className="absolute inset-0 opacity-[0.05]"
-          style={{
-            backgroundImage:
-              "repeating-linear-gradient(45deg,#fff 0,#fff 1px,transparent 0,transparent 50%)",
-            backgroundSize: "14px 14px",
-          }}
-        />
+  const brandPanelBg = isDark
+    ? "rgba(255, 255, 255, 0.03)"
+    : isBlue
+    ? "rgba(255, 255, 255, 0.65)"
+    : "rgba(255, 255, 255, 0.7)";
 
-        {/* Vignette */}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_35%,rgba(0,0,0,0.72)_100%)]" />
+  const brandPanelShadow = isDark
+    ? "0 25px 50px -12px rgba(0, 0, 0, 0.5)"
+    : isBlue
+    ? "0 20px 40px -15px rgba(2, 132, 199, 0.08)"
+    : "0 20px 40px -15px rgba(232, 25, 44, 0.06)";
 
-        {/* Bottom fade */}
-        <div className="absolute bottom-0 left-0 right-0 h-28" style={{ background: fadeBottomGradient }} />
+  const brandBadgeBg = isDark
+    ? "rgba(255, 255, 255, 0.08)"
+    : isBlue
+    ? "rgba(2, 132, 199, 0.08)"
+    : "rgba(232, 25, 44, 0.05)";
 
-        <div className="relative z-10 min-h-screen flex items-center justify-center px-4 py-10">
-          <div className="w-full max-w-5xl">
-            <div className="grid lg:grid-cols-12 gap-6 items-stretch">
-              {/* Brand panel */}
-              <div className="lg:col-span-5 rounded-3xl border border-white/10 bg-white/5 backdrop-blur-md p-7 md:p-9 shadow-2xl shadow-black/35 animate-fade-in">
-                <div className="flex items-center justify-between gap-3">
-                  <div className="inline-flex items-center gap-2 rounded-full bg-white/10 border border-white/15 px-4 py-2">
-                    <span className="h-2 w-2 rounded-full bg-red-400" />
-                    <span className="text-[11px] font-bold uppercase tracking-[0.25em] text-white/80">
-                      BookinAL
-                    </span>
-                  </div>
+  const brandBadgeBorder = isDark
+    ? "rgba(255, 255, 255, 0.12)"
+    : isBlue
+    ? "rgba(2, 132, 199, 0.15)"
+    : "rgba(232, 25, 44, 0.1)";
 
-                  <button
-                    type="button"
-                    onClick={() => setShowManualAuth(false)}
-                    className="text-white/70 hover:text-white text-xs font-semibold tracking-wide transition-colors"
-                  >
-                    {t("common.back", { defaultValue: "Back" })}
-                  </button>
-                </div>
+  const brandBadgeTextColor = isDark
+    ? "rgba(255, 255, 255, 0.85)"
+    : isBlue
+    ? "#0369a1"
+    : "#b91c1c";
 
-                <h1 className="mt-6 text-4xl md:text-5xl font-black text-white leading-[0.95] tracking-tight">
-                  {isSignUp ? t("user.joinBookinAL") : t("user.welcomeBack")}
-                </h1>
-                <p className="mt-4 text-white/65 text-sm md:text-base leading-relaxed max-w-md">
-                  {isSignUp
-                    ? t("user.startAlbanianAdventure")
-                    : t("user.continueExploringAlbania")}
-                </p>
+  const brandBadgeCircleColor = isBlue ? "#0284c7" : "#dc2626";
 
-                <div className="mt-8 grid grid-cols-3 gap-3">
-                  {["🏨", "🏠", "🚗"].map((icon, i) => (
-                    <div
-                      key={icon}
-                      className="rounded-2xl bg-white/6 border border-white/10 px-4 py-4 text-center shadow-sm animate-fade-in-up"
-                      style={{ animationDelay: `${120 + i * 90}ms` }}
-                    >
-                      <div className="text-2xl">{icon}</div>
-                      <div className="mt-2 h-1.5 rounded-full bg-gradient-to-r from-red-400/70 to-white/15" />
-                    </div>
-                  ))}
-                </div>
+  const brandTitleColor = isDark
+    ? "#ffffff"
+    : isBlue
+    ? "hsl(212 48% 18%)"
+    : "#111115";
 
-                <div className="mt-8 rounded-2xl border border-white/10 bg-black/25 p-5">
-                  <div className="flex justify-center gap-1.5 mb-3">
-                    {[...Array(5)].map((_, i) => (
-                      <span
-                        key={i}
-                        className={`block rounded-full bg-red-300 ${
-                          i === 2
-                            ? "w-7 h-1.5"
-                            : "w-1.5 h-1.5 opacity-50"
-                        }`}
-                      />
-                    ))}
-                  </div>
-                  <p className="text-xs text-white/65 text-center leading-relaxed">
-                    {t("user.termsAgreement")}
-                  </p>
-                </div>
-              </div>
+  const brandTitleGradient = isDark
+    ? "linear-gradient(to right, #fee2e2, #ffffff)"
+    : isBlue
+    ? "linear-gradient(to right, #0369a1, #0284c7)"
+    : "linear-gradient(to right, #b91c1c, #111115)";
 
-              {/* Auth card */}
-              <div className="lg:col-span-7 animate-fade-in-up" style={{ animationDelay: "80ms" }}>
-                <div
-                  className="rounded-3xl overflow-hidden shadow-2xl"
-                  style={{ background: cardBg, border: `1px solid ${cardBorder}` }}
-                >
-                  <div className="h-2 bg-gradient-to-r from-red-700 via-red-600 to-black" />
+  const brandDescColor = isDark
+    ? "rgba(255, 255, 255, 0.65)"
+    : isBlue
+    ? "hsl(211 22% 42%)"
+    : "#6b6663";
 
-                  <div className="p-7 md:p-10">
-                    {error && (
-                      <div style={{
-                        background: isDark ? 'rgba(239,68,68,0.12)' : '#fef2f2',
-                        border: `1px solid ${isDark ? 'rgba(239,68,68,0.30)' : '#fecaca'}`,
-                        color: isDark ? '#fca5a5' : '#991b1b',
-                        padding: '12px 16px', borderRadius: 16, marginBottom: 16,
-                      }} className="animate-fade-in">
-                        <p className="text-sm font-semibold">{error}</p>
-                      </div>
-                    )}
+  // Feature cards inside Brand Panel
+  const brandIconContainerBg = isDark
+    ? "rgba(255, 255, 255, 0.04)"
+    : isBlue
+    ? "rgba(255, 255, 255, 0.8)"
+    : "rgba(255, 255, 255, 0.85)";
 
-                    {success && (
-                      <div style={{
-                        background: isDark ? 'rgba(16,185,129,0.12)' : '#ecfdf5',
-                        border: `1px solid ${isDark ? 'rgba(16,185,129,0.30)' : '#a7f3d0'}`,
-                        color: isDark ? '#6ee7b7' : '#065f46',
-                        padding: '12px 16px', borderRadius: 16, marginBottom: 16,
-                      }} className="animate-fade-in">
-                        <p className="text-sm font-semibold">{success}</p>
-                      </div>
-                    )}
+  const brandIconContainerBorder = isDark
+    ? "rgba(255, 255, 255, 0.08)"
+    : isBlue
+    ? "rgba(2, 132, 199, 0.12)"
+    : "rgba(232, 25, 44, 0.08)";
 
-                    <form
-                      onSubmit={isSignUp ? handleManualSignUp : handleManualSignIn}
-                      className="space-y-4"
-                    >
-                      {isSignUp && (
-                        <div className="animate-fade-in">
-                          <label style={{ display: 'block', fontSize: 14, fontWeight: 700, color: labelText, marginBottom: 8 }}>
-                            {t("user.fullNameLabel")}
-                          </label>
-                          <input
-                            type="text"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            style={{
-                              width: '100%', padding: '12px 16px',
-                              border: `1px solid ${inputBorder}`, borderRadius: 16,
-                              background: inputBg, color: inputText,
-                              outline: 'none', transition: 'border-color 0.2s',
-                              boxSizing: 'border-box',
-                            }}
-                            placeholder={t("user.fullNamePlaceholder")}
-                            required
-                          />
-                        </div>
-                      )}
+  const brandIconColor = isBlue ? "#0284c7" : "#dc2626";
 
-                      <div>
-                        <label style={{ display: 'block', fontSize: 14, fontWeight: 700, color: labelText, marginBottom: 8 }}>
-                          {t("user.emailLabel")}
-                        </label>
-                        <input
-                          type="email"
-                          value={email}
-                          onChange={(e) => setEmail(e.target.value)}
-                          style={{
-                            width: '100%', padding: '12px 16px',
-                            border: `1px solid ${inputBorder}`, borderRadius: 16,
-                            background: inputBg, color: inputText,
-                            outline: 'none', transition: 'border-color 0.2s',
-                            boxSizing: 'border-box',
-                          }}
-                          placeholder={t("user.emailPlaceholder")}
-                          required
-                        />
-                      </div>
+  const brandIconTextColor = isDark
+    ? "rgba(255, 255, 255, 0.8)"
+    : isBlue
+    ? "hsl(212 48% 18%)"
+    : "#111115";
 
-                      <div>
-                        <label style={{ display: 'block', fontSize: 14, fontWeight: 700, color: labelText, marginBottom: 8 }}>
-                          {t("user.passwordLabel")}
-                        </label>
-                        <input
-                          type="password"
-                          value={password}
-                          onChange={(e) => setPassword(e.target.value)}
-                          style={{
-                            width: '100%', padding: '12px 16px',
-                            border: `1px solid ${inputBorder}`, borderRadius: 16,
-                            background: inputBg, color: inputText,
-                            outline: 'none', transition: 'border-color 0.2s',
-                            boxSizing: 'border-box',
-                          }}
-                          placeholder={t("user.passwordPlaceholder")}
-                          required
-                        />
-                      </div>
+  const brandBottomBoxBorder = isDark
+    ? "rgba(255, 255, 255, 0.08)"
+    : isBlue
+    ? "rgba(2, 132, 199, 0.1)"
+    : "rgba(232, 25, 44, 0.06)";
 
-                      {isSignUp && (
-                        <>
-                          <div className="animate-fade-in">
-                            <label style={{ display: 'block', fontSize: 14, fontWeight: 700, color: labelText, marginBottom: 8 }}>
-                              {t("user.confirmPasswordLabel")}
-                            </label>
-                            <input
-                              type="password"
-                              value={confirmPassword}
-                              onChange={(e) => setConfirmPassword(e.target.value)}
-                              style={{
-                                width: '100%', padding: '12px 16px',
-                                border: `1px solid ${inputBorder}`, borderRadius: 16,
-                                background: inputBg, color: inputText,
-                                outline: 'none', transition: 'border-color 0.2s',
-                                boxSizing: 'border-box',
-                              }}
-                              placeholder={t("user.passwordPlaceholder")}
-                              required
-                            />
-                          </div>
-                          <div className="animate-fade-in">
-                            <label style={{ display: 'block', fontSize: 14, fontWeight: 700, color: labelText, marginBottom: 8 }}>
-                              {t("user.locationLabel")}
-                            </label>
-                            <input
-                              type="text"
-                              value={location}
-                              onChange={(e) => setLocation(e.target.value)}
-                              style={{
-                                width: '100%', padding: '12px 16px',
-                                border: `1px solid ${inputBorder}`, borderRadius: 16,
-                                background: inputBg, color: inputText,
-                                outline: 'none', transition: 'border-color 0.2s',
-                                boxSizing: 'border-box',
-                              }}
-                              placeholder={t("user.locationPlaceholder")}
-                              required
-                            />
-                          </div>
-                        </>
-                      )}
+  const brandBottomBoxBg = isDark
+    ? "rgba(0, 0, 0, 0.2)"
+    : isBlue
+    ? "rgba(255, 255, 255, 0.4)"
+    : "rgba(255, 255, 255, 0.45)";
 
-                      <button
-                        type="submit"
-                        disabled={loading}
-                        className={`w-full bg-gradient-to-r from-red-700 via-red-600 to-black text-white py-3.5 px-4 rounded-2xl hover:from-red-800 hover:via-red-700 hover:to-black transition-all font-bold shadow-lg shadow-red-900/25 hover:shadow-xl hover:shadow-red-900/30 transform hover:scale-[1.01] ${
-                          loading ? "opacity-70 cursor-not-allowed" : ""
-                        }`}
-                      >
-                        {loading ? (
-                          <span className="flex items-center justify-center">
-                            <svg
-                              className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                              xmlns="http://www.w3.org/2000/svg"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                            >
-                              <circle
-                                className="opacity-25"
-                                cx="12"
-                                cy="12"
-                                r="10"
-                                stroke="currentColor"
-                                strokeWidth="4"
-                              ></circle>
-                              <path
-                                className="opacity-75"
-                                fill="currentColor"
-                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                              ></path>
-                            </svg>
-                            {t("user.processing")}
-                          </span>
-                        ) : isSignUp ? (
-                          t("user.createAccount")
-                        ) : (
-                          t("user.signIn")
-                        )}
-                      </button>
-                    </form>
+  // Auth Card (Right Panel) Styling
+  const cardBg = isDark
+    ? "#111115"
+    : "#ffffff";
 
-                    <div className="relative my-7">
-                      <div className="absolute inset-0 flex items-center">
-                        <div className="w-full border-t" style={{ borderColor: dividerBg }}></div>
-                      </div>
-                      <div className="relative flex justify-center text-sm">
-                        <span className="px-4 font-semibold" style={{ background: cardBg, color: mutedText }}>
-                          {t("user.or")}
-                        </span>
-                      </div>
-                    </div>
+  const cardBorder = isDark
+    ? "rgba(255,255,255,0.08)"
+    : isBlue
+    ? "rgba(2, 132, 199, 0.12)"
+    : "rgba(232, 25, 44, 0.08)";
 
-                    <button
-                      onClick={() => {
-                        setShowManualAuth(false);
-                        handleGoogleSignIn();
-                      }}
-                      disabled={loading}
-                      style={{
-                        width: '100%',
-                        background: googleBtnBg,
-                        border: `1px solid ${googleBtnBorder}`,
-                        color: googleBtnText,
-                        padding: '14px 16px',
-                        borderRadius: 16,
-                        fontWeight: 700,
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        cursor: 'pointer', transition: 'opacity 0.2s',
-                        opacity: loading ? 0.7 : 1,
-                      }}
-                    >
-                      <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
-                        <path
-                          fill="#4285F4"
-                          d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                        />
-                        <path
-                          fill="#34A853"
-                          d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                        />
-                        <path
-                          fill="#FBBC05"
-                          d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-                        />
-                        <path
-                          fill="#EA4335"
-                          d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-                        />
-                      </svg>
-                      {t("user.continueWithGoogle")}
-                    </button>
+  const cardShadow = isDark
+    ? "0 25px 50px -12px rgba(0,0,0,0.5)"
+    : isBlue
+    ? "0 20px 40px -15px rgba(2, 132, 199, 0.12)"
+    : "0 20px 40px -15px rgba(0, 0, 0, 0.08)";
 
-                    <div className="text-center mt-7">
-                      <p className="text-sm" style={{ color: mutedText }}>
-                        {isSignUp
-                          ? t("user.alreadyHaveAccountText")
-                          : t("user.dontHaveAccountText")}
-                        <button
-                          type="button"
-                          onClick={toggleAuthMode}
-                          className="ml-1 font-bold transition-colors"
-                          style={{ color: '#E8192C', background: 'transparent', border: 'none', cursor: 'pointer' }}
-                        >
-                          {isSignUp ? t("user.signIn") : t("user.register")}
-                        </button>
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <PageMotionStyles />
-      </div>
-    );
-  }
+  const cardTopAccentGradient = isBlue
+    ? "linear-gradient(to right, #2563eb, #0ea5e9, #0f172a)"
+    : "linear-gradient(to right, #b91c1c, #dc2626, #000000)";
+
+  const inputBg = isDark
+    ? "rgba(255,255,255,0.03)"
+    : isBlue
+    ? "#f8fafc"
+    : "#fdfcfb";
+
+  const inputBorder = isDark
+    ? "rgba(255,255,255,0.1)"
+    : isBlue
+    ? "rgba(2, 132, 199, 0.15)"
+    : "#e2e8f0";
+
+  const inputText = isDark
+    ? "#ffffff"
+    : isBlue
+    ? "hsl(212 48% 18%)"
+    : "#111115";
+
+  const labelText = isDark
+    ? "rgba(255,255,255,0.9)"
+    : isBlue
+    ? "hsl(212 48% 18%)"
+    : "#111115";
+
+  const mutedText = isDark
+    ? "rgba(255,255,255,0.45)"
+    : isBlue
+    ? "hsl(211 22% 42%)"
+    : "#6b6663";
+
+  const dividerBg = isDark
+    ? "rgba(255,255,255,0.08)"
+    : isBlue
+    ? "rgba(2, 132, 199, 0.12)"
+    : "#e2e8f0";
+
+  const googleBtnBg = isDark
+    ? "rgba(255,255,255,0.03)"
+    : "#ffffff";
+
+  const googleBtnBorder = isDark
+    ? "rgba(255,255,255,0.1)"
+    : isBlue
+    ? "rgba(2, 132, 199, 0.15)"
+    : "#e2e8f0";
+
+  const googleBtnText = isDark
+    ? "#ffffff"
+    : isBlue
+    ? "hsl(212 48% 18%)"
+    : "#111115";
+
+  // Primary buttons and gradient accents
+  const primaryGradient = isBlue
+    ? "linear-gradient(to right, #0284c7, #0369a1)"
+    : "linear-gradient(to right, #dc2626, #991b1b)";
+
+  const primaryBtnShadow = isBlue
+    ? "shadow-blue-900/25 hover:shadow-blue-900/35"
+    : "shadow-red-900/25 hover:shadow-red-900/35";
+
+  const linkText = isBlue ? "#0284c7" : "#dc2626";
+  const linkTextHover = isBlue ? "#0369a1" : "#b91c1c";
 
   if (initialLoading) {
     return (
-      <div className="min-h-screen relative overflow-hidden flex items-center justify-center" style={{ background: isDark ? '#0a0a0c' : '#ffffff' }}>
-        <div className="absolute inset-0 bg-gradient-to-br from-red-700 via-red-950 to-black" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_35%,rgba(0,0,0,0.72)_100%)]" />
+      <div className="min-h-screen relative overflow-hidden flex items-center justify-center animate-fade-in" style={{ background: primaryBg }}>
+        {/* Background gradient overlay */}
+        <div className="absolute inset-0 transition-opacity duration-300" style={{ background: overlayGradient }} />
+        {/* Vignette */}
+        <div className="absolute inset-0" style={{ background: vignetteBg }} />
+        {/* Decorative cross-hatched pattern */}
         <div
-          className="absolute inset-0 opacity-[0.05]"
+          className="absolute inset-0 transition-opacity duration-300"
           style={{
-            backgroundImage: "repeating-linear-gradient(45deg,#fff 0,#fff 1px,transparent 0,transparent 50%)",
+            opacity: crossHatchOpacity,
+            backgroundImage: `repeating-linear-gradient(45deg, ${crossHatchColor} 0, ${crossHatchColor} 1px, transparent 0, transparent 50%)`,
             backgroundSize: "14px 14px",
           }}
         />
         <div className="relative z-10 flex flex-col items-center gap-4">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white/80"></div>
-          <div className="text-xs font-bold uppercase tracking-[0.28em] text-white/60">
+          <Loader2 className="animate-spin h-10 w-10" style={{ color: isBlue ? "#0284c7" : "#dc2626" }} />
+          <div className="text-xs font-bold uppercase tracking-[0.28em]" style={{ color: isDark ? "rgba(255,255,255,0.6)" : isBlue ? "hsl(212 48% 18%)" : "#111115" }}>
             {t("user.processing")}
           </div>
         </div>
@@ -554,123 +399,183 @@ export default function AuthPage() {
     );
   }
 
-  // OAuth page view
   return (
-    <div className="min-h-screen relative overflow-hidden" style={{ background: isDark ? '#0a0a0c' : '#ffffff' }}>
-      {/* Albania flag gradient — red to black */}
-      <div className="absolute inset-0 bg-gradient-to-br from-red-700 via-red-950 to-black" />
+    <div className="min-h-screen relative overflow-hidden transition-colors duration-300" style={{ background: primaryBg }}>
+      {/* Background gradient overlay */}
+      <div className="absolute inset-0 transition-all duration-300" style={{ background: overlayGradient }} />
 
       {/* Decorative cross-hatched overlay for texture */}
       <div
-        className="absolute inset-0 opacity-[0.05]"
+        className="absolute inset-0 transition-opacity duration-300"
         style={{
-          backgroundImage: "repeating-linear-gradient(45deg,#fff 0,#fff 1px,transparent 0,transparent 50%)",
+          opacity: crossHatchOpacity,
+          backgroundImage: `repeating-linear-gradient(45deg, ${crossHatchColor} 0, ${crossHatchColor} 1px, transparent 0, transparent 50%)`,
           backgroundSize: "14px 14px",
         }}
       />
 
       {/* Vignette */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_35%,rgba(0,0,0,0.72)_100%)]" />
+      <div className="absolute inset-0" style={{ background: vignetteBg }} />
 
       {/* Bottom fade */}
       <div className="absolute bottom-0 left-0 right-0 h-28" style={{ background: fadeBottomGradient }} />
 
-      <div className="relative z-10 min-h-screen flex items-center justify-center px-4 py-10">
+      <div className="relative z-10 min-h-screen flex items-center justify-center px-4 py-12 md:py-16">
         <div className="w-full max-w-5xl">
-          <div className="grid lg:grid-cols-12 gap-6 items-stretch">
+          <div className="grid lg:grid-cols-12 gap-8 items-stretch">
             {/* Brand panel */}
-            <div className="lg:col-span-6 rounded-3xl border border-white/10 bg-white/5 backdrop-blur-md p-7 md:p-10 shadow-2xl shadow-black/35 animate-fade-in">
-              <span className="inline-block text-red-200/90 text-[11px] font-bold uppercase tracking-[0.32em] mb-5">
-                Albania · Travel · Stays
-              </span>
-
-              <div className="inline-flex items-center gap-2 rounded-full bg-white/10 border border-white/15 px-4 py-2">
-                <span className="h-2 w-2 rounded-full bg-red-400" />
-                <span className="text-[11px] font-bold uppercase tracking-[0.25em] text-white/80">
-                  BookinAL
-                </span>
-              </div>
-
-              <h1 className="mt-6 text-5xl md:text-6xl font-black text-white leading-[0.9] tracking-tight">
-                {t("user.welcomeToAlbania")}
-                <br />
-                <span className="bg-gradient-to-r from-red-200 to-white bg-clip-text text-transparent">
-                  {t("user.gatewayToExperiences")}
-                </span>
-              </h1>
-
-              <p className="mt-5 text-white/65 text-sm md:text-base leading-relaxed max-w-md">
-                Secure sign-in, fast booking, and a curated experience—designed in the colors of the Albanian flag.
-              </p>
-
-              <div className="mt-10 grid grid-cols-3 gap-3">
-                {[
-                  { icon: "🏨", label: t("user.hotels") },
-                  { icon: "🏠", label: t("user.apartments") },
-                  { icon: "🚗", label: t("user.carRentals") },
-                ].map((item, i) => (
+            <div
+              className="lg:col-span-5 rounded-3xl border backdrop-blur-md p-7 md:p-9 shadow-2xl flex flex-col justify-between transition-all duration-300 animate-fade-in"
+              style={{
+                borderColor: brandPanelBorder,
+                background: brandPanelBg,
+                boxShadow: brandPanelShadow,
+              }}
+            >
+              <div>
+                <div className="flex items-center justify-between gap-3 mb-8">
                   <div
-                    key={item.label}
-                    className="rounded-2xl bg-white/6 border border-white/10 px-4 py-4 text-center shadow-sm animate-fade-in-up"
-                    style={{ animationDelay: `${160 + i * 90}ms` }}
+                    className="inline-flex items-center gap-2 rounded-full px-4 py-2 border transition-all duration-300"
+                    style={{
+                      background: brandBadgeBg,
+                      borderColor: brandBadgeBorder,
+                    }}
                   >
-                    <div className="text-2xl">{item.icon}</div>
-                    <p className="mt-2 text-[11px] font-bold tracking-wide text-white/75">
-                      {item.label}
-                    </p>
+                    <span className="h-2 w-2 rounded-full" style={{ backgroundColor: brandBadgeCircleColor }} />
+                    <span className="text-[11px] font-bold uppercase tracking-[0.25em]" style={{ color: brandBadgeTextColor }}>
+                      BookinAL
+                    </span>
                   </div>
-                ))}
+
+                  <button
+                    type="button"
+                    onClick={() => navigate("/")}
+                    className="text-xs font-semibold tracking-wide transition-colors flex items-center gap-1.5 hover:opacity-85"
+                    style={{ color: brandBadgeTextColor }}
+                  >
+                    <ArrowLeft className="h-3.5 w-3.5" />
+                    {t("common.back", { defaultValue: "Back" })}
+                  </button>
+                </div>
+
+                <h1 className="text-4xl md:text-5xl font-black leading-[1.05] tracking-tight transition-all duration-300" style={{ color: brandTitleColor }}>
+                  {isSignUp ? (
+                    t("user.joinBookinAL")
+                  ) : (
+                    <>
+                      {t("user.welcomeToAlbania")}
+                      <br />
+                      <span className="bg-gradient-to-r bg-clip-text text-transparent" style={{ backgroundImage: brandTitleGradient }}>
+                        {t("user.gatewayToExperiences")}
+                      </span>
+                    </>
+                  )}
+                </h1>
+                <p className="mt-4 text-sm md:text-base leading-relaxed max-w-md transition-all duration-300" style={{ color: brandDescColor }}>
+                  {isSignUp
+                    ? t("user.startAlbanianAdventure")
+                    : t("user.continueExploringAlbania")}
+                </p>
+
+                <div className="mt-8 grid grid-cols-3 gap-3">
+                  {[
+                    { Icon: Hotel, label: t("user.hotels") },
+                    { Icon: Home, label: t("user.apartments") },
+                    { Icon: Car, label: t("user.carRentals") },
+                  ].map((item, i) => {
+                    const Icon = item.Icon;
+                    return (
+                      <div
+                        key={item.label}
+                        className="rounded-2xl px-3 py-4 text-center shadow-sm animate-fade-in-up transition-all duration-300"
+                        style={{
+                          background: brandIconContainerBg,
+                          border: `1px solid ${brandIconContainerBorder}`,
+                          animationDelay: `${160 + i * 90}ms`,
+                        }}
+                      >
+                        <div className="flex justify-center mb-2">
+                          <Icon className="h-6 w-6" style={{ color: brandIconColor }} />
+                        </div>
+                        <p className="text-[11px] font-bold tracking-wide animate-fade-in" style={{ color: brandIconTextColor }}>
+                          {item.label}
+                        </p>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
 
-              <div className="mt-10 rounded-2xl border border-white/10 bg-black/25 p-5">
+              <div
+                className="mt-8 rounded-2xl border p-5 transition-all duration-300"
+                style={{
+                  borderColor: brandBottomBoxBorder,
+                  background: brandBottomBoxBg,
+                }}
+              >
                 <div className="flex justify-center gap-1.5 mb-3">
                   {[...Array(5)].map((_, i) => (
                     <span
                       key={i}
-                      className={`block rounded-full bg-red-300 ${i === 2 ? "w-7 h-1.5" : "w-1.5 h-1.5 opacity-50"}`}
+                      className="block rounded-full transition-all duration-300"
+                      style={{
+                        backgroundColor: brandIconColor,
+                        width: i === 2 ? 28 : 6,
+                        height: 6,
+                        opacity: i === 2 ? 0.9 : 0.3,
+                      }}
                     />
                   ))}
                 </div>
-                <p className="text-xs text-white/65 text-center leading-relaxed">
+                <p className="text-xs text-center leading-relaxed transition-all duration-300" style={{ color: brandDescColor }}>
                   {t("user.termsAgreement")}{" "}
-                  <span className="text-white/85 font-semibold">{t("user.termsOfService")}</span>{" "}
+                  <span className="font-semibold text-nowrap" style={{ color: brandIconColor }}>{t("user.termsOfService")}</span>{" "}
                   {t("user.and")}{" "}
-                  <span className="text-white/85 font-semibold">{t("user.privacyPolicy")}</span>
+                  <span className="font-semibold text-nowrap" style={{ color: brandIconColor }}>{t("user.privacyPolicy")}</span>
                 </p>
               </div>
             </div>
 
             {/* Auth card */}
-            <div className="lg:col-span-6 animate-fade-in-up" style={{ animationDelay: "90ms" }}>
+            <div className="lg:col-span-7 animate-fade-in-up" style={{ animationDelay: "80ms" }}>
               <div
-                className="rounded-3xl shadow-2xl overflow-hidden"
-                style={{ background: cardBg, border: `1px solid ${cardBorder}` }}
+                className="rounded-3xl overflow-hidden shadow-2xl transition-all duration-300"
+                style={{
+                  background: cardBg,
+                  border: `1px solid ${cardBorder}`,
+                  boxShadow: cardShadow,
+                }}
               >
-                <div className="h-2 bg-gradient-to-r from-red-700 via-red-600 to-black" />
+                <div className="h-2" style={{ background: cardTopAccentGradient }} />
 
                 <div className="p-7 md:p-10">
-                  <h2 className="text-2xl font-black mb-6" style={{ color: labelText }}>
-                    {t("user.getStarted")}
+                  <h2 className="text-2xl font-black mb-6 animate-fade-in" style={{ color: labelText }}>
+                    {isSignUp ? t("user.createNewAccount") : t("user.signIn")}
                   </h2>
 
+                  {/* Google sign-in button at the top */}
                   <button
                     onClick={handleGoogleSignIn}
                     disabled={loading}
                     style={{
-                      width: '100%',
+                      width: "100%",
                       background: googleBtnBg,
                       border: `1px solid ${googleBtnBorder}`,
                       color: googleBtnText,
-                      padding: '14px 16px',
+                      padding: "14px 16px",
                       borderRadius: 16,
                       fontWeight: 700,
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      cursor: loading ? 'not-allowed' : 'pointer',
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      cursor: loading ? "not-allowed" : "pointer",
                       opacity: loading ? 0.7 : 1,
-                      transition: 'opacity 0.2s',
+                      transition: "opacity 0.2s, transform 0.1s",
                     }}
+                    onMouseEnter={e => (e.currentTarget as HTMLButtonElement).style.opacity = "0.85"}
+                    onMouseLeave={e => (e.currentTarget as HTMLButtonElement).style.opacity = "1"}
                   >
-                    <svg className="w-6 h-6 mr-3" viewBox="0 0 24 24">
+                    <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
                       <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
                       <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
                       <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
@@ -679,51 +584,216 @@ export default function AuthPage() {
                     {t("user.continueWithGoogle")}
                   </button>
 
-                  <div className="relative my-7">
+                  <div className="relative my-6">
                     <div className="absolute inset-0 flex items-center">
                       <div className="w-full border-t" style={{ borderColor: dividerBg }}></div>
                     </div>
                     <div className="relative flex justify-center text-sm">
                       <span className="px-4 font-semibold" style={{ background: cardBg, color: mutedText }}>
-                        {t("user.orContinueWithEmail")}
+                        {t("user.or")}
                       </span>
                     </div>
                   </div>
 
-                  <div className="space-y-3">
-                    <button
-                      onClick={() => { setShowManualAuth(true); setIsSignUp(false); }}
-                      className="w-full bg-gradient-to-r from-red-700 via-red-600 to-black text-white py-3.5 px-4 rounded-2xl hover:from-red-800 hover:via-red-700 hover:to-black transition-all duration-200 font-bold shadow-lg shadow-red-900/25 hover:shadow-xl transform hover:scale-[1.01]"
-                    >
-                      {t("user.signInWithEmail")}
-                    </button>
+                  {error && (
+                    <div style={{
+                      background: isDark ? "rgba(239,68,68,0.12)" : "#fef2f2",
+                      border: `1px solid ${isDark ? "rgba(239,68,68,0.30)" : "#fecaca"}`,
+                      color: isDark ? "#fca5a5" : "#991b1b",
+                      padding: "12px 16px", borderRadius: 16, marginBottom: 16,
+                    }} className="animate-fade-in">
+                      <p className="text-sm font-semibold">{error}</p>
+                    </div>
+                  )}
+
+                  {success && (
+                    <div style={{
+                      background: isDark ? "rgba(16,185,129,0.12)" : "#ecfdf5",
+                      border: `1px solid ${isDark ? "rgba(16,185,129,0.30)" : "#a7f3d0"}`,
+                      color: isDark ? "#6ee7b7" : "#065f46",
+                      padding: "12px 16px", borderRadius: 16, marginBottom: 16,
+                    }} className="animate-fade-in">
+                      <p className="text-sm font-semibold">{success}</p>
+                    </div>
+                  )}
+
+                  <form
+                    onSubmit={isSignUp ? handleManualSignUp : handleManualSignIn}
+                    className="space-y-4"
+                  >
+                    {isSignUp && (
+                      <div className="animate-fade-in">
+                        <label style={{ display: "block", fontSize: 13, fontWeight: 700, color: labelText, marginBottom: 6 }}>
+                          {t("user.fullNameLabel")}
+                        </label>
+                        <div className="relative">
+                          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <User className="h-4 w-4" style={{ color: mutedText }} />
+                          </div>
+                          <input
+                            type="text"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            style={{
+                              width: "100%",
+                              padding: "12px 16px 12px 42px",
+                              border: `1px solid ${inputBorder}`, borderRadius: 16,
+                              background: inputBg, color: inputText,
+                              outline: "none", transition: "all 0.2s",
+                              boxSizing: "border-box",
+                            }}
+                            placeholder={t("user.fullNamePlaceholder")}
+                            required
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    <div>
+                      <label style={{ display: "block", fontSize: 13, fontWeight: 700, color: labelText, marginBottom: 6 }}>
+                        {t("user.emailLabel")}
+                      </label>
+                      <div className="relative">
+                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                          <Mail className="h-4 w-4" style={{ color: mutedText }} />
+                        </div>
+                        <input
+                          type="email"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          style={{
+                            width: "100%",
+                            padding: "12px 16px 12px 42px",
+                            border: `1px solid ${inputBorder}`, borderRadius: 16,
+                            background: inputBg, color: inputText,
+                            outline: "none", transition: "all 0.2s",
+                            boxSizing: "border-box",
+                          }}
+                          placeholder={t("user.emailPlaceholder")}
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label style={{ display: "block", fontSize: 13, fontWeight: 700, color: labelText, marginBottom: 6 }}>
+                        {t("user.passwordLabel")}
+                      </label>
+                      <div className="relative">
+                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                          <KeyRound className="h-4 w-4" style={{ color: mutedText }} />
+                        </div>
+                        <input
+                          type="password"
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          style={{
+                            width: "100%",
+                            padding: "12px 16px 12px 42px",
+                            border: `1px solid ${inputBorder}`, borderRadius: 16,
+                            background: inputBg, color: inputText,
+                            outline: "none", transition: "all 0.2s",
+                            boxSizing: "border-box",
+                          }}
+                          placeholder={t("user.passwordPlaceholder")}
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    {isSignUp && (
+                      <>
+                        <div className="animate-fade-in">
+                          <label style={{ display: "block", fontSize: 13, fontWeight: 700, color: labelText, marginBottom: 6 }}>
+                            {t("user.confirmPasswordLabel")}
+                          </label>
+                          <div className="relative">
+                            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                              <ShieldCheck className="h-4 w-4" style={{ color: mutedText }} />
+                            </div>
+                            <input
+                              type="password"
+                              value={confirmPassword}
+                              onChange={(e) => setConfirmPassword(e.target.value)}
+                              style={{
+                                width: "100%",
+                                padding: "12px 16px 12px 42px",
+                                border: `1px solid ${inputBorder}`, borderRadius: 16,
+                                background: inputBg, color: inputText,
+                                outline: "none", transition: "all 0.2s",
+                                boxSizing: "border-box",
+                              }}
+                              placeholder={t("user.passwordPlaceholder")}
+                              required
+                            />
+                          </div>
+                        </div>
+                        <div className="animate-fade-in">
+                          <label style={{ display: "block", fontSize: 13, fontWeight: 700, color: labelText, marginBottom: 6 }}>
+                            {t("user.locationLabel")}
+                          </label>
+                          <div className="relative">
+                            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                              <MapPin className="h-4 w-4" style={{ color: mutedText }} />
+                            </div>
+                            <input
+                              type="text"
+                              value={location}
+                              onChange={(e) => setLocation(e.target.value)}
+                              style={{
+                                width: "100%",
+                                padding: "12px 16px 12px 42px",
+                                border: `1px solid ${inputBorder}`, borderRadius: 16,
+                                background: inputBg, color: inputText,
+                                outline: "none", transition: "all 0.2s",
+                                boxSizing: "border-box",
+                              }}
+                              placeholder={t("user.locationPlaceholder")}
+                              required
+                            />
+                          </div>
+                        </div>
+                      </>
+                    )}
 
                     <button
-                      onClick={() => { setShowManualAuth(true); setIsSignUp(true); }}
-                      style={{
-                        width: '100%',
-                        background: createAccountBtnBg,
-                        border: `1px solid ${createAccountBtnBorder}`,
-                        color: createAccountBtnText,
-                        padding: '14px 16px',
-                        borderRadius: 16,
-                        fontWeight: 700,
-                        cursor: 'pointer',
-                        transition: 'opacity 0.2s, transform 0.1s',
-                      }}
-                      onMouseEnter={e => (e.currentTarget as HTMLButtonElement).style.opacity = '0.85'}
-                      onMouseLeave={e => (e.currentTarget as HTMLButtonElement).style.opacity = '1'}
+                      type="submit"
+                      disabled={loading}
+                      className={`w-full text-white py-3.5 px-4 rounded-2xl transition-all font-bold shadow-lg transform hover:scale-[1.01] flex items-center justify-center ${primaryBtnShadow} ${
+                        loading ? "opacity-70 cursor-not-allowed" : "hover:opacity-95"
+                      }`}
+                      style={{ background: primaryGradient }}
                     >
-                      {t("user.createNewAccount")}
+                      {loading ? (
+                        <span className="flex items-center justify-center">
+                          <Loader2 className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" />
+                          {t("user.processing")}
+                        </span>
+                      ) : isSignUp ? (
+                        t("user.createAccount")
+                      ) : (
+                        t("user.signIn")
+                      )}
                     </button>
+                  </form>
+
+                  <div className="text-center mt-6">
+                    <p className="text-sm" style={{ color: mutedText }}>
+                      {isSignUp
+                        ? t("user.alreadyHaveAccountText")
+                        : t("user.dontHaveAccountText")}
+                      <button
+                        type="button"
+                        onClick={toggleAuthMode}
+                        className="ml-1.5 font-bold transition-colors hover:underline"
+                        style={{ color: linkText, background: "transparent", border: "none", cursor: "pointer", padding: 0 }}
+                        onMouseEnter={(e) => e.currentTarget.style.color = linkTextHover}
+                        onMouseLeave={(e) => e.currentTarget.style.color = linkText}
+                      >
+                        {isSignUp ? t("user.signIn") : t("user.register")}
+                      </button>
+                    </p>
                   </div>
-
-                  <p className="text-center text-xs mt-7 leading-relaxed" style={{ color: mutedText }}>
-                    {t("user.termsAgreement")}{" "}
-                    <a href="#" className="font-bold" style={{ color: '#E8192C' }}>{t("user.termsOfService")}</a>{" "}
-                    {t("user.and")}{" "}
-                    <a href="#" className="font-bold" style={{ color: '#E8192C' }}>{t("user.privacyPolicy")}</a>
-                  </p>
                 </div>
               </div>
             </div>

@@ -31,7 +31,7 @@ const PropertiesMapPage = () => {
     setApartmentFilters,
     setDestinationFilters,
     resetFilters,
-  } = useSearchFilters({ propertyType: "hotel" });
+  } = useSearchFilters({ propertyType: "destination" });
 
   const handleDateChange = (dates: {
     checkInDate?: string | null;
@@ -61,7 +61,7 @@ const PropertiesMapPage = () => {
       style={{ background: isDark ? '#111115' : '#f8f6f3' }}
     >
       {/* AppBar */}
-      <div className="flex-shrink-0 z-50">
+      <div className="flex-shrink-0 relative z-[9999]">
         <PrimarySearchAppBar />
       </div>
 

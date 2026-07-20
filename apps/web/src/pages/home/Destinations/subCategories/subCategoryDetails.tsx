@@ -18,7 +18,7 @@ import { useTranslation } from "react-i18next";
 import { useDestinations } from "@/hooks/useDestinations";
 import { DestinationCard } from "../DestinationCard";
 import { DestinationFilterBar } from "../../../../components/home/destinations/DestinationFilterBar";
-import DestinationMap from "../DestinationMap";
+// import DestinationMap from "../DestinationMap";
 
 const SUB_HERO: Record<string, { gradient: string; description: string }> = {
   default: {
@@ -452,7 +452,8 @@ const subCategoryDetails = () => {
                   </div>
                 )}
 
-                {(!isMobile || showMapMobile) && (
+                {/* DestinationMap commented out */}
+                {/* {(!isMobile || showMapMobile) && (
                   <div
                     style={{
                       width: isMobile ? "100%" : "300px",
@@ -465,7 +466,7 @@ const subCategoryDetails = () => {
                   >
                     <DestinationMap destinations={filtered} />
                   </div>
-                )}
+                )} */}
               </div>
             )}
           </>

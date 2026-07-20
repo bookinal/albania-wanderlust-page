@@ -113,7 +113,7 @@ const HotelReservation = () => {
           <Loader2
             className="animate-spin mx-auto mb-4"
             size={48}
-            style={{ color: "#E8192C" }}
+            style={{ color: tk.brand }}
           />
           <p style={{ color: tk.mutedText, fontWeight: 500 }}>
             {t("hotel.loadingHotelDetails")}
@@ -141,7 +141,7 @@ const HotelReservation = () => {
             className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4"
             style={{ background: tk.brandSoftStrong }}
           >
-            <Home size={40} style={{ color: "#E8192C" }} />
+            <Home size={40} style={{ color: tk.brand }} />
           </div>
           <h3 className="text-2xl font-bold mb-2" style={{ color: tk.pageText }}>
             {t("hotel.hotelNotFound")}
@@ -152,7 +152,7 @@ const HotelReservation = () => {
           <button
             onClick={() => navigate("/searchResults")}
             className="w-full py-3 px-6 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all hover:opacity-90"
-            style={{ background: "#E8192C", color: "#ffffff" }}
+            style={{ background: tk.brand, color: "#ffffff" }}
           >
             <ArrowLeft size={16} />
             {t("hotel.backToHotels")}
@@ -281,7 +281,7 @@ const HotelReservation = () => {
                       onClick={() => setPhotoIndex(index)}
                       className="flex-shrink-0 w-24 h-24 rounded-lg overflow-hidden transition-all"
                       style={{
-                        outline: index === photoIndex ? "3px solid #E8192C" : `2px solid ${tk.statBorder}`,
+                        outline: index === photoIndex ? `3px solid ${tk.brand}` : `2px solid ${tk.statBorder}`,
                         opacity: index === photoIndex ? 1 : 0.6,
                         transform: index === photoIndex ? "scale(1.05)" : "scale(1)",
                       }}
@@ -336,7 +336,7 @@ const HotelReservation = () => {
                     style={{ background: tk.statBg, border: `1px solid ${tk.statBorder}` }}
                   >
                     <div className="flex items-center gap-3">
-                      <item.icon size={20} style={{ color: "#E8192C" }} />
+                      <item.icon size={20} style={{ color: tk.brand }} />
                       <span className="font-medium text-sm" style={{ color: tk.dimText }}>{item.label}</span>
                     </div>
                     <span className="font-bold text-sm" style={{ color: tk.pageText }}>{item.value}</span>
@@ -347,7 +347,7 @@ const HotelReservation = () => {
               <button
                 onClick={handleReservation}
                 className="w-full py-4 rounded-xl font-bold text-lg shadow-lg transition-all hover:opacity-90 flex items-center justify-center gap-2"
-                style={{ background: "#E8192C", color: "#ffffff" }}
+                style={{ background: tk.brand, color: "#ffffff" }}
               >
                 <Calendar size={20} />
                 {t("hotel.bookNow")}
@@ -365,7 +365,7 @@ const HotelReservation = () => {
               style={{ background: tk.cardBg, borderColor: tk.cardBorder, boxShadow: tk.cardShadow }}
             >
               <h2 className="text-2xl font-bold mb-4 flex items-center gap-2" style={{ color: tk.pageText }}>
-                <Home size={24} style={{ color: "#E8192C" }} />
+                <Home size={24} style={{ color: tk.brand }} />
                 {t("hotel.aboutThisHotel")}
               </h2>
               <p className="leading-relaxed text-lg" style={{ color: tk.dimText }}>
@@ -389,7 +389,7 @@ const HotelReservation = () => {
                       className="flex items-center gap-3 p-4 rounded-xl"
                       style={{ background: tk.amenityBg, border: `1px solid ${tk.statBorder}` }}
                     >
-                      <amenity.icon size={24} style={{ color: "#E8192C" }} />
+                      <amenity.icon size={24} style={{ color: tk.brand }} />
                       <span className="font-medium text-sm" style={{ color: tk.dimText }}>{amenity.label}</span>
                     </div>
                   ))}
@@ -408,7 +408,7 @@ const HotelReservation = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="flex items-start gap-4 p-4 rounded-xl md:col-span-2" style={{ background: tk.statBg, border: `1px solid ${tk.statBorder}` }}>
                   <div className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: tk.brandSoftStrong }}>
-                    <Mail size={20} style={{ color: "#E8192C" }} />
+                    <Mail size={20} style={{ color: tk.brand }} />
                   </div>
                   <div>
                     <p className="text-sm font-medium mb-1" style={{ color: tk.mutedText }}>
@@ -424,7 +424,7 @@ const HotelReservation = () => {
                 </div>
                 <div className="flex items-start gap-4 p-4 rounded-xl md:col-span-2" style={{ background: tk.statBg, border: `1px solid ${tk.statBorder}` }}>
                   <div className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: tk.brandSoftStrong }}>
-                    <MapPin size={20} style={{ color: "#E8192C" }} />
+                    <MapPin size={20} style={{ color: tk.brand }} />
                   </div>
                   <div>
                     <p className="text-sm font-medium mb-1" style={{ color: tk.mutedText }}>{t("hotel.address")}</p>
@@ -441,7 +441,7 @@ const HotelReservation = () => {
                 style={{ background: tk.cardBg, borderColor: tk.cardBorder, boxShadow: tk.cardShadow }}
               >
                 <h2 className="text-2xl font-bold mb-6 flex items-center gap-2" style={{ color: tk.pageText }}>
-                  <MapPin size={24} style={{ color: "#E8192C" }} />
+                  <MapPin size={24} style={{ color: tk.brand }} />
                   {t("hotel.location")}
                 </h2>
                 <div className="rounded-xl overflow-hidden shadow-md">
