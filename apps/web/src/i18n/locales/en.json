@@ -21,10 +21,17 @@
       "badge": "Southeast Europe's Hidden Gem",
       "discover": "Discover",
       "albania": "Albania",
-      "subheading": "Book hotels, apartments, and cars for your perfect Albanian adventure. From the Albanian Alps to the Riviera coast.",
+      "subheading": "From the Albanian Alps to the Riviera coast.  Explore the best destinations, Book apartments and cars for your perfect Albanian adventure.",
       "exploreMap": "Explore Map",
       "exploreDestinations": "Explore Destinations",
       "browseProperties": "Browse Properties"
+    },
+    "appBar": {
+      "Home": "Home",
+      "Stays": "Stays",
+      "CarRentals": "Car Rentals",
+      "Destinations-Guidedtours": "Destinations - Guided tours",
+      "ExploreOnMap": "Explore On Map"
     },
     "reservationPicker": {
       "carModel": "Car Model",
@@ -437,7 +444,8 @@
     "pageNotFound": "Oops! Page not found",
     "returnToHome": "Return to Home",
     "accountSuspended": "Oops! Looks like your account has been suspended for some reasons by an Admin",
-    "unauthorizedAccess": "Oops! You are not authorized to access this page"
+    "unauthorizedAccess": "Oops! You are not authorized to access this page",
+    "seeAll": "See All"
   },
   "letUsInspireYou":{
     "title": "Let Us Inspire You",

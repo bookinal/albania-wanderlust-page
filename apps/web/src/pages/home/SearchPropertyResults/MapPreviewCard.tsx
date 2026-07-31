@@ -3,13 +3,20 @@ import { useTranslation } from "react-i18next";
 import { useTheme } from "@/context/ThemeContext";
 import { getSearchResultsThemeTokens } from "./searchResultsTheme";
 
-const MapPreviewCard = () => {
+interface MapPreviewCardProps {
+  category?: string;
+}
+
+const MapPreviewCard = ({ category }: MapPreviewCardProps) => {
   const { t } = useTranslation();
   const { isDark, isBlue } = useTheme();
   const tk = getSearchResultsThemeTokens({ isDark, isBlue });
 
   const handleOpenMap = () => {
-    window.open("/properties-map", "_blank", "noopener,noreferrer");
+    const url = category
+      ? `/properties-map?category=${encodeURIComponent(category)}`
+      : "/properties-map";
+    window.open(url, "_blank", "noopener,noreferrer");
   };
 
   return (

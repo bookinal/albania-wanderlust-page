@@ -47,6 +47,8 @@ import {
   Tent,
   Umbrella,
   Bus,
+  Images,
+  X,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { addDestinationToCurrentUserWishlist } from "@albania/api-client";
@@ -219,6 +221,299 @@ function Carousel({ children }: { children: React.ReactNode[] }) {
   );
 }
 
+function MosaicGallery({
+  images,
+  onOpen,
+  alt,
+}: {
+  images: string[];
+  onOpen: (index: number) => void;
+  alt: string;
+}) {
+  const total = images.length;
+  if (total === 0) return null;
+
+  const cellButtonStyle: React.CSSProperties = {
+    position: "relative",
+    display: "block",
+    width: "100%",
+    height: "100%",
+    padding: 0,
+    border: "none",
+    background: "none",
+    cursor: "pointer",
+    overflow: "hidden",
+  };
+
+  const imgStyle: React.CSSProperties = {
+    width: "100%",
+    height: "100%",
+    objectFit: "cover",
+    display: "block",
+  };
+
+  const renderCell = (
+    index: number,
+    gridArea: React.CSSProperties,
+    overlay?: React.ReactNode,
+  ) => (
+    <button
+      key={index}
+      onClick={() => onOpen(index)}
+      style={{ ...cellButtonStyle, ...gridArea }}
+    >
+      <img
+        src={images[index]}
+        alt={`${alt} ${index + 1}`}
+        style={imgStyle}
+        onError={(e) => {
+          e.currentTarget.src = "/placeholder.svg";
+        }}
+      />
+      {overlay}
+    </button>
+  );
+
+  const viewAllOverlay =
+    total > 4 ? (
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          background: "rgba(15,23,42,0.45)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <span
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "0.4rem",
+            padding: "0.5rem 0.9rem",
+            borderRadius: "9999px",
+            background: "rgba(255,255,255,0.95)",
+            color: "#111827",
+            fontWeight: 700,
+            fontSize: "0.85rem",
+          }}
+        >
+          <Images className="w-4 h-4" />
+          View all
+        </span>
+      </div>
+    ) : null;
+
+  let columns = "1fr";
+  let rows = "1fr";
+  let cells: React.ReactNode[];
+
+  if (total === 1) {
+    cells = [renderCell(0, {})];
+  } else if (total === 2) {
+    columns = "1fr 1fr";
+    cells = [renderCell(0, {}), renderCell(1, {})];
+  } else if (total === 3) {
+    columns = "1.3fr 1fr";
+    rows = "1fr 1fr";
+    cells = [
+      renderCell(0, { gridRow: "1 / span 2", gridColumn: "1" }),
+      renderCell(1, { gridRow: "1", gridColumn: "2" }),
+      renderCell(2, { gridRow: "2", gridColumn: "2" }),
+    ];
+  } else {
+    columns = "1fr 1.3fr 1fr";
+    rows = "1fr 1fr";
+    cells = [
+      renderCell(0, { gridRow: "1 / span 2", gridColumn: "1" }),
+      renderCell(1, { gridRow: "1 / span 2", gridColumn: "2" }),
+      renderCell(2, { gridRow: "1", gridColumn: "3" }),
+      renderCell(3, { gridRow: "2", gridColumn: "3" }, viewAllOverlay),
+    ];
+  }
+
+  return (
+    <div
+      style={{
+        width: "100%",
+        height: "100%",
+        display: "grid",
+        gridTemplateColumns: columns,
+        gridTemplateRows: rows,
+        gap: "4px",
+      }}
+    >
+      {cells}
+    </div>
+  );
+}
+
+function Lightbox({
+  images,
+  initialIndex,
+  onClose,
+  alt,
+}: {
+  images: string[];
+  initialIndex: number;
+  onClose: () => void;
+  alt: string;
+}) {
+  const [index, setIndex] = useState(initialIndex);
+  const touchStartX = useRef<number | null>(null);
+  const total = images.length;
+
+  const goNext = useCallback(() => setIndex((i) => (i + 1) % total), [total]);
+  const goPrev = useCallback(
+    () => setIndex((i) => (i - 1 + total) % total),
+    [total],
+  );
+
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+      if (e.key === "ArrowRight") goNext();
+      if (e.key === "ArrowLeft") goPrev();
+    };
+    window.addEventListener("keydown", handler);
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      window.removeEventListener("keydown", handler);
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [goNext, goPrev, onClose]);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX.current === null) return;
+    const dx = e.changedTouches[0].clientX - touchStartX.current;
+    if (Math.abs(dx) > 50) {
+      if (dx < 0) goNext();
+      else goPrev();
+    }
+    touchStartX.current = null;
+  };
+
+  const arrowButtonStyle: React.CSSProperties = {
+    position: "absolute",
+    top: "50%",
+    transform: "translateY(-50%)",
+    width: "3rem",
+    height: "3rem",
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: "9999px",
+    background: "rgba(255,255,255,0.12)",
+    border: "1px solid rgba(255,255,255,0.22)",
+    color: "#fff",
+    cursor: "pointer",
+  };
+
+  return (
+    <div
+      onClick={onClose}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+      style={{
+        position: "fixed",
+        inset: 0,
+        background: "rgba(0,0,0,0.92)",
+        zIndex: 1000,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          onClose();
+        }}
+        style={{
+          position: "absolute",
+          top: "1.25rem",
+          right: "1.25rem",
+          width: "2.75rem",
+          height: "2.75rem",
+          display: "inline-flex",
+          alignItems: "center",
+          justifyContent: "center",
+          borderRadius: "9999px",
+          background: "rgba(255,255,255,0.12)",
+          border: "1px solid rgba(255,255,255,0.22)",
+          color: "#fff",
+          cursor: "pointer",
+        }}
+      >
+        <X className="w-5 h-5" />
+      </button>
+
+      {total > 1 && (
+        <>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              goPrev();
+            }}
+            style={{ ...arrowButtonStyle, left: "1rem" }}
+          >
+            <ChevronLeft className="w-6 h-6" />
+          </button>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              goNext();
+            }}
+            style={{ ...arrowButtonStyle, right: "1rem" }}
+          >
+            <ChevronRight className="w-6 h-6" />
+          </button>
+        </>
+      )}
+
+      <img
+        src={images[index]}
+        alt={`${alt} ${index + 1}`}
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          maxWidth: "90vw",
+          maxHeight: "85vh",
+          objectFit: "contain",
+          borderRadius: "0.75rem",
+          boxShadow: "0 24px 60px rgba(0,0,0,0.5)",
+        }}
+        onError={(e) => {
+          e.currentTarget.src = "/placeholder.svg";
+        }}
+      />
+
+      {total > 1 && (
+        <div
+          style={{
+            position: "absolute",
+            bottom: "1.5rem",
+            left: "50%",
+            transform: "translateX(-50%)",
+            padding: "0.4rem 0.9rem",
+            borderRadius: "9999px",
+            background: "rgba(255,255,255,0.12)",
+            color: "#fff",
+            fontSize: "0.85rem",
+            fontWeight: 600,
+          }}
+        >
+          {index + 1} / {total}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // Fix for default marker icon issue in React-Leaflet
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -242,7 +537,10 @@ const DestinationDetails = () => {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [descriptionExpanded, setDescriptionExpanded] = useState(false);
   const [mapZoom, setMapZoom] = useState(13);
+  const [quickFactsExpanded, setQuickFactsExpanded] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const isMobile = useMediaQuery("(max-width: 639px)");
+  const isDesktop = useMediaQuery("(min-width: 1024px)");
   const { data: destination, isLoading, error } = useDestination(id);
   const { data: allDestinations = [] } = useDestinations();
 
@@ -493,7 +791,6 @@ const DestinationDetails = () => {
     destination.lat || 41.3275,
     destination.lng || 19.8187,
   ];
-  const heroImage = destination.imageUrls[0] || "/placeholder.svg";
   const quickFacts = [
     {
       icon: MapPin,
@@ -681,19 +978,21 @@ const DestinationDetails = () => {
             background: tk.mapFallbackBg,
           }}
         >
-          <img
-            src={heroImage}
+          <MosaicGallery
+            images={
+              destination.imageUrls.length > 0
+                ? destination.imageUrls
+                : ["/placeholder.svg"]
+            }
+            onOpen={setLightboxIndex}
             alt={localize(destination.name)}
-            style={{ width: "100%", height: "100%", objectFit: "cover" }}
-            onError={(e) => {
-              e.currentTarget.src = "/placeholder.svg";
-            }}
           />
           <div
             style={{
               position: "absolute",
               inset: 0,
-              // background: `linear-gradient(180deg, rgba(0,0,0,0.01) 0%, rgba(0,0,0,0.01) 32%, rgba(0,0,0,0.74) 100%), ${tk.heroGradient}`,
+              pointerEvents: "none",
+              background: `linear-gradient(180deg, rgba(0,0,0,0.18) 0%, rgba(0,0,0,0.01) 35%, rgba(0,0,0,0.62) 100%)`,
             }}
           />
           <div
@@ -704,6 +1003,7 @@ const DestinationDetails = () => {
               flexDirection: "column",
               justifyContent: "space-between",
               padding: "clamp(1.25rem, 3vw, 2.5rem)",
+              pointerEvents: "none",
             }}
           >
             <div
@@ -711,6 +1011,7 @@ const DestinationDetails = () => {
                 display: "flex",
                 alignItems: "flex-start",
                 justifyContent: "space-between",
+                pointerEvents: "none",
                 gap: "1rem",
                 flexWrap: "wrap",
               }}
@@ -732,6 +1033,7 @@ const DestinationDetails = () => {
                   backdropFilter: "blur(14px)",
                   WebkitBackdropFilter: "blur(14px)",
                   boxShadow: "0 10px 30px rgba(0,0,0,0.16)",
+                  pointerEvents: "auto",
                 }}
               >
                 <ArrowLeft className="w-5 h-5" />
@@ -744,6 +1046,7 @@ const DestinationDetails = () => {
                   gap: "0.6rem",
                   flexWrap: "wrap",
                   justifyContent: "flex-end",
+                  pointerEvents: "none",
                 }}
               >
                 <button
@@ -761,6 +1064,7 @@ const DestinationDetails = () => {
                     cursor: "pointer",
                     backdropFilter: "blur(14px)",
                     WebkitBackdropFilter: "blur(14px)",
+                    pointerEvents: "auto",
                   }}
                 >
                   <Share2 className="w-5 h-5" />
@@ -782,6 +1086,7 @@ const DestinationDetails = () => {
                     opacity: isAddingToWishlist ? 0.6 : 1,
                     backdropFilter: "blur(14px)",
                     WebkitBackdropFilter: "blur(14px)",
+                    pointerEvents: "auto",
                   }}
                 >
                   {isAddingToWishlist ? (
@@ -797,13 +1102,15 @@ const DestinationDetails = () => {
                 display: "flex",
                 alignItems: "flex-end",
                 justifyContent: "space-between",
-                gap: "1.5rem",
+                gap: "1rem",
+                pointerEvents: "none",
                 flexWrap: "wrap",
               }}
             >
               <div
                 style={{
                   maxWidth: "42rem",
+                  pointerEvents: "none",
                   display: "flex",
                   flexDirection: "column",
                   gap: "1rem",
@@ -851,63 +1158,19 @@ const DestinationDetails = () => {
                     Albania
                   </span>
                 </div>
-                <div>
-                  <h1
+                <h1
                     style={{
                       fontSize: "clamp(2.3rem, 5vw, 4.5rem)",
                       fontWeight: 800,
-                      lineHeight: 0.95,
+                      lineHeight: 1,
                       letterSpacing: "-0.04em",
                       color: "#fff",
                       margin: 0,
-                      textShadow: "0 10px 30px rgba(0,0,0,0.35)",
+                      textShadow: "0 10px 30px rgba(0,0,0,0.45)",
                     }}
                   >
                     {localize(destination.name)}
                   </h1>
-                  <p
-                    style={{
-                      margin: "1rem 0 0",
-                      maxWidth: "36rem",
-                      fontSize: "clamp(1rem, 1.5vw, 1.1rem)",
-                      lineHeight: 1.7,
-                      color: "rgba(255,255,255,0.88)",
-                    }}
-                  >
-                    {(() => {
-                      const desc = localize(destination.description);
-                      const limit = 400;
-                      const needsTruncation = desc.length > limit;
-                      return (
-                        <>
-                          {needsTruncation && !descriptionExpanded
-                            ? desc.slice(0, limit) + "..."
-                            : desc}
-                        </>
-                      );
-                    })()}
-                  </p>
-                  {localize(destination.description).length > 400 && (
-                    <button
-                      onClick={() =>
-                        setDescriptionExpanded(!descriptionExpanded)
-                      }
-                      style={{
-                        background: "none",
-                        border: "none",
-                        color: "rgba(255,255,255,0.75)",
-                        cursor: "pointer",
-                        fontWeight: 600,
-                        fontSize: "0.9rem",
-                        padding: 0,
-                        textDecoration: "underline",
-                        textUnderlineOffset: "2px",
-                      }}
-                    >
-                      {descriptionExpanded ? "Show less" : "Read more"}
-                    </button>
-                  )}
-                </div>
               </div>
               <button
                 onClick={() => navigate(backTarget)}
@@ -926,6 +1189,7 @@ const DestinationDetails = () => {
                   backdropFilter: "blur(14px)",
                   WebkitBackdropFilter: "blur(14px)",
                   boxShadow: "0 16px 40px rgba(0,0,0,0.18)",
+                  pointerEvents: "auto",
                 }}
               >
                 {t("home.destinations.seeAllDestinations")}
@@ -958,11 +1222,16 @@ const DestinationDetails = () => {
             <div
               style={{
                 display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+                gridTemplateColumns: isDesktop
+                  ? "repeat(3, 1fr)"
+                  : "repeat(auto-fit, minmax(220px, 1fr))",
                 gap: "0.9rem",
               }}
             >
-              {quickFacts.map((fact) => {
+              {(quickFactsExpanded
+                ? quickFacts
+                : quickFacts.slice(0, 6)
+              ).map((fact) => {
                 const Icon = fact.icon;
 
                 return (
@@ -1023,6 +1292,34 @@ const DestinationDetails = () => {
                 );
               })}
             </div>
+            {quickFacts.length > 6 && (
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  marginTop: "1rem",
+                }}
+              >
+                <button
+                  onClick={() => setQuickFactsExpanded((prev) => !prev)}
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "0.4rem",
+                    padding: "0.6rem 1.1rem",
+                    borderRadius: "9999px",
+                    border: "1px solid rgba(13,148,136,0.25)",
+                    background: "rgba(13,148,136,0.06)",
+                    color: "#0f766e",
+                    fontWeight: 700,
+                    fontSize: "0.85rem",
+                    cursor: "pointer",
+                  }}
+                >
+                  {quickFactsExpanded ? "See less" : "See more"}
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -1166,12 +1463,14 @@ const DestinationDetails = () => {
             style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
           >
             <div
+              onClick={() => setLightboxIndex(selectedImageIndex)}
               style={{
                 position: "relative",
                 height: "28rem",
                 borderRadius: "1rem",
                 overflow: "hidden",
                 boxShadow: tk.cardShadow,
+                cursor: "pointer",
               }}
             >
               <img
@@ -1868,144 +2167,15 @@ const DestinationDetails = () => {
         </div>
       )}
 
-      {/* Photo Gallery */}
-      <div style={{ width: "100%", padding: "0 1.5rem 3rem" }}>
-        <div style={{ marginBottom: "1rem" }}>
-          <h2
-            style={{
-              margin: 0,
-              fontSize: "1.6rem",
-              fontWeight: 800,
-              color: tk.pageText,
-            }}
-          >
-            Photo Gallery
-          </h2>
-          <p
-            style={{
-              margin: "0.5rem 0 0",
-              fontSize: "0.98rem",
-              lineHeight: 1.7,
-              color: tk.dimText,
-            }}
-          >
-            Explore the destination through a rich, scrollable collection of
-            moments.
-          </p>
-        </div>
-
-        {isMobile ? (
-          <Carousel>
-            {destination.imageUrls.map((url, index) => (
-              <button
-                key={`${url}-${index}`}
-                onClick={() => setSelectedImageIndex(index)}
-                style={{
-                  display: "block",
-                  width: "100%",
-                  padding: 0,
-                  border: selectedImageIndex === index ? `3px solid ${tk.brand}` : "none",
-                  borderRadius: "1.25rem",
-                  overflow: "hidden",
-                  background: "transparent",
-                  cursor: "pointer",
-                  boxShadow: selectedImageIndex === index ? tk.cardShadow : "0 14px 32px rgba(15,23,42,0.08)",
-                }}
-              >
-                <div
-                  style={{
-                    position: "relative",
-                    aspectRatio: "4 / 3",
-                    background: tk.mapFallbackBg,
-                  }}
-                >
-                  <img
-                    src={url}
-                    alt={`${localize(destination.name)} gallery ${index + 1}`}
-                    style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                    onError={(e) => { e.currentTarget.src = "/placeholder.svg"; }}
-                  />
-                  <div
-                    style={{
-                      position: "absolute",
-                      bottom: 0,
-                      left: 0,
-                      right: 0,
-                      padding: "0.5rem 1rem",
-                      background: "linear-gradient(to top, rgba(0,0,0,0.5), transparent)",
-                    }}
-                  >
-                    <span style={{ color: "#fff", fontSize: "0.8rem", fontWeight: 600 }}>
-                      {index + 1} / {destination.imageUrls.length}
-                    </span>
-                  </div>
-                </div>
-              </button>
-            ))}
-          </Carousel>
-        ) : (
-          <div style={{ columnWidth: "260px", columnGap: "0.9rem" }}>
-            {destination.imageUrls.map((url, index) => (
-              <button
-                key={`${url}-${index}`}
-                onClick={() => setSelectedImageIndex(index)}
-                style={{
-                  display: "block",
-                  width: "100%",
-                  marginBottom: "0.9rem",
-                  padding: 0,
-                  border:
-                    selectedImageIndex === index
-                      ? `3px solid ${tk.brand}`
-                      : "none",
-                  borderRadius: "1.25rem",
-                  overflow: "hidden",
-                  background: "transparent",
-                  cursor: "pointer",
-                  breakInside: "avoid",
-                  boxShadow:
-                    selectedImageIndex === index
-                      ? tk.cardShadow
-                      : "0 14px 32px rgba(15,23,42,0.08)",
-                }}
-              >
-                <div
-                  style={{
-                    position: "relative",
-                    aspectRatio:
-                      index % 5 === 0
-                        ? "4 / 5"
-                        : index % 3 === 0
-                          ? "1 / 1"
-                          : index % 2 === 0
-                            ? "4 / 3"
-                            : "3 / 4",
-                    background: tk.mapFallbackBg,
-                  }}
-                >
-                  <img
-                    src={url}
-                    alt={`${localize(destination.name)} gallery ${index + 1}`}
-                    style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                    onError={(e) => {
-                      e.currentTarget.src = "/placeholder.svg";
-                    }}
-                  />
-                  <div
-                    style={{
-                      position: "absolute",
-                      inset: 0,
-                      background:
-                        "linear-gradient(180deg, rgba(15,23,42,0) 45%, rgba(15,23,42,0.18) 100%)",
-                    }}
-                  />
-                </div>
-              </button>
-            ))}
-          </div>
-        )}
       </div>
-      </div>
+      {lightboxIndex !== null && destination.imageUrls.length > 0 && (
+        <Lightbox
+          images={destination.imageUrls}
+          initialIndex={lightboxIndex}
+          onClose={() => setLightboxIndex(null)}
+          alt={localize(destination.name)}
+        />
+      )}
     </div>
   );
 };

@@ -9,7 +9,6 @@ import CarsPreview from "@/components/home/CarsPreview";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@/context/ThemeContext";
 import { getHomeThemeTokens } from "@/components/home/homeTheme";
-import TrustIndicators from "@/components/home/TrustIndicators";
 
 const Index = () => {
   const { t } = useTranslation();
@@ -21,8 +20,6 @@ const Index = () => {
       {/* <LoadingScreen /> */}
       <PrimarySearchAppBar />
       <Hero />
-
-      <TrustIndicators />
 
       {/* Destinations Section */}
       <Destinations />
@@ -79,7 +76,7 @@ const Index = () => {
             >
               {t("home.accommodations.title")}
             </h2>
-            <p
+            {/* <p
               style={{
                 fontSize: "1.05rem",
                 color: tk.textMuted,
@@ -88,7 +85,7 @@ const Index = () => {
               }}
             >
               {t("home.accommodations.description")}
-            </p>
+            </p> */}
           </div>
 
           <div

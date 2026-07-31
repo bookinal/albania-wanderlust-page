@@ -16,6 +16,11 @@ const Hero = () => {
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
   };
 
+  // navigate to ("/searchResults")
+  const navigateToSearchResults = () => {
+    window.location.href = "/searchResults";
+  };
+
   return (
     <section className="relative min-h-screen flex items-start justify-center overflow-hidden pt-24 sm:pt-12 lg:pt-12">
       {/* Background Image with Overlay */}
@@ -112,7 +117,7 @@ const Hero = () => {
                 variant="ghost"
                 className="px-6 py-5 rounded-full transition-all group"
                 style={{ color: tk.textSoftOnMedia, background: "transparent" }}
-                onClick={() => scrollToSection("hotels")}
+                onClick={navigateToSearchResults}
               >
                 {t("home.hero.browseProperties")}
                 <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />

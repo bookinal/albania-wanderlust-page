@@ -150,7 +150,7 @@ export const DestinationCard = ({
         >
           {localize(destination.name)}
         </h2>
-        <p
+        {/* <p
           style={{
             margin: "0.75rem 0 0",
             color: tk.textMuted,
@@ -160,7 +160,7 @@ export const DestinationCard = ({
         >
           {localize(destination.description).slice(0, 50)}
           {localize(destination.description).length > 50 ? "..." : ""}
-        </p>
+        </p> */}
 
         { destination.location && (
             <div

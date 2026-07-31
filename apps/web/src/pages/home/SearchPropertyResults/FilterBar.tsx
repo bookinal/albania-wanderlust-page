@@ -569,16 +569,35 @@ export const FilterBar = ({
                 label={cat.label}
                 onChange={checked => {
                   const current = filters.destinationFilters?.categories || [];
-                  const next = checked 
-                    ? [...current, cat.id] 
+                  const next = checked
+                    ? [...current, cat.id]
                     : current.filter(c => c !== cat.id);
-                  onDestinationFiltersChange?.({ categories: next });
+
+                  // Cascade: auto-select / deselect subcategories belonging to this category
+                  const catSubIds = SUBCATEGORIES.filter(s => s.parent === cat.id).map(s => s.id);
+                  const currentSubs = filters.destinationFilters?.subcategories || [];
+
+                  let nextSubs: string[];
+                  if (checked) {
+                    // Add all subcategories of this category (deduplicated)
+                    nextSubs = Array.from(new Set([...currentSubs, ...catSubIds]));
+                  } else {
+                    // Remove subcategories of this category, but keep those still covered by another selected category
+                    const remainingCats = current.filter(c => c !== cat.id);
+                    const stillNeeded = new Set(
+                      SUBCATEGORIES.filter(s => remainingCats.includes(s.parent)).map(s => s.id)
+                    );
+                    nextSubs = currentSubs.filter(s => stillNeeded.has(s));
+                  }
+
+                  onDestinationFiltersChange?.({ categories: next, subcategories: nextSubs });
                 }}
               />
             ))}
           </div>
         </AccSection>
       )}
+
 
       {/* Destination Subcategories (Advanced Filters) */}
       {filters.propertyType === "destination" && (
@@ -612,11 +631,32 @@ export const FilterBar = ({
                         checked={filters.destinationFilters?.subcategories?.includes(sub.id) || false}
                         label={sub.label}
                         onChange={checked => {
-                          const current = filters.destinationFilters?.subcategories || [];
-                          const next = checked
-                            ? [...current, sub.id]
-                            : current.filter(s => s !== sub.id);
-                          onDestinationFiltersChange?.({ subcategories: next });
+                          const currentSubs = filters.destinationFilters?.subcategories || [];
+                          const nextSubs = checked
+                            ? [...currentSubs, sub.id]
+                            : currentSubs.filter(s => s !== sub.id);
+
+                          // Reverse-cascade: sync parent category based on subcategory state
+                          const currentCats = filters.destinationFilters?.categories || [];
+                          let nextCats = currentCats;
+
+                          if (checked) {
+                            // Auto-check the parent category if it isn't already selected
+                            if (!currentCats.includes(parentCat)) {
+                              nextCats = [...currentCats, parentCat];
+                            }
+                          } else {
+                            // Auto-uncheck the parent category if none of its subcategories remain selected
+                            const siblingSubIds = SUBCATEGORIES.filter(s => s.parent === parentCat).map(s => s.id);
+                            const anyRemainingSubSelected = siblingSubIds.some(
+                              id => id !== sub.id && nextSubs.includes(id)
+                            );
+                            if (!anyRemainingSubSelected) {
+                              nextCats = currentCats.filter(c => c !== parentCat);
+                            }
+                          }
+
+                          onDestinationFiltersChange?.({ subcategories: nextSubs, categories: nextCats });
                         }}
                       />
                     ))}

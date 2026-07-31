@@ -313,17 +313,9 @@ const subCategoryDetails = () => {
             <DestinationFilterBar
               search={search}
               onSearchChange={setSearch}
-              categories={[]}
-              selectedCategory=""
-              onCategoryChange={() => {}}
-              subcategories={subcategories}
-              selectedSubcategory={selectedSubcategory}
-              onSubcategoryChange={setSelectedSubcategory}
               location={locations}
               selectedLocation={selectedLocation}
               onLocationChange={setSelectedLocation}
-              allCategoriesLabel={t("home.destinations.allCategories")}
-              allSubcategoriesLabel="All types"
               searchPlaceholder={t("home.destinations.searchPlaceholder")}
               clearFiltersLabel={t("home.destinations.clearFilters")}
               hasActiveFilters={hasActiveFilters}

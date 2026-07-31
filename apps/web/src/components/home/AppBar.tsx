@@ -87,28 +87,29 @@ export default function PrimarySearchAppBar() {
   const isProvider = userRole?.role === "provider" || userRole === "provider";
   const isUser = userRole?.role === "user" || userRole === "user";
 
-  const navLinks = [
+  const primaryNavLinks = [
     {
-      label: t("sidebar.home") || "Home",
+      label: t("home.appBar.Home") || "Home",
       href: "/",
       icon: <Home className="w-4 h-4" />,
     },
     {
-      label: t("common.stay") || "Stays",
+      label: t("home.appBar.Stays") || "Stays",
       href: "/searchResults",
       icon: <Building2 className="w-4 h-4" />,
     },
     {
-      label: t("common.car") || "Cars",
+      label: t("home.appBar.CarRentals") || "Cars",
       href: "/searchCarResults",
       icon: <Car className="w-4 h-4" />,
     },
-    {
-      label: t("common.map") || "Map",
-      href: "/properties-map",
-      icon: <MapPin className="w-4 h-4" />,
-    },
   ];
+
+  const mapNavLink = {
+    label: t("home.appBar.ExploreOnMap") || "Map",
+    href: "/properties-map",
+    icon: <MapPin className="w-4 h-4" />,
+  };
 
   const tk = {
     brand: homeTk.brand,
@@ -215,72 +216,82 @@ export default function PrimarySearchAppBar() {
       <header
         className={`fixed top-0 left-0 right-0 z-[9999] transition-all duration-500 ${
           scrolled
-            ? isDark ? 'appbar-scrolled-dark' : 'appbar-scrolled-light'
-            : 'appbar-luxury'
+            ? isDark
+              ? "appbar-scrolled-dark"
+              : "appbar-scrolled-light"
+            : "appbar-luxury"
         }`}
-        style={{ position: 'fixed' }}
+        style={{ position: "fixed" }}
       >
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-16">
-
             {/* ── Logo ── */}
             <button
               onClick={() => navigate("/")}
-              className={`font-black text-xl tracking-tight transition-colors ${!scrolled ? 'text-white' : ''}`}
-              style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, color: scrolled ? tk.logoTextScrolled : '#ffffff' }}
+              className={`font-black text-xl tracking-tight transition-colors ${!scrolled ? "text-white" : ""}`}
+              style={{
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                padding: 0,
+                color: scrolled ? tk.logoTextScrolled : "#ffffff",
+              }}
             >
               BOOKinAL<span style={{ color: tk.brand }}>.</span>
             </button>
 
             {/* ── Desktop Nav Links ── */}
             <nav className="hidden md:flex items-center gap-0.5">
-              {navLinks.map((link) => {
+              {primaryNavLinks.map((link) => {
                 const isActive = location.pathname === link.href;
                 return (
                   <Link
                     key={link.href}
                     to={link.href}
                     style={{
-                      fontFamily: 'Crimson Pro, Georgia, serif',
-                      fontSize: '0.95rem',
-                      letterSpacing: '0.03em',
-                      padding: '6px 16px',
+                      fontFamily: "Crimson Pro, Georgia, serif",
+                      fontSize: "0.95rem",
+                      letterSpacing: "0.03em",
+                      padding: "6px 16px",
                       borderRadius: 3,
-                      transition: 'all 0.2s',
-                      textDecoration: 'none',
+                      transition: "all 0.2s",
+                      textDecoration: "none",
                       ...(scrolled
                         ? {
-                            color: isActive
-                              ? tk.brand
-                              : tk.navInactive,
+                            color: isActive ? tk.brand : tk.navInactive,
                             background: isActive
                               ? tk.navActiveBg
-                              : 'transparent',
+                              : "transparent",
                             fontWeight: isActive ? 600 : 400,
                           }
                         : {
-                            color: isActive ? '#ffffff' : 'rgba(255,255,255,0.72)',
-                            background: isActive ? 'rgba(255,255,255,0.12)' : 'transparent',
+                            color: isActive
+                              ? "#ffffff"
+                              : "rgba(255,255,255,0.72)",
+                            background: isActive
+                              ? "rgba(255,255,255,0.12)"
+                              : "transparent",
                             fontWeight: isActive ? 600 : 400,
-                          }
-                      ),
+                          }),
                     }}
-                    onMouseEnter={e => {
+                    onMouseEnter={(e) => {
                       if (!isActive) {
-                        (e.currentTarget as HTMLAnchorElement).style.color = scrolled
-                          ? tk.navHover
-                          : '#ffffff';
-                        (e.currentTarget as HTMLAnchorElement).style.background = scrolled
+                        (e.currentTarget as HTMLAnchorElement).style.color =
+                          scrolled ? tk.navHover : "#ffffff";
+                        (
+                          e.currentTarget as HTMLAnchorElement
+                        ).style.background = scrolled
                           ? tk.navHoverBg
-                          : 'rgba(255,255,255,0.1)';
+                          : "rgba(255,255,255,0.1)";
                       }
                     }}
-                    onMouseLeave={e => {
+                    onMouseLeave={(e) => {
                       if (!isActive) {
-                        (e.currentTarget as HTMLAnchorElement).style.color = scrolled
-                          ? tk.navInactive
-                          : 'rgba(255,255,255,0.72)';
-                        (e.currentTarget as HTMLAnchorElement).style.background = 'transparent';
+                        (e.currentTarget as HTMLAnchorElement).style.color =
+                          scrolled ? tk.navInactive : "rgba(255,255,255,0.72)";
+                        (
+                          e.currentTarget as HTMLAnchorElement
+                        ).style.background = "transparent";
                       }
                     }}
                   >
@@ -294,51 +305,55 @@ export default function PrimarySearchAppBar() {
                 <DropdownMenuTrigger asChild>
                   <button
                     style={{
-                      fontFamily: 'Crimson Pro, Georgia, serif',
-                      fontSize: '0.95rem',
-                      letterSpacing: '0.03em',
-                      padding: '6px 16px',
+                      fontFamily: "Crimson Pro, Georgia, serif",
+                      fontSize: "0.95rem",
+                      letterSpacing: "0.03em",
+                      padding: "6px 16px",
                       borderRadius: 3,
-                      transition: 'all 0.2s',
-                      textDecoration: 'none',
-                      border: 'none',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '4px',
+                      transition: "all 0.2s",
+                      textDecoration: "none",
+                      border: "none",
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "4px",
                       ...(scrolled
                         ? {
                             color: tk.navInactive,
-                            background: 'transparent',
+                            background: "transparent",
                             fontWeight: 400,
                           }
                         : {
-                            color: 'rgba(255,255,255,0.72)',
-                            background: 'transparent',
+                            color: "rgba(255,255,255,0.72)",
+                            background: "transparent",
                             fontWeight: 400,
-                          }
-                      ),
+                          }),
                     }}
-                    onMouseEnter={e => {
-                      (e.currentTarget as HTMLButtonElement).style.color = scrolled
-                        ? tk.navHover
-                        : '#ffffff';
-                      (e.currentTarget as HTMLButtonElement).style.background = scrolled
-                        ? tk.navHoverBg
-                        : 'rgba(255,255,255,0.1)';
+                    onMouseEnter={(e) => {
+                      (e.currentTarget as HTMLButtonElement).style.color =
+                        scrolled ? tk.navHover : "#ffffff";
+                      (e.currentTarget as HTMLButtonElement).style.background =
+                        scrolled ? tk.navHoverBg : "rgba(255,255,255,0.1)";
                     }}
-                    onMouseLeave={e => {
-                      (e.currentTarget as HTMLButtonElement).style.color = scrolled
-                        ? tk.navInactive
-                        : 'rgba(255,255,255,0.72)';
-                      (e.currentTarget as HTMLButtonElement).style.background = 'transparent';
+                    onMouseLeave={(e) => {
+                      (e.currentTarget as HTMLButtonElement).style.color =
+                        scrolled ? tk.navInactive : "rgba(255,255,255,0.72)";
+                      (e.currentTarget as HTMLButtonElement).style.background =
+                        "transparent";
                     }}
                   >
-                    {t("common.destinations", "Destinations")}
+                    {t("home.appBar.Destinations-Guidedtours", "Destinations - Guided tours")}
                     <ChevronDown className="w-3.5 h-3.5 opacity-70" />
                   </button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="start" className="w-56 mt-2 rounded-xl shadow-xl p-1.5" style={{ background: tk.dropdownBg, borderColor: tk.dropdownBorder }}>
+                <DropdownMenuContent
+                  align="start"
+                  className="w-56 mt-2 rounded-xl shadow-xl p-1.5"
+                  style={{
+                    background: tk.dropdownBg,
+                    borderColor: tk.dropdownBorder,
+                  }}
+                >
                   {DESTINATION_CATEGORIES.map((cat) => (
                     <DropdownMenuItem
                       key={cat.slug}
@@ -359,11 +374,70 @@ export default function PrimarySearchAppBar() {
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
+
+              {/* Explore On Map */}
+              {(() => {
+                const link = mapNavLink;
+                const isActive = location.pathname === link.href;
+                return (
+                  <Link
+                    key={link.href}
+                    to={link.href}
+                    style={{
+                      fontFamily: "Crimson Pro, Georgia, serif",
+                      fontSize: "0.95rem",
+                      letterSpacing: "0.03em",
+                      padding: "6px 16px",
+                      borderRadius: 3,
+                      transition: "all 0.2s",
+                      textDecoration: "none",
+                      ...(scrolled
+                        ? {
+                            color: isActive ? tk.brand : tk.navInactive,
+                            background: isActive
+                              ? tk.navActiveBg
+                              : "transparent",
+                            fontWeight: isActive ? 600 : 400,
+                          }
+                        : {
+                            color: isActive
+                              ? "#ffffff"
+                              : "rgba(255,255,255,0.72)",
+                            background: isActive
+                              ? "rgba(255,255,255,0.12)"
+                              : "transparent",
+                            fontWeight: isActive ? 600 : 400,
+                          }),
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!isActive) {
+                        (e.currentTarget as HTMLAnchorElement).style.color =
+                          scrolled ? tk.navHover : "#ffffff";
+                        (
+                          e.currentTarget as HTMLAnchorElement
+                        ).style.background = scrolled
+                          ? tk.navHoverBg
+                          : "rgba(255,255,255,0.1)";
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!isActive) {
+                        (e.currentTarget as HTMLAnchorElement).style.color =
+                          scrolled ? tk.navInactive : "rgba(255,255,255,0.72)";
+                        (
+                          e.currentTarget as HTMLAnchorElement
+                        ).style.background = "transparent";
+                      }
+                    }}
+                  >
+                    {link.label}
+                  </Link>
+                );
+              })()}
             </nav>
 
             {/* ── Right Side Actions ── */}
             <div className="flex items-center gap-1">
-
               {/* Theme Toggle */}
               <button
                 onClick={toggleTheme}
@@ -383,34 +457,43 @@ export default function PrimarySearchAppBar() {
                         ? "text-white/55 hover:text-white hover:bg-white/8"
                         : "text-gray-500 hover:text-amber-500 hover:bg-amber-50"
                 }`}
-                style={{ position: 'relative', overflow: 'hidden' }}
+                style={{ position: "relative", overflow: "hidden" }}
               >
                 <span
                   style={{
-                    position: 'absolute',
-                    transition: 'opacity 0.2s, transform 0.3s',
+                    position: "absolute",
+                    transition: "opacity 0.2s, transform 0.3s",
                     opacity: theme === "dark" ? 1 : 0,
-                    transform: theme === "dark" ? 'rotate(0deg) scale(1)' : 'rotate(90deg) scale(0.5)',
+                    transform:
+                      theme === "dark"
+                        ? "rotate(0deg) scale(1)"
+                        : "rotate(90deg) scale(0.5)",
                   }}
                 >
                   <Sun className="w-[17px] h-[17px]" />
                 </span>
                 <span
                   style={{
-                    position: 'absolute',
-                    transition: 'opacity 0.2s, transform 0.3s',
+                    position: "absolute",
+                    transition: "opacity 0.2s, transform 0.3s",
                     opacity: theme === "light" ? 1 : 0,
-                    transform: theme === "light" ? 'rotate(0deg) scale(1)' : 'rotate(-90deg) scale(0.5)',
+                    transform:
+                      theme === "light"
+                        ? "rotate(0deg) scale(1)"
+                        : "rotate(-90deg) scale(0.5)",
                   }}
                 >
                   <Moon className="w-[17px] h-[17px]" />
                 </span>
                 <span
                   style={{
-                    position: 'absolute',
-                    transition: 'opacity 0.2s, transform 0.3s',
+                    position: "absolute",
+                    transition: "opacity 0.2s, transform 0.3s",
                     opacity: theme === "blue" ? 1 : 0,
-                    transform: theme === "blue" ? 'rotate(0deg) scale(1)' : 'rotate(90deg) scale(0.5)',
+                    transform:
+                      theme === "blue"
+                        ? "rotate(0deg) scale(1)"
+                        : "rotate(90deg) scale(0.5)",
                   }}
                 >
                   <Waves className="w-[17px] h-[17px]" />
@@ -454,11 +537,17 @@ export default function PrimarySearchAppBar() {
                     <DropdownMenuTrigger asChild>
                       <button
                         className={`flex items-center gap-1.5 pl-1 pr-2.5 py-1 rounded-full transition-all outline-none ${
-                          !scrolled
-                            ? "hover:bg-white/15 text-white"
-                            : "border"
+                          !scrolled ? "hover:bg-white/15 text-white" : "border"
                         }`}
-                        style={scrolled ? { borderColor: tk.dropdownBorder, color: tk.dropdownText, background: 'transparent' } : undefined}
+                        style={
+                          scrolled
+                            ? {
+                                borderColor: tk.dropdownBorder,
+                                color: tk.dropdownText,
+                                background: "transparent",
+                              }
+                            : undefined
+                        }
                       >
                         {/* Profile incomplete dot */}
                         <div className="relative">
@@ -471,16 +560,31 @@ export default function PrimarySearchAppBar() {
                       </button>
                     </DropdownMenuTrigger>
 
-                    <DropdownMenuContent align="end" className="w-60 mt-2 rounded-2xl shadow-xl p-1" style={{ background: tk.dropdownBg, borderColor: tk.dropdownBorder }}>
+                    <DropdownMenuContent
+                      align="end"
+                      className="w-60 mt-2 rounded-2xl shadow-xl p-1"
+                      style={{
+                        background: tk.dropdownBg,
+                        borderColor: tk.dropdownBorder,
+                      }}
+                    >
                       {/* User info header */}
                       <div className="px-3 py-3 mb-1">
                         <div className="flex items-center gap-3">
                           {renderAvatar()}
                           <div className="min-w-0">
-                            <p className="font-semibold text-sm truncate" style={{ color: tk.dropdownText }}>
+                            <p
+                              className="font-semibold text-sm truncate"
+                              style={{ color: tk.dropdownText }}
+                            >
                               {user.full_name || "User"}
                             </p>
-                            <p className="text-xs truncate" style={{ color: tk.dropdownMuted }}>{user.email}</p>
+                            <p
+                              className="text-xs truncate"
+                              style={{ color: tk.dropdownMuted }}
+                            >
+                              {user.email}
+                            </p>
                           </div>
                         </div>
                       </div>
@@ -491,7 +595,10 @@ export default function PrimarySearchAppBar() {
                           onClick={() => navigate("/dashboard")}
                           className="rounded-xl mx-1 gap-2.5"
                         >
-                          <LayoutDashboard className="w-4 h-4" style={{ color: tk.dropdownItemIcon }} />
+                          <LayoutDashboard
+                            className="w-4 h-4"
+                            style={{ color: tk.dropdownItemIcon }}
+                          />
                           {t("appBar.dashboard")}
                         </DropdownMenuItem>
                       )}
@@ -500,7 +607,10 @@ export default function PrimarySearchAppBar() {
                           onClick={() => navigate("/dashboard")}
                           className="rounded-xl mx-1 gap-2.5"
                         >
-                          <Home className="w-4 h-4" style={{ color: tk.dropdownItemIcon }} />
+                          <Home
+                            className="w-4 h-4"
+                            style={{ color: tk.dropdownItemIcon }}
+                          />
                           {t("appBar.propertiesManagement")}
                         </DropdownMenuItem>
                       )}
@@ -508,14 +618,20 @@ export default function PrimarySearchAppBar() {
                         onClick={() => navigate("/myBookings")}
                         className="rounded-xl mx-1 gap-2.5"
                       >
-                        <CalendarDays className="w-4 h-4" style={{ color: tk.dropdownItemIcon }} />
+                        <CalendarDays
+                          className="w-4 h-4"
+                          style={{ color: tk.dropdownItemIcon }}
+                        />
                         {t("appBar.myBookings")}
                       </DropdownMenuItem>
                       <DropdownMenuItem
                         onClick={() => navigate("/myAccount")}
                         className="rounded-xl mx-1 gap-2.5"
                       >
-                        <User2 className="w-4 h-4" style={{ color: tk.dropdownItemIcon }} />
+                        <User2
+                          className="w-4 h-4"
+                          style={{ color: tk.dropdownItemIcon }}
+                        />
                         <span className="flex-1">
                           {isProfileComplete
                             ? t("appBar.myAccount")
@@ -530,7 +646,10 @@ export default function PrimarySearchAppBar() {
                           onClick={() => navigate("/ProviderRequest")}
                           className="rounded-xl mx-1 gap-2.5"
                         >
-                          <Building2 className="w-4 h-4" style={{ color: tk.dropdownItemIcon }} />
+                          <Building2
+                            className="w-4 h-4"
+                            style={{ color: tk.dropdownItemIcon }}
+                          />
                           {t("appBar.becomeProvider")}
                         </DropdownMenuItem>
                       )}
@@ -594,33 +713,33 @@ export default function PrimarySearchAppBar() {
           }}
         >
           <div className="container mx-auto px-4 pt-3 pb-6 space-y-1">
-            {/* Nav links */}
-            {navLinks.map((link) => {
+            {/* Primary Nav links */}
+            {primaryNavLinks.map((link) => {
               const isActive = location.pathname === link.href;
               return (
                 <Link
                   key={link.href}
                   to={link.href}
                   style={{
-                    display: 'flex',
-                    alignItems: 'center',
+                    display: "flex",
+                    alignItems: "center",
                     gap: 12,
-                    padding: '10px 16px',
+                    padding: "10px 16px",
                     borderRadius: 4,
-                    textDecoration: 'none',
-                    fontFamily: 'Crimson Pro, Georgia, serif',
-                    fontSize: '0.95rem',
+                    textDecoration: "none",
+                    fontFamily: "Crimson Pro, Georgia, serif",
+                    fontSize: "0.95rem",
                     fontWeight: isActive ? 600 : 400,
-                    color: isActive
-                      ? tk.brand
-                      : tk.mobileInactive,
-                    background: isActive
-                      ? tk.navActiveBg
-                      : 'transparent',
-                    transition: 'all 0.2s',
+                    color: isActive ? tk.brand : tk.mobileInactive,
+                    background: isActive ? tk.navActiveBg : "transparent",
+                    transition: "all 0.2s",
                   }}
                 >
-                  <span style={{ color: isActive ? tk.brand : tk.mobileIconInactive }}>
+                  <span
+                    style={{
+                      color: isActive ? tk.brand : tk.mobileIconInactive,
+                    }}
+                  >
                     {link.icon}
                   </span>
                   {link.label}
@@ -631,38 +750,51 @@ export default function PrimarySearchAppBar() {
             {/* Mobile Destinations Accordion */}
             <div>
               <button
-                onClick={() => setMobileDestinationsOpen(!mobileDestinationsOpen)}
+                onClick={() =>
+                  setMobileDestinationsOpen(!mobileDestinationsOpen)
+                }
                 style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  width: '100%',
-                  padding: '10px 16px',
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  width: "100%",
+                  padding: "10px 16px",
                   borderRadius: 4,
-                  fontFamily: 'Crimson Pro, Georgia, serif',
-                  fontSize: '0.95rem',
+                  fontFamily: "Crimson Pro, Georgia, serif",
+                  fontSize: "0.95rem",
                   fontWeight: 400,
                   color: tk.mobileInactive,
-                  background: 'transparent',
-                  border: 'none',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s',
+                  background: "transparent",
+                  border: "none",
+                  cursor: "pointer",
+                  transition: "all 0.2s",
                 }}
               >
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                   <span style={{ color: tk.mobileIconInactive }}>
-                    <MapPin className="w-4 h-4" />
+                    <BookOpen className="w-4 h-4" />
                   </span>
-                  {t("common.destinations", "Destinations")}
+                  {t("home.appBar.Destinations-Guidedtours", "Destinations - Guided tours")}
                 </div>
                 <ChevronDown
                   className="w-4 h-4 transition-transform"
-                  style={{ transform: mobileDestinationsOpen ? "rotate(180deg)" : "rotate(0deg)", color: tk.mobileIconInactive }}
+                  style={{
+                    transform: mobileDestinationsOpen
+                      ? "rotate(180deg)"
+                      : "rotate(0deg)",
+                    color: tk.mobileIconInactive,
+                  }}
                 />
               </button>
 
               {mobileDestinationsOpen && (
-                <div className="pl-12 pr-4 py-2 space-y-1" style={{ borderLeft: `2px solid ${tk.mobilePanelBorder}`, marginLeft: '24px' }}>
+                <div
+                  className="pl-12 pr-4 py-2 space-y-1"
+                  style={{
+                    borderLeft: `2px solid ${tk.mobilePanelBorder}`,
+                    marginLeft: "24px",
+                  }}
+                >
                   {DESTINATION_CATEGORIES.map((cat) => (
                     <button
                       key={cat.slug}
@@ -671,41 +803,46 @@ export default function PrimarySearchAppBar() {
                         setMobileOpen(false);
                       }}
                       style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        width: '100%',
-                        padding: '8px 0',
-                        fontFamily: 'Crimson Pro, Georgia, serif',
-                        fontSize: '0.9rem',
+                        display: "flex",
+                        alignItems: "center",
+                        width: "100%",
+                        padding: "8px 0",
+                        fontFamily: "Crimson Pro, Georgia, serif",
+                        fontSize: "0.9rem",
                         color: tk.mobileInactive,
-                        background: 'transparent',
-                        border: 'none',
-                        cursor: 'pointer',
-                        textAlign: 'left',
+                        background: "transparent",
+                        border: "none",
+                        cursor: "pointer",
+                        textAlign: "left",
                       }}
                     >
                       {cat.label}
                     </button>
                   ))}
-                  <div style={{ borderTop: `1px solid ${tk.mobilePanelBorder}`, margin: '6px 0' }} />
+                  <div
+                    style={{
+                      borderTop: `1px solid ${tk.mobilePanelBorder}`,
+                      margin: "6px 0",
+                    }}
+                  />
                   <button
                     onClick={() => {
                       navigate("/destinations");
                       setMobileOpen(false);
                     }}
                     style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      width: '100%',
-                      padding: '8px 0',
-                      fontFamily: 'Crimson Pro, Georgia, serif',
-                      fontSize: '0.9rem',
+                      display: "flex",
+                      alignItems: "center",
+                      width: "100%",
+                      padding: "8px 0",
+                      fontFamily: "Crimson Pro, Georgia, serif",
+                      fontSize: "0.9rem",
                       fontWeight: 600,
                       color: tk.brand,
-                      background: 'transparent',
-                      border: 'none',
-                      cursor: 'pointer',
-                      textAlign: 'left',
+                      background: "transparent",
+                      border: "none",
+                      cursor: "pointer",
+                      textAlign: "left",
                     }}
                   >
                     See all
@@ -714,73 +851,188 @@ export default function PrimarySearchAppBar() {
               )}
             </div>
 
+            {/* Explore On Map (Mobile) */}
+            {(() => {
+              const link = mapNavLink;
+              const isActive = location.pathname === link.href;
+              return (
+                <Link
+                  key={link.href}
+                  to={link.href}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 12,
+                    padding: "10px 16px",
+                    borderRadius: 4,
+                    textDecoration: "none",
+                    fontFamily: "Crimson Pro, Georgia, serif",
+                    fontSize: "0.95rem",
+                    fontWeight: isActive ? 600 : 400,
+                    color: isActive ? tk.brand : tk.mobileInactive,
+                    background: isActive ? tk.navActiveBg : "transparent",
+                    transition: "all 0.2s",
+                  }}
+                >
+                  <span
+                    style={{
+                      color: isActive ? tk.brand : tk.mobileIconInactive,
+                    }}
+                  >
+                    {link.icon}
+                  </span>
+                  {link.label}
+                </Link>
+              );
+            })()}
+
             {/* Divider */}
-            <div style={{ borderTop: `1px solid ${tk.mobilePanelBorder}`, marginTop: 10, paddingTop: 10 }} className="space-y-1">
+            <div
+              style={{
+                borderTop: `1px solid ${tk.mobilePanelBorder}`,
+                marginTop: 10,
+                paddingTop: 10,
+              }}
+              className="space-y-1"
+            >
               {user ? (
                 <>
                   {/* User info */}
                   <div className="flex items-center gap-3 px-4 py-3 mb-1">
                     {renderAvatar()}
                     <div className="min-w-0">
-                      <p style={{ fontFamily: 'Crimson Pro, Georgia, serif', fontSize: '0.95rem', fontWeight: 600, color: tk.dropdownText }} className="truncate">
+                      <p
+                        style={{
+                          fontFamily: "Crimson Pro, Georgia, serif",
+                          fontSize: "0.95rem",
+                          fontWeight: 600,
+                          color: tk.dropdownText,
+                        }}
+                        className="truncate"
+                      >
                         {user.full_name || "User"}
                       </p>
-                      <p style={{ fontFamily: 'Crimson Pro, Georgia, serif', fontSize: '0.8rem', color: tk.dropdownMuted }} className="truncate">
+                      <p
+                        style={{
+                          fontFamily: "Crimson Pro, Georgia, serif",
+                          fontSize: "0.8rem",
+                          color: tk.dropdownMuted,
+                        }}
+                        className="truncate"
+                      >
                         {user.email}
                       </p>
                     </div>
                   </div>
 
                   {[
-                    { label: t("appBar.myWishlist"), icon: <Heart className="w-4 h-4" />, action: () => { navigate("/wishlist"); setMobileOpen(false); } },
-                    { label: t("appBar.myBookings"), icon: <CalendarDays className="w-4 h-4" />, action: () => { navigate("/myBookings"); setMobileOpen(false); } },
-                    { label: isProfileComplete ? t("appBar.myAccount") : t("appBar.completeProfile"), icon: <User2 className="w-4 h-4" />, action: () => { navigate("/myAccount"); setMobileOpen(false); }, dot: !isProfileComplete },
-                    ...((isAdmin || isProvider) ? [{ label: t("appBar.dashboard"), icon: <LayoutDashboard className="w-4 h-4" />, action: () => { navigate("/dashboard"); setMobileOpen(false); } }] : []),
-                    ...(isUser ? [{ label: t("appBar.becomeProvider"), icon: <Building2 className="w-4 h-4" />, action: () => { navigate("/ProviderRequest"); setMobileOpen(false); } }] : []),
+                    {
+                      label: t("appBar.myWishlist"),
+                      icon: <Heart className="w-4 h-4" />,
+                      action: () => {
+                        navigate("/wishlist");
+                        setMobileOpen(false);
+                      },
+                    },
+                    {
+                      label: t("appBar.myBookings"),
+                      icon: <CalendarDays className="w-4 h-4" />,
+                      action: () => {
+                        navigate("/myBookings");
+                        setMobileOpen(false);
+                      },
+                    },
+                    {
+                      label: isProfileComplete
+                        ? t("appBar.myAccount")
+                        : t("appBar.completeProfile"),
+                      icon: <User2 className="w-4 h-4" />,
+                      action: () => {
+                        navigate("/myAccount");
+                        setMobileOpen(false);
+                      },
+                      dot: !isProfileComplete,
+                    },
+                    ...(isAdmin || isProvider
+                      ? [
+                          {
+                            label: t("appBar.dashboard"),
+                            icon: <LayoutDashboard className="w-4 h-4" />,
+                            action: () => {
+                              navigate("/dashboard");
+                              setMobileOpen(false);
+                            },
+                          },
+                        ]
+                      : []),
+                    ...(isUser
+                      ? [
+                          {
+                            label: t("appBar.becomeProvider"),
+                            icon: <Building2 className="w-4 h-4" />,
+                            action: () => {
+                              navigate("/ProviderRequest");
+                              setMobileOpen(false);
+                            },
+                          },
+                        ]
+                      : []),
                   ].map((item, i) => (
                     <button
                       key={i}
                       onClick={item.action}
                       style={{
-                        display: 'flex',
-                        width: '100%',
-                        alignItems: 'center',
+                        display: "flex",
+                        width: "100%",
+                        alignItems: "center",
                         gap: 12,
-                        padding: '10px 16px',
+                        padding: "10px 16px",
                         borderRadius: 4,
-                        fontFamily: 'Crimson Pro, Georgia, serif',
-                        fontSize: '0.95rem',
+                        fontFamily: "Crimson Pro, Georgia, serif",
+                        fontSize: "0.95rem",
                         color: tk.mobileInactive,
-                        background: 'none',
-                        border: 'none',
-                        cursor: 'pointer',
-                        textAlign: 'left',
-                        transition: 'all 0.2s',
+                        background: "none",
+                        border: "none",
+                        cursor: "pointer",
+                        textAlign: "left",
+                        transition: "all 0.2s",
                       }}
                     >
-                      <span style={{ color: tk.mobileIconInactive }}>{item.icon}</span>
+                      <span style={{ color: tk.mobileIconInactive }}>
+                        {item.icon}
+                      </span>
                       <span style={{ flex: 1 }}>{item.label}</span>
-                      {item.dot && <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#f59e0b', flexShrink: 0 }} />}
+                      {item.dot && (
+                        <span
+                          style={{
+                            width: 7,
+                            height: 7,
+                            borderRadius: "50%",
+                            background: "#f59e0b",
+                            flexShrink: 0,
+                          }}
+                        />
+                      )}
                     </button>
                   ))}
 
                   <button
                     onClick={handleLogout}
                     style={{
-                      display: 'flex',
-                      width: '100%',
-                      alignItems: 'center',
+                      display: "flex",
+                      width: "100%",
+                      alignItems: "center",
                       gap: 12,
-                      padding: '10px 16px',
+                      padding: "10px 16px",
                       borderRadius: 4,
-                      fontFamily: 'Crimson Pro, Georgia, serif',
-                      fontSize: '0.95rem',
+                      fontFamily: "Crimson Pro, Georgia, serif",
+                      fontSize: "0.95rem",
                       color: tk.brand,
-                      background: 'none',
-                      border: 'none',
-                      cursor: 'pointer',
-                      textAlign: 'left',
-                      transition: 'all 0.2s',
+                      background: "none",
+                      border: "none",
+                      cursor: "pointer",
+                      textAlign: "left",
+                      transition: "all 0.2s",
                     }}
                   >
                     <LogOut className="w-4 h-4" />
@@ -789,22 +1041,25 @@ export default function PrimarySearchAppBar() {
                 </>
               ) : (
                 <button
-                  onClick={() => { navigate("/auth"); setMobileOpen(false); }}
+                  onClick={() => {
+                    navigate("/auth");
+                    setMobileOpen(false);
+                  }}
                   style={{
-                    display: 'flex',
-                    width: '100%',
-                    alignItems: 'center',
-                    justifyContent: 'center',
+                    display: "flex",
+                    width: "100%",
+                    alignItems: "center",
+                    justifyContent: "center",
                     gap: 8,
-                    padding: '12px 16px',
-                     background: tk.loginBtnBg,
-                    color: '#ffffff',
+                    padding: "12px 16px",
+                    background: tk.loginBtnBg,
+                    color: "#ffffff",
                     borderRadius: 4,
-                    fontFamily: 'Bebas Neue, Impact, sans-serif',
-                    fontSize: '1rem',
-                    letterSpacing: '0.08em',
-                    border: 'none',
-                    cursor: 'pointer',
+                    fontFamily: "Bebas Neue, Impact, sans-serif",
+                    fontSize: "1rem",
+                    letterSpacing: "0.08em",
+                    border: "none",
+                    cursor: "pointer",
                   }}
                 >
                   <LogIn className="w-4 h-4" />

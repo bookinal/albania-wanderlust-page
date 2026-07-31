@@ -21,10 +21,17 @@
       "badge": "Gjemica e Lindore e Evropës - Këmb i Fshehur",
       "discover": "Zbuloni",
       "albania": "Shqipërinë",
-      "subheading": "Rezervo hotele, apartamente dhe makina për aventurën tuaj të përkryer në Shqipëri. Nga Alpet Shqiptare deri në bregdetin Jonianë dhe Adriatik.",
+      "subheading": "Nga Alpet Shqiptare deri te bregdeti i Rivierës. Eksploroni destinacionet më të mira, rezervoni apartamente dhe makina për aventurën tuaj të përsosur shqiptare.",
       "exploreMap": "Shploro Hartën",
       "exploreDestinations": "Shploro Destinacionet",
       "browseProperties": "Shfleto Prona"
+    },
+    "appBar": {
+      "Home": "Faqja Kryesore",
+      "Stays": "Qëndrime",
+      "CarRentals": "Makina me Qira",
+      "Destinations-Guidedtours": "Destinacionet - Udhëtime të udhëhequra",
+      "ExploreOnMap": "Eksploro në Hartë"
     },
     "reservationPicker": {
       "carModel": "Modeli i Makina",
@@ -445,7 +452,8 @@
     "pageNotFound": "Oops! Faqja nuk u gjet",
     "returnToHome": "Kthehu në Faqen Kryesore",
     "accountSuspended": "Oops! Duket se llogaria juaj është pezulluar për disa arsye nga një Admin",
-    "unauthorizedAccess": "Oops! Ju nuk jeni të autorizuar të hyni në këtë faqe"
+    "unauthorizedAccess": "Oops! Ju nuk jeni të autorizuar të hyni në këtë faqe",
+    "seeAll": "Shiko të Gjitha"
   },
   "letUsInspireYou": {
     "title": "Lëreni të jemi të inspiruar",

@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import PropertiesMap from "../../components/home/data-map/PropertiesMap";
 import MapPropertySidebar from "../../components/home/data-map/MapPropertySidebar";
 import PrimarySearchAppBar from "@/components/home/AppBar";
@@ -10,6 +11,7 @@ import { Apartment } from "@/types/apartment.type";
 import { Destination } from "@/types/destination.types";
 import { Filter, X } from "lucide-react";
 import { useTheme } from "@/context/ThemeContext";
+import { SUBCATEGORIES } from "@/lib/destinationManagement";
 
 type Selected =
   | { type: "hotel"; data: Hotel }
@@ -22,6 +24,7 @@ const PropertiesMapPage = () => {
   const { isDark } = useTheme();
   const [selected, setSelected] = useState<Selected>(null);
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
+  const [searchParams] = useSearchParams();
   
   const {
     filters,
@@ -32,6 +35,14 @@ const PropertiesMapPage = () => {
     setDestinationFilters,
     resetFilters,
   } = useSearchFilters({ propertyType: "destination" });
+
+  useEffect(() => {
+    const category = searchParams.get("category");
+    if (category) {
+      const subs = SUBCATEGORIES.filter(s => s.parent === category).map(s => s.id);
+      setDestinationFilters({ categories: [category], subcategories: subs });
+    }
+  }, []);
 
   const handleDateChange = (dates: {
     checkInDate?: string | null;

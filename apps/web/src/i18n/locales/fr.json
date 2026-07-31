@@ -21,10 +21,17 @@
       "badge": "Joyau caché d'Europe du Sud-Est",
       "discover": "Découvrez",
       "albania": "l'Albanie",
-      "subheading": "Réservez hôtels, appartements et voitures pour votre parfaite aventure albanaise. Des Alpes albanaises à la côte de la Riviera.",
+      "subheading": "Des Alpes albanaises à la côte de la Riviera. Explorez les meilleures destinations, réservez des appartements et des voitures pour votre parfaite aventure albanaise.",
       "exploreMap": "Explorer la carte",
       "exploreDestinations": "Explorer les destinations",
       "browseProperties": "Parcourir les biens"
+    },
+    "appBar": {
+      "Home": "Accueil",
+      "Stays": "Séjours",
+      "CarRentals": "Location de voitures",
+      "Destinations-Guidedtours": "Destinations - Visites guidées",
+      "ExploreOnMap": "Explorer sur la carte"
     },
     "reservationPicker": {
       "carModel": "Modèle de voiture",
@@ -437,7 +444,8 @@
     "pageNotFound": "Oups ! Page non trouvée",
     "returnToHome": "Retour à l'accueil",
     "accountSuspended": "Oups ! Il semble que votre compte ait été suspendu pour certaines raisons par un administrateur",
-    "unauthorizedAccess": "Oups ! Vous n'êtes pas autorisé à accéder à cette page"
+    "unauthorizedAccess": "Oups ! Vous n'êtes pas autorisé à accéder à cette page",
+    "seeAll": "Voir tout"
   },
   "letUsInspireYou": {
     "title": "Laissez-nous vous inspirer",

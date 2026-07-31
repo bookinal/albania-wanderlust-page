@@ -6,20 +6,9 @@ interface DestinationFilterBarProps {
   search: string;
   onSearchChange: (value: string) => void;
 
-  categories: string[];
-  selectedCategory: string;
-  onCategoryChange: (value: string) => void;
-
-  subcategories?: string[];
-  selectedSubcategory?: string;
-  onSubcategoryChange?: (value: string) => void;
-
   location?: string[];
   selectedLocation?: string;
   onLocationChange?: (value: string) => void;
-
-  allCategoriesLabel: string;
-  allSubcategoriesLabel?: string;
 
   searchPlaceholder: string;
   clearFiltersLabel: string;
@@ -39,17 +28,9 @@ interface DestinationFilterBarProps {
 export function DestinationFilterBar({
   search,
   onSearchChange,
-  categories,
-  selectedCategory,
-  onCategoryChange,
-  subcategories = [],
-  selectedSubcategory = "",
-  onSubcategoryChange,
   location = [],
   selectedLocation = "",
   onLocationChange,
-  allCategoriesLabel,
-  allSubcategoriesLabel = "All",
   searchPlaceholder,
   clearFiltersLabel,
   hasActiveFilters,
@@ -154,10 +135,7 @@ export function DestinationFilterBar({
     );
   };
 
-  const hasSelects =
-    categories.length > 0 ||
-    (subcategories.length > 0 && !!onSubcategoryChange) ||
-    (location.length > 0 && !!onLocationChange);
+  const hasLocationSelect = location.length > 0 && !!onLocationChange;
 
   return (
     <div
@@ -170,9 +148,9 @@ export function DestinationFilterBar({
         borderRadius: "1.25rem",
         border: `1px solid ${borderColor}`,
         background,
+        marginBottom: "1rem",
       }}
     >
-      {/* Row 1: Search + (on desktop: selects inline) */}
       <div
         style={{
           display: "flex",
@@ -181,7 +159,6 @@ export function DestinationFilterBar({
           flexWrap: "nowrap",
         }}
       >
-        {/* Search input */}
         <div style={{ position: "relative", flex: "1 1 180px", minWidth: 0 }}>
           <Search
             style={{
@@ -211,35 +188,15 @@ export function DestinationFilterBar({
           />
         </div>
 
-        {/* Desktop: selects inline on same row */}
-        {!isMobile && hasSelects && (
-          <>
-            <SelectWrapper
-              value={selectedCategory}
-              onChange={onCategoryChange}
-              options={categories}
-              allLabel={allCategoriesLabel}
-            />
-            {subcategories.length > 0 && onSubcategoryChange && (
-              <SelectWrapper
-                value={selectedSubcategory}
-                onChange={onSubcategoryChange}
-                options={subcategories}
-                allLabel={allSubcategoriesLabel}
-              />
-            )}
-            {location.length > 0 && onLocationChange && (
-              <SelectWrapper
-                value={selectedLocation}
-                onChange={onLocationChange}
-                options={location}
-                allLabel="All locations"
-              />
-            )}
-          </>
+        {!isMobile && hasLocationSelect && (
+          <SelectWrapper
+            value={selectedLocation}
+            onChange={onLocationChange}
+            options={location}
+            allLabel="All locations"
+          />
         )}
 
-        {/* Results label */}
         <span
           style={{
             color: mutedColor,
@@ -252,7 +209,6 @@ export function DestinationFilterBar({
           {resultsLabel}
         </span>
 
-        {/* Clear filters */}
         {hasActiveFilters && (
           <button
             onClick={onClearFilters}
@@ -275,8 +231,7 @@ export function DestinationFilterBar({
         )}
       </div>
 
-      {/* Row 2: Mobile only — selects on their own line */}
-      {isMobile && hasSelects && (
+      {isMobile && hasLocationSelect && (
         <div
           style={{
             display: "flex",
@@ -285,27 +240,11 @@ export function DestinationFilterBar({
           }}
         >
           <SelectWrapper
-            value={selectedCategory}
-            onChange={onCategoryChange}
-            options={categories}
-            allLabel={allCategoriesLabel}
+            value={selectedLocation}
+            onChange={onLocationChange}
+            options={location}
+            allLabel="All locations"
           />
-          {subcategories.length > 0 && onSubcategoryChange && (
-            <SelectWrapper
-              value={selectedSubcategory}
-              onChange={onSubcategoryChange}
-              options={subcategories}
-              allLabel={allSubcategoriesLabel}
-            />
-          )}
-          {location.length > 0 && onLocationChange && (
-            <SelectWrapper
-              value={selectedLocation}
-              onChange={onLocationChange}
-              options={location}
-              allLabel="All locations"
-            />
-          )}
         </div>
       )}
     </div>

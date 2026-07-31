@@ -6,6 +6,7 @@ import { getHomeThemeTokens } from "./homeTheme";
 import { Button } from "@/components/ui/button";
 import { CATEGORIES, SUBCATEGORIES } from "@/lib/destinationManagement";
 import { Link } from "react-router-dom";
+import { t } from "i18next";
 
 const DestinationsHomePreview = () => {
   const { t } = useTranslation();
@@ -66,6 +67,13 @@ const DestinationsHomePreview = () => {
       "https://images.unsplash.com/photo-1576709501191-a9ccd791f174?q=80&w=764&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
   };
 
+
+  const categoryRoutes: Record<string, string> = {
+    Destinations: "/destinations/destinations",
+    "Eat, drink & dance": "/destinations/eat-drink-dance",
+    "History & culture": "/destinations/history-culture",
+    Experiences: "/destinations/experiences",
+  };
 
   const categoryGradients: Record<string, string> = {
     Destinations: "linear-gradient(135deg, #0f766e, #14b8a6)",
@@ -132,6 +140,7 @@ const DestinationsHomePreview = () => {
                 "linear-gradient(135deg, #1e3a5f, #3b82f6)"
               }
               subcategoryImages={subcategoryImages}
+              categoryRoutes={categoryRoutes}
               navigate={navigate}
             />
           );
@@ -147,6 +156,7 @@ const CategoryRow = ({
   tk,
   gradient,
   subcategoryImages,
+  categoryRoutes,
   navigate,
 }: {
   category: { id: string; label: string };
@@ -154,16 +164,46 @@ const CategoryRow = ({
   tk: Record<string, string>;
   gradient: string;
   subcategoryImages: Record<string, string>;
+  categoryRoutes: Record<string, string>;
   navigate: ReturnType<typeof useNavigate>;
 }) => {
   return (
     <div className="mb-10 last:mb-0">
-      <h3
-        className="text-xl md:text-2xl font-bold mb-4"
-        style={{ color: tk.textMain }}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          marginBottom: "1rem",
+        }}
       >
-        {category.label}
-      </h3>
+        <h3
+          className="text-xl md:text-2xl font-bold"
+          style={{ color: tk.textMain, margin: 0 }}
+        >
+          {category.label}
+        </h3>
+        <button
+          onClick={() =>
+            navigate(categoryRoutes[category.id] || "/destinations")
+          }
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "0.4rem",
+            background: "none",
+            border: "none",
+            color: tk.brand,
+            fontWeight: 600,
+            fontSize: "0.9rem",
+            cursor: "pointer",
+            padding: 0,
+          }}
+        >
+          {t("common.seeAll")}
+          <ArrowRight className="w-4 h-4" />
+        </button>
+      </div>
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
         {subcategories.map((sub) => (
           <div
@@ -184,8 +224,7 @@ const CategoryRow = ({
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.transform = "translateY(-4px)";
-              e.currentTarget.style.boxShadow =
-                "0 24px 48px rgba(0,0,0,0.15)";
+              e.currentTarget.style.boxShadow = "0 24px 48px rgba(0,0,0,0.15)";
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.transform = "translateY(0)";

@@ -21,7 +21,7 @@ import { useTranslation } from "react-i18next";
 import { useDestinations } from "@/hooks/useDestinations";
 import { DestinationCard } from "../DestinationCard";
 import { DestinationFilterBar } from "../../../../components/home/destinations/DestinationFilterBar";
-// import DestinationMap from "../DestinationMap";
+import MapPreviewCard from "../../SearchPropertyResults/MapPreviewCard";
 
 const HistoricDestinationsPage = () => {
   const { t } = useTranslation();
@@ -335,17 +335,9 @@ const HistoricDestinationsPage = () => {
             <DestinationFilterBar
               search={search}
               onSearchChange={setSearch}
-              categories={[]}
-              selectedCategory=""
-              onCategoryChange={() => {}}
-              subcategories={subcategories}
-              selectedSubcategory={selectedSubcategory}
-              onSubcategoryChange={setSelectedSubcategory}
               location={locations}
               selectedLocation={selectedLocation}
               onLocationChange={setSelectedLocation}
-              allCategoriesLabel={t("home.destinations.allCategories")}
-              allSubcategoriesLabel="All types"
               searchPlaceholder={t("home.destinations.searchPlaceholder")}
               clearFiltersLabel={t("home.destinations.clearFilters")}
               hasActiveFilters={hasActiveFilters}
@@ -504,21 +496,18 @@ const HistoricDestinationsPage = () => {
                   </div>
                 )}
 
-                {/* DestinationMap commented out */}
-                {/* {(!isMobile || showMapMobile) && (
+                {(!isMobile || showMapMobile) && (
                   <div
                     style={{
                       width: isMobile ? "100%" : "300px",
-                      height: isMobile
-                        ? "calc(100vh - 20rem)"
-                        : "calc(100vh - 12rem)",
                       position: isMobile ? "relative" : "sticky",
                       top: isMobile ? "auto" : "6rem",
+                      flexShrink: 0,
                     }}
                   >
-                    <DestinationMap destinations={filteredHistoricSpots} />
+                    <MapPreviewCard category="History & culture" />
                   </div>
-                )} */}
+                )}
               </div>
             )}
           </>

@@ -21,10 +21,17 @@
       "badge": "La Perla Nascosta del Sud-Est Europa",
       "discover": "Scopri",
       "albania": "l'Albania",
-      "subheading": "Prenota hotel, appartamenti e auto per la tua avventura albanese perfetta. Dalle Alpi Albanesi alla costa della Riviera.",
+      "subheading": "Dalle Alpi Albanesi alla costa della Riviera. Esplora le migliori destinazioni, prenota appartamenti e auto per la tua perfetta avventura albanese.",
       "exploreMap": "Esplora Mappa",
       "exploreDestinations": "Esplora Destinazioni",
       "browseProperties": "Sfoglia Strutture"
+    },
+    "appBar": {
+      "Home": "Home",
+      "Stays": "Soggiorni",
+      "CarRentals": "Noleggio Auto",
+      "Destinations-Guidedtours": "Destinazioni - Tour Guidati",
+      "ExploreOnMap": "Esplora sulla Mappa"
     },
     "reservationPicker": {
       "carModel": "Modello Auto",
@@ -437,7 +444,8 @@
     "pageNotFound": "Oops! Pagina non trovata",
     "returnToHome": "Torna alla Home",
     "accountSuspended": "Oops! Sembra che il tuo account sia stato sospeso per qualche motivo da un Amministratore",
-    "unauthorizedAccess": "Oops! Non sei autorizzato ad accedere a questa pagina"
+    "unauthorizedAccess": "Oops! Non sei autorizzato ad accedere a questa pagina",
+    "seeAll": "Vedi Tutto"
   },
   "letUsInspireYou": {
     "title": "Lasciati Ispirare",
