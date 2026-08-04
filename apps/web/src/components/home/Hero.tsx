@@ -22,7 +22,7 @@ const Hero = () => {
   };
 
   return (
-    <section className="relative min-h-[70vh] flex items-start justify-center overflow-hidden pt-20 sm:pt-10 lg:pt-10">
+    <section className="relative flex items-start justify-center overflow-hidden pt-3 sm:pt-2 lg:pt-2 pb-4 sm:pb-6">
       {/* Background Image with Overlay */}
       <div className="absolute inset-0 z-0">
         <img
@@ -37,25 +37,25 @@ const Hero = () => {
       </div>
 
       {/* Content */}
-      <div className="relative z-10 container mx-auto flex flex-1 flex-col items-center px-4 sm:px-6 lg:px-8 text-white">
-        <div className="w-full xl:grid xl:grid-cols-[minmax(0,600px)_minmax(240px,1fr)_minmax(240px,1fr)] xl:items-stretch xl:gap-4">
-          <div className="animate-fade-in-up mx-auto max-w-3xl text-center xl:text-left xl:flex xl:min-h-[420px] xl:flex-col xl:justify-center xl:self-center xl:items-start">
+      <div className="relative z-10 container mx-auto flex flex-1 flex-col items-center px-3 sm:px-5 lg:px-6 text-white">
+        <div className="w-full xl:grid xl:grid-cols-[minmax(0,520px)_minmax(200px,1fr)_minmax(200px,1fr)] xl:items-stretch xl:gap-3">
+          <div className="animate-fade-in-up mx-auto max-w-2xl text-center xl:text-left xl:flex xl:min-h-[340px] xl:flex-col xl:justify-center xl:self-center xl:items-start">
             {/* Badge */}
             <div
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full mb-4 border backdrop-blur-md"
+              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full mb-2.5 border backdrop-blur-md"
               style={{
                 background: tk.glassCardBg,
                 borderColor: tk.glassPanelBorder,
               }}
             >
-              <MapPin className="w-3.5 h-3.5" style={{ color: tk.badgeText }} />
-              <span className="text-xs font-medium tracking-wide">
+              <MapPin className="w-3 h-3" style={{ color: tk.badgeText }} />
+              <span className="text-[10px] sm:text-xs font-medium tracking-wide">
                 {t("home.hero.badge")}
               </span>
             </div>
 
             {/* Main Heading */}
-            <h1 className="mb-3 text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight">
+            <h1 className="mb-2 text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight">
               <span className="block">{t("home.hero.discover")}</span>
               <span
                 className="block bg-clip-text text-transparent"
@@ -70,39 +70,39 @@ const Hero = () => {
             </h1>
 
             {/* Subheading */}
-            <p className="text-sm sm:text-base md:text-lg mb-5 max-w-xl mx-auto xl:mx-0 text-white/85 leading-relaxed">
+            <p className="text-xs sm:text-sm md:text-base mb-3.5 max-w-lg mx-auto xl:mx-0 text-white/85 leading-relaxed">
               {t("home.hero.subheading")}
             </p>
 
-            <div className="mb-3 w-full xl:hidden">
+            <div className="mb-2.5 w-full xl:hidden scale-90 origin-top">
               <HeroInventoryPreview layout="stacked" />
             </div>
 
             {/* Search Widget */}
-            <div className="mb-4 sm:mb-5 w-full">
+            <div className="mb-3 w-full scale-90 sm:scale-85 origin-center xl:origin-left -my-1 sm:-my-2">
               <ReservationPickerValue />
             </div>
 
             {/* Secondary Actions */}
-            <div className="flex flex-col sm:flex-row gap-2 justify-center xl:justify-start items-center">
+            <div className="flex flex-col sm:flex-row gap-1.5 justify-center xl:justify-start items-center">
               <Link to="/properties-map">
                 <Button
                   size="sm"
-                  className="backdrop-blur-sm px-4 py-4 rounded-full transition-all duration-300 hover:scale-105 group"
+                  className="backdrop-blur-sm px-3 py-2 text-xs rounded-full transition-all duration-300 hover:scale-105 group h-auto"
                   style={{
                     background: tk.glassCardBg,
                     border: `1px solid ${tk.glassPanelBorder}`,
                     color: tk.textStrongOnMedia,
                   }}
                 >
-                  <MapPin className="w-3.5 h-3.5 mr-1.5" />
+                  <MapPin className="w-3 h-3 mr-1" />
                   {t("home.hero.exploreMap")}
                 </Button>
               </Link>
               <Link to="/destinations">
                 <Button
                   size="sm"
-                  className="backdrop-blur-sm px-4 py-4 rounded-full transition-all duration-300 hover:scale-105 group"
+                  className="backdrop-blur-sm px-3 py-2 text-xs rounded-full transition-all duration-300 hover:scale-105 group h-auto"
                   style={{
                     background: tk.glassCardBg,
                     border: `1px solid ${tk.glassPanelBorder}`,
@@ -115,18 +115,22 @@ const Hero = () => {
               <Button
                 size="sm"
                 variant="ghost"
-                className="px-4 py-4 rounded-full transition-all group"
+                className="px-3 py-2 text-xs rounded-full transition-all group h-auto"
                 style={{ color: tk.textSoftOnMedia, background: "transparent" }}
                 onClick={navigateToSearchResults}
               >
                 {t("home.hero.browseProperties")}
-                <ArrowRight className="ml-1.5 w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="ml-1 w-3 h-3 group-hover:translate-x-1 transition-transform" />
               </Button>
             </div>
           </div>
 
-          <HeroInventoryPreview layout="split" side="stays" />
-          <HeroInventoryPreview layout="split" side="cars" />
+          <div className="hidden h-full xl:flex scale-85 origin-top-left">
+            <HeroInventoryPreview layout="split" side="stays" />
+          </div>
+          <div className="hidden h-full xl:flex scale-85 origin-top-left">
+            <HeroInventoryPreview layout="split" side="cars" />
+          </div>
         </div>
       </div>
 

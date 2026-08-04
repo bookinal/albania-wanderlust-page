@@ -85,18 +85,13 @@ const DestinationsHomePreview = () => {
   return (
     <section
       id="destinations"
-      className="py-24 transition-colors duration-300"
+      className="pt-0 pb-24 transition-colors duration-300"
       style={{ background: tk.sectionBg }}
     >
       <div className="container mx-auto px-4">
         <div className="flex flex-col gap-5 mb-10 md:flex-row md:items-end md:justify-between">
           <div className="max-w-3xl">
-            <div
-              className="text-[11px] font-bold uppercase tracking-[0.25em] mb-3"
-              style={{ color: tk.brand }}
-            >
-              {t("common.destinations")}
-            </div>
+
             <h2
               className="text-4xl md:text-5xl font-black mb-4"
               style={{ color: tk.textMain }}
