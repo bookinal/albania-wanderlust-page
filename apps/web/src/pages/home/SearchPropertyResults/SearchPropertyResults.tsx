@@ -33,8 +33,12 @@ const SearchPropertyResults = () => {
     rooms?: number;
   } | null;
 
-  const initialFilters = state
-    ? {
+  const initialFilters = {
+    propertyType: (state?.type === "hotel" ? "hotel" : "apartment") as
+      | "hotel"
+      | "apartment",
+    ...(state
+      ? {
         destination: state.destination,
         checkInDate: state.checkInDate,
         checkOutDate: state.checkOutDate,
@@ -69,7 +73,8 @@ const SearchPropertyResults = () => {
               : defaultSearchFilters.apartmentFilters.beds,
         },
       }
-    : undefined;
+      : {}),
+  };
 
   const {
     filters,

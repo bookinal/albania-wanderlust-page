@@ -96,7 +96,7 @@ export default function ReservationPickerValue() {
         maxWidth: { xs: "100%", sm: "90%", md: "fit-content" },
         width: { xs: "100%", sm: "auto" },
         mx: "auto",
-        my: { xs: 1, sm: 1.5, md: 4 },
+        my: { xs: 0.5, sm: 1, md: 1.5 },
         overflow: "hidden",
       }}
     >
@@ -110,17 +110,22 @@ export default function ReservationPickerValue() {
           borderColor: "divider",
           "& .MuiTab-root": {
             fontWeight: 600,
-            fontSize: { xs: "0.8rem", sm: "1rem" },
-            minHeight: { xs: 46, sm: 56 },
+            fontSize: { xs: "0.7rem", sm: "0.85rem" },
+            minHeight: { xs: 36, sm: 42 },
+            py: 0.5,
           },
         }}
       >
         <Tab
-          icon={<DirectionsCar />}
+          icon={<DirectionsCar fontSize="small" />}
           iconPosition="start"
           label={t("common.car")}
         />
-        <Tab icon={<Hotel />} iconPosition="start" label={t("common.stay")} />
+        <Tab
+          icon={<Hotel fontSize="small" />}
+          iconPosition="start"
+          label={t("common.stay")}
+        />
       </Tabs>
 
       {/* Search Fields */}
@@ -128,8 +133,8 @@ export default function ReservationPickerValue() {
         sx={{
           display: "flex",
           flexDirection: "column",
-          gap: { xs: 1.25, sm: 2 },
-          p: { xs: 1.25, sm: 2.5, md: 3 },
+          gap: { xs: 1, sm: 1.5 },
+          p: { xs: 1, sm: 1.5, md: 2 },
         }}
       >
         <Box
@@ -138,7 +143,7 @@ export default function ReservationPickerValue() {
             flexDirection: { xs: "column", md: "row" },
             alignItems: "center",
             justifyContent: "center",
-            gap: { xs: 1.25, sm: 2 },
+            gap: { xs: 1, sm: 1.5 },
             width: "100%",
           }}
         >
@@ -152,7 +157,7 @@ export default function ReservationPickerValue() {
             onChange={(e) => setDestination(e.target.value)}
             variant="outlined"
             size="small"
-            sx={{ minWidth: { xs: "100%", sm: 200 } }}
+            sx={{ minWidth: { xs: "100%", sm: 170 } }}
           />
 
           <Box sx={{ width: { xs: "100%", sm: "auto" } }}>
@@ -165,7 +170,7 @@ export default function ReservationPickerValue() {
                   : t("home.reservationPicker.carDate")
               }
               minDate={new Date()}
-              className="w-full sm:w-auto [&_button]:!text-gray-900 [&_button]:!bg-white [&_button]:border-gray-300 [&_button:hover]:!bg-gray-50"
+              className="w-full sm:w-auto h-9 text-sm [&_button]:!text-gray-900 [&_button]:!bg-white [&_button]:border-gray-300 [&_button:hover]:!bg-gray-50"
             />
           </Box>
 
@@ -175,9 +180,10 @@ export default function ReservationPickerValue() {
               color="primary"
               disabled={!dateRange?.from || !dateRange?.to || loading}
               onClick={handleSearch}
+              size="small"
               sx={{
-                px: 4,
-                py: 1.5,
+                px: 3,
+                py: 1,
                 fontWeight: "bold",
                 width: { xs: "100%", sm: "auto" },
               }}
@@ -197,9 +203,9 @@ export default function ReservationPickerValue() {
               flexDirection: { xs: "column", md: "row" },
               alignItems: "center",
               justifyContent: "center",
-              gap: { xs: 2, sm: 3 },
+              gap: { xs: 1.5, sm: 2 },
               width: "100%",
-              mt: { md: 1 },
+              mt: { md: 0.5 },
             }}
           >
             <Box
@@ -215,7 +221,7 @@ export default function ReservationPickerValue() {
                 sx={{
                   color: "text.primary",
                   fontWeight: 500,
-                  fontSize: { xs: "0.875rem", sm: "1rem" },
+                  fontSize: { xs: "0.75rem", sm: "0.875rem" },
                   mr: { sm: 1 },
                 }}
               >
@@ -225,13 +231,13 @@ export default function ReservationPickerValue() {
                 onClick={() => handleDecrement(setAdults)}
                 size="small"
               >
-                <Remove />
+                <Remove fontSize="small" />
               </IconButton>
               <Typography
                 sx={{
                   color: "text.primary",
                   fontWeight: 500,
-                  fontSize: { xs: "0.875rem", sm: "1rem" },
+                  fontSize: { xs: "0.75rem", sm: "0.875rem" },
                   minWidth: "20px",
                   textAlign: "center",
                 }}
@@ -242,7 +248,7 @@ export default function ReservationPickerValue() {
                 onClick={() => handleIncrement(setAdults)}
                 size="small"
               >
-                <Add />
+                <Add fontSize="small" />
               </IconButton>
             </Box>
 
@@ -259,7 +265,7 @@ export default function ReservationPickerValue() {
                 sx={{
                   color: "text.primary",
                   fontWeight: 500,
-                  fontSize: { xs: "0.875rem", sm: "1rem" },
+                  fontSize: { xs: "0.75rem", sm: "0.875rem" },
                   mr: { sm: 1 },
                 }}
               >
@@ -269,13 +275,13 @@ export default function ReservationPickerValue() {
                 onClick={() => handleDecrement(setChildren)}
                 size="small"
               >
-                <Remove />
+                <Remove fontSize="small" />
               </IconButton>
               <Typography
                 sx={{
                   color: "text.primary",
                   fontWeight: 500,
-                  fontSize: { xs: "0.875rem", sm: "1rem" },
+                  fontSize: { xs: "0.75rem", sm: "0.875rem" },
                   minWidth: "20px",
                   textAlign: "center",
                 }}
@@ -286,7 +292,7 @@ export default function ReservationPickerValue() {
                 onClick={() => handleIncrement(setChildren)}
                 size="small"
               >
-                <Add />
+                <Add fontSize="small" />
               </IconButton>
             </Box>
 
@@ -303,7 +309,7 @@ export default function ReservationPickerValue() {
                 sx={{
                   color: "text.primary",
                   fontWeight: 500,
-                  fontSize: { xs: "0.875rem", sm: "1rem" },
+                  fontSize: { xs: "0.75rem", sm: "0.875rem" },
                   mr: { sm: 1 },
                 }}
               >
@@ -313,13 +319,13 @@ export default function ReservationPickerValue() {
                 onClick={() => handleDecrement(setRooms)}
                 size="small"
               >
-                <Remove />
+                <Remove fontSize="small" />
               </IconButton>
               <Typography
                 sx={{
                   color: "text.primary",
                   fontWeight: 500,
-                  fontSize: { xs: "0.875rem", sm: "1rem" },
+                  fontSize: { xs: "0.75rem", sm: "0.875rem" },
                   minWidth: "20px",
                   textAlign: "center",
                 }}
@@ -330,7 +336,7 @@ export default function ReservationPickerValue() {
                 onClick={() => handleIncrement(setRooms)}
                 size="small"
               >
-                <Add />
+                <Add fontSize="small" />
               </IconButton>
             </Box>
 
@@ -339,12 +345,13 @@ export default function ReservationPickerValue() {
               color="primary"
               disabled={!dateRange?.from || !dateRange?.to || loading}
               onClick={handleSearch}
+              size="small"
               sx={{
-                px: 4,
-                py: 1.5,
+                px: 3,
+                py: 1,
                 fontWeight: "bold",
                 width: { xs: "100%", sm: "auto" },
-                ml: { md: 2 },
+                ml: { md: 1.5 },
               }}
             >
               {loading

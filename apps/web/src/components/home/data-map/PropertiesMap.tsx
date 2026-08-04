@@ -1,4 +1,4 @@
-import { MapContainer, TileLayer, Marker, Tooltip } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Tooltip, useMapEvents } from "react-leaflet";
 import { getAllHotels } from "@/services/api/hotelService";
 import { getAllApartments } from "@/services/api/apartmentService";
 import { getAllDestinations } from "@/services/api/destinationService";
@@ -89,14 +89,35 @@ function createPriceMarker(
   });
 }
 
+// Destination marker size scales with zoom: MAX_SIZE is the size at DESTINATION_MARKER_MAX_ZOOM and above.
+const DESTINATION_MARKER_MAX_SIZE = 36;
+const DESTINATION_MARKER_MIN_SIZE = 18;
+const DESTINATION_MARKER_MIN_ZOOM = 6;
+const DESTINATION_MARKER_MAX_ZOOM = 14;
+
+function getDestinationMarkerSize(zoom: number): number {
+  const t =
+    (Math.min(Math.max(zoom, DESTINATION_MARKER_MIN_ZOOM), DESTINATION_MARKER_MAX_ZOOM) -
+      DESTINATION_MARKER_MIN_ZOOM) /
+    (DESTINATION_MARKER_MAX_ZOOM - DESTINATION_MARKER_MIN_ZOOM);
+  return Math.round(
+    DESTINATION_MARKER_MIN_SIZE + t * (DESTINATION_MARKER_MAX_SIZE - DESTINATION_MARKER_MIN_SIZE),
+  );
+}
+
 /**
  * Creates an icon-only circular badge for Destination markers based on destination subcategories.
- * Each subcategory displays its dedicated icon and unique color theme.
+ * Each subcategory displays its dedicated icon and unique color theme. Size scales with zoom,
+ * capped at DESTINATION_MARKER_MAX_SIZE (the size used before zoom-based scaling was added).
  */
-function createDestinationMarker(destination: Destination, isDark: boolean): L.DivIcon {
+function createDestinationMarker(destination: Destination, isDark: boolean, zoom: number): L.DivIcon {
   const subcategoryKey = destination.subcategory || destination.category || "";
   const style = getDestinationCategoryColor(subcategoryKey, isDark);
-  const iconSvg = getSubcategoryIconSvg(destination.subcategory, destination.category);
+  const size = getDestinationMarkerSize(zoom);
+  const iconSize = Math.round(size / 2);
+  const iconSvg = getSubcategoryIconSvg(destination.subcategory, destination.category)
+    .replace('width="18"', `width="${iconSize}"`)
+    .replace('height="18"', `height="${iconSize}"`);
 
   const html = `
     <div style="
@@ -107,8 +128,8 @@ function createDestinationMarker(destination: Destination, isDark: boolean): L.D
       cursor: pointer;
     ">
       <div style="
-        width: 36px;
-        height: 36px;
+        width: ${size}px;
+        height: ${size}px;
         background: ${style.bg};
         border: 2px solid ${style.border};
         border-radius: 50%;
@@ -137,6 +158,14 @@ function createDestinationMarker(destination: Destination, isDark: boolean): L.D
 
 // Center of Albania (Tirana)
 const ALBANIA_CENTER: [number, number] = [41.3275, 19.8187];
+const DEFAULT_ZOOM = 8;
+
+function ZoomTracker({ onZoomChange }: { onZoomChange: (zoom: number) => void }) {
+  useMapEvents({
+    zoomend: (e) => onZoomChange(e.target.getZoom()),
+  });
+  return null;
+}
 
 export default function PropertiesMap({ onSelect, filters }: PropertiesMapProps) {
   const { localize } = useLocalized();
@@ -145,6 +174,7 @@ export default function PropertiesMap({ onSelect, filters }: PropertiesMapProps)
   const [loading, setLoading] = useState(true);
   const [apartmentsData, setApartmentsData] = useState<Apartment[]>([]);
   const [destinationsData, setDestinationsData] = useState<Destination[]>([]);
+  const [zoom, setZoom] = useState(DEFAULT_ZOOM);
 
   const homeTk = getHomeThemeTokens({ isDark, isBlue });
   const tk = {
@@ -264,11 +294,12 @@ export default function PropertiesMap({ onSelect, filters }: PropertiesMapProps)
       <div className="flex-1 relative w-full h-full">
         <MapContainer
           center={ALBANIA_CENTER}
-          zoom={8}
+          zoom={DEFAULT_ZOOM}
           className="w-full h-full"
           attributionControl={false}
           zoomControl={false}
         >
+          <ZoomTracker onZoomChange={setZoom} />
           {/* Base map */}
           <TileLayer
             attribution="Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community"
@@ -318,7 +349,7 @@ export default function PropertiesMap({ onSelect, filters }: PropertiesMapProps)
             <Marker
               key={`destination-${destination.id}`}
               position={[destination.lat || 0, destination.lng || 0]}
-              icon={createDestinationMarker(destination, isDark)}
+              icon={createDestinationMarker(destination, isDark, zoom)}
               eventHandlers={{
                 click: () =>
                   onSelect?.({ type: "destination", data: destination }),

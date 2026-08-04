@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   ArrowLeft,
@@ -18,9 +18,10 @@ import {
   Wine,
   UtensilsCrossed,
   CheckCircle2,
-  Image as ImageIcon,
   ChevronLeft,
   ChevronRight,
+  Images,
+  X,
 } from "lucide-react";
 import { Hotel } from "@/types/hotel.types";
 import { getHotelById } from "@/services/api/hotelService";
@@ -28,15 +29,308 @@ import { MapPicker } from "@/components/dashboard/mapPicker";
 import Swal from "sweetalert2";
 import { Pool, Spa } from "@mui/icons-material";
 import PrimarySearchAppBar from "@/components/home/AppBar";
-import Lightbox from "yet-another-react-lightbox";
-import "yet-another-react-lightbox/styles.css";
-import Zoom from "yet-another-react-lightbox/plugins/zoom";
-import Fullscreen from "yet-another-react-lightbox/plugins/fullscreen";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@/context/ThemeContext";
 import { getBookingThemeTokens } from "./booking/bookingTheme";
 import { userService } from "@/services/api/userService";
 import { User } from "@/types/user.types";
+
+function MosaicGallery({
+  images,
+  onOpen,
+  alt,
+}: {
+  images: string[];
+  onOpen: (index: number) => void;
+  alt: string;
+}) {
+  const total = images.length;
+  if (total === 0) return null;
+
+  const cellButtonStyle: React.CSSProperties = {
+    position: "relative",
+    display: "block",
+    width: "100%",
+    height: "100%",
+    padding: 0,
+    border: "none",
+    background: "none",
+    cursor: "pointer",
+    overflow: "hidden",
+  };
+
+  const imgStyle: React.CSSProperties = {
+    width: "100%",
+    height: "100%",
+    objectFit: "cover",
+    display: "block",
+    transition: "transform 0.3s ease",
+  };
+
+  const renderCell = (
+    index: number,
+    gridArea: React.CSSProperties,
+    overlay?: React.ReactNode,
+  ) => (
+    <button
+      key={index}
+      onClick={() => onOpen(index)}
+      style={{ ...cellButtonStyle, ...gridArea }}
+      className="group"
+    >
+      <img
+        src={images[index]}
+        alt={`${alt} ${index + 1}`}
+        style={imgStyle}
+        className="group-hover:scale-105"
+        onError={(e) => {
+          e.currentTarget.src = "/placeholder.svg";
+        }}
+      />
+      {overlay}
+    </button>
+  );
+
+  const viewAllOverlay =
+    total > 4 ? (
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          background: "rgba(15,23,42,0.45)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <span
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "0.4rem",
+            padding: "0.5rem 0.9rem",
+            borderRadius: "9999px",
+            background: "rgba(255,255,255,0.95)",
+            color: "#111827",
+            fontWeight: 700,
+            fontSize: "0.85rem",
+          }}
+        >
+          <Images className="w-4 h-4" />
+          View all {total}
+        </span>
+      </div>
+    ) : null;
+
+  let columns = "1fr";
+  let rows = "1fr";
+  let cells: React.ReactNode[];
+
+  if (total === 1) {
+    cells = [renderCell(0, {})];
+  } else if (total === 2) {
+    columns = "1fr 1fr";
+    cells = [renderCell(0, {}), renderCell(1, {})];
+  } else if (total === 3) {
+    columns = "1.3fr 1fr";
+    rows = "1fr 1fr";
+    cells = [
+      renderCell(0, { gridRow: "1 / span 2", gridColumn: "1" }),
+      renderCell(1, { gridRow: "1", gridColumn: "2" }),
+      renderCell(2, { gridRow: "2", gridColumn: "2" }),
+    ];
+  } else {
+    columns = "1fr 1.3fr 1fr";
+    rows = "1fr 1fr";
+    cells = [
+      renderCell(0, { gridRow: "1 / span 2", gridColumn: "1" }),
+      renderCell(1, { gridRow: "1 / span 2", gridColumn: "2" }),
+      renderCell(2, { gridRow: "1", gridColumn: "3" }),
+      renderCell(3, { gridRow: "2", gridColumn: "3" }, viewAllOverlay),
+    ];
+  }
+
+  return (
+    <div
+      style={{
+        width: "100%",
+        height: "100%",
+        display: "grid",
+        gridTemplateColumns: columns,
+        gridTemplateRows: rows,
+        gap: "4px",
+      }}
+    >
+      {cells}
+    </div>
+  );
+}
+
+function LightboxModal({
+  images,
+  initialIndex,
+  onClose,
+  alt,
+}: {
+  images: string[];
+  initialIndex: number;
+  onClose: () => void;
+  alt: string;
+}) {
+  const [index, setIndex] = useState(initialIndex);
+  const touchStartX = useRef<number | null>(null);
+  const total = images.length;
+
+  const goNext = useCallback(() => setIndex((i) => (i + 1) % total), [total]);
+  const goPrev = useCallback(
+    () => setIndex((i) => (i - 1 + total) % total),
+    [total],
+  );
+
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+      if (e.key === "ArrowRight") goNext();
+      if (e.key === "ArrowLeft") goPrev();
+    };
+    window.addEventListener("keydown", handler);
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      window.removeEventListener("keydown", handler);
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [goNext, goPrev, onClose]);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX.current === null) return;
+    const dx = e.changedTouches[0].clientX - touchStartX.current;
+    if (Math.abs(dx) > 50) {
+      if (dx < 0) goNext();
+      else goPrev();
+    }
+    touchStartX.current = null;
+  };
+
+  const arrowButtonStyle: React.CSSProperties = {
+    position: "absolute",
+    top: "50%",
+    transform: "translateY(-50%)",
+    width: "3rem",
+    height: "3rem",
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: "9999px",
+    background: "rgba(255,255,255,0.12)",
+    border: "1px solid rgba(255,255,255,0.22)",
+    color: "#fff",
+    cursor: "pointer",
+  };
+
+  return (
+    <div
+      onClick={onClose}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+      style={{
+        position: "fixed",
+        inset: 0,
+        background: "rgba(0,0,0,0.92)",
+        zIndex: 1000,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          onClose();
+        }}
+        style={{
+          position: "absolute",
+          top: "1.25rem",
+          right: "1.25rem",
+          width: "2.75rem",
+          height: "2.75rem",
+          display: "inline-flex",
+          alignItems: "center",
+          justifyContent: "center",
+          borderRadius: "9999px",
+          background: "rgba(255,255,255,0.12)",
+          border: "1px solid rgba(255,255,255,0.22)",
+          color: "#fff",
+          cursor: "pointer",
+        }}
+      >
+        <X className="w-5 h-5" />
+      </button>
+
+      {total > 1 && (
+        <>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              goPrev();
+            }}
+            style={{ ...arrowButtonStyle, left: "1rem" }}
+          >
+            <ChevronLeft className="w-6 h-6" />
+          </button>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              goNext();
+            }}
+            style={{ ...arrowButtonStyle, right: "1rem" }}
+          >
+            <ChevronRight className="w-6 h-6" />
+          </button>
+        </>
+      )}
+
+      <img
+        src={images[index]}
+        alt={`${alt} ${index + 1}`}
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          maxWidth: "90vw",
+          maxHeight: "85vh",
+          objectFit: "contain",
+          borderRadius: "0.75rem",
+          boxShadow: "0 24px 60px rgba(0,0,0,0.5)",
+        }}
+        onError={(e) => {
+          e.currentTarget.src = "/placeholder.svg";
+        }}
+      />
+
+      {total > 1 && (
+        <div
+          style={{
+            position: "absolute",
+            bottom: "1.5rem",
+            left: "50%",
+            transform: "translateX(-50%)",
+            padding: "0.4rem 0.9rem",
+            borderRadius: "9999px",
+            background: "rgba(255,255,255,0.12)",
+            color: "#fff",
+            fontSize: "0.85rem",
+            fontWeight: 600,
+            backdropFilter: "blur(8px)",
+          }}
+        >
+          {index + 1} / {total}
+        </div>
+      )}
+    </div>
+  );
+}
 
 const HotelReservation = () => {
   const { id } = useParams<{ id: string }>();
@@ -49,8 +343,7 @@ const HotelReservation = () => {
   const [hotel, setHotel] = useState<Hotel | null>(null);
   const [loading, setLoading] = useState(true);
   const [images, setImages] = useState<string[]>([]);
-  const [photoIndex, setPhotoIndex] = useState(0);
-  const [isOpen, setIsOpen] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
@@ -187,7 +480,7 @@ const HotelReservation = () => {
           Back to Hotels
         </button>
 
-        {/* Hero Gallery */}
+        {/* Hero Gallery Section */}
         <div
           className="rounded-3xl overflow-hidden mb-8 border"
           style={{
@@ -196,113 +489,70 @@ const HotelReservation = () => {
             boxShadow: tk.cardShadow,
           }}
         >
-          <div className="relative">
+          <div className="relative h-96 sm:h-[500px]">
             {images.length > 0 ? (
-              <div className="relative h-96 sm:h-[500px]">
-                <img
-                  src={images[photoIndex]}
-                  alt={`${hotel.name} - Image ${photoIndex + 1}`}
-                  onClick={() => setIsOpen(true)}
-                  className="w-full h-full object-cover cursor-zoom-in"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
-
-                {images.length > 1 && (
-                  <>
-                    <button
-                      onClick={() => setPhotoIndex((photoIndex + images.length - 1) % images.length)}
-                      className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/90 hover:bg-white rounded-full flex items-center justify-center shadow-lg transition-all hover:scale-110"
-                    >
-                      <ChevronLeft size={24} className="text-gray-900" />
-                    </button>
-                    <button
-                      onClick={() => setPhotoIndex((photoIndex + 1) % images.length)}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/90 hover:bg-white rounded-full flex items-center justify-center shadow-lg transition-all hover:scale-110"
-                    >
-                      <ChevronRight size={24} className="text-gray-900" />
-                    </button>
-                  </>
-                )}
-
-                <button
-                  onClick={() => setIsOpen(true)}
-                  className="absolute bottom-6 right-6 px-6 py-3 bg-white hover:bg-gray-50 rounded-xl shadow-lg flex items-center gap-2 font-semibold text-gray-900 transition-all hover:scale-105"
-                >
-                  <ImageIcon size={20} />
-                  {t("hotel.viewAllPhotos", { count: images.length })}
-                </button>
-
-                <div className="absolute bottom-6 left-6 px-4 py-2 bg-black/60 backdrop-blur-sm rounded-full text-white text-sm font-medium">
-                  {photoIndex + 1} / {images.length}
-                </div>
-
-                <div className="absolute top-6 right-6">
-                  <span
-                    className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-bold uppercase tracking-wider shadow-lg backdrop-blur-sm ${
-                      hotel.status === "active" ? "bg-emerald-500/90 text-white" : "bg-amber-500/90 text-white"
-                    }`}
-                  >
-                    <CheckCircle2 size={16} className="mr-2" />
-                    {hotel.status}
-                  </span>
-                </div>
-
-                <div className="absolute bottom-0 left-0 right-0 p-8 text-white">
-                  <h1 className="text-4xl sm:text-5xl font-bold mb-3 drop-shadow-lg">{hotel.name}</h1>
-                  <div className="flex items-center gap-2 text-lg mb-4">
-                    <MapPin size={20} />
-                    <span className="drop-shadow">{hotel.location}</span>
-                  </div>
-                  <div className="flex items-center gap-6">
-                    <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full">
-                      <Star size={20} className="text-amber-400 fill-amber-400" />
-                      <span className="font-bold text-lg">{hotel.rating}</span>
-                      <span className="text-sm opacity-90">/ 5.0</span>
-                    </div>
-                    <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full">
-                      <Users size={20} />
-                      <span className="font-medium">{hotel.occupancy}% occupied</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <MosaicGallery
+                images={images}
+                onOpen={(idx) => setLightboxIndex(idx)}
+                alt={hotel.name}
+              />
             ) : (
-              <div className="h-96 sm:h-[500px] flex items-center justify-center" style={{ background: tk.statBg }}>
+              <div className="h-full flex items-center justify-center" style={{ background: tk.statBg }}>
                 <p style={{ color: tk.mutedText }}>{t("hotel.noImagesAvailable")}</p>
               </div>
             )}
 
-            {images.length > 1 && (
-              <div className="p-4 overflow-x-auto" style={{ background: tk.thumbBg }}>
-                <div className="flex gap-3">
-                  {images.map((img, index) => (
-                    <button
-                      key={index}
-                      onClick={() => setPhotoIndex(index)}
-                      className="flex-shrink-0 w-24 h-24 rounded-lg overflow-hidden transition-all"
-                      style={{
-                        outline: index === photoIndex ? `3px solid ${tk.brand}` : `2px solid ${tk.statBorder}`,
-                        opacity: index === photoIndex ? 1 : 0.6,
-                        transform: index === photoIndex ? "scale(1.05)" : "scale(1)",
-                      }}
-                    >
-                      <img src={img} alt={`Thumbnail ${index + 1}`} className="w-full h-full object-cover" />
-                    </button>
-                  ))}
+            {/* Gradient Overlay for Text Visibility */}
+            <div
+              style={{
+                position: "absolute",
+                inset: 0,
+                pointerEvents: "none",
+                background: `linear-gradient(180deg, rgba(0,0,0,0.18) 0%, rgba(0,0,0,0.01) 35%, rgba(0,0,0,0.65) 100%)`,
+              }}
+            />
+
+            {/* Top Right Status Badge */}
+            <div className="absolute top-6 right-6 pointer-events-none z-10">
+              <span
+                className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-bold uppercase tracking-wider shadow-lg backdrop-blur-sm ${
+                  hotel.status === "active" ? "bg-emerald-500/90 text-white" : "bg-amber-500/90 text-white"
+                }`}
+              >
+                <CheckCircle2 size={16} className="mr-2" />
+                {hotel.status}
+              </span>
+            </div>
+
+            {/* Bottom Overlay Info */}
+            <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-8 text-white pointer-events-none z-10">
+              <h1 className="text-3xl sm:text-5xl font-bold mb-3 drop-shadow-lg">{hotel.name}</h1>
+              <div className="flex items-center gap-2 text-base sm:text-lg mb-4">
+                <MapPin size={20} />
+                <span className="drop-shadow">{hotel.location}</span>
+              </div>
+              <div className="flex items-center gap-4 sm:gap-6 flex-wrap">
+                <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full">
+                  <Star size={20} className="text-amber-400 fill-amber-400" />
+                  <span className="font-bold text-lg">{hotel.rating}</span>
+                  <span className="text-sm opacity-90">/ 5.0</span>
+                </div>
+                <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full">
+                  <Users size={20} />
+                  <span className="font-medium">{hotel.occupancy}% occupied</span>
                 </div>
               </div>
-            )}
+            </div>
           </div>
         </div>
 
-        {isOpen && images.length > 0 && (
-          <Lightbox
-            open={isOpen}
-            close={() => setIsOpen(false)}
-            index={photoIndex}
-            slides={images.map((src) => ({ src }))}
-            plugins={[Zoom, Fullscreen]}
-            on={{ view: ({ index }) => setPhotoIndex(index) }}
+        {/* Fullscreen Lightbox Modal */}
+        {lightboxIndex !== null && (
+          <LightboxModal
+            images={images.length > 0 ? images : ["/placeholder.svg"]}
+            initialIndex={lightboxIndex}
+            onClose={() => setLightboxIndex(null)}
+            alt={hotel.name}
           />
         )}
 

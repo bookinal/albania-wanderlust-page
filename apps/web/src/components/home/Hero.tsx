@@ -5,24 +5,24 @@ import ReservationPickerValue from "./reservationPicker";
 import HeroInventoryPreview from "./HeroInventoryPreview";
 import { useTheme } from "@/context/ThemeContext";
 import { getHomeThemeTokens } from "./homeTheme";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
 
 const Hero = () => {
   const { t } = useTranslation();
   const { isDark, isBlue } = useTheme();
   const tk = getHomeThemeTokens({ isDark, isBlue });
+  const navigate = useNavigate();
   const scrollToSection = (id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
   };
 
-  // navigate to ("/searchResults")
   const navigateToSearchResults = () => {
-    window.location.href = "/searchResults";
+    navigate("/searchResults", { state: { type: "apartment" } });
   };
 
   return (
-    <section className="relative min-h-screen flex items-start justify-center overflow-hidden pt-24 sm:pt-12 lg:pt-12">
+    <section className="relative min-h-[70vh] flex items-start justify-center overflow-hidden pt-20 sm:pt-10 lg:pt-10">
       {/* Background Image with Overlay */}
       <div className="absolute inset-0 z-0">
         <img
@@ -38,24 +38,24 @@ const Hero = () => {
 
       {/* Content */}
       <div className="relative z-10 container mx-auto flex flex-1 flex-col items-center px-4 sm:px-6 lg:px-8 text-white">
-        <div className="w-full xl:grid xl:grid-cols-[minmax(0,720px)_minmax(280px,1fr)_minmax(280px,1fr)] xl:items-stretch xl:gap-6">
-          <div className="animate-fade-in-up mx-auto max-w-4xl text-center xl:text-left xl:flex xl:min-h-[540px] xl:flex-col xl:justify-center xl:self-center xl:items-start">
+        <div className="w-full xl:grid xl:grid-cols-[minmax(0,600px)_minmax(240px,1fr)_minmax(240px,1fr)] xl:items-stretch xl:gap-4">
+          <div className="animate-fade-in-up mx-auto max-w-3xl text-center xl:text-left xl:flex xl:min-h-[420px] xl:flex-col xl:justify-center xl:self-center xl:items-start">
             {/* Badge */}
             <div
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6 border backdrop-blur-md"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full mb-4 border backdrop-blur-md"
               style={{
                 background: tk.glassCardBg,
                 borderColor: tk.glassPanelBorder,
               }}
             >
-              <MapPin className="w-4 h-4" style={{ color: tk.badgeText }} />
-              <span className="text-sm font-medium tracking-wide">
+              <MapPin className="w-3.5 h-3.5" style={{ color: tk.badgeText }} />
+              <span className="text-xs font-medium tracking-wide">
                 {t("home.hero.badge")}
               </span>
             </div>
 
             {/* Main Heading */}
-            <h1 className="mb-4 text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight">
+            <h1 className="mb-3 text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight">
               <span className="block">{t("home.hero.discover")}</span>
               <span
                 className="block bg-clip-text text-transparent"
@@ -70,39 +70,39 @@ const Hero = () => {
             </h1>
 
             {/* Subheading */}
-            <p className="text-base sm:text-lg md:text-xl mb-8 max-w-2xl mx-auto xl:mx-0 text-white/85 leading-relaxed">
+            <p className="text-sm sm:text-base md:text-lg mb-5 max-w-xl mx-auto xl:mx-0 text-white/85 leading-relaxed">
               {t("home.hero.subheading")}
             </p>
 
-            <div className="mb-4 w-full xl:hidden">
+            <div className="mb-3 w-full xl:hidden">
               <HeroInventoryPreview layout="stacked" />
             </div>
 
             {/* Search Widget */}
-            <div className="mb-6 sm:mb-8 w-full">
+            <div className="mb-4 sm:mb-5 w-full">
               <ReservationPickerValue />
             </div>
 
             {/* Secondary Actions */}
-            <div className="flex flex-col sm:flex-row gap-3 justify-center xl:justify-start items-center">
+            <div className="flex flex-col sm:flex-row gap-2 justify-center xl:justify-start items-center">
               <Link to="/properties-map">
                 <Button
-                  size="lg"
-                  className="backdrop-blur-sm px-6 py-5 rounded-full transition-all duration-300 hover:scale-105 group"
+                  size="sm"
+                  className="backdrop-blur-sm px-4 py-4 rounded-full transition-all duration-300 hover:scale-105 group"
                   style={{
                     background: tk.glassCardBg,
                     border: `1px solid ${tk.glassPanelBorder}`,
                     color: tk.textStrongOnMedia,
                   }}
                 >
-                  <MapPin className="w-4 h-4 mr-2" />
+                  <MapPin className="w-3.5 h-3.5 mr-1.5" />
                   {t("home.hero.exploreMap")}
                 </Button>
               </Link>
               <Link to="/destinations">
                 <Button
-                  size="lg"
-                  className="backdrop-blur-sm px-6 py-5 rounded-full transition-all duration-300 hover:scale-105 group"
+                  size="sm"
+                  className="backdrop-blur-sm px-4 py-4 rounded-full transition-all duration-300 hover:scale-105 group"
                   style={{
                     background: tk.glassCardBg,
                     border: `1px solid ${tk.glassPanelBorder}`,
@@ -113,14 +113,14 @@ const Hero = () => {
                 </Button>
               </Link>
               <Button
-                size="lg"
+                size="sm"
                 variant="ghost"
-                className="px-6 py-5 rounded-full transition-all group"
+                className="px-4 py-4 rounded-full transition-all group"
                 style={{ color: tk.textSoftOnMedia, background: "transparent" }}
                 onClick={navigateToSearchResults}
               >
                 {t("home.hero.browseProperties")}
-                <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="ml-1.5 w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
               </Button>
             </div>
           </div>

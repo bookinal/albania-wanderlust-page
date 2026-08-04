@@ -60,8 +60,7 @@
       "title": "Premium Car Rentals",
       "description": "Curated selection of quality vehicles for your road trip through Albania's stunning landscapes",
       "viewAll": "View All Cars",
-      "noCars": "No cars available",
-      "seats": "Seats"
+      "noCars": "No cars available"
     },
     "destinations": {
       "title": "Top Destinations",
@@ -145,6 +144,8 @@
     "pickUpLocation": "Pick-up Location",
     "flexibleCancellation": "Flexible cancellation • 24/7 roadside assistance",
     "insurance": "Insurance",
+    "addChildSeat": "Add child seat",
+    "addAdditionalDriver": "Add additional driver",
     "pricePerDay": "per day (for this month)",
     "aboutThisApartment": "About This Apartment",
     "rentalPeriod": "Rental Period",
@@ -260,8 +261,6 @@
       "diesel": "Diesel",
       "hybrid": "Hybrid",
       "electric": "Electric",
-      "minSeats": "Min Seats",
-      "seatsPlaceholder": "e.g. 4",
       "features": "Features",
       "loadingFeatures": "Loading features...",
       "noFeatures": "No features available"
@@ -283,9 +282,8 @@
       "brand": "Brand",
       "model": "Model",
       "year": "Year",
-      "seats": "Seats",
-      "Mileage": "Mileage",
-      "color": "Color",
+      "childSeat": "Child seat",
+      "additionalDriver": "Additional driver",
       "plate": "License Plate"
     },
     "properties": {
@@ -429,6 +427,7 @@
     "stay": "Stay",
     "culture": "Culture",
     "map": "Map",
+    "back": "Back",
     "explore": "Explore More",
     "learnMore": "Learn More",
     "tryAgain": "Try Again",
@@ -757,12 +756,13 @@
         "year": "Year",
         "transmission": "Transmission",
         "fuelType": "Fuel Type",
-        "seats": "Seats",
-        "mileage": "Mileage (km)",
         "basePrice": "Base Price per Day ($)",
         "priceHelp": "This is the default price. You can set seasonal prices below.",
         "status": "Status",
-        "color": "Color",
+        "childSeatPrice": "Add Child Seat",
+        "childSeatPriceHelp": "Optional price for a child seat. Leave at 0 if not offered.",
+        "additionalDriverPrice": "Add Additional Driver",
+        "additionalDriverPriceHelp": "Optional price for an additional driver. Leave at 0 if not offered.",
         "plateNumber": "Plate Number",
         "features": "Features",
         "suggestedFeatures": "Click to add common features:",
@@ -807,8 +807,8 @@
       "card": {
         "basePrice": "Base Price",
         "view": "View",
-        "seats_one": "{{count}} Seat",
-        "seats_other": "{{count}} Seats"
+        "childSeat": "Child seat",
+        "additionalDriver": "Extra driver"
       },
       "delete": {
         "confirmTitle": "Are you sure?",
@@ -865,12 +865,14 @@
         "year": "Year",
         "transmission": "Transmission",
         "fuelType": "Fuel Type",
-        "seats": "Seats",
         "basePrice": "Base Price per Day",
         "priceHelp": "Default price used when no monthly price is set",
-        "color": "Color",
+        "childSeatPrice": "Add Child Seat",
+        "childSeatPriceHelp": "Optional price for a child seat. 0 means not offered.",
+        "additionalDriverPrice": "Add Additional Driver",
+        "additionalDriverPriceHelp": "Optional price for an additional driver. 0 means not offered.",
+        "notOffered": "Not offered",
         "plateNumber": "Plate Number",
-        "mileage": "Mileage",
         "pickupLocation": "Pick Up Location",
         "addFeature": "Add a new feature",
         "noFeatures": "No features listed.",

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   ArrowLeft,
@@ -67,10 +67,6 @@ const AdventureDestinationsPage = () => {
       ? "rgba(255,255,255,0.12)"
       : "rgba(15,23,42,0.08)",
   };
-
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
 
   const adventureSpots = useMemo(
     () =>

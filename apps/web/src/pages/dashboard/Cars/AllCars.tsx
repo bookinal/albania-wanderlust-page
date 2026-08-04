@@ -14,7 +14,6 @@ import {
   Filter,
   Fuel,
   Settings,
-  Users,
   DollarSign,
   Edit,
   Trash2,
@@ -22,9 +21,10 @@ import {
   ChevronLeft,
   ChevronRight,
   Calendar,
-  Gauge,
   Cog,
   MapPin,
+  Baby,
+  UserPlus,
 } from "lucide-react";
 import Swal from "sweetalert2";
 import { userService } from "@/services/api/userService";
@@ -607,15 +607,15 @@ const AllCars = () => {
                       </span>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <Users size={16} style={{ color: tk.mutedText, flexShrink: 0 }} />
-                      <span style={{ fontSize: '0.8rem', color: tk.bodyText }}>
-                        {t("cars.allCars.card.seats", { count: car.seats })}
+                      <Baby size={16} style={{ color: tk.mutedText, flexShrink: 0 }} />
+                      <span style={{ fontSize: '0.8rem', color: tk.bodyText, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {car.childSeatPrice > 0 ? `${t("cars.allCars.card.childSeat", "Child seat")}: $${car.childSeatPrice}` : t("cars.carDetails.fields.notOffered", "Not offered")}
                       </span>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <Gauge size={16} style={{ color: tk.mutedText, flexShrink: 0 }} />
+                      <UserPlus size={16} style={{ color: tk.mutedText, flexShrink: 0 }} />
                       <span style={{ fontSize: '0.8rem', color: tk.bodyText, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                        {car.mileage}
+                        {car.additionalDriverPrice > 0 ? `${t("cars.allCars.card.additionalDriver", "Extra driver")}: $${car.additionalDriverPrice}` : t("cars.carDetails.fields.notOffered", "Not offered")}
                       </span>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', gridColumn: 'span 2' }}>

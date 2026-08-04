@@ -284,7 +284,7 @@ Deno.serve(async (req: Request) => {
       });
     }
 
-    const feeAmount = Math.round(Number(booking.totalPrice) * 0.07 * 100) / 100;
+    const feeAmount = Number(booking.fee) || 0;
 
     // Log booking details for debugging
     console.log("[Create PayPal Order] Booking found:", {
@@ -293,9 +293,23 @@ Deno.serve(async (req: Request) => {
       status: booking.status,
       payment_status: booking.payment_status,
       totalPrice: booking.totalPrice,
+      fee: booking.fee,
       feeAmount,
-      type: typeof booking.totalPrice,
     });
+
+    if (feeAmount <= 0) {
+      console.error("[Create PayPal Order] No fee found on booking:", bookingId);
+      return new Response(
+        JSON.stringify({ error: "No fee amount found for this booking" }),
+        {
+          status: 400,
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "*",
+          },
+        },
+      );
+    }
 
     // Validate booking ownership
     if (booking.userId !== user.id) {

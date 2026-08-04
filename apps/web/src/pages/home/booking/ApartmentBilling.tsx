@@ -196,14 +196,16 @@ export default function ApartmentBilling() {
       dropOffLocation: apartment.address || apartment.location || "",
       pickUpTime: formData.checkInTime,
       dropOffTime: formData.checkOutTime,
-      totalPrice: Math.round(totalPrice),
+      totalPrice: Math.round(finalTotal),
       contactMail: formData.email,
       contactPhone: formData.phone,
       requesterName: formData.fullName,
+      fee: Math.round(serviceFee * 100) / 100,
     });
   };
 
-  const serviceFee = totalPrice * 0.07;
+  const rawFee = totalPrice * 0.05;
+  const serviceFee = rawFee < 2 && totalPrice > 0 ? 2 : rawFee;
   const finalTotal = totalPrice + serviceFee;
 
   function handlePhoneChange(value?: string): void {
@@ -579,7 +581,7 @@ export default function ApartmentBilling() {
                       className="flex justify-between"
                       style={{ color: tk.dimText }}
                     >
-                      <span>{t("billing.serviceFee")} (7%)</span>
+                      <span>{t("billing.serviceFee")} (5%)</span>
                       <span className="font-medium">
                         ${serviceFee.toFixed(2)}
                       </span>

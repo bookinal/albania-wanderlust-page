@@ -8,6 +8,8 @@ import {
   CreditCard,
   Check,
   TrendingUp,
+  Baby,
+  UserPlus,
 } from "lucide-react";
 import { DateRange } from "react-day-picker";
 import { Car } from "@/types/car.types";
@@ -91,6 +93,8 @@ export default function CarBilling() {
   }, [id]);
 
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
+  const [addChildSeat, setAddChildSeat] = useState(false);
+  const [addAdditionalDriver, setAddAdditionalDriver] = useState(false);
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -238,16 +242,23 @@ export default function CarBilling() {
       dropOffLocation: formData.dropOffLocation || formData.pickUpLocation,
       pickUpTime: formData.pickUpTime,
       dropOffTime: formData.dropOffTime,
-      totalPrice: Math.round(totalPrice),
+      totalPrice: Math.round(finalTotal),
       contactMail: formData.email,
       contactPhone: formData.phone,
       requesterName: formData.fullName,
+      childSeatPrice: addChildSeat ? car?.childSeatPrice : undefined,
+      additionalDriverPrice: addAdditionalDriver ? car?.additionalDriverPrice : undefined,
+      fee: Math.round(serviceFee * 100) / 100,
     });
   };
 
-  const serviceFee = totalPrice * 0.07;
+  const childSeatFee = addChildSeat ? (car?.childSeatPrice ?? 0) : 0;
+  const additionalDriverFee = addAdditionalDriver ? (car?.additionalDriverPrice ?? 0) : 0;
+  const feeBase = totalPrice + childSeatFee + additionalDriverFee;
+  const rawFee = feeBase * 0.05;
+  const serviceFee = rawFee < 2 && feeBase > 0 ? 2 : rawFee;
   const insuranceFee = car?.insurance ?? 0;
-  const finalTotal = totalPrice + serviceFee + insuranceFee;
+  const finalTotal = totalPrice + serviceFee + insuranceFee + childSeatFee + additionalDriverFee;
 
   function handlePhoneChange(value?: string): void {
     setFormData((prev) => ({ ...prev, phone: value || "" }));
@@ -589,7 +600,7 @@ export default function CarBilling() {
                       {car.brand} {car.name}
                     </h3>
                     <p style={{ color: tk.mutedText }} className="text-sm mb-4">
-                      {car.year} • {car.color}
+                      {car.year} • {car.type}
                     </p>
                     <div className="space-y-2 mb-4">
                       <div
@@ -708,7 +719,7 @@ export default function CarBilling() {
                         className="flex justify-between"
                         style={{ color: tk.dimText }}
                       >
-                        <span>{t("billing.serviceFee")} (7%)</span>
+                        <span>{t("billing.serviceFee")} (5%)</span>
                         <span className="font-medium">
                           ${serviceFee.toFixed(2)}
                         </span>
@@ -741,6 +752,60 @@ export default function CarBilling() {
                       </div>
                     )}
 
+                    {((car.childSeatPrice ?? 0) > 0 || (car.additionalDriverPrice ?? 0) > 0) && (
+                      <div
+                        style={{
+                          borderTop: `1px solid ${tk.divider}`,
+                          paddingTop: "12px",
+                        }}
+                        className="space-y-3"
+                      >
+                        {(car.childSeatPrice ?? 0) > 0 && (
+                          <label
+                            className="flex items-start justify-between gap-2 cursor-pointer"
+                            style={{ color: tk.dimText }}
+                          >
+                            <span className="flex items-start gap-2">
+                              <input
+                                type="checkbox"
+                                checked={addChildSeat}
+                                onChange={(e) => setAddChildSeat(e.target.checked)}
+                                className="mt-0.5"
+                              />
+                              <span className="flex items-center gap-1.5">
+                                <Baby className="w-4 h-4" style={{ color: tk.brand }} />
+                                {t("billing.addChildSeat", "Add child seat")}
+                              </span>
+                            </span>
+                            <span className="font-medium">
+                              +${(car.childSeatPrice ?? 0).toFixed(2)}
+                            </span>
+                          </label>
+                        )}
+                        {(car.additionalDriverPrice ?? 0) > 0 && (
+                          <label
+                            className="flex items-start justify-between gap-2 cursor-pointer"
+                            style={{ color: tk.dimText }}
+                          >
+                            <span className="flex items-start gap-2">
+                              <input
+                                type="checkbox"
+                                checked={addAdditionalDriver}
+                                onChange={(e) => setAddAdditionalDriver(e.target.checked)}
+                                className="mt-0.5"
+                              />
+                              <span className="flex items-center gap-1.5">
+                                <UserPlus className="w-4 h-4" style={{ color: tk.brand }} />
+                                {t("billing.addAdditionalDriver", "Add additional driver")}
+                              </span>
+                            </span>
+                            <span className="font-medium">
+                              +${(car.additionalDriverPrice ?? 0).toFixed(2)}
+                            </span>
+                          </label>
+                        )}
+                      </div>
+                    )}
 
                   </div>
 

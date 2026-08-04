@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   ArrowLeft,
@@ -7,20 +7,20 @@ import {
   Loader2,
   Calendar,
   Car as CarIcon,
-  Gauge,
   Fuel,
-  Users,
   Zap,
   CheckCircle2,
-  Image as ImageIcon,
   ChevronLeft,
   ChevronRight,
   Settings,
-  Palette,
   Hash,
   Package,
   MapPinned,
   TrendingUp,
+  Baby,
+  UserPlus,
+  Images,
+  X,
 } from "lucide-react";
 import { Car } from "@/types/car.types";
 import { Month, MONTHS, MONTH_NAMES } from "@/types/price.type";
@@ -39,12 +39,305 @@ const getCurrentMonth = (): Month => {
 };
 import { MapPicker } from "@/components/dashboard/mapPicker";
 import PrimarySearchAppBar from "@/components/home/AppBar";
-import Lightbox from "yet-another-react-lightbox";
-import "yet-another-react-lightbox/styles.css";
-import Zoom from "yet-another-react-lightbox/plugins/zoom";
-import Fullscreen from "yet-another-react-lightbox/plugins/fullscreen";
 import ReviewsSection from "@/components/reviews/ReviewsSection";
 import { getBookingThemeTokens } from "./bookingTheme";
+
+function MosaicGallery({
+  images,
+  onOpen,
+  alt,
+}: {
+  images: string[];
+  onOpen: (index: number) => void;
+  alt: string;
+}) {
+  const total = images.length;
+  if (total === 0) return null;
+
+  const cellButtonStyle: React.CSSProperties = {
+    position: "relative",
+    display: "block",
+    width: "100%",
+    height: "100%",
+    padding: 0,
+    border: "none",
+    background: "none",
+    cursor: "pointer",
+    overflow: "hidden",
+  };
+
+  const imgStyle: React.CSSProperties = {
+    width: "100%",
+    height: "100%",
+    objectFit: "cover",
+    display: "block",
+    transition: "transform 0.3s ease",
+  };
+
+  const renderCell = (
+    index: number,
+    gridArea: React.CSSProperties,
+    overlay?: React.ReactNode,
+  ) => (
+    <button
+      key={index}
+      onClick={() => onOpen(index)}
+      style={{ ...cellButtonStyle, ...gridArea }}
+      className="group"
+    >
+      <img
+        src={images[index]}
+        alt={`${alt} ${index + 1}`}
+        style={imgStyle}
+        className="group-hover:scale-105"
+        onError={(e) => {
+          e.currentTarget.src = "/placeholder.svg";
+        }}
+      />
+      {overlay}
+    </button>
+  );
+
+  const viewAllOverlay =
+    total > 4 ? (
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          background: "rgba(15,23,42,0.45)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <span
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "0.4rem",
+            padding: "0.5rem 0.9rem",
+            borderRadius: "9999px",
+            background: "rgba(255,255,255,0.95)",
+            color: "#111827",
+            fontWeight: 700,
+            fontSize: "0.85rem",
+          }}
+        >
+          <Images className="w-4 h-4" />
+          View all {total}
+        </span>
+      </div>
+    ) : null;
+
+  let columns = "1fr";
+  let rows = "1fr";
+  let cells: React.ReactNode[];
+
+  if (total === 1) {
+    cells = [renderCell(0, {})];
+  } else if (total === 2) {
+    columns = "1fr 1fr";
+    cells = [renderCell(0, {}), renderCell(1, {})];
+  } else if (total === 3) {
+    columns = "1.3fr 1fr";
+    rows = "1fr 1fr";
+    cells = [
+      renderCell(0, { gridRow: "1 / span 2", gridColumn: "1" }),
+      renderCell(1, { gridRow: "1", gridColumn: "2" }),
+      renderCell(2, { gridRow: "2", gridColumn: "2" }),
+    ];
+  } else {
+    columns = "1fr 1.3fr 1fr";
+    rows = "1fr 1fr";
+    cells = [
+      renderCell(0, { gridRow: "1 / span 2", gridColumn: "1" }),
+      renderCell(1, { gridRow: "1 / span 2", gridColumn: "2" }),
+      renderCell(2, { gridRow: "1", gridColumn: "3" }),
+      renderCell(3, { gridRow: "2", gridColumn: "3" }, viewAllOverlay),
+    ];
+  }
+
+  return (
+    <div
+      style={{
+        width: "100%",
+        height: "100%",
+        display: "grid",
+        gridTemplateColumns: columns,
+        gridTemplateRows: rows,
+        gap: "4px",
+      }}
+    >
+      {cells}
+    </div>
+  );
+}
+
+function LightboxModal({
+  images,
+  initialIndex,
+  onClose,
+  alt,
+}: {
+  images: string[];
+  initialIndex: number;
+  onClose: () => void;
+  alt: string;
+}) {
+  const [index, setIndex] = useState(initialIndex);
+  const touchStartX = useRef<number | null>(null);
+  const total = images.length;
+
+  const goNext = useCallback(() => setIndex((i) => (i + 1) % total), [total]);
+  const goPrev = useCallback(
+    () => setIndex((i) => (i - 1 + total) % total),
+    [total],
+  );
+
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+      if (e.key === "ArrowRight") goNext();
+      if (e.key === "ArrowLeft") goPrev();
+    };
+    window.addEventListener("keydown", handler);
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      window.removeEventListener("keydown", handler);
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [goNext, goPrev, onClose]);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX.current === null) return;
+    const dx = e.changedTouches[0].clientX - touchStartX.current;
+    if (Math.abs(dx) > 50) {
+      if (dx < 0) goNext();
+      else goPrev();
+    }
+    touchStartX.current = null;
+  };
+
+  const arrowButtonStyle: React.CSSProperties = {
+    position: "absolute",
+    top: "50%",
+    transform: "translateY(-50%)",
+    width: "3rem",
+    height: "3rem",
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: "9999px",
+    background: "rgba(255,255,255,0.12)",
+    border: "1px solid rgba(255,255,255,0.22)",
+    color: "#fff",
+    cursor: "pointer",
+  };
+
+  return (
+    <div
+      onClick={onClose}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+      style={{
+        position: "fixed",
+        inset: 0,
+        background: "rgba(0,0,0,0.92)",
+        zIndex: 1000,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          onClose();
+        }}
+        style={{
+          position: "absolute",
+          top: "1.25rem",
+          right: "1.25rem",
+          width: "2.75rem",
+          height: "2.75rem",
+          display: "inline-flex",
+          alignItems: "center",
+          justifyContent: "center",
+          borderRadius: "9999px",
+          background: "rgba(255,255,255,0.12)",
+          border: "1px solid rgba(255,255,255,0.22)",
+          color: "#fff",
+          cursor: "pointer",
+        }}
+      >
+        <X className="w-5 h-5" />
+      </button>
+
+      {total > 1 && (
+        <>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              goPrev();
+            }}
+            style={{ ...arrowButtonStyle, left: "1rem" }}
+          >
+            <ChevronLeft className="w-6 h-6" />
+          </button>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              goNext();
+            }}
+            style={{ ...arrowButtonStyle, right: "1rem" }}
+          >
+            <ChevronRight className="w-6 h-6" />
+          </button>
+        </>
+      )}
+
+      <img
+        src={images[index]}
+        alt={`${alt} ${index + 1}`}
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          maxWidth: "90vw",
+          maxHeight: "85vh",
+          objectFit: "contain",
+          borderRadius: "0.75rem",
+          boxShadow: "0 24px 60px rgba(0,0,0,0.5)",
+        }}
+        onError={(e) => {
+          e.currentTarget.src = "/placeholder.svg";
+        }}
+      />
+
+      {total > 1 && (
+        <div
+          style={{
+            position: "absolute",
+            bottom: "1.5rem",
+            left: "50%",
+            transform: "translateX(-50%)",
+            padding: "0.4rem 0.9rem",
+            borderRadius: "9999px",
+            background: "rgba(255,255,255,0.12)",
+            color: "#fff",
+            fontSize: "0.85rem",
+            fontWeight: 600,
+            backdropFilter: "blur(8px)",
+          }}
+        >
+          {index + 1} / {total}
+        </div>
+      )}
+    </div>
+  );
+}
 
 const CarReservation = () => {
   const { t } = useTranslation();
@@ -56,8 +349,7 @@ const CarReservation = () => {
   const [car, setCar] = useState<Car | null>(null);
   const [loading, setLoading] = useState(true);
   const [images, setImages] = useState<string[]>([]);
-  const [photoIndex, setPhotoIndex] = useState(0);
-  const [isOpen, setIsOpen] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
@@ -189,137 +481,80 @@ const CarReservation = () => {
           {t("navigation.backToCars")}
         </button>
 
-        {/* Hero Section */}
+        {/* Mosaic Gallery Hero Section */}
         <div style={{ background: tk.cardBg, border: `1px solid ${tk.cardBorder}`, boxShadow: tk.cardShadow }} className="rounded-3xl overflow-hidden mb-8">
-          <div className="relative">
+          <div className="relative h-96 sm:h-[500px]">
             {images.length > 0 ? (
-              <div className="relative h-96 sm:h-[500px]">
-                <img
-                  src={images[photoIndex]}
-                  alt={`${car.name} - Image ${photoIndex + 1}`}
-                  onClick={() => setIsOpen(true)}
-                  className="w-full h-full object-cover cursor-zoom-in"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
-
-                {images.length > 1 && (
-                  <>
-                    <button
-                      onClick={() => setPhotoIndex((photoIndex + images.length - 1) % images.length)}
-                        className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full flex items-center justify-center shadow-lg transition-all hover:scale-110"
-                        style={{ background: isBlue ? 'rgba(255,255,255,0.95)' : 'rgba(255,255,255,0.9)' }}
-                     >
-                       <ChevronLeft size={24} style={{ color: tk.pageText }} />
-                     </button>
-                    <button
-                      onClick={() => setPhotoIndex((photoIndex + 1) % images.length)}
-                        className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full flex items-center justify-center shadow-lg transition-all hover:scale-110"
-                        style={{ background: isBlue ? 'rgba(255,255,255,0.95)' : 'rgba(255,255,255,0.9)' }}
-                     >
-                       <ChevronRight size={24} style={{ color: tk.pageText }} />
-                     </button>
-                  </>
-                )}
-
-                {images.length > 1 && (
-                  <button
-                    onClick={() => setIsOpen(true)}
-                    className="absolute bottom-6 right-6 px-6 py-3 rounded-xl shadow-lg flex items-center gap-2 font-semibold transition-all hover:scale-105"
-                    style={{ background: isBlue ? 'rgba(255,255,255,0.96)' : '#ffffff', color: tk.pageText }}
-                  >
-                    <ImageIcon size={20} />
-                    View All {images.length} Photos
-                  </button>
-                )}
-
-                {images.length > 1 && (
-                  <div className="absolute bottom-6 left-6 px-4 py-2 bg-black/60 backdrop-blur-sm rounded-full text-white text-sm font-medium">
-                    {photoIndex + 1} / {images.length}
-                  </div>
-                )}
-
-                <div className="absolute top-6 right-6 flex flex-col gap-3">
-                  <span className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-bold uppercase tracking-wider shadow-lg backdrop-blur-sm ${getStatusColor()}`}>
-                    <CheckCircle2 size={16} className="mr-2" />
-                    {car.status}
-                  </span>
-                  <span className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-bold uppercase tracking-wider shadow-lg backdrop-blur-sm ${getTypeColor()}`}>
-                    <Package size={16} className="mr-2" />
-                    {car.type}
-                  </span>
-                </div>
-
-                <div className="absolute bottom-0 left-0 right-0 p-8 text-white">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="text-lg font-semibold mb-2 opacity-90">{car.brand}</div>
-                      <h1 className="text-4xl sm:text-5xl font-bold mb-3 drop-shadow-lg">{car.name}</h1>
-                      <div className="flex items-center gap-2 text-lg mb-4">
-                        <MapPin size={20} />
-                        <span className="drop-shadow">{car.pickUpLocation || "Pick-up location not specified"}</span>
-                      </div>
-                      <div className="flex items-center gap-4 flex-wrap">
-                        <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full">
-                          <Calendar size={18} />
-                          <span className="font-medium text-sm">{car.year}</span>
-                        </div>
-                        <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full">
-                          <Settings size={18} />
-                          <span className="font-medium text-sm">{car.transmission}</span>
-                        </div>
-                        <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full">
-                          <FuelIcon size={18} />
-                          <span className="font-medium text-sm">{car.fuelType}</span>
-                        </div>
-                        <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full">
-                          <Users size={18} />
-                          <span className="font-medium text-sm">{car.seats} {t("searchResults.cars.seats")}</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <MosaicGallery
+                images={images}
+                onOpen={(idx) => setLightboxIndex(idx)}
+                alt={`${car.brand} ${car.name}`}
+              />
             ) : (
-              <div className="h-96 sm:h-[500px] flex items-center justify-center" style={{ background: tk.statBg }}>
+              <div className="h-full flex items-center justify-center" style={{ background: tk.statBg }}>
                 <p style={{ color: tk.mutedText }}>No images available</p>
               </div>
             )}
 
-            {/* Thumbnail Strip */}
-            {images.length > 1 && (
-              <div style={{ background: tk.thumbBg }} className="p-4 overflow-x-auto">
-                <div className="flex gap-3">
-                  {images.map((img, index) => (
-                    <button
-                      key={index}
-                      onClick={() => setPhotoIndex(index)}
-                      style={{
-                        outline: index === photoIndex ? `3px solid ${tk.brand}` : `2px solid ${tk.cardBorder}`,
-                        opacity: index === photoIndex ? 1 : 0.65,
-                        transform: index === photoIndex ? 'scale(1.05)' : 'scale(1)',
-                        transition: 'all 0.15s',
-                      }}
-                      className="flex-shrink-0 w-24 h-24 rounded-lg overflow-hidden"
-                    >
-                      <img src={img} alt={`Thumbnail ${index + 1}`} className="w-full h-full object-cover" />
-                    </button>
-                  ))}
+            {/* Gradient Overlay for Text Visibility */}
+            <div
+              style={{
+                position: "absolute",
+                inset: 0,
+                pointerEvents: "none",
+                background: `linear-gradient(180deg, rgba(0,0,0,0.18) 0%, rgba(0,0,0,0.01) 35%, rgba(0,0,0,0.65) 100%)`,
+              }}
+            />
+
+            {/* Top Right Status & Type Badges */}
+            <div className="absolute top-6 right-6 flex flex-col gap-3 pointer-events-none z-10">
+              <span className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-bold uppercase tracking-wider shadow-lg backdrop-blur-sm ${getStatusColor()}`}>
+                <CheckCircle2 size={16} className="mr-2" />
+                {car.status}
+              </span>
+              <span className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-bold uppercase tracking-wider shadow-lg backdrop-blur-sm ${getTypeColor()}`}>
+                <Package size={16} className="mr-2" />
+                {car.type}
+              </span>
+            </div>
+
+            {/* Bottom Overlay Info */}
+            <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-8 text-white pointer-events-none z-10">
+              <div className="flex items-start justify-between">
+                <div className="flex-1">
+                  <div className="text-lg font-semibold mb-1 opacity-90">{car.brand}</div>
+                  <h1 className="text-3xl sm:text-5xl font-bold mb-3 drop-shadow-lg">{car.name}</h1>
+                  <div className="flex items-center gap-2 text-base sm:text-lg mb-4">
+                    <MapPin size={20} />
+                    <span className="drop-shadow">{car.pickUpLocation || "Pick-up location not specified"}</span>
+                  </div>
+                  <div className="flex items-center gap-3 sm:gap-4 flex-wrap">
+                    <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full">
+                      <Calendar size={18} />
+                      <span className="font-medium text-sm">{car.year}</span>
+                    </div>
+                    <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full">
+                      <Settings size={18} />
+                      <span className="font-medium text-sm">{car.transmission}</span>
+                    </div>
+                    <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full">
+                      <FuelIcon size={18} />
+                      <span className="font-medium text-sm">{car.fuelType}</span>
+                    </div>
+                  </div>
                 </div>
               </div>
-            )}
+            </div>
           </div>
         </div>
 
-        {/* Lightbox */}
-        {isOpen && images.length > 0 && (
-          <Lightbox
-            open={isOpen}
-            close={() => setIsOpen(false)}
-            index={photoIndex}
-            slides={images.map((src) => ({ src }))}
-            plugins={[Zoom, Fullscreen]}
-            on={{ view: ({ index }) => setPhotoIndex(index) }}
+        {/* Fullscreen Lightbox Modal */}
+        {lightboxIndex !== null && (
+          <LightboxModal
+            images={images.length > 0 ? images : ["/placeholder.svg"]}
+            initialIndex={lightboxIndex}
+            onClose={() => setLightboxIndex(null)}
+            alt={`${car.brand} ${car.name}`}
           />
         )}
 
@@ -359,10 +594,9 @@ const CarReservation = () => {
 
               <div className="space-y-4 mb-6">
                 {[
-                  { icon: <Gauge size={20} style={{ color: tk.brand }} />, label: t("searchResults.cars.Mileage"), value: `${car.mileage.toLocaleString()} km` },
-                  { icon: <Users size={20} style={{ color: tk.brand }} />, label: t("searchResults.cars.seats"), value: String(car.seats) },
-                  { icon: <Palette size={20} style={{ color: tk.brand }} />, label: t("searchResults.cars.color"), value: car.color },
                   { icon: <Hash size={20} style={{ color: tk.brand }} />, label: t("searchResults.cars.plate"), value: car.plateNumber },
+                  { icon: <Baby size={20} style={{ color: tk.brand }} />, label: t("searchResults.cars.childSeat", "Child seat"), value: car.childSeatPrice > 0 ? `+$${car.childSeatPrice}` : t("cars.carDetails.fields.notOffered", "Not offered") },
+                  { icon: <UserPlus size={20} style={{ color: tk.brand }} />, label: t("searchResults.cars.additionalDriver", "Additional driver"), value: car.additionalDriverPrice > 0 ? `+$${car.additionalDriverPrice}` : t("cars.carDetails.fields.notOffered", "Not offered") },
                 ].map(({ icon, label, value }, i) => (
                   <div key={i} style={{ background: tk.statBg, border: `1px solid ${tk.statBorder}` }} className="flex items-center justify-between p-4 rounded-xl">
                     <div className="flex items-center gap-3">
@@ -418,7 +652,6 @@ const CarReservation = () => {
                   { label: t("searchResults.filters.carType"), value: car.type },
                   { label: t("searchResults.filters.transmission"), value: car.transmission },
                   { label: t("searchResults.filters.fuelType"), value: car.fuelType },
-                  { label: t("searchResults.cars.seats"), value: `${car.seats} Persons` },
                 ].map(({ label, value }, i) => (
                   <div key={i} className="flex flex-col gap-2">
                     <span style={{ color: tk.mutedText }} className="text-sm font-medium">{label}</span>

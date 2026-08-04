@@ -62,6 +62,9 @@ import PrimarySearchAppBar from "@/components/home/AppBar";
 import { getHomeThemeTokens } from "@/components/home/homeTheme";
 import { useDestination, useDestinations } from "@/hooks/useDestinations";
 import { DestinationCard } from "./DestinationCard";
+import { useQuery } from "@tanstack/react-query";
+import { getAllApartments } from "@/services/api/apartmentService";
+import { PropertyCard } from "@/components/home/PropertyCard";
 
 const visitorTipIcons: Record<string, LucideIcon> = {
   Sunrise,
@@ -543,16 +546,35 @@ const DestinationDetails = () => {
   const isDesktop = useMediaQuery("(min-width: 1024px)");
   const { data: destination, isLoading, error } = useDestination(id);
   const { data: allDestinations = [] } = useDestinations();
+  const { data: allApartments = [] } = useQuery({
+    queryKey: ["apartments"],
+    queryFn: getAllApartments,
+  });
 
   const backTarget = destination?.subcategory
     ? `/destinations/subcategory/${encodeURIComponent(destination.subcategory)}`
     : "/destinations";
+
+  const handleBack = () => {
+    if (typeof window !== "undefined" && (window.history.state?.idx ?? 0) > 0) {
+      navigate(-1);
+    } else {
+      navigate(backTarget);
+    }
+  };
 
   const nearbyIds = destination
     ? ((destination as unknown as Record<string, unknown>).nearbyDestinationIds as string[] | undefined) || []
     : [];
   const nearbyDestinations = allDestinations.filter(
     (d) => nearbyIds.includes(d.id) && d.id !== destination?.id,
+  );
+
+  const nearbyApartmentIds = destination
+    ? ((destination as unknown as Record<string, unknown>).nearbyApartmentsIds as number[] | undefined) || []
+    : [];
+  const nearbyApartments = allApartments.filter((a) =>
+    nearbyApartmentIds.includes(a.id),
   );
 
   const [nearbyWishlistLoading, setNearbyWishlistLoading] = useState<string | null>(null);
@@ -581,6 +603,10 @@ const DestinationDetails = () => {
     } finally {
       setNearbyWishlistLoading(null);
     }
+  };
+
+  const handleApartmentClick = (apartmentId: number) => {
+    navigate(`/apartmentReservation/${apartmentId}`);
   };
 
   const tk = {
@@ -1017,7 +1043,7 @@ const DestinationDetails = () => {
               }}
             >
               <button
-                onClick={() => navigate(backTarget)}
+                onClick={handleBack}
                 style={{
                   display: "inline-flex",
                   alignItems: "center",
@@ -1171,6 +1197,79 @@ const DestinationDetails = () => {
                   >
                     {localize(destination.name)}
                   </h1>
+                {destination.contact && (
+                  <div
+                    style={{
+                      display: "flex",
+                      flexWrap: "wrap",
+                      gap: "0.6rem",
+                    }}
+                  >
+                    {(
+                      [
+                        { key: "instagram", icon: Camera, prefix: "" },
+                        { key: "facebook", icon: Users, prefix: "" },
+                        { key: "website", icon: Globe, prefix: null },
+                        { key: "phone", icon: Phone, prefix: "tel:" },
+                        { key: "email", icon: Mail, prefix: "mailto:" },
+                        { key: "whatsapp", icon: MessageCircle, prefix: "" },
+                        { key: "tripadvisor", icon: Star, prefix: null },
+                        { key: "bookingUrl", icon: ExternalLink, prefix: null },
+                      ] as const
+                    ).map(({ key, icon: Icon, prefix }) => {
+                      const val = destination.contact![key];
+                      if (!val) return null;
+                      const href = prefix ? `${prefix}${val}` : val;
+                      return (
+                        <a
+                          key={key}
+                          href={href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{
+                            display: "inline-flex",
+                            alignItems: "center",
+                            gap: "0.5rem",
+                            padding: "0.55rem 1rem",
+                            borderRadius: "9999px",
+                            background: "rgba(255,255,255,0.16)",
+                            border: "1px solid rgba(255,255,255,0.24)",
+                            color: "#fff",
+                            fontSize: "0.9rem",
+                            fontWeight: 600,
+                            textDecoration: "none",
+                            backdropFilter: "blur(10px)",
+                            WebkitBackdropFilter: "blur(10px)",
+                            boxShadow: "0 8px 24px rgba(0,0,0,0.16)",
+                            transition: "background 0.2s, transform 0.2s",
+                            pointerEvents: "auto",
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.background =
+                              "rgba(255,255,255,0.28)";
+                            e.currentTarget.style.transform =
+                              "translateY(-1px)";
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.background =
+                              "rgba(255,255,255,0.16)";
+                            e.currentTarget.style.transform = "translateY(0)";
+                          }}
+                        >
+                          <Icon className="w-4 h-4" />
+                          {key === "instagram" && "Instagram"}
+                          {key === "facebook" && "Facebook"}
+                          {key === "website" && "Website"}
+                          {key === "phone" && val}
+                          {key === "email" && val}
+                          {key === "whatsapp" && "WhatsApp"}
+                          {key === "tripadvisor" && "TripAdvisor"}
+                          {key === "bookingUrl" && "Book Now"}
+                        </a>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
               <button
                 onClick={() => navigate(backTarget)}
@@ -1645,101 +1744,6 @@ const DestinationDetails = () => {
         </div>
       </div>
 
-      {/* Contact */}
-      {destination.contact && (
-        <div style={{ width: "100%", padding: "0 1.5rem 2.5rem" }}>
-          <div style={{ marginBottom: "1rem" }}>
-            <h2
-              style={{
-                margin: 0,
-                fontSize: "1.6rem",
-                fontWeight: 800,
-                color: tk.pageText,
-              }}
-            >
-              Contact & Links
-            </h2>
-            <p
-              style={{
-                margin: "0.5rem 0 0",
-                fontSize: "0.98rem",
-                lineHeight: 1.7,
-                color: tk.dimText,
-              }}
-            >
-              Reach out or explore more about this destination online.
-            </p>
-          </div>
-          <div
-            style={{
-              display: "flex",
-              flexWrap: "wrap",
-              gap: "0.75rem",
-            }}
-          >
-            {(
-              [
-                { key: "instagram", icon: Camera, prefix: "" },
-                { key: "facebook", icon: Users, prefix: "" },
-                { key: "website", icon: Globe, prefix: null },
-                { key: "phone", icon: Phone, prefix: "tel:" },
-                { key: "email", icon: Mail, prefix: "mailto:" },
-                { key: "whatsapp", icon: MessageCircle, prefix: "" },
-                { key: "tripadvisor", icon: Star, prefix: null },
-                { key: "bookingUrl", icon: ExternalLink, prefix: null },
-              ] as const
-            ).map(({ key, icon: Icon, prefix }) => {
-              const val = destination.contact![key];
-              if (!val) return null;
-              const href = prefix ? `${prefix}${val}` : val;
-              return (
-                <a
-                  key={key}
-                  href={href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: "0.5rem",
-                    padding: "0.6rem 1.1rem",
-                    borderRadius: "9999px",
-                    background: "#ffffff",
-                    border: "1px solid rgba(15,23,42,0.06)",
-                    color: tk.pageText,
-                    fontSize: "0.9rem",
-                    fontWeight: 600,
-                    textDecoration: "none",
-                    boxShadow: "0 4px 14px rgba(15,23,42,0.06)",
-                    transition: "box-shadow 0.2s, transform 0.2s",
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.boxShadow =
-                      "0 8px 24px rgba(15,23,42,0.12)";
-                    e.currentTarget.style.transform = "translateY(-1px)";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.boxShadow =
-                      "0 4px 14px rgba(15,23,42,0.06)";
-                    e.currentTarget.style.transform = "translateY(0)";
-                  }}
-                >
-                  <Icon className="w-4 h-4" style={{ color: tk.brand }} />
-                  {key === "instagram" && "Instagram"}
-                  {key === "facebook" && "Facebook"}
-                  {key === "website" && "Website"}
-                  {key === "phone" && val}
-                  {key === "email" && val}
-                  {key === "whatsapp" && "WhatsApp"}
-                  {key === "tripadvisor" && "TripAdvisor"}
-                  {key === "bookingUrl" && "Book Now"}
-                </a>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
       {/* How To Reach */}
       <div style={{ width: "100%", padding: "0 1.5rem 3rem" }}>
         <div style={{ marginBottom: "1rem" }}>
@@ -2160,6 +2164,82 @@ const DestinationDetails = () => {
                   tk={cardTk}
                   onAddToWishlist={handleNearbyAddToWishlist}
                   isLoadingWishlist={nearbyWishlistLoading === d.id}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Nearby Apartments */}
+      {nearbyApartments.length > 0 && (
+        <div style={{ width: "100%", padding: "0 1.5rem 3rem" }}>
+          <div style={{ marginBottom: "1rem" }}>
+            <h2
+              style={{
+                margin: 0,
+                fontSize: "1.6rem",
+                fontWeight: 800,
+                color: tk.pageText,
+              }}
+            >
+              Nearby Apartments
+            </h2>
+            <p
+              style={{
+                margin: "0.5rem 0 0",
+                fontSize: "0.98rem",
+                lineHeight: 1.7,
+                color: tk.dimText,
+              }}
+            >
+              Apartments close to {localize(destination.name)}.
+            </p>
+          </div>
+          {isMobile ? (
+            <Carousel>
+              {nearbyApartments.map((apartment) => (
+                <PropertyCard
+                  key={apartment.id}
+                  id={apartment.id}
+                  name={apartment.name}
+                  image={apartment.imageUrls?.[0] || "/placeholder.svg"}
+                  rating={apartment.rating || 0}
+                  price={apartment.price || 0}
+                  location={apartment.location}
+                  address={apartment.address}
+                  rooms={apartment.rooms || 0}
+                  amenities={apartment.amenities || []}
+                  status={apartment.status}
+                  propertyType="apartment"
+                  onClick={handleApartmentClick}
+                />
+              ))}
+            </Carousel>
+          ) : (
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns:
+                  "repeat(auto-fill, minmax(min(100%, 210px), 1fr))",
+                gap: "1.25rem",
+              }}
+            >
+              {nearbyApartments.map((apartment) => (
+                <PropertyCard
+                  key={apartment.id}
+                  id={apartment.id}
+                  name={apartment.name}
+                  image={apartment.imageUrls?.[0] || "/placeholder.svg"}
+                  rating={apartment.rating || 0}
+                  price={apartment.price || 0}
+                  location={apartment.location}
+                  address={apartment.address}
+                  rooms={apartment.rooms || 0}
+                  amenities={apartment.amenities || []}
+                  status={apartment.status}
+                  propertyType="apartment"
+                  onClick={handleApartmentClick}
                 />
               ))}
             </div>

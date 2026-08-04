@@ -32,6 +32,7 @@ interface CreatePaymentIntentRequest {
 interface BookingData {
   id: string;
   totalPrice: number;
+  fee: number;
   userId: string;
   propertyType: string;
   propertyId: string;
@@ -260,11 +261,24 @@ Deno.serve(async (req) => {
       }
     }
 
-    // Charge only the 7% booking fee; full rental is paid in person
-    const feeAmount = Math.round(bookingData.totalPrice * 0.07 * 100) / 100;
+    // Charge only the booking fee (stored in DB); full rental is paid in person
+    const feeAmount = Number(bookingData.fee) || 0;
+    if (feeAmount <= 0) {
+      console.error("[Stripe] No fee found on booking:", bookingId);
+      return new Response(
+        JSON.stringify({
+          error: "Bad Request",
+          message: "No fee amount found for this booking",
+        }),
+        {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        },
+      );
+    }
     const amountInCents = Math.round(feeAmount * 100);
 
-    console.log("[Stripe] Creating PaymentIntent for fee amount:", amountInCents, "(full price:", bookingData.totalPrice, ")");
+    console.log("[Stripe] Creating PaymentIntent for fee amount:", amountInCents, "(fee:", feeAmount, ")");
 
     const paymentIntent = await stripe.paymentIntents.create({
       amount: amountInCents,

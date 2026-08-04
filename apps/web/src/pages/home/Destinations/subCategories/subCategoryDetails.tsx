@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   ArrowLeft,
@@ -77,10 +77,6 @@ const subCategoryDetails = () => {
       ? "rgba(255,255,255,0.12)"
       : "rgba(15,23,42,0.08)",
   };
-
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
 
   const filteredDestinations = useMemo(
     () =>

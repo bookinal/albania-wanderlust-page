@@ -14,7 +14,6 @@ export interface SearchCarFilters {
   fuelType?: string;
   priceRange?: { min: number; max: number };
   features?: string[];
-  seats?: number;
   pickupDate?: Date | null;
   returnDate?: Date | null;
 }
@@ -95,11 +94,6 @@ export const searchCars = async (
   // Fuel Type
   if (filters.fuelType && filters.fuelType !== "all") {
     query = query.eq("fuelType", filters.fuelType);
-  }
-
-  // Seats
-  if (filters.seats) {
-    query = query.gte("seats", filters.seats);
   }
 
   // Features (contains all selected features)
@@ -397,6 +391,11 @@ export const addCar = async (
   // Extract monthly prices from payload (they go to a separate table)
   const { monthlyPrices, ...carData } = car;
 
+  // Drop legacy columns that no longer exist in Supabase (may come from stale cache)
+  delete (carData as any).color;
+  delete (carData as any).seats;
+  delete (carData as any).mileage;
+
   const payload = {
     ...carData,
     providerId: providerId,
@@ -442,6 +441,10 @@ export const updateCar = async (
   const { monthlyPrices, ...updateData } = car;
   delete (updateData as any).id;
   delete (updateData as any).created_at;
+  // Drop legacy columns that no longer exist in Supabase (may come from stale cache)
+  delete (updateData as any).color;
+  delete (updateData as any).seats;
+  delete (updateData as any).mileage;
 
   // Handle new image uploads
   if (newImageFiles && newImageFiles.length > 0) {

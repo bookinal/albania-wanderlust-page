@@ -57,12 +57,14 @@ import {
   DestinationDto,
   TranslatedField,
 } from "@/types/destination.types";
+import { Apartment } from "@albania/shared-types";
 import {
   getAllDestinations,
   createDestination,
   updateDestination,
   deleteDestination,
 } from "@/services/api/destinationService";
+import { getAllApartments } from "@/services/api/apartmentService";
 import { MapPicker } from "@/components/dashboard/mapPicker";
 import { ImageUpload } from "@/components/dashboard/ImageUpload";
 import Swal from "sweetalert2";
@@ -117,6 +119,7 @@ interface DestinationFormData {
   imageUrls: string[];
   contact?: DestinationContact;
   nearbyDestinationIds: string[];
+  nearbyApartmentsIds: number[];
   historicalPeriod?: string;
   siteType?: string;
   museumType?: string;
@@ -377,6 +380,11 @@ function extractNearbyIds(dest: Destination): string[] {
   return Array.isArray(raw) ? (raw as string[]) : [];
 }
 
+function extractNearbyApartmentIds(dest: Destination): number[] {
+  const raw = (dest as unknown as Record<string, unknown>).nearbyApartmentsIds;
+  return Array.isArray(raw) ? (raw as number[]) : [];
+}
+
 function createEmptyDestinationFormData(): DestinationFormData {
   return {
     name: emptyTranslatedField(),
@@ -402,6 +410,7 @@ function createEmptyDestinationFormData(): DestinationFormData {
     imageUrls: [],
     contact: undefined,
     nearbyDestinationIds: [],
+    nearbyApartmentsIds: [],
     historicalPeriod: undefined,
     siteType: undefined,
     museumType: undefined,
@@ -466,6 +475,7 @@ export default function DestinationsManagement() {
   const queryClient = useQueryClient();
 
   const [destinations, setDestinations] = useState<Destination[]>([]);
+  const [apartments, setApartments] = useState<Apartment[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -535,6 +545,14 @@ export default function DestinationsManagement() {
 
   useEffect(() => {
     fetchDestinations();
+  }, []);
+
+  useEffect(() => {
+    getAllApartments()
+      .then(setApartments)
+      .catch((err) => {
+        console.error("Error fetching apartments:", err);
+      });
   }, []);
 
   /* ============================== Handlers ============================== */
@@ -611,6 +629,7 @@ export default function DestinationsManagement() {
       imageUrls: destination.imageUrls || [],
       contact: destination.contact,
       nearbyDestinationIds: extractNearbyIds(destination),
+      nearbyApartmentsIds: extractNearbyApartmentIds(destination),
       historicalPeriod: destination.historicalPeriod,
       siteType: destination.siteType,
       museumType: destination.museumType,
@@ -673,6 +692,7 @@ export default function DestinationsManagement() {
       imageUrls: destination.imageUrls || [],
       contact: destination.contact,
       nearbyDestinationIds: extractNearbyIds(destination),
+      nearbyApartmentsIds: extractNearbyApartmentIds(destination),
       historicalPeriod: destination.historicalPeriod,
       siteType: destination.siteType,
       museumType: destination.museumType,
@@ -859,6 +879,7 @@ export default function DestinationsManagement() {
         imageUrls,
         contact: formData.contact,
         nearbyDestinationIds: formData.nearbyDestinationIds,
+        nearbyApartmentsIds: formData.nearbyApartmentsIds,
         historicalPeriod: formData.historicalPeriod,
         siteType: formData.siteType,
         museumType: formData.museumType,
@@ -1835,6 +1856,75 @@ export default function DestinationsManagement() {
                 {otherDestinations.length === 0 && (
                   <p className="text-sm text-center py-4" style={{ color: tk.mutedText }}>
                     No other destinations available.
+                  </p>
+                )}
+              </div>
+            </div>
+
+            {/* Nearby Apartments */}
+            <div className="space-y-3">
+              <div>
+                <h3
+                  className="text-sm font-semibold"
+                  style={{ color: tk.dialogText }}
+                >
+                  Nearby Apartments
+                </h3>
+                <p className="text-sm mt-1" style={{ color: tk.mutedText }}>
+                  Select apartments that are nearby this destination.
+                </p>
+              </div>
+              <div
+                className="rounded-xl border p-3 max-h-48 overflow-y-auto"
+                style={{
+                  background: tk.cardBg,
+                  borderColor: tk.cardBorder,
+                }}
+              >
+                {apartments.map((apartment) => {
+                  const checked = formData.nearbyApartmentsIds.includes(
+                    apartment.id,
+                  );
+                  return (
+                    <label
+                      key={apartment.id}
+                      className="flex items-center gap-3 px-2 py-1.5 rounded-lg cursor-pointer hover:opacity-80"
+                      style={{
+                        color: tk.dimText,
+                        opacity: dialogMode === "view" ? 0.7 : 1,
+                      }}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={checked}
+                        disabled={dialogMode === "view"}
+                        onChange={() =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            nearbyApartmentsIds: checked
+                              ? prev.nearbyApartmentsIds.filter(
+                                  (id) => id !== apartment.id,
+                                )
+                              : [...prev.nearbyApartmentsIds, apartment.id],
+                          }))
+                        }
+                        style={{ accentColor: "#E8192C" }}
+                      />
+                      <span className="text-sm font-medium">
+                        {apartment.name}
+                      </span>
+                      <span
+                        className="text-xs ml-auto opacity-60"
+                        style={{ color: tk.mutedText }}
+                      >
+                        {apartment.status}
+                      </span>
+                    </label>
+                  );
+                })}
+                {apartments.length === 0 && (
+                  <p className="text-sm text-center py-4" style={{ color: tk.mutedText }}>
+                    No apartments available.
                   </p>
                 )}
               </div>

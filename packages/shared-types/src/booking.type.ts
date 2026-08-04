@@ -34,6 +34,9 @@ export interface Booking {
   createdAt: string;
   updatedAt: string;
   propertyData?: Car | Apartment | Hotel | null;
+  additionalDriverPrice?: number;
+  childSeatPrice?: number;
+  fee?: number;
 }
 
 export interface CreateBookingDto {
@@ -50,4 +53,7 @@ export interface CreateBookingDto {
   contactMail: string;
   contactPhone: string;
   requesterName: string;
+  additionalDriverPrice?: number;
+  childSeatPrice?: number;
+  fee?: number;
 }

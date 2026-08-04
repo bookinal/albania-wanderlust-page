@@ -147,12 +147,9 @@ const CarsPreview = () => {
                   year={car.year}
                   transmission={car.transmission}
                   fuelType={car.fuelType}
-                  seats={car.seats}
-                  mileage={car.mileage}
                   pricePerDay={car.pricePerDay}
                   currentMonthPrice={carMonthlyPrices[car.id] ?? undefined}
                   status={car.status}
-                  color={car.color}
                   plateNumber={car.plateNumber}
                   features={car.features}
                   imageUrls={car.imageUrls}

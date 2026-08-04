@@ -11,17 +11,13 @@ import {
   Wine,
   ArrowRight,
 } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useTheme } from "@/context/ThemeContext";
 import { getHomeThemeTokens } from "@/components/home/homeTheme";
 
 const CultureDetails = () => {
   const { isDark, isBlue } = useTheme();
   const homeTk = getHomeThemeTokens({ isDark, isBlue });
-
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
 
   const [activeTab, setActiveTab] = useState("cuisine");
 

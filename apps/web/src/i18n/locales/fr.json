@@ -60,8 +60,7 @@
       "title": "Location de voitures de prestige",
       "description": "Sélection de véhicules de qualité pour votre road trip à travers les paysages époustouflants de l'Albanie",
       "viewAll": "Voir toutes les voitures",
-      "noCars": "Aucune voiture disponible",
-      "seats": "Places"
+      "noCars": "Aucune voiture disponible"
     },
     "destinations": {
       "title": "Meilleures destinations",
@@ -145,6 +144,8 @@
     "pickUpLocation": "Lieu de prise en charge",
     "flexibleCancellation": "Annulation flexible • Assistance routière 24h/24 et 7j/7",
     "insurance": "Assurance",
+    "addChildSeat": "Ajouter un siège enfant",
+    "addAdditionalDriver": "Ajouter un conducteur supplémentaire",
     "pricePerDay": "par jour (pour ce mois-ci)",
     "aboutThisApartment": "À propos de cet appartement",
     "rentalPeriod": "Période de location",
@@ -260,8 +261,6 @@
       "diesel": "Diesel",
       "hybrid": "Hybride",
       "electric": "Électrique",
-      "minSeats": "Places min",
-      "seatsPlaceholder": "ex: 4",
       "features": "Caractéristiques",
       "loadingFeatures": "Chargement des caractéristiques...",
       "noFeatures": "Aucune caractéristique disponible"
@@ -283,9 +282,8 @@
       "brand": "Marque",
       "model": "Modèle",
       "year": "Année",
-      "seats": "Places",
-      "Mileage": "Kilométrage",
-      "color": "Couleur",
+      "childSeat": "Siège enfant",
+      "additionalDriver": "Conducteur supplémentaire",
       "plate": "Plaque d'immatriculation"
     },
     "properties": {
@@ -429,6 +427,7 @@
     "stay": "Séjour",
     "culture": "Culture",
     "map": "Carte",
+    "back": "Retour",
     "explore": "Explorer plus",
     "learnMore": "En savoir plus",
     "tryAgain": "Réessayer",
@@ -757,12 +756,13 @@
         "year": "Année",
         "transmission": "Transmission",
         "fuelType": "Type de carburant",
-        "seats": "Places",
-        "mileage": "Kilométrage (km)",
         "basePrice": "Prix de base par jour ($)",
         "priceHelp": "C'est le prix par défaut. Vous pouvez définir des prix saisonniers ci-dessous.",
         "status": "Statut",
-        "color": "Couleur",
+        "childSeatPrice": "Ajouter un siège enfant",
+        "childSeatPriceHelp": "Prix facultatif pour un siège enfant. Laissez à 0 si non proposé.",
+        "additionalDriverPrice": "Ajouter un conducteur supplémentaire",
+        "additionalDriverPriceHelp": "Prix facultatif pour un conducteur supplémentaire. Laissez à 0 si non proposé.",
         "plateNumber": "Numéro de plaque",
         "features": "Caractéristiques",
         "suggestedFeatures": "Cliquez pour ajouter des caractéristiques courantes :",
@@ -807,8 +807,8 @@
       "card": {
         "basePrice": "Prix de base",
         "view": "Voir",
-        "seats_one": "{{count}} place",
-        "seats_other": "{{count}} places"
+        "childSeat": "Siège enfant",
+        "additionalDriver": "Conducteur supplémentaire"
       },
       "delete": {
         "confirmTitle": "Êtes-vous sûr ?",
@@ -865,12 +865,14 @@
         "year": "Année",
         "transmission": "Transmission",
         "fuelType": "Type de carburant",
-        "seats": "Places",
         "basePrice": "Prix de base par jour",
         "priceHelp": "Prix par défaut utilisé lorsqu'aucun prix mensuel n'est défini",
-        "color": "Couleur",
+        "childSeatPrice": "Ajouter un siège enfant",
+        "childSeatPriceHelp": "Prix facultatif pour un siège enfant. 0 signifie non proposé.",
+        "additionalDriverPrice": "Ajouter un conducteur supplémentaire",
+        "additionalDriverPriceHelp": "Prix facultatif pour un conducteur supplémentaire. 0 signifie non proposé.",
+        "notOffered": "Non proposé",
         "plateNumber": "Numéro de plaque",
-        "mileage": "Kilométrage",
         "pickupLocation": "Lieu de prise en charge",
         "addFeature": "Ajouter une nouvelle caractéristique",
         "noFeatures": "Aucune caractéristique listée.",

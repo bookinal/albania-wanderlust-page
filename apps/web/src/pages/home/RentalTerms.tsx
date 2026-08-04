@@ -1,14 +1,9 @@
 import PrimarySearchAppBar from "@/components/home/AppBar";
 import { useTheme } from "@/context/ThemeContext";
-import { useEffect } from "react";
 import RentalTermsSection from "@/components/home/RentalTermsSection";
 
 const RentalTerms = () => {
   const { isDark } = useTheme();
-
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
 
   return (
     <div

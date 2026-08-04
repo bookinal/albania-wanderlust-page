@@ -60,8 +60,7 @@
       "title": "Noleggio Auto Premium",
       "description": "Selezione curata di veicoli di qualità per il tuo viaggio on the road attraverso gli stupendi paesaggi albanesi",
       "viewAll": "Vedi Tutte le Auto",
-      "noCars": "Nessuna auto disponibile",
-      "seats": "Posti"
+      "noCars": "Nessuna auto disponibile"
     },
     "destinations": {
       "title": "Destinazioni Top",
@@ -145,6 +144,8 @@
     "pickUpLocation": "Luogo di Ritiro",
     "flexibleCancellation": "Cancellazione flessibile • Assistenza stradale 24/7",
     "insurance": "Assicurazione",
+    "addChildSeat": "Aggiungi seggiolino per bambini",
+    "addAdditionalDriver": "Aggiungi guidatore aggiuntivo",
     "pricePerDay": "al giorno (per questo mese)",
     "aboutThisApartment": "Informazioni su Questo Appartamento",
     "rentalPeriod": "Periodo di Noleggio",
@@ -260,8 +261,6 @@
       "diesel": "Diesel",
       "hybrid": "Ibrida",
       "electric": "Elettrica",
-      "minSeats": "Numero Minimo Posti",
-      "seatsPlaceholder": "es. 4",
       "features": "Caratteristiche",
       "loadingFeatures": "Caricamento caratteristiche...",
       "noFeatures": "Nessuna caratteristica disponibile"
@@ -283,9 +282,8 @@
       "brand": "Marca",
       "model": "Modello",
       "year": "Anno",
-      "seats": "Posti",
-      "Mileage": "Chilometraggio",
-      "color": "Colore",
+      "childSeat": "Seggiolino per bambini",
+      "additionalDriver": "Guidatore aggiuntivo",
       "plate": "Targa"
     },
     "properties": {
@@ -429,6 +427,7 @@
     "stay": "Soggiorno",
     "culture": "Culture",
     "map": "Mappa",
+    "back": "Indietro",
     "explore": "Esplora di Più",
     "learnMore": "Scopri di Più",
     "tryAgain": "Riprova",
@@ -757,12 +756,13 @@
         "year": "Anno",
         "transmission": "Cambio",
         "fuelType": "Tipo Carburante",
-        "seats": "Posti",
-        "mileage": "Chilometraggio (km)",
         "basePrice": "Prezzo Base al Giorno (€)",
         "priceHelp": "Questo è il prezzo predefinito. Puoi impostare prezzi stagionali qui sotto.",
         "status": "Stato",
-        "color": "Colore",
+        "childSeatPrice": "Aggiungi Seggiolino per Bambini",
+        "childSeatPriceHelp": "Prezzo facoltativo per un seggiolino per bambini. Lascia a 0 se non offerto.",
+        "additionalDriverPrice": "Aggiungi Guidatore Aggiuntivo",
+        "additionalDriverPriceHelp": "Prezzo facoltativo per un guidatore aggiuntivo. Lascia a 0 se non offerto.",
         "plateNumber": "Targa",
         "features": "Caratteristiche",
         "suggestedFeatures": "Clicca per aggiungere caratteristiche comuni:",
@@ -807,8 +807,8 @@
       "card": {
         "basePrice": "Prezzo Base",
         "view": "Visualizza",
-        "seats_one": "{{count}} Posto",
-        "seats_other": "{{count}} Posti"
+        "childSeat": "Seggiolino per bambini",
+        "additionalDriver": "Guidatore aggiuntivo"
       },
       "delete": {
         "confirmTitle": "Sei sicuro?",
@@ -865,12 +865,14 @@
         "year": "Anno",
         "transmission": "Cambio",
         "fuelType": "Tipo Carburante",
-        "seats": "Posti",
         "basePrice": "Prezzo Base al Giorno",
         "priceHelp": "Prezzo predefinito utilizzato quando non è impostato un prezzo mensile",
-        "color": "Colore",
+        "childSeatPrice": "Aggiungi Seggiolino per Bambini",
+        "childSeatPriceHelp": "Prezzo facoltativo per un seggiolino per bambini. 0 significa non offerto.",
+        "additionalDriverPrice": "Aggiungi Guidatore Aggiuntivo",
+        "additionalDriverPriceHelp": "Prezzo facoltativo per un guidatore aggiuntivo. 0 significa non offerto.",
+        "notOffered": "Non offerto",
         "plateNumber": "Targa",
-        "mileage": "Chilometraggio",
         "pickupLocation": "Luogo di Ritiro",
         "addFeature": "Aggiungi una nuova caratteristica",
         "noFeatures": "Nessuna caratteristica elencata.",

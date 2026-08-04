@@ -1,7 +1,5 @@
 import {
   Fuel,
-  Users,
-  Gauge,
   MapPin,
   Settings,
   TrendingUp,
@@ -19,12 +17,9 @@ interface CarCardProps {
   year: number;
   transmission: "Manual" | "Automatic";
   fuelType: "Petrol" | "Diesel" | "Hybrid" | "Electric";
-  seats: number;
-  mileage: number;
   pricePerDay: number;
   currentMonthPrice?: number;
   status: "available" | "rented" | "maintenance" | "review";
-  color: string;
   plateNumber: string;
   features?: string[];
   imageUrls?: string[];
@@ -43,8 +38,6 @@ export const CarCard = ({
   year,
   transmission,
   fuelType,
-  seats,
-  mileage,
   pricePerDay,
   currentMonthPrice,
   status,
@@ -244,10 +237,8 @@ export const CarCard = ({
         {/* Specs grid */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px 12px', marginBottom: 14 }}>
           {[
-            { icon: <Users style={{ width: 13, height: 13 }} />, label: `${seats} ${t("home.carsPreview.seats")}` },
             { icon: <Settings style={{ width: 13, height: 13 }} />, label: transmission },
             { icon: <Fuel style={{ width: 13, height: 13 }} />, label: fuelType },
-            { icon: <Gauge style={{ width: 13, height: 13 }} />, label: `${mileage.toLocaleString()} km` },
           ].map((spec, i) => (
             <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                <span style={{ color: homeTk.brand, opacity: 0.55 }}>{spec.icon}</span>

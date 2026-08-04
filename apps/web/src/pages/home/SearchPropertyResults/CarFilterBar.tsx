@@ -9,7 +9,6 @@ import { getSearchResultsThemeTokens } from "./searchResultsTheme";
 export interface CarFilterState extends CarFilters {
   priceRange?: { min: number; max: number };
   features?: string[];
-  seats?: number;
   pickupDate?: Date | null;
   returnDate?: Date | null;
 }
@@ -157,7 +156,6 @@ export const CarFilterBar = ({
     if (filters.fuelType && filters.fuelType !== "all") count++;
     if (filters.priceRange && (filters.priceRange.min > 0 || filters.priceRange.max < 1000)) count++;
     if (filters.features && filters.features.length > 0) count++;
-    if (filters.seats && filters.seats > 0) count++;
     if (filters.pickupDate || filters.returnDate) count++;
     return count;
   };
@@ -341,21 +339,6 @@ export const CarFilterBar = ({
           <option value="Hybrid" style={{ background: tk.selectOptionBg }}>{t("searchResults.filters.hybrid")}</option>
           <option value="Electric" style={{ background: tk.selectOptionBg }}>{t("searchResults.filters.electric")}</option>
         </select>
-      </AccSection>
-
-      {/* Seats */}
-      <AccSection label={t("searchResults.filters.minSeats")} headerColor={tk.headerText} dividerColor={tk.sidebarBorder} iconColor={themeTk.brand}>
-        <input
-          type="number"
-          min="1"
-          max="9"
-          style={inputStyle}
-          placeholder={t("searchResults.filters.seatsPlaceholder")}
-          value={filters.seats || ""}
-          onChange={e => onFilterChange({ seats: e.target.value ? parseInt(e.target.value) : undefined })}
-          onFocus={e => (e.currentTarget.style.borderColor = tk.focusBorder)}
-          onBlur={e => (e.currentTarget.style.borderColor = tk.inputBorder)}
-        />
       </AccSection>
 
       {/* Features */}

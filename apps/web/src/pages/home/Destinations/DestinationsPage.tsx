@@ -258,10 +258,6 @@ const DestinationsPage = () => {
     buttonGhostBorder: isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.08)",
   };
 
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
-
   const handleAddToWishlist = async (destinationId: string) => {
     try {
       setWishlistLoadingId(destinationId);

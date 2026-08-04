@@ -32,7 +32,6 @@ type CarPreview = {
   brand: string;
   image?: string;
   type: string;
-  seats: number;
   pricePerDay: number;
   pickUpLocation: string;
 };
@@ -121,7 +120,6 @@ const HeroInventoryPreview = ({
         brand: car.brand,
         image: car.imageUrls?.[0],
         type: car.type,
-        seats: car.seats,
         pricePerDay: car.pricePerDay,
         pickUpLocation: car.pickUpLocation,
       }));
@@ -382,8 +380,7 @@ const HeroInventoryPreview = ({
                 className={`mt-0.5 truncate ${isStacked ? "text-[9px] sm:text-xs" : "text-[10px] sm:text-xs"}`}
                 style={{ color: tk.textMutedOnMedia }}
               >
-                {car.seats} {t("home.hero.seats", "seats")} -{" "}
-                {car.pickUpLocation}
+                {car.type} - {car.pickUpLocation}
               </p>
             </div>
 
@@ -551,7 +548,7 @@ const HeroInventoryPreview = ({
                       {isStay
                         ? item.location ||
                           t("home.hero.flexibleStay", "Across Albania")
-                        : `${item.seats} ${t("home.hero.seats", "seats")} - ${item.pickUpLocation}`}
+                        : `${item.type} - ${item.pickUpLocation}`}
                     </p>
                   </div>
 

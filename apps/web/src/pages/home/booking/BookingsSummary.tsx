@@ -67,6 +67,23 @@ const generateInvoicePDF = async (booking: Booking) => {
   const doc = new jsPDF();
   const pageWidth = doc.internal.pageSize.getWidth();
 
+  // Fetch provider info if available
+  let providerName = "";
+  let providerEmail = "";
+  let providerPhone = "";
+  if (booking.providerId) {
+    try {
+      const provider = await userService.getUserById(booking.providerId);
+      if (provider) {
+        providerName = provider.full_name || "";
+        providerEmail = provider.email || "";
+        providerPhone = provider.phone || "";
+      }
+    } catch {
+      // Silently continue if provider info fetch fails
+    }
+  }
+
   // Add logo
   try {
     const img = new Image();
@@ -111,17 +128,41 @@ const generateInvoicePDF = async (booking: Booking) => {
   doc.text(`Booking Reference: ${booking.id}`, pageWidth / 2 + 10, 75);
   doc.text(`Status: ${booking.status.toUpperCase()}`, pageWidth / 2 + 10, 82);
 
+  // Customer & Provider Information (2-Column Layout)
+  const infoY = 103;
+  const col2X = pageWidth / 2 + 10;
+
   // Customer Information
-  doc.setFontSize(14);
+  doc.setFontSize(12);
   doc.setFont("helvetica", "bold");
   doc.setTextColor(30, 41, 59);
-  doc.text("Customer Information", 15, 105);
+  doc.text("Customer Information", 15, infoY);
 
-  doc.setFontSize(11);
+  doc.setFontSize(10);
   doc.setFont("helvetica", "normal");
   doc.setTextColor(71, 85, 105);
-  doc.text(`Name: ${booking.requesterName}`, 15, 115);
-  doc.text(`Email: ${booking.contactMail}`, 15, 123);
+  doc.text(`Name: ${booking.requesterName}`, 15, infoY + 8);
+  doc.text(`Email: ${booking.contactMail}`, 15, infoY + 15);
+  if (booking.contactPhone) {
+    doc.text(`Phone: ${booking.contactPhone}`, 15, infoY + 22);
+  }
+
+  // Provider Information
+  doc.setFontSize(12);
+  doc.setFont("helvetica", "bold");
+  doc.setTextColor(30, 41, 59);
+  doc.text("Provider / Host Information", col2X, infoY);
+
+  doc.setFontSize(10);
+  doc.setFont("helvetica", "normal");
+  doc.setTextColor(71, 85, 105);
+  doc.text(`Name: ${providerName || "N/A"}`, col2X, infoY + 8);
+  if (providerEmail) {
+    doc.text(`Email: ${providerEmail}`, col2X, infoY + 15);
+  }
+  if (providerPhone) {
+    doc.text(`Phone: ${providerPhone}`, col2X, infoY + 22);
+  }
 
   // Booking Details
   doc.setFontSize(14);
@@ -136,23 +177,25 @@ const generateInvoicePDF = async (booking: Booking) => {
   doc.setFont("helvetica", "bold");
   doc.setTextColor(255, 255, 255);
   doc.text("Description", 20, 151);
-  doc.text("Details", pageWidth - 60, 151);
+  doc.text("Details", pageWidth - 25, 151, { align: "right" });
 
-  // Table content
+  // Table content — compact rows
   doc.setFont("helvetica", "normal");
   doc.setTextColor(71, 85, 105);
-  let yPos = 165;
+  let yPos = 162;
 
   const addTableRow = (label: string, value: string, highlight = false) => {
     if (highlight) {
       doc.setFillColor(248, 250, 252);
-      doc.rect(15, yPos - 6, pageWidth - 30, 10, "F");
+      doc.rect(15, yPos - 5, pageWidth - 30, 9, "F");
     }
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(9);
     doc.setTextColor(71, 85, 105);
     doc.text(label, 20, yPos);
     doc.setTextColor(30, 41, 59);
-    doc.text(value, pageWidth - 60, yPos);
-    yPos += 12;
+    doc.text(value, pageWidth - 25, yPos, { align: "right" });
+    yPos += 9;
   };
 
   addTableRow(
@@ -162,30 +205,85 @@ const generateInvoicePDF = async (booking: Booking) => {
     true,
   );
   addTableRow("Property Name", booking.propertyData?.name || "N/A");
+  if (providerName) addTableRow("Provider / Host", providerName, true);
   addTableRow("Check-in Date", formatDate(new Date(booking.startDate)), true);
   addTableRow("Check-out Date", formatDate(new Date(booking.endDate)));
-  addTableRow("Pick-up Location", booking.pickUpLocation || "N/A", true);
-  addTableRow("Drop-off Location", booking.dropOffLocation || "N/A");
-  addTableRow("Pick-up Time", booking.pickUpTime || "N/A", true);
-  addTableRow("Drop-off Time", booking.dropOffTime || "N/A");
+  if (booking.pickUpLocation) addTableRow("Pick-up Location", booking.pickUpLocation, true);
+  if (booking.dropOffLocation) addTableRow("Drop-off Location", booking.dropOffLocation);
+  if (booking.pickUpTime) addTableRow("Pick-up Time", booking.pickUpTime, true);
+  if (booking.dropOffTime) addTableRow("Drop-off Time", booking.dropOffTime);
 
-  // Total section
-  yPos += 10;
-  doc.setFillColor(16, 185, 129); // Green
-  doc.roundedRect(pageWidth - 85, yPos, 70, 20, 3, 3, "F");
-  doc.setFontSize(12);
+  // ── Invoice Breakdown ──
+  yPos += 8;
+  doc.setFontSize(14);
+  doc.setFont("helvetica", "bold");
+  doc.setTextColor(30, 41, 59);
+  doc.text("Invoice Details", 15, yPos);
+  yPos += 6;
+
+  // Price table header
+  doc.setFillColor(30, 58, 138);
+  doc.rect(15, yPos, pageWidth - 30, 10, "F");
+  doc.setFontSize(10);
   doc.setFont("helvetica", "bold");
   doc.setTextColor(255, 255, 255);
-  doc.text("TOTAL", pageWidth - 80, yPos + 8);
+  doc.text("Item", 20, yPos + 7);
+  doc.text("Amount", pageWidth - 25, yPos + 7, { align: "right" });
+  yPos += 16;
+
+  const rawFeeCalc = booking.totalPrice * 0.05;
+  const fallbackFee = rawFeeCalc < 2 && booking.totalPrice > 0 ? 2 : Math.round(rawFeeCalc * 100) / 100;
+  const fee = booking.fee ?? fallbackFee;
+  const childSeat = booking.childSeatPrice ?? 0;
+  const additionalDriver = booking.additionalDriverPrice ?? 0;
+  const insurance = booking.propertyType === "car" ? ((booking.propertyData as any)?.insurance ?? 0) : 0;
+  const rentalSubtotal = booking.totalPrice - fee - childSeat - additionalDriver - insurance;
+
+  let priceRowIdx = 0;
+  const addPriceLine = (label: string, amount: number) => {
+    if (priceRowIdx % 2 === 0) {
+      doc.setFillColor(248, 250, 252);
+      doc.rect(15, yPos - 5, pageWidth - 30, 10, "F");
+    }
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(10);
+    doc.setTextColor(71, 85, 105);
+    doc.text(label, 20, yPos);
+    doc.setTextColor(30, 41, 59);
+    doc.setFont("helvetica", "bold");
+    doc.text(`$${amount.toFixed(2)}`, pageWidth - 25, yPos, { align: "right" });
+    yPos += 10;
+    priceRowIdx++;
+  };
+
+  addPriceLine("Rental", rentalSubtotal > 0 ? rentalSubtotal : 0);
+  if (childSeat > 0) addPriceLine("Child Seat", childSeat);
+  if (additionalDriver > 0) addPriceLine("Additional Driver", additionalDriver);
+  if (insurance > 0) addPriceLine("Insurance", insurance);
+  if (fee > 0) addPriceLine("Service Fee (5%)", fee);
+
+  // Divider line
+  yPos += 2;
+  doc.setDrawColor(200, 200, 200);
+  doc.line(15, yPos, pageWidth - 15, yPos);
+  yPos += 8;
+
+  // Total section
+  doc.setFillColor(16, 185, 129);
+  doc.roundedRect(pageWidth - 90, yPos - 2, 75, 22, 3, 3, "F");
+  doc.setFontSize(11);
+  doc.setFont("helvetica", "bold");
+  doc.setTextColor(255, 255, 255);
+  doc.text("TOTAL", pageWidth - 85, yPos + 8);
   doc.setFontSize(14);
-  doc.text(`$${booking.totalPrice.toFixed(2)}`, pageWidth - 80, yPos + 16);
+  doc.text(`$${booking.totalPrice.toFixed(2)}`, pageWidth - 20, yPos + 8, { align: "right" });
 
   // Payment status
-  yPos += 35;
+  yPos += 30;
   const paymentColor =
     booking.payment_status === "paid" ? [16, 185, 129] : [245, 158, 11];
   doc.setFillColor(paymentColor[0], paymentColor[1], paymentColor[2]);
-  doc.roundedRect(15, yPos, 60, 8, 2, 2, "F");
+  doc.roundedRect(15, yPos, 65, 8, 2, 2, "F");
   doc.setFontSize(9);
   doc.setTextColor(255, 255, 255);
   doc.text(
@@ -195,15 +293,16 @@ const generateInvoicePDF = async (booking: Booking) => {
   );
 
   // Footer
+  const pageHeight = doc.internal.pageSize.getHeight();
   doc.setFontSize(9);
   doc.setTextColor(148, 163, 184);
-  doc.text("Thank you for booking with BOOKinAL!", pageWidth / 2, 270, {
+  doc.text("Thank you for booking with BOOKinAL!", pageWidth / 2, pageHeight - 20, {
     align: "center",
   });
   doc.text(
     "For any questions, please contact us at support@bookinal.com",
     pageWidth / 2,
-    277,
+    pageHeight - 13,
     { align: "center" },
   );
 
@@ -1105,7 +1204,7 @@ export default function BookingsSummary() {
                           );
                         })()}
 
-                        {/* Invoice download link */}
+                        {/* Invoice download button */}
                         {booking.payment_status === "paid" && (
                           <button
                             onClick={(e) => {
@@ -1113,22 +1212,26 @@ export default function BookingsSummary() {
                               generateInvoicePDF(booking);
                             }}
                             style={{
-                              marginTop: 12,
+                              marginTop: 14,
                               display: "flex",
                               alignItems: "center",
-                              gap: 6,
-                              fontSize: 12,
-                              color: bookingTk.brand,
-                              fontWeight: 600,
-                              background: "transparent",
+                              justifyContent: "center",
+                              gap: 8,
+                              fontSize: 14,
+                              color: "#ffffff",
+                              fontWeight: 700,
+                              background: bookingTk.brand,
                               border: "none",
+                              borderRadius: 999,
+                              padding: "10px 20px",
                               cursor: "pointer",
                               transition: "opacity 0.2s",
+                              width: "100%",
                             }}
                             onMouseEnter={(e) =>
                               ((
                                 e.currentTarget as HTMLButtonElement
-                              ).style.opacity = "0.7")
+                              ).style.opacity = "0.85")
                             }
                             onMouseLeave={(e) =>
                               ((
@@ -1136,9 +1239,9 @@ export default function BookingsSummary() {
                               ).style.opacity = "1")
                             }
                           >
-                            <FileText style={{ width: 14, height: 14 }} />
+                            <FileText style={{ width: 16, height: 16 }} />
                             {t("booking.downloadInvoice")}
-                            <Download style={{ width: 12, height: 12 }} />
+                            <Download style={{ width: 16, height: 16 }} />
                           </button>
                         )}
                       </div>
@@ -1154,7 +1257,7 @@ export default function BookingsSummary() {
                           minWidth: 168,
                         }}
                       >
-                        {/* Price */}
+                        {/* Invoice Breakdown */}
                         <div style={{ textAlign: "right" }}>
                           <p
                             style={{
@@ -1162,43 +1265,76 @@ export default function BookingsSummary() {
                               color: tk.mutedText,
                               textTransform: "uppercase",
                               letterSpacing: "0.1em",
+                              marginBottom: 8,
                             }}
                           >
-                            Total
+                            {t("booking.invoiceDetails", "Invoice Details")}
                           </p>
-                          <p
-                            style={{
-                              fontSize: 24,
-                              fontWeight: 900,
-                              color: tk.pageText,
-                              lineHeight: 1,
-                            }}
-                          >
-                            ${booking.totalPrice.toFixed(2)}
-                          </p>
-                          {booking.propertyType === "car" && (booking.propertyData as any)?.insurance > 0 && (
-                            <p
-                              style={{
-                                fontSize: 14,
-                                fontWeight: 900,
-                                color: tk.pageText,
-                                lineHeight: 1,
-                                marginBottom: 4,
-                              }}
-                            >
-                              + ${(booking.propertyData as any).insurance.toFixed(2)} {t("billing.insurance")}
-                            </p>
-                          )}
-                          <p
-                            style={{
-                              fontSize: 14,
-                              fontWeight: 900,
-                              color: tk.pageText,
-                              lineHeight: 1,
-                            }}
-                          >
-                            + ${(booking.totalPrice * 0.07).toFixed(2)} Fee
-                          </p>
+
+                          {/* Rental subtotal line */}
+                          {(() => {
+                            const rawFeeCalc = booking.totalPrice * 0.05;
+                            const fallbackFee = rawFeeCalc < 2 && booking.totalPrice > 0 ? 2 : Math.round(rawFeeCalc * 100) / 100;
+                            const fee = booking.fee ?? fallbackFee;
+                            const childSeat = booking.childSeatPrice ?? 0;
+                            const additionalDriver = booking.additionalDriverPrice ?? 0;
+                            const insurance = booking.propertyType === "car" ? ((booking.propertyData as any)?.insurance ?? 0) : 0;
+                            const rentalSubtotal = booking.totalPrice - fee - childSeat - additionalDriver - insurance;
+                            return (
+                              <div style={{ display: "flex", flexDirection: "column", gap: 4, alignItems: "flex-end" }}>
+                                {/* Rental Price */}
+                                <div style={{ display: "flex", justifyContent: "space-between", gap: 16, width: "100%", fontSize: 13 }}>
+                                  <span style={{ color: tk.dimText }}>{t("billing.rentalPrice", "Rental")}</span>
+                                  <span style={{ fontWeight: 600, color: tk.pageText }}>${rentalSubtotal > 0 ? rentalSubtotal.toFixed(2) : "0.00"}</span>
+                                </div>
+
+                                {/* Child Seat */}
+                                {childSeat > 0 && (
+                                  <div style={{ display: "flex", justifyContent: "space-between", gap: 16, width: "100%", fontSize: 13 }}>
+                                    <span style={{ color: tk.dimText }}>{t("billing.childSeat", "Child Seat")}</span>
+                                    <span style={{ fontWeight: 600, color: tk.pageText }}>${childSeat.toFixed(2)}</span>
+                                  </div>
+                                )}
+
+                                {/* Additional Driver */}
+                                {additionalDriver > 0 && (
+                                  <div style={{ display: "flex", justifyContent: "space-between", gap: 16, width: "100%", fontSize: 13 }}>
+                                    <span style={{ color: tk.dimText }}>{t("billing.additionalDriver", "Additional Driver")}</span>
+                                    <span style={{ fontWeight: 600, color: tk.pageText }}>${additionalDriver.toFixed(2)}</span>
+                                  </div>
+                                )}
+
+                                {/* Insurance */}
+                                {insurance > 0 && (
+                                  <div style={{ display: "flex", justifyContent: "space-between", gap: 16, width: "100%", fontSize: 13 }}>
+                                    <span style={{ color: tk.dimText }}>{t("billing.insurance", "Insurance")}</span>
+                                    <span style={{ fontWeight: 600, color: tk.pageText }}>${insurance.toFixed(2)}</span>
+                                  </div>
+                                )}
+
+                                {/* Fee */}
+                                {fee > 0 && (
+                                  <div style={{ display: "flex", justifyContent: "space-between", gap: 16, width: "100%", fontSize: 13 }}>
+                                    <span style={{ color: tk.dimText }}>{t("billing.serviceFee", "Service Fee")} (5%)</span>
+                                    <span style={{ fontWeight: 600, color: tk.pageText }}>${fee.toFixed(2)}</span>
+                                  </div>
+                                )}
+
+                                {/* Divider */}
+                                <div style={{ width: "100%", height: 1, background: tk.cardBorder, margin: "4px 0" }} />
+
+                                {/* Total */}
+                                <div style={{ display: "flex", justifyContent: "space-between", gap: 16, width: "100%" }}>
+                                  <span style={{ fontSize: 10, color: tk.mutedText, textTransform: "uppercase", letterSpacing: "0.1em" }}>
+                                    {t("billing.total", "Total")}
+                                  </span>
+                                  <span style={{ fontSize: 22, fontWeight: 900, color: tk.pageText, lineHeight: 1 }}>
+                                    ${booking.totalPrice.toFixed(2)}
+                                  </span>
+                                </div>
+                              </div>
+                            );
+                          })()}
                         </div>
 
                         {/* Status Badges */}
@@ -1408,9 +1544,44 @@ export default function BookingsSummary() {
                                   display: "flex",
                                   flexDirection: "column",
                                   alignItems: "flex-end",
-                                  gap: 6,
+                                  gap: 8,
                                 }}
                               >
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    generateInvoicePDF(booking);
+                                  }}
+                                  style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: 8,
+                                    fontSize: 13,
+                                    padding: "8px 16px",
+                                    borderRadius: 999,
+                                    background: bookingTk.brand,
+                                    color: "#ffffff",
+                                    border: "none",
+                                    cursor: "pointer",
+                                    fontWeight: 700,
+                                    boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+                                    transition: "opacity 0.2s",
+                                  }}
+                                  onMouseEnter={(e) =>
+                                    ((
+                                      e.currentTarget as HTMLButtonElement
+                                    ).style.opacity = "0.85")
+                                  }
+                                  onMouseLeave={(e) =>
+                                    ((
+                                      e.currentTarget as HTMLButtonElement
+                                    ).style.opacity = "1")
+                                  }
+                                >
+                                  <FileText style={{ width: 15, height: 15 }} />
+                                  {t("booking.downloadInvoice", "Download Invoice")}
+                                  <Download style={{ width: 14, height: 14 }} />
+                                </button>
                                 {(booking.propertyType === "car" ||
                                   booking.propertyType === "apartment") && (
                                   <button

@@ -8,17 +8,16 @@ import {
   X,
   MapPin,
   Star,
-  Users,
   DollarSign,
   Car as CarIcon,
   Loader2,
-  Gauge,
   Fuel,
   Settings,
   Calendar,
-  Palette,
   Image as ImageIcon,
   ShieldCheck,
+  Baby,
+  UserPlus,
 } from "lucide-react";
 import { Car, UpdateCarDto } from "@/types/car.types";
 import { MonthlyPriceInput, MONTHS, MONTH_NAMES } from "@/types/price.type";
@@ -123,7 +122,7 @@ const CarDetails = () => {
     setFormData((prev) => ({
       ...prev,
       [name]:
-        name === "year" || name === "seats" || name === "pricePerDay" || name === "insurance" || name === "lat" || name === "lng"
+        name === "year" || name === "pricePerDay" || name === "insurance" || name === "childSeatPrice" || name === "additionalDriverPrice" || name === "lat" || name === "lng"
           ? parseFloat(value) || 0
           : value,
     }));
@@ -390,13 +389,6 @@ const CarDetails = () => {
                       </select>
                     ) : <p style={{ color: tk.dimText }}>{car.fuelType}</p>}
                   </div>
-                  {/* Seats */}
-                  <div>
-                    <p style={{ fontSize: 13, color: tk.labelText, marginBottom: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <Users size={14} style={{ color: tk.mutedText }} /> {t("cars.carDetails.fields.seats")}
-                    </p>
-                    {isEditing ? <input name="seats" type="number" min="1" max="20" value={formData.seats || 0} onChange={handleChange} style={inputStyle} /> : <p style={{ color: tk.dimText }}>{t("cars.carDetails.card.seats", { count: car.seats })}</p>}
-                  </div>
                   {/* Base Price */}
                   <div>
                     <p style={{ fontSize: 13, color: tk.labelText, marginBottom: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -420,6 +412,30 @@ const CarDetails = () => {
                         <p style={{ fontSize: 12, color: tk.mutedText, marginTop: 4 }}>{t("cars.carDetails.fields.insuranceHelp", "Fixed insurance price per booking")}</p>
                       </>
                     ) : <p style={{ fontSize: 18, fontWeight: 700, color: tk.pageText }}>${car.insurance ?? 0}</p>}
+                  </div>
+                  {/* Child Seat Add-on */}
+                  <div>
+                    <p style={{ fontSize: 13, color: tk.labelText, marginBottom: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <Baby size={14} style={{ color: '#3b82f6' }} /> {t("cars.carDetails.fields.childSeatPrice", "Add Child Seat")}
+                    </p>
+                    {isEditing ? (
+                      <>
+                        <input name="childSeatPrice" type="number" min="0" value={formData.childSeatPrice ?? 0} onChange={handleChange} style={inputStyle} />
+                        <p style={{ fontSize: 12, color: tk.mutedText, marginTop: 4 }}>{t("cars.carDetails.fields.childSeatPriceHelp", "Optional price for a child seat. 0 means not offered.")}</p>
+                      </>
+                    ) : <p style={{ fontSize: 18, fontWeight: 700, color: tk.pageText }}>{car.childSeatPrice > 0 ? `$${car.childSeatPrice}` : t("cars.carDetails.fields.notOffered", "Not offered")}</p>}
+                  </div>
+                  {/* Additional Driver Add-on */}
+                  <div>
+                    <p style={{ fontSize: 13, color: tk.labelText, marginBottom: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <UserPlus size={14} style={{ color: '#3b82f6' }} /> {t("cars.carDetails.fields.additionalDriverPrice", "Add Additional Driver")}
+                    </p>
+                    {isEditing ? (
+                      <>
+                        <input name="additionalDriverPrice" type="number" min="0" value={formData.additionalDriverPrice ?? 0} onChange={handleChange} style={inputStyle} />
+                        <p style={{ fontSize: 12, color: tk.mutedText, marginTop: 4 }}>{t("cars.carDetails.fields.additionalDriverPriceHelp", "Optional price for an additional driver. 0 means not offered.")}</p>
+                      </>
+                    ) : <p style={{ fontSize: 18, fontWeight: 700, color: tk.pageText }}>{car.additionalDriverPrice > 0 ? `$${car.additionalDriverPrice}` : t("cars.carDetails.fields.notOffered", "Not offered")}</p>}
                   </div>
                 </div>
               </div>
@@ -456,26 +472,12 @@ const CarDetails = () => {
               <div style={{ background: tk.cardBg, border: `1px solid ${tk.cardBorder}`, borderRadius: 12, padding: 24 }}>
                 <h2 style={{ fontSize: 20, fontWeight: 700, marginBottom: 24, color: tk.pageText }}>{t("cars.carDetails.sections.vehicleDetails")}</h2>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
-                  {/* Color */}
-                  <div>
-                    <p style={{ fontSize: 13, color: tk.labelText, marginBottom: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <Palette size={14} style={{ color: '#E8192C' }} /> {t("cars.carDetails.fields.color")}
-                    </p>
-                    {isEditing ? <input name="color" value={formData.color || ""} onChange={handleChange} style={inputStyle} /> : <p style={{ color: tk.dimText }}>{car.color}</p>}
-                  </div>
                   {/* Plate Number */}
                   <div>
                     <p style={{ fontSize: 13, color: tk.labelText, marginBottom: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
                       <CarIcon size={14} style={{ color: '#E8192C' }} /> {t("cars.carDetails.fields.plateNumber")}
                     </p>
                     {isEditing ? <input name="plateNumber" value={formData.plateNumber || ""} onChange={handleChange} style={inputStyle} /> : <p style={{ color: tk.dimText }}>{car.plateNumber}</p>}
-                  </div>
-                  {/* Mileage */}
-                  <div>
-                    <p style={{ fontSize: 13, color: tk.labelText, marginBottom: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <Gauge size={14} style={{ color: '#E8192C' }} /> {t("cars.carDetails.fields.mileage")}
-                    </p>
-                    {isEditing ? <input name="mileage" type="number" min="0" max="999999" value={formData.mileage || ""} onChange={handleChange} style={inputStyle} /> : <p style={{ color: tk.dimText }}>{car.mileage}</p>}
                   </div>
                   {/* Pick Up Location */}
                   <div>

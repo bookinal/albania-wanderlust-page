@@ -61,8 +61,7 @@
       "description": "Përzgjedhje e kuruar e automjeteve cilësore për udhëtimin tuaj nëpër peizazhet mahnitëse të Shqipërisë",
       "viewAll": "Shiko të Gjitha Makinat",
       "noCars": "Nuk ka makina të disponueshme",
-      "pricePerDay": "për ditë (për këtë muaj)",
-      "seats": "Vende"
+      "pricePerDay": "për ditë (për këtë muaj)"
     },
     "destinations": {
       "title": "Destinacionet Kryesore",
@@ -437,6 +436,7 @@
     "stay": "Qëndrim",
     "culture": "Kulturë",
     "map": "Hartë",
+    "back": "Kthehu",
     "explore": "Eksploro Më Shumë",
     "learnMore": "Mëso Më Shumë",
     "tryAgain": "Provo Përsëri",

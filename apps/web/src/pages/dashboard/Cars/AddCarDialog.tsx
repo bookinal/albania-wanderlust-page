@@ -41,12 +41,11 @@ export const AddCarDialog: React.FC<AddCarDialogProps> = ({ onCarAdded }) => {
     year: new Date().getFullYear(),
     transmission: "Manual" as "Manual" | "Automatic",
     fuelType: "Petrol" as "Petrol" | "Diesel" | "Hybrid" | "Electric",
-    seats: 5,
-    mileage: 0,
     pricePerDay: 10,
     insurance: 0,
+    childSeatPrice: 0,
+    additionalDriverPrice: 0,
     status: "review" as "available" | "rented" | "maintenance" | "review",
-    color: "",
     plateNumber: "",
     features: [] as string[],
     imageUrls: [] as string[],
@@ -109,7 +108,7 @@ export const AddCarDialog: React.FC<AddCarDialogProps> = ({ onCarAdded }) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: name === "year" || name === "seats" || name === "mileage" || name === "pricePerDay" || name === "insurance"
+      [name]: name === "year" || name === "pricePerDay" || name === "insurance" || name === "childSeatPrice" || name === "additionalDriverPrice"
         ? parseFloat(value) || 0
         : value,
     }));
@@ -144,12 +143,11 @@ export const AddCarDialog: React.FC<AddCarDialogProps> = ({ onCarAdded }) => {
         year: formData.year,
         transmission: formData.transmission,
         fuelType: formData.fuelType,
-        seats: formData.seats,
-        mileage: formData.mileage,
         pricePerDay: formData.pricePerDay,
         insurance: formData.insurance,
+        childSeatPrice: formData.childSeatPrice,
+        additionalDriverPrice: formData.additionalDriverPrice,
         status: "review",
-        color: formData.color,
         plateNumber: formData.plateNumber,
         features: formData.features,
         imageUrls: formData.imageUrls,
@@ -166,7 +164,7 @@ export const AddCarDialog: React.FC<AddCarDialogProps> = ({ onCarAdded }) => {
       );
       onCarAdded(newCar);
       setSubmissionSuccess(true);
-      setFormData({ name: "", brand: "", type: "Sedan", year: new Date().getFullYear(), transmission: "Manual", fuelType: "Petrol", seats: 5, mileage: 0, pricePerDay: 10, insurance: 0, status: "review", color: "", plateNumber: "", features: [], imageUrls: [], pickUpLocation: "", lat: undefined, lng: undefined });
+      setFormData({ name: "", brand: "", type: "Sedan", year: new Date().getFullYear(), transmission: "Manual", fuelType: "Petrol", pricePerDay: 10, insurance: 0, childSeatPrice: 0, additionalDriverPrice: 0, status: "review", plateNumber: "", features: [], imageUrls: [], pickUpLocation: "", lat: undefined, lng: undefined });
       setSelectedImageFiles([]);
       setMonthlyPrices([]);
     } catch (error) {
@@ -271,16 +269,6 @@ export const AddCarDialog: React.FC<AddCarDialogProps> = ({ onCarAdded }) => {
                     {["Petrol","Diesel","Hybrid","Electric"].map(f => <option key={f} value={f} style={{ background: tk.optionBg }}>{f}</option>)}
                   </select>
                 </div>
-                {/* Seats */}
-                <div>
-                  <p style={{ fontSize: 13, fontWeight: 500, color: tk.labelText, marginBottom: 6 }}>{t("cars.addCarDialog.form.seats")}</p>
-                  <input id="seats" name="seats" type="number" min="1" max="20" value={formData.seats} onChange={handleChange} placeholder="5" style={inputStyle} />
-                </div>
-                {/* Mileage */}
-                <div>
-                  <p style={{ fontSize: 13, fontWeight: 500, color: tk.labelText, marginBottom: 6 }}>{t("cars.addCarDialog.form.mileage")}</p>
-                  <input id="mileage" name="mileage" type="number" min="0" value={formData.mileage} onChange={handleChange} placeholder="15000" style={inputStyle} />
-                </div>
                 {/* Price Per Day */}
                 <div>
                   <p style={{ fontSize: 13, fontWeight: 500, color: tk.labelText, marginBottom: 6 }}>{t("cars.addCarDialog.form.basePrice")} <span style={{ color: '#E8192C' }}>*</span></p>
@@ -293,6 +281,18 @@ export const AddCarDialog: React.FC<AddCarDialogProps> = ({ onCarAdded }) => {
                   <input id="insurance" name="insurance" type="number" min="0" value={formData.insurance} onChange={handleChange} placeholder="15" style={inputStyle} />
                   <p style={{ fontSize: 12, color: tk.mutedText, marginTop: 4 }}>{t("cars.addCarDialog.form.insuranceHelp", "Fixed insurance price per booking")}</p>
                 </div>
+                {/* Child Seat Add-on */}
+                <div>
+                  <p style={{ fontSize: 13, fontWeight: 500, color: tk.labelText, marginBottom: 6 }}>{t("cars.addCarDialog.form.childSeatPrice", "Add Child Seat")}</p>
+                  <input id="childSeatPrice" name="childSeatPrice" type="number" min="0" value={formData.childSeatPrice} onChange={handleChange} placeholder="10" style={inputStyle} />
+                  <p style={{ fontSize: 12, color: tk.mutedText, marginTop: 4 }}>{t("cars.addCarDialog.form.childSeatPriceHelp", "Optional price for a child seat. Leave at 0 if not offered.")}</p>
+                </div>
+                {/* Additional Driver Add-on */}
+                <div>
+                  <p style={{ fontSize: 13, fontWeight: 500, color: tk.labelText, marginBottom: 6 }}>{t("cars.addCarDialog.form.additionalDriverPrice", "Add Additional Driver")}</p>
+                  <input id="additionalDriverPrice" name="additionalDriverPrice" type="number" min="0" value={formData.additionalDriverPrice} onChange={handleChange} placeholder="15" style={inputStyle} />
+                  <p style={{ fontSize: 12, color: tk.mutedText, marginTop: 4 }}>{t("cars.addCarDialog.form.additionalDriverPriceHelp", "Optional price for an additional driver. Leave at 0 if not offered.")}</p>
+                </div>
                 {/* Status */}
                 <div>
                   <p style={{ fontSize: 13, fontWeight: 500, color: tk.labelText, marginBottom: 6 }}>{t("cars.addCarDialog.form.status")}</p>
@@ -301,11 +301,6 @@ export const AddCarDialog: React.FC<AddCarDialogProps> = ({ onCarAdded }) => {
                     <option value="rented" style={{ background: tk.optionBg }}>Rented</option>
                     <option value="maintenance" style={{ background: tk.optionBg }}>Maintenance</option>
                   </select>
-                </div>
-                {/* Color */}
-                <div>
-                  <p style={{ fontSize: 13, fontWeight: 500, color: tk.labelText, marginBottom: 6 }}>{t("cars.addCarDialog.form.color")}</p>
-                  <input id="color" name="color" value={formData.color} onChange={handleChange} placeholder="Black" style={inputStyle} />
                 </div>
                 {/* Plate Number */}
                 <div>

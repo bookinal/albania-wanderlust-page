@@ -495,9 +495,8 @@ export default function PropertyRequestsManagement() {
                     { label: "Year", value: propertyDetails.year },
                     { label: "Transmission", value: propertyDetails.transmission },
                     { label: "Fuel Type", value: propertyDetails.fuelType },
-                    { label: "Seats", value: propertyDetails.seats },
-                    { label: "Mileage", value: `${propertyDetails.mileage?.toLocaleString()} km` },
-                    { label: "Color", value: propertyDetails.color },
+                    { label: "Child Seat", value: propertyDetails.childSeatPrice > 0 ? `$${propertyDetails.childSeatPrice}` : "Not offered" },
+                    { label: "Additional Driver", value: propertyDetails.additionalDriverPrice > 0 ? `$${propertyDetails.additionalDriverPrice}` : "Not offered" },
                     { label: "Plate Number", value: propertyDetails.plateNumber },
                     { label: "Status", value: propertyDetails.status },
                   ].map(({ label, value }) => (

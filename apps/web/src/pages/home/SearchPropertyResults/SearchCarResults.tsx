@@ -45,7 +45,6 @@ const SearchCarResults = () => {
     fuelType: "all",
     priceRange: { min: 0, max: 1000 },
     features: [],
-    seats: undefined,
     pickupDate: pickupDate,
     returnDate: returnDate,
   });
@@ -70,7 +69,6 @@ const SearchCarResults = () => {
         fuelType: filters.fuelType,
         priceRange: filters.priceRange,
         features: filters.features,
-        seats: filters.seats,
         pickupDate: filters.pickupDate,
         returnDate: filters.returnDate,
       };
@@ -143,7 +141,6 @@ const SearchCarResults = () => {
       fuelType: "all",
       priceRange: { min: 0, max: 1000 },
       features: [],
-      seats: undefined,
       pickupDate: null,
       returnDate: null,
     });
