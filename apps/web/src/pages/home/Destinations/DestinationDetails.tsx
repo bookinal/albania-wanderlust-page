@@ -66,6 +66,8 @@ import { DestinationCard } from "./DestinationCard";
 import { useQuery } from "@tanstack/react-query";
 import { getAllApartments } from "@/services/api/apartmentService";
 import { PropertyCard } from "@/components/home/PropertyCard";
+import { DestinationBreadcrumb } from "@/components/home/destinations/DestinationBreadcrumb";
+import { CATEGORY_ROUTES } from "@/lib/destinationManagement";
 
 const visitorTipIcons: Record<string, LucideIcon> = {
   Sunrise,
@@ -1042,268 +1044,204 @@ const DestinationDetails = () => {
               pointerEvents: "none",
             }}
           >
+          <div
+            style={{
+              display: "flex",
+              alignItems: "flex-start",
+              justifyContent: "space-between",
+              pointerEvents: "none",
+              gap: "1rem",
+              flexWrap: "wrap",
+            }}
+          >
+            <button
+              onClick={handleBack}
+              aria-label={t("home.destinations.back")}
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                width: "2.75rem",
+                height: "2.75rem",
+                background: "rgba(15,23,42,0.32)",
+                border: "1px solid rgba(255,255,255,0.22)",
+                borderRadius: "9999px",
+                color: "#fff",
+                cursor: "pointer",
+                backdropFilter: "blur(14px)",
+                WebkitBackdropFilter: "blur(14px)",
+                boxShadow: "0 10px 30px rgba(0,0,0,0.16)",
+                pointerEvents: "auto",
+              }}
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </button>
             <div
               style={{
                 display: "flex",
-                alignItems: "flex-start",
-                justifyContent: "space-between",
-                pointerEvents: "none",
-                gap: "1rem",
+                alignItems: "center",
+                gap: "0.6rem",
                 flexWrap: "wrap",
+                justifyContent: "flex-end",
+                pointerEvents: "none",
               }}
             >
               <button
-                onClick={handleBack}
-                aria-label={t("home.destinations.back")}
+                onClick={handleShare}
                 style={{
                   display: "inline-flex",
                   alignItems: "center",
                   justifyContent: "center",
                   width: "2.75rem",
                   height: "2.75rem",
-                  background: "rgba(15,23,42,0.32)",
+                  background: "rgba(255,255,255,0.14)",
                   border: "1px solid rgba(255,255,255,0.22)",
                   borderRadius: "9999px",
                   color: "#fff",
                   cursor: "pointer",
                   backdropFilter: "blur(14px)",
                   WebkitBackdropFilter: "blur(14px)",
-                  boxShadow: "0 10px 30px rgba(0,0,0,0.16)",
                   pointerEvents: "auto",
                 }}
               >
-                <ArrowLeft className="w-5 h-5" />
+                <Share2 className="w-5 h-5" />
               </button>
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "0.6rem",
-                  flexWrap: "wrap",
-                  justifyContent: "flex-end",
-                  pointerEvents: "none",
-                }}
-              >
-                <button
-                  onClick={handleShare}
-                  style={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    width: "2.75rem",
-                    height: "2.75rem",
-                    background: "rgba(255,255,255,0.14)",
-                    border: "1px solid rgba(255,255,255,0.22)",
-                    borderRadius: "9999px",
-                    color: "#fff",
-                    cursor: "pointer",
-                    backdropFilter: "blur(14px)",
-                    WebkitBackdropFilter: "blur(14px)",
-                    pointerEvents: "auto",
-                  }}
-                >
-                  <Share2 className="w-5 h-5" />
-                </button>
-                <button
-                  onClick={handleAddToWishlist}
-                  disabled={isAddingToWishlist}
-                  style={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    width: "2.75rem",
-                    height: "2.75rem",
-                    background: "rgba(255,255,255,0.14)",
-                    border: "1px solid rgba(255,255,255,0.22)",
-                    borderRadius: "9999px",
-                    color: "#fff",
-                    cursor: isAddingToWishlist ? "not-allowed" : "pointer",
-                    opacity: isAddingToWishlist ? 0.6 : 1,
-                    backdropFilter: "blur(14px)",
-                    WebkitBackdropFilter: "blur(14px)",
-                    pointerEvents: "auto",
-                  }}
-                >
-                  {isAddingToWishlist ? (
-                    <Loader2 className="w-5 h-5 animate-spin" />
-                  ) : (
-                    <Heart className="w-5 h-5" />
-                  )}
-                </button>
-              </div>
-            </div>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "flex-end",
-                justifyContent: "space-between",
-                gap: "1rem",
-                pointerEvents: "none",
-                flexWrap: "wrap",
-              }}
-            >
-              <div
-                style={{
-                  maxWidth: "42rem",
-                  pointerEvents: "none",
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "1rem",
-                }}
-              >
-                <div
-                  style={{ display: "flex", flexWrap: "wrap", gap: "0.75rem" }}
-                >
-                  <span
-                    style={{
-                      display: "inline-flex",
-                      alignItems: "center",
-                      padding: "0.45rem 0.95rem",
-                      borderRadius: "9999px",
-                      background: "rgba(255,255,255,0.16)",
-                      border: "1px solid rgba(255,255,255,0.24)",
-                      color: tk.pillText,
-                      fontSize: "0.8rem",
-                      fontWeight: 700,
-                      letterSpacing: "0.08em",
-                      textTransform: "uppercase",
-                      backdropFilter: "blur(10px)",
-                      WebkitBackdropFilter: "blur(10px)",
-                    }}
-                  >
-                    {destination.category}
-                  </span>
-                  <span
-                    style={{
-                      display: "inline-flex",
-                      alignItems: "center",
-                      gap: "0.45rem",
-                      padding: "0.45rem 0.95rem",
-                      borderRadius: "9999px",
-                      background: "rgba(255,255,255,0.12)",
-                      border: "1px solid rgba(255,255,255,0.18)",
-                      color: "#fff",
-                      fontSize: "0.85rem",
-                      fontWeight: 500,
-                      backdropFilter: "blur(10px)",
-                      WebkitBackdropFilter: "blur(10px)",
-                    }}
-                  >
-                    <MapPin className="w-4 h-4" />
-                    Albania
-                  </span>
-                </div>
-                <h1
-                    style={{
-                      fontSize: "clamp(2.3rem, 5vw, 4.5rem)",
-                      fontWeight: 800,
-                      lineHeight: 1,
-                      letterSpacing: "-0.04em",
-                      color: "#fff",
-                      margin: 0,
-                      textShadow: "0 10px 30px rgba(0,0,0,0.45)",
-                    }}
-                  >
-                    {localize(destination.name)}
-                  </h1>
-                {destination.contact && (
-                  <div
-                    style={{
-                      display: "flex",
-                      flexWrap: "wrap",
-                      gap: "0.6rem",
-                    }}
-                  >
-                    {(
-                      [
-                        { key: "instagram", icon: Camera, prefix: "" },
-                        { key: "facebook", icon: Users, prefix: "" },
-                        { key: "website", icon: Globe, prefix: null },
-                        { key: "phone", icon: Phone, prefix: "tel:" },
-                        { key: "email", icon: Mail, prefix: "mailto:" },
-                        { key: "whatsapp", icon: MessageCircle, prefix: "" },
-                        { key: "tripadvisor", icon: Star, prefix: null },
-                        { key: "bookingUrl", icon: ExternalLink, prefix: null },
-                      ] as const
-                    ).map(({ key, icon: Icon, prefix }) => {
-                      const val = destination.contact![key];
-                      if (!val) return null;
-                      const href = prefix ? `${prefix}${val}` : val;
-                      return (
-                        <a
-                          key={key}
-                          href={href}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          style={{
-                            display: "inline-flex",
-                            alignItems: "center",
-                            gap: "0.5rem",
-                            padding: "0.55rem 1rem",
-                            borderRadius: "9999px",
-                            background: "rgba(255,255,255,0.16)",
-                            border: "1px solid rgba(255,255,255,0.24)",
-                            color: "#fff",
-                            fontSize: "0.9rem",
-                            fontWeight: 600,
-                            textDecoration: "none",
-                            backdropFilter: "blur(10px)",
-                            WebkitBackdropFilter: "blur(10px)",
-                            boxShadow: "0 8px 24px rgba(0,0,0,0.16)",
-                            transition: "background 0.2s, transform 0.2s",
-                            pointerEvents: "auto",
-                          }}
-                          onMouseEnter={(e) => {
-                            e.currentTarget.style.background =
-                              "rgba(255,255,255,0.28)";
-                            e.currentTarget.style.transform =
-                              "translateY(-1px)";
-                          }}
-                          onMouseLeave={(e) => {
-                            e.currentTarget.style.background =
-                              "rgba(255,255,255,0.16)";
-                            e.currentTarget.style.transform = "translateY(0)";
-                          }}
-                        >
-                          <Icon className="w-4 h-4" />
-                          {key === "instagram" && "Instagram"}
-                          {key === "facebook" && "Facebook"}
-                          {key === "website" && "Website"}
-                          {key === "phone" && val}
-                          {key === "email" && val}
-                          {key === "whatsapp" && "WhatsApp"}
-                          {key === "tripadvisor" && "TripAdvisor"}
-                          {key === "bookingUrl" && "Book Now"}
-                        </a>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
               <button
-                onClick={() => navigate(backTarget)}
+                onClick={handleAddToWishlist}
+                disabled={isAddingToWishlist}
                 style={{
                   display: "inline-flex",
                   alignItems: "center",
-                  gap: "0.65rem",
-                  padding: "0.9rem 1.2rem",
+                  justifyContent: "center",
+                  width: "2.75rem",
+                  height: "2.75rem",
                   background: "rgba(255,255,255,0.14)",
                   border: "1px solid rgba(255,255,255,0.22)",
-                  borderRadius: "1rem",
+                  borderRadius: "9999px",
                   color: "#fff",
-                  cursor: "pointer",
-                  fontSize: "0.95rem",
-                  fontWeight: 600,
+                  cursor: isAddingToWishlist ? "not-allowed" : "pointer",
+                  opacity: isAddingToWishlist ? 0.6 : 1,
                   backdropFilter: "blur(14px)",
                   WebkitBackdropFilter: "blur(14px)",
-                  boxShadow: "0 16px 40px rgba(0,0,0,0.18)",
                   pointerEvents: "auto",
                 }}
               >
-                {t("home.destinations.seeAllDestinations")}
+                {isAddingToWishlist ? (
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                ) : (
+                  <Heart className="w-5 h-5" />
+                )}
               </button>
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Separated Destination Title Section */}
+      <div
+        style={{
+          width: "100%",
+          padding: "1.75rem 1.5rem 0.5rem",
+          display: "flex",
+          flexDirection: "column",
+          gap: "0.6rem",
+        }}
+      >
+        <h1
+          style={{
+            fontSize: "clamp(2.2rem, 4.5vw, 3.5rem)",
+            fontWeight: 800,
+            lineHeight: 1.15,
+            letterSpacing: "-0.03em",
+            color: tk.pageText,
+            margin: 0,
+          }}
+        >
+          {localize(destination.name)}
+        </h1>
+        <DestinationBreadcrumb
+          variant="page"
+          items={[
+            { label: "Destinations", to: "/destinations" },
+            ...(destination.category && CATEGORY_ROUTES[destination.category]
+              ? [
+                  {
+                    label: destination.category,
+                    to: CATEGORY_ROUTES[destination.category],
+                  },
+                ]
+              : []),
+            ...(destination.subcategory
+              ? [
+                  {
+                    label: destination.subcategory,
+                    to: `/destinations/subcategory/${encodeURIComponent(destination.subcategory)}`,
+                  },
+                ]
+              : []),
+            { label: localize(destination.name) },
+          ]}
+        />
+          {destination.contact && (
+            <div
+              style={{
+                display: "flex",
+                flexWrap: "wrap",
+                gap: "0.6rem",
+                marginTop: "1.25rem",
+              }}
+            >
+              {(
+                [
+                  { key: "instagram", icon: Camera, prefix: "" },
+                  { key: "facebook", icon: Users, prefix: "" },
+                  { key: "website", icon: Globe, prefix: null },
+                  { key: "phone", icon: Phone, prefix: "tel:" },
+                  { key: "email", icon: Mail, prefix: "mailto:" },
+                  { key: "whatsapp", icon: MessageCircle, prefix: "" },
+                  { key: "tripadvisor", icon: Star, prefix: null },
+                  { key: "bookingUrl", icon: ExternalLink, prefix: null },
+                ] as const
+              ).map(({ key, icon: Icon, prefix }) => {
+                const val = destination.contact![key];
+                if (!val) return null;
+                const href = prefix ? `${prefix}${val}` : val;
+                return (
+                  <a
+                    key={key}
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: "0.5rem",
+                      padding: "0.55rem 1rem",
+                      borderRadius: "9999px",
+                      background: tk.btnOutlineBg,
+                      border: `1px solid ${tk.cardBorder}`,
+                      color: tk.pageText,
+                      fontSize: "0.9rem",
+                      fontWeight: 600,
+                      textDecoration: "none",
+                      boxShadow: "0 4px 12px rgba(0,0,0,0.04)",
+                      transition: "all 0.2s",
+                    }}
+                  >
+                    <Icon className="w-4 h-4" style={{ color: tk.brand }} />
+                    {key === "instagram" && "Instagram"}
+                    {key === "facebook" && "Facebook"}
+                    {key === "website" && "Website"}
+                    {key === "phone" && val}
+                    {key === "email" && val}
+                    {key === "whatsapp" && "WhatsApp"}
+                    {key === "tripadvisor" && "TripAdvisor"}
+                    {key === "bookingUrl" && "Book Now"}
+                  </a>
+                );
+              })}
+            </div>
+          )}
         </div>
       </div>
 
@@ -1313,7 +1251,7 @@ const DestinationDetails = () => {
           style={{
             width: "100%",
             padding: "0 1.5rem",
-            marginTop: "-2.75rem",
+            marginTop: "1.25rem",
             position: "relative",
             zIndex: 3,
           }}

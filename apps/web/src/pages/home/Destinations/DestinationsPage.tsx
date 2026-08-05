@@ -19,6 +19,7 @@ import { DestinationCard } from "./DestinationCard";
 import { addDestinationToCurrentUserWishlist } from "@/services/api/destinationService";
 import { useToast } from "@/hooks/use-toast";
 import { CATEGORIES, SUBCATEGORIES } from "@/lib/destinationManagement";
+import { DestinationBreadcrumb } from "@/components/home/destinations/DestinationBreadcrumb";
 
 const selectDiverseDestinations = (destinationsList: any[], limit = 7) => {
   if (destinationsList.length <= limit) return destinationsList;
@@ -343,6 +344,8 @@ const DestinationsPage = () => {
             <ArrowLeft className="w-4 h-4" />
             {t("home.destinations.backToHome")}
           </button>
+
+          <DestinationBreadcrumb items={[{ label: t("common.destinations") }]} />
 
           <div
             className="destinations-hero-grid"

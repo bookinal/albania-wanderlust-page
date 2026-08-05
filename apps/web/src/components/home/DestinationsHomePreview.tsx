@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { useTheme } from "@/context/ThemeContext";
 import { getHomeThemeTokens } from "./homeTheme";
 import { Button } from "@/components/ui/button";
-import { CATEGORIES, SUBCATEGORIES } from "@/lib/destinationManagement";
+import { CATEGORIES, SUBCATEGORIES, CATEGORY_ROUTES } from "@/lib/destinationManagement";
 import { Link } from "react-router-dom";
 import { t } from "i18next";
 
@@ -65,15 +65,14 @@ const DestinationsHomePreview = () => {
       "https://images.unsplash.com/photo-1638619394560-1bd8d1131d63?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     "On high altitude":
       "https://images.unsplash.com/photo-1576709501191-a9ccd791f174?q=80&w=764&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    "Religious Sites":
+      "https://images.unsplash.com/photo-1708481686679-1bfebe1afefc?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    "Traditional Festivals & Events":
+      "https://cdn.getyourguide.com/image/format=auto,fit=crop,gravity=auto,quality=60,width=1920,dpr=1/tour_img/73b1f82a3b962fd06ae5634f05d2d6663fc5d292a6f71147f87bb069acb35b9b.jpeg",
   };
 
 
-  const categoryRoutes: Record<string, string> = {
-    Destinations: "/destinations/destinations",
-    "Eat, drink & dance": "/destinations/eat-drink-dance",
-    "History & culture": "/destinations/history-culture",
-    Experiences: "/destinations/experiences",
-  };
+  const categoryRoutes = CATEGORY_ROUTES;
 
   const categoryGradients: Record<string, string> = {
     Destinations: "linear-gradient(135deg, #0f766e, #14b8a6)",

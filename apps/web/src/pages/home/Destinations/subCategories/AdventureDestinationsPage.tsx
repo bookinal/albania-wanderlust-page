@@ -20,6 +20,7 @@ import { useTranslation } from "react-i18next";
 import { useDestinations } from "@/hooks/useDestinations";
 import { DestinationCard } from "../DestinationCard";
 import { DestinationFilterBar } from "../../../../components/home/destinations/DestinationFilterBar";
+import { DestinationBreadcrumb } from "../../../../components/home/destinations/DestinationBreadcrumb";
 // import DestinationMap from "../DestinationMap";
 
 const AdventureDestinationsPage = () => {
@@ -177,6 +178,13 @@ const AdventureDestinationsPage = () => {
             <ArrowLeft className="w-4 h-4" />
             Back to categories
           </button>
+
+          <DestinationBreadcrumb
+            items={[
+              { label: "Destinations", to: "/destinations" },
+              { label: "Adventure" },
+            ]}
+          />
 
           <div style={{ maxWidth: "52rem" }}>
             <p

@@ -37,6 +37,7 @@ export interface Booking {
   additionalDriverPrice?: number;
   childSeatPrice?: number;
   fee?: number;
+  deliveryFee?: number;
 }
 
 export interface CreateBookingDto {
@@ -56,4 +57,5 @@ export interface CreateBookingDto {
   additionalDriverPrice?: number;
   childSeatPrice?: number;
   fee?: number;
+  deliveryFee?: number;
 }

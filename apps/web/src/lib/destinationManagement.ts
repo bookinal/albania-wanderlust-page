@@ -5,6 +5,13 @@ export const CATEGORIES = [
   { id: "Experiences", label: "Experiences" },
 ];
 
+export const CATEGORY_ROUTES: Record<string, string> = {
+  Destinations: "/destinations/destinations",
+  "Eat, drink & dance": "/destinations/eat-drink-dance",
+  "History & culture": "/destinations/history-culture",
+  Experiences: "/destinations/experiences",
+};
+
 export interface QuickFactField {
   key: string;
   label: string;

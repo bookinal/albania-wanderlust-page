@@ -18,6 +18,8 @@ import { useTranslation } from "react-i18next";
 import { useDestinations } from "@/hooks/useDestinations";
 import { DestinationCard } from "../DestinationCard";
 import { DestinationFilterBar } from "../../../../components/home/destinations/DestinationFilterBar";
+import { DestinationBreadcrumb } from "../../../../components/home/destinations/DestinationBreadcrumb";
+import { SUBCATEGORIES, CATEGORY_ROUTES } from "@/lib/destinationManagement";
 // import DestinationMap from "../DestinationMap";
 
 const SUB_HERO: Record<string, { gradient: string; description: string }> = {
@@ -37,6 +39,9 @@ const subCategoryDetails = () => {
   const homeTk = getHomeThemeTokens({ isDark, isBlue });
   const { subcategory } = useParams<{ subcategory: string }>();
   const decodedSubcategory = decodeURIComponent(subcategory || "");
+  const parentCategory = SUBCATEGORIES.find(
+    (sub) => sub.id.toLowerCase() === decodedSubcategory.toLowerCase(),
+  )?.parent;
   const [wishlistLoadingId, setWishlistLoadingId] = useState<string | null>(null);
   const [showMapMobile, setShowMapMobile] = useState(false);
   const [search, setSearch] = useState("");
@@ -205,6 +210,16 @@ const subCategoryDetails = () => {
             <ArrowLeft className="w-4 h-4" />
             Back to categories
           </button>
+
+          <DestinationBreadcrumb
+            items={[
+              { label: "Destinations", to: "/destinations" },
+              ...(parentCategory
+                ? [{ label: parentCategory, to: CATEGORY_ROUTES[parentCategory] }]
+                : []),
+              { label: decodedSubcategory },
+            ]}
+          />
 
           <div style={{ maxWidth: "52rem" }}>
             <h1

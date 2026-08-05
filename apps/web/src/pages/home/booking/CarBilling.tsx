@@ -30,6 +30,31 @@ import { User } from "@/types/user.types";
 import { useTheme } from "@/context/ThemeContext";
 import { getBookingThemeTokens } from "./bookingTheme";
 
+interface DeliveryLocation {
+  name: string;
+  price: number;
+}
+
+const DELIVERY_LOCATIONS: DeliveryLocation[] = [
+  { name: "Tirana (airport)", price: 0 },
+  { name: "Tirana", price: 10 },
+  { name: "Durres", price: 19 },
+  { name: "Vlore", price: 49 },
+  { name: "Saranda", price: 99 },
+  { name: "Shkoder", price: 49 },
+  { name: "Kukes (airport)", price: 89 },
+  { name: "Podgorica (airport)", price: 120 },
+  { name: "Lezhe", price: 39 },
+  { name: "Golem", price: 25 },
+  { name: "Ksamil", price: 120 },
+  { name: "Korçë", price: 99 },
+  { name: "Pristina (airport)", price: 120 },
+  { name: "Skopje (airport)", price: 200 },
+];
+
+const getDeliveryPrice = (locationName: string): number =>
+  DELIVERY_LOCATIONS.find((loc) => loc.name === locationName)?.price ?? 0;
+
 export default function CarBilling() {
   const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
@@ -117,14 +142,14 @@ export default function CarBilling() {
   }, [user]);
 
   useEffect(() => {
-    if (car) {
+    if (formData.pickUpLocation && !formData.dropOffLocation) {
       setFormData((prev) => ({
         ...prev,
-        pickUpLocation: prev.pickUpLocation || car.pickUpLocation || "",
-        dropOffLocation: prev.pickUpLocation || car.pickUpLocation || "",
+        dropOffLocation: prev.pickUpLocation,
       }));
     }
-  }, [car]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formData.pickUpLocation]);
 
   const [totalDays, setTotalDays] = useState(0);
   const [totalPrice, setTotalPrice] = useState(0);
@@ -194,7 +219,9 @@ export default function CarBilling() {
     }
   }, [dateRange, car]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+  ) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
@@ -232,14 +259,25 @@ export default function CarBilling() {
       });
       return;
     }
+    if (!formData.pickUpLocation || !formData.dropOffLocation) {
+      Swal.fire({
+        icon: "warning",
+        title: t("billing.missingLocations", "Missing locations"),
+        text: t(
+          "billing.selectPickUpDropOffLocations",
+          "Please select a pick-up and drop-off location.",
+        ),
+      });
+      return;
+    }
     bookingMutation.mutate({
       propertyId: String(car.id),
       providerId: car.providerId,
       propertyType: "car",
       startDate: formatDateLocal(dateRange.from),
       endDate: formatDateLocal(dateRange.to),
-      pickUpLocation: formData.pickUpLocation || car.pickUpLocation,
-      dropOffLocation: formData.dropOffLocation || formData.pickUpLocation,
+      pickUpLocation: formData.pickUpLocation,
+      dropOffLocation: formData.dropOffLocation,
       pickUpTime: formData.pickUpTime,
       dropOffTime: formData.dropOffTime,
       totalPrice: Math.round(finalTotal),
@@ -248,17 +286,29 @@ export default function CarBilling() {
       requesterName: formData.fullName,
       childSeatPrice: addChildSeat ? car?.childSeatPrice : undefined,
       additionalDriverPrice: addAdditionalDriver ? car?.additionalDriverPrice : undefined,
+      deliveryFee: deliveryFee > 0 ? deliveryFee : undefined,
       fee: Math.round(serviceFee * 100) / 100,
     });
   };
 
   const childSeatFee = addChildSeat ? (car?.childSeatPrice ?? 0) : 0;
   const additionalDriverFee = addAdditionalDriver ? (car?.additionalDriverPrice ?? 0) : 0;
+  const deliveryFee = getDeliveryPrice(formData.pickUpLocation);
   const feeBase = totalPrice + childSeatFee + additionalDriverFee;
   const rawFee = feeBase * 0.05;
   const serviceFee = rawFee < 2 && feeBase > 0 ? 2 : rawFee;
   const insuranceFee = car?.insurance ?? 0;
-  const finalTotal = totalPrice + serviceFee + insuranceFee + childSeatFee + additionalDriverFee;
+  const finalTotal = totalPrice + serviceFee + insuranceFee + childSeatFee + additionalDriverFee + deliveryFee;
+
+  const isSubmitDisabled =
+    bookingMutation.isPending ||
+    !formData.fullName ||
+    !formData.email ||
+    !formData.phone ||
+    !formData.pickUpLocation ||
+    !formData.dropOffLocation ||
+    !dateRange?.from ||
+    !dateRange?.to;
 
   function handlePhoneChange(value?: string): void {
     setFormData((prev) => ({ ...prev, phone: value || "" }));
@@ -491,16 +541,24 @@ export default function CarBilling() {
                         </label>
                         <div className="relative">
                           <MapPin
-                            className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5"
+                            className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 pointer-events-none"
                             style={{ color: tk.mutedText }}
                           />
-                          <input
-                            type="text"
+                          <select
                             name="pickUpLocation"
                             value={formData.pickUpLocation}
                             onChange={handleInputChange}
                             style={inputWithIconStyle}
-                          />
+                          >
+                            <option value="" disabled>
+                              {t("billing.selectLocation", "Select a location")}
+                            </option>
+                            {DELIVERY_LOCATIONS.map((loc) => (
+                              <option key={loc.name} value={loc.name}>
+                                {loc.name} — {loc.price > 0 ? `$${loc.price}` : t("billing.free", "Free")}
+                              </option>
+                            ))}
+                          </select>
                         </div>
                       </div>
                     </div>
@@ -536,17 +594,28 @@ export default function CarBilling() {
                         </label>
                         <div className="relative">
                           <MapPin
-                            className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5"
+                            className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 pointer-events-none"
                             style={{ color: tk.mutedText }}
                           />
-                          <input
-                            type="text"
+                          <select
                             name="dropOffLocation"
                             value={formData.dropOffLocation}
                             onChange={handleInputChange}
                             style={inputWithIconStyle}
-                          />
+                          >
+                            <option value="" disabled>
+                              {t("billing.selectLocation", "Select a location")}
+                            </option>
+                            {DELIVERY_LOCATIONS.map((loc) => (
+                              <option key={loc.name} value={loc.name}>
+                                {loc.name}
+                              </option>
+                            ))}
+                          </select>
                         </div>
+                        <p style={{ color: tk.mutedText }} className="text-xs mt-1">
+                          {t("billing.dropOffAlwaysFree", "Drop-off is always free.")}
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -752,6 +821,29 @@ export default function CarBilling() {
                       </div>
                     )}
 
+                    {formData.pickUpLocation && (
+                      <div>
+                        <div
+                          className="flex justify-between"
+                          style={{ color: tk.dimText }}
+                        >
+                          <span>{t("billing.deliveryFee", "Delivery fee")}</span>
+                          <span className="font-medium">
+                            {deliveryFee > 0 ? `$${deliveryFee.toFixed(2)}` : t("billing.free", "Free")}
+                          </span>
+                        </div>
+                        <p
+                          style={{ color: tk.mutedText }}
+                          className="text-xs mt-1"
+                        >
+                          {t(
+                            "billing.deliveryFeeDescription",
+                            "Based on your selected pick-up location. Drop-off is always free.",
+                          )}
+                        </p>
+                      </div>
+                    )}
+
                     {((car.childSeatPrice ?? 0) > 0 || (car.additionalDriverPrice ?? 0) > 0) && (
                       <div
                         style={{
@@ -833,44 +925,13 @@ export default function CarBilling() {
 
                   <button
                     onClick={handleSubmit}
-                    disabled={
-                      bookingMutation.isPending ||
-                      !formData.fullName ||
-                      !formData.email ||
-                      !formData.phone ||
-                      !dateRange?.from ||
-                      !dateRange?.to
-                    }
+                    disabled={isSubmitDisabled}
                     style={{
                       width: "100%",
                       marginTop: "24px",
-                      background:
-                        bookingMutation.isPending ||
-                        !formData.fullName ||
-                        !formData.email ||
-                        !formData.phone ||
-                        !dateRange?.from ||
-                        !dateRange?.to
-                          ? tk.statBg
-                          : tk.brand,
-                      color:
-                        bookingMutation.isPending ||
-                        !formData.fullName ||
-                        !formData.email ||
-                        !formData.phone ||
-                        !dateRange?.from ||
-                        !dateRange?.to
-                          ? tk.mutedText
-                          : "#fff",
-                      cursor:
-                        bookingMutation.isPending ||
-                        !formData.fullName ||
-                        !formData.email ||
-                        !formData.phone ||
-                        !dateRange?.from ||
-                        !dateRange?.to
-                          ? "not-allowed"
-                          : "pointer",
+                      background: isSubmitDisabled ? tk.statBg : tk.brand,
+                      color: isSubmitDisabled ? tk.mutedText : "#fff",
+                      cursor: isSubmitDisabled ? "not-allowed" : "pointer",
                       padding: "12px 24px",
                       borderRadius: "8px",
                       fontWeight: "600",
