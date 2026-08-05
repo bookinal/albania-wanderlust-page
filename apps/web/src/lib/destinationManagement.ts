@@ -68,6 +68,11 @@ export const SUBCATEGORIES = [
     parent: "History & culture",
   },
   { id: "UNESCO sites", label: "UNESCO sites", parent: "History & culture" },
+  {
+    id: "Religious Sites",
+    label: "Religious Sites",
+    parent: "History & culture",
+  },
 
 
   // Experiences
@@ -78,4 +83,9 @@ export const SUBCATEGORIES = [
   },
   { id: "Sea activities", label: "Sea activities", parent: "Experiences" },
   { id: "On high altitude", label: "On high altitude", parent: "Experiences" },
+  {
+    id: "Traditional Festivals & Events",
+    label: "Traditional Festivals & Events",
+    parent: "Experiences",
+  },
 ];

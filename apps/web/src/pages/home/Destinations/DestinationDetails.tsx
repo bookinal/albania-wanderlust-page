@@ -1044,18 +1044,18 @@ const DestinationDetails = () => {
             >
               <button
                 onClick={handleBack}
+                aria-label={t("home.destinations.back")}
                 style={{
                   display: "inline-flex",
                   alignItems: "center",
-                  gap: "0.6rem",
-                  padding: "0.7rem 1rem",
+                  justifyContent: "center",
+                  width: "2.75rem",
+                  height: "2.75rem",
                   background: "rgba(15,23,42,0.32)",
                   border: "1px solid rgba(255,255,255,0.22)",
                   borderRadius: "9999px",
                   color: "#fff",
                   cursor: "pointer",
-                  fontSize: "0.9rem",
-                  fontWeight: 600,
                   backdropFilter: "blur(14px)",
                   WebkitBackdropFilter: "blur(14px)",
                   boxShadow: "0 10px 30px rgba(0,0,0,0.16)",
@@ -1063,7 +1063,6 @@ const DestinationDetails = () => {
                 }}
               >
                 <ArrowLeft className="w-5 h-5" />
-                {t("home.destinations.back")}
               </button>
               <div
                 style={{

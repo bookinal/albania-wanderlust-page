@@ -33,6 +33,8 @@ const CATEGORY_MAP_LIGHT: Record<string, CategoryColorStyle> = {
   "Breathtaking/Adventure": { bg: "#ffedd5", border: "#ea580c", text: "#9a3412", hoverBg: "#ea580c", hoverText: "#ffffff", badgeBg: "bg-orange-100", badgeText: "text-orange-800" },
   "Sea activities": { bg: "#e0f2fe", border: "#0284c7", text: "#0369a1", hoverBg: "#0284c7", hoverText: "#ffffff", badgeBg: "bg-sky-100", badgeText: "text-sky-800" },
   "On high altitude": { bg: "#ccfbf1", border: "#0d9488", text: "#115e59", hoverBg: "#0d9488", hoverText: "#ffffff", badgeBg: "bg-teal-100", badgeText: "text-teal-800" },
+  "Religious Sites": { bg: "#ede9fe", border: "#7c3aed", text: "#5b21b6", hoverBg: "#7c3aed", hoverText: "#ffffff", badgeBg: "bg-violet-100", badgeText: "text-violet-800" },
+  "Traditional Festivals & Events": { bg: "#fce7f3", border: "#db2777", text: "#9d174d", hoverBg: "#db2777", hoverText: "#ffffff", badgeBg: "bg-pink-100", badgeText: "text-pink-800" },
 };
 
 const CATEGORY_MAP_DARK: Record<string, CategoryColorStyle> = {
@@ -60,6 +62,8 @@ const CATEGORY_MAP_DARK: Record<string, CategoryColorStyle> = {
   "Breathtaking/Adventure": { bg: "rgba(234, 88, 12, 0.25)", border: "#fb923c", text: "#ffedd5", hoverBg: "#c2410c", hoverText: "#ffffff", badgeBg: "bg-orange-950/70", badgeText: "text-orange-300" },
   "Sea activities": { bg: "rgba(2, 132, 199, 0.25)", border: "#38bdf8", text: "#7dd3fc", hoverBg: "#0284c7", hoverText: "#ffffff", badgeBg: "bg-sky-950/70", badgeText: "text-sky-300" },
   "On high altitude": { bg: "rgba(13, 148, 136, 0.25)", border: "#2dd4bf", text: "#99f6e4", hoverBg: "#0f766e", hoverText: "#ffffff", badgeBg: "bg-teal-950/70", badgeText: "text-teal-300" },
+  "Religious Sites": { bg: "rgba(124, 58, 237, 0.25)", border: "#a78bfa", text: "#ddd6fe", hoverBg: "#6d28d9", hoverText: "#ffffff", badgeBg: "bg-purple-950/70", badgeText: "text-purple-300" },
+  "Traditional Festivals & Events": { bg: "rgba(219, 39, 119, 0.25)", border: "#f472b6", text: "#fbcfe8", hoverBg: "#be185d", hoverText: "#ffffff", badgeBg: "bg-pink-950/70", badgeText: "text-pink-300" },
 };
 
 const PALETTES_LIGHT: CategoryColorStyle[] = [
@@ -164,6 +168,16 @@ export function getSubcategoryIconSvg(subcategory?: string, category?: string): 
   // Clubs & Music
   if (key.includes("club") || key.includes("dance") || key.includes("night")) {
     return `<svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>`;
+  }
+
+  // Religious Sites
+  if (key.includes("religious") || key.includes("church") || key.includes("mosque") || key.includes("temple") || key.includes("shrine")) {
+    return `<svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4"/><path d="M10 4h4"/><path d="M6 22V10l6-4 6 4v12"/><path d="M9 22v-6a3 3 0 0 1 6 0v6"/></svg>`;
+  }
+
+  // Traditional Festivals & Events
+  if (key.includes("festival") || key.includes("event") || key.includes("celebration") || key.includes("tradition")) {
+    return `<svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/><path d="m9 16 2 2 4-4"/></svg>`;
   }
 
   // Historical & archeological sites / History
