@@ -263,6 +263,7 @@ export const getCurrentUserWishlist = async (): Promise<Wishlist | null> => {
           region,
           destinationType,
           founded,
+          built,
           population,
           elevation,
           heritageStatus,

@@ -56,6 +56,7 @@ export interface Destination {
   contact?: DestinationContact;
   nearbyDestinations?: Destination[];
   nearbyApartmentsIds?: number[];
+  built?: string;
   historicalPeriod?: string;
   siteType?: string;
   museumType?: string;
@@ -90,6 +91,7 @@ export interface DestinationDto {
   region?: string;
   destinationType?: string;
   founded?: string;
+  built?: string;
   population?: string;
   elevation?: string;
   heritageStatus?: string;

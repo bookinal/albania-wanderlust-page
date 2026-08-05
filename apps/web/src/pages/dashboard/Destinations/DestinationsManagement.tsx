@@ -107,6 +107,7 @@ interface DestinationFormData {
   region?: string;
   destinationType?: string;
   founded?: string;
+  built?: string;
   population?: string;
   elevation?: string;
   heritageStatus?: string;
@@ -185,6 +186,7 @@ const QUICK_FACT_FIELDS: Array<{
     | "region"
     | "destinationType"
     | "founded"
+    | "built"
     | "population"
     | "elevation"
     | "heritageStatus"
@@ -257,6 +259,7 @@ const QUICK_FACT_FIELDS: Array<{
   { key: "region", label: "Region", placeholder: "e.g. Southern Albania, Albanian Riviera..." },
   { key: "destinationType", label: "Destination Type", placeholder: "e.g. Beach, Mountain, City..." },
   { key: "founded", label: "Founded", placeholder: "e.g. 6th century BC, 1920..." },
+  { key: "built", label: "Built", placeholder: "e.g. 13th century, 1417, 1850..." },
   { key: "population", label: "Population", placeholder: "e.g. 85,000" },
   { key: "elevation", label: "Elevation", placeholder: "e.g. 1,200 m" },
   { key: "heritageStatus", label: "Heritage Status", placeholder: "e.g. UNESCO World Heritage..." },
@@ -392,8 +395,9 @@ function createEmptyDestinationFormData(): DestinationFormData {
     category: "",
     subcategory: "",
     lat: undefined,
-    lng: undefined,
-    location: undefined,
+    founded: undefined,
+    built: undefined,
+    population: undefined,
     beachType: undefined,
     cuisineType: undefined,
     howToBook: undefined,
@@ -614,6 +618,7 @@ export default function DestinationsManagement() {
       region: destination.region,
       destinationType: destination.destinationType,
       founded: destination.founded,
+      built: destination.built,
       population: destination.population,
       elevation: destination.elevation,
       heritageStatus: destination.heritageStatus,
@@ -677,6 +682,7 @@ export default function DestinationsManagement() {
       region: destination.region,
       destinationType: destination.destinationType,
       founded: destination.founded,
+      built: destination.built,
       population: destination.population,
       elevation: destination.elevation,
       heritageStatus: destination.heritageStatus,
@@ -880,6 +886,7 @@ export default function DestinationsManagement() {
         contact: formData.contact,
         nearbyDestinationIds: formData.nearbyDestinationIds,
         nearbyApartmentsIds: formData.nearbyApartmentsIds,
+        built: formData.built,
         historicalPeriod: formData.historicalPeriod,
         siteType: formData.siteType,
         museumType: formData.museumType,

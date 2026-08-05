@@ -49,6 +49,7 @@ import {
   Bus,
   Images,
   X,
+  Landmark,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { addDestinationToCurrentUserWishlist } from "@albania/api-client";
@@ -821,7 +822,36 @@ const DestinationDetails = () => {
     {
       icon: MapPin,
       label: "Location",
-      value: destination.location,
+      value: destination.location ? String(destination.location) : "",
+    },
+    {
+      icon: MapPin,
+      label: "Region",
+      value: destination.region ? String(destination.region) : "",
+    },
+    {
+      icon: Compass,
+      label: "Type",
+      value: destination.destinationType ? String(destination.destinationType) : "",
+    },
+    {
+      icon: Landmark,
+      label: "Built",
+      value: destination.built != null
+        ? String(destination.built)
+        : (destination as any).built_year != null
+        ? String((destination as any).built_year)
+        : "",
+    },
+    {
+      icon: CalendarRange,
+      label: "Founded",
+      value: destination.founded ? String(destination.founded) : "",
+    },
+    {
+      icon: CalendarRange,
+      label: "Historical Period",
+      value: destination.historicalPeriod ? String(destination.historicalPeriod) : "",
     },
     {
       icon: Waves,
@@ -864,29 +894,14 @@ const DestinationDetails = () => {
       value: destination.priceLevel,
     },
     {
-      icon: MapPin,
-      label: "Region",
-      value: destination.region,
-    },
-    {
-      icon: Compass,
-      label: "Type",
-      value: destination.destinationType,
-    },
-    {
-      icon: CalendarRange,
-      label: "Founded",
-      value: destination.founded,
-    },
-    {
       icon: Users,
       label: "Population",
-      value: destination.population,
+      value: destination.population ? String(destination.population) : "",
     },
     {
       icon: Navigation,
       label: "Elevation",
-      value: destination.elevation,
+      value: destination.elevation ? String(destination.elevation) : "",
     },
     {
       icon: Star,
@@ -912,11 +927,6 @@ const DestinationDetails = () => {
       icon: Zap,
       label: "Difficulty",
       value: destination.difficultyLevel,
-    },
-    {
-      icon: CalendarRange,
-      label: "Historical Period",
-      value: destination.historicalPeriod,
     },
     {
       icon: Compass,
@@ -955,7 +965,7 @@ const DestinationDetails = () => {
     },
   ].filter(
     (fact): fact is { icon: LucideIcon; label: string; value: string } =>
-      typeof fact.value === "string" && fact.value.trim().length > 0,
+      Boolean(fact.value) && String(fact.value).trim().length > 0,
   );
   const visitorTips = (destination.visitorTips || []).filter(
     (tip): tip is { icon: string; title: string; description: string } =>
