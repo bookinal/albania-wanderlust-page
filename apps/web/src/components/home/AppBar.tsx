@@ -690,7 +690,7 @@ export default function PrimarySearchAppBar() {
                       ? "text-sky-800 hover:bg-sky-50"
                       : "text-gray-700 hover:bg-gray-100"
                 }`}
-                aria-label="Toggle menu"
+                aria-label={t("common.toggleMenu", "Toggle menu")}
               >
                 {mobileOpen ? (
                   <X className="w-5 h-5" />

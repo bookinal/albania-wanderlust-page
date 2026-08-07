@@ -163,7 +163,7 @@ const HistoricDestinationsPage = () => {
         {heroImage ? (
           <img
             src={heroImage}
-            alt="Historic Albania"
+            alt={t("home.destinations.subCategories.historic.alt", "Historic Albania")}
             style={{
               position: "absolute",
               inset: 0,
@@ -214,7 +214,7 @@ const HistoricDestinationsPage = () => {
             }}
           >
             <ArrowLeft className="w-4 h-4" />
-            Back to categories
+            {t("home.destinations.subCategories.common.backToCategories", "Back to categories")}
           </button>
 
           <div style={{ maxWidth: "52rem" }}>
@@ -228,7 +228,7 @@ const HistoricDestinationsPage = () => {
                 marginBottom: "0.9rem",
               }}
             >
-              Heritage Collection
+              {t("home.destinations.subCategories.historic.kicker", "Heritage Collection")}
             </p>
             <h1
               style={{
@@ -239,7 +239,7 @@ const HistoricDestinationsPage = () => {
                 marginBottom: "0.85rem",
               }}
             >
-              Historic Albania
+              {t("home.destinations.subCategories.historic.title", "Historic Albania")}
             </h1>
             <p
               style={{
@@ -249,8 +249,10 @@ const HistoricDestinationsPage = () => {
                 maxWidth: "42rem",
               }}
             >
-              Step back in time to discover centuries-old castles, ancient
-              ruins, intricate architecture, and towns where history lives on.
+              {t(
+                "home.destinations.subCategories.historic.description",
+                "Step back in time to discover centuries-old castles, ancient ruins, intricate architecture, and towns where history lives on.",
+              )}
             </p>
           </div>
         </div>
@@ -261,8 +263,8 @@ const HistoricDestinationsPage = () => {
         <DestinationBreadcrumb
           variant="page"
           items={[
-            { label: "Destinations", to: "/destinations" },
-            { label: "History & culture" },
+            { label: t("common.destinations"), to: "/destinations" },
+            { label: t("home.destinations.subCategories.historic.breadcrumbLabel", "History & culture") },
           ]}
         />
       </div>
@@ -332,9 +334,9 @@ const HistoricDestinationsPage = () => {
                 marginBottom: "0.55rem",
               }}
             >
-              No historic destinations available yet.
+              {t("home.destinations.subCategories.historic.emptyTitle", "No historic destinations available yet.")}
             </div>
-            <div>Once destinations are added, they will appear here.</div>
+            <div>{t("home.destinations.subCategories.common.onceAdded", "Once destinations are added, they will appear here.")}</div>
           </div>
         )}
 
@@ -385,9 +387,9 @@ const HistoricDestinationsPage = () => {
                     marginBottom: "0.55rem",
                   }}
                 >
-                  No historic destinations match your filters.
+                  {t("home.destinations.subCategories.historic.noMatchTitle", "No historic destinations match your filters.")}
                 </div>
-                <div>Try adjusting your search or clear filters.</div>
+                <div>{t("home.destinations.subCategories.common.tryAdjustFilters", "Try adjusting your search or clear filters.")}</div>
               </div>
             )}
 
@@ -431,7 +433,9 @@ const HistoricDestinationsPage = () => {
                       ) : (
                         <MapIcon className="w-4 h-4" />
                       )}
-                      {showMapMobile ? "Show List" : "Show Map"}
+                      {showMapMobile
+                        ? t("home.destinations.subCategories.common.showList", "Show List")
+                        : t("home.destinations.subCategories.common.showMap", "Show Map")}
                     </button>
                   </div>
                 )}
@@ -495,7 +499,7 @@ const HistoricDestinationsPage = () => {
                                 fontSize: "0.9rem",
                               }}
                             >
-                              See All ({dests.length})
+                              {t("home.destinations.subCategories.common.seeAllCount", "See All ({{count}})", { count: dests.length })}
                             </button>
                           </div>
                         )}

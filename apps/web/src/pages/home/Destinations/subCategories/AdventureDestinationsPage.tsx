@@ -125,7 +125,7 @@ const AdventureDestinationsPage = () => {
         {heroImage ? (
           <img
             src={heroImage}
-            alt="Adventure in Albania"
+            alt={t("home.destinations.subCategories.adventure.alt", "Adventure in Albania")}
             style={{
               position: "absolute",
               inset: 0,
@@ -176,7 +176,7 @@ const AdventureDestinationsPage = () => {
             }}
           >
             <ArrowLeft className="w-4 h-4" />
-            Back to categories
+            {t("home.destinations.subCategories.common.backToCategories", "Back to categories")}
           </button>
 
           <div style={{ maxWidth: "52rem" }}>
@@ -190,7 +190,7 @@ const AdventureDestinationsPage = () => {
                 marginBottom: "0.9rem",
               }}
             >
-              Wild Collection
+              {t("home.destinations.subCategories.adventure.kicker", "Wild Collection")}
             </p>
             <h1
               style={{
@@ -201,7 +201,7 @@ const AdventureDestinationsPage = () => {
                 marginBottom: "0.85rem",
               }}
             >
-              Adventure Albania
+              {t("home.destinations.subCategories.adventure.title", "Adventure Albania")}
             </h1>
             <p
               style={{
@@ -211,8 +211,10 @@ const AdventureDestinationsPage = () => {
                 maxWidth: "42rem",
               }}
             >
-              Explore the rugged peaks, hike the cursed mountains, raft through
-              deep canyons, and find adrenaline-filled experiences outdoors.
+              {t(
+                "home.destinations.subCategories.adventure.description",
+                "Explore the rugged peaks, hike the cursed mountains, raft through deep canyons, and find adrenaline-filled experiences outdoors.",
+              )}
             </p>
           </div>
         </div>
@@ -223,8 +225,8 @@ const AdventureDestinationsPage = () => {
         <DestinationBreadcrumb
           variant="page"
           items={[
-            { label: "Destinations", to: "/destinations" },
-            { label: "Adventure" },
+            { label: t("common.destinations"), to: "/destinations" },
+            { label: t("home.destinations.subCategories.adventure.breadcrumbLabel", "Adventure") },
           ]}
         />
       </div>
@@ -294,9 +296,9 @@ const AdventureDestinationsPage = () => {
                 marginBottom: "0.55rem",
               }}
             >
-              No adventure destinations available yet.
+              {t("home.destinations.subCategories.adventure.emptyTitle", "No adventure destinations available yet.")}
             </div>
-            <div>Once destinations are added, they will appear here.</div>
+            <div>{t("home.destinations.subCategories.common.onceAdded", "Once destinations are added, they will appear here.")}</div>
           </div>
         )}
 
@@ -340,7 +342,9 @@ const AdventureDestinationsPage = () => {
                   ) : (
                     <MapIcon className="w-4 h-4" />
                   )}
-                  {showMapMobile ? "Show List" : "Show Map"}
+                  {showMapMobile
+                    ? t("home.destinations.subCategories.common.showList", "Show List")
+                    : t("home.destinations.subCategories.common.showMap", "Show Map")}
                 </button>
               </div>
             )}
@@ -404,7 +408,7 @@ const AdventureDestinationsPage = () => {
                                 fontSize: "0.9rem",
                               }}
                             >
-                              See All ({dests.length})
+                              {t("home.destinations.subCategories.common.seeAllCount", "See All ({{count}})", { count: dests.length })}
                             </button>
                           </div>
                         )}

@@ -7,7 +7,7 @@ import { Month, MONTHS } from "@/types/price.type";
 import { useKeenSlider } from "keen-slider/react";
 import "keen-slider/keen-slider.min.css";
 import { ClipLoader } from "react-spinners";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { CarCard } from "./CarCard";
 import { Button } from "@/components/ui/button";
 import { Car, ArrowRight } from "lucide-react";
@@ -28,6 +28,7 @@ const override: CSSProperties = {
 
 const CarsPreview = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const currentMonth = getCurrentMonth();
   const { isDark, isBlue } = useTheme();
   const tk = getHomeThemeTokens({ isDark, isBlue });
@@ -154,7 +155,7 @@ const CarsPreview = () => {
                   features={car.features}
                   imageUrls={car.imageUrls}
                   pickUpLocation={car.pickUpLocation}
-                  onClick={() => {}}
+                  onClick={() => navigate(`/carReservation/${car.id}`)}
                 />
               </div>
             ))}

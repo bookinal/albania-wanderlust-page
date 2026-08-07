@@ -373,7 +373,7 @@ const DestinationsPage = () => {
                   textShadow: "0 2px 4px rgba(0,0,0,0.3)",
                 }}
               >
-                Explore the best of Albania
+                {t("home.destinations.exploreHeroTitle", "Explore the best of Albania")}
               </h1>
               <p
                 style={{
@@ -384,8 +384,10 @@ const DestinationsPage = () => {
                   textShadow: "0 1px 2px rgba(0,0,0,0.2)",
                 }}
               >
-                From crystal clear beaches to majestic mountains, discover the
-                most beautiful places in Albania.
+                {t(
+                  "home.destinations.exploreHeroDescription",
+                  "From crystal clear beaches to majestic mountains, discover the most beautiful places in Albania.",
+                )}
               </p>
             </div>
           </div>
@@ -452,7 +454,7 @@ const DestinationsPage = () => {
                         className="inline-flex items-center gap-2 text-sm font-bold transition-all"
                         style={{ color: tk.brand }}
                       >
-                        See more
+                        {t("home.destinations.seeMore", "See more")}
                         <ArrowRight className="w-4 h-4" />
                       </button>
                     </div>
@@ -504,7 +506,7 @@ const DestinationsPage = () => {
             {destinations.length === 0 && (
               <div className="text-center py-20">
                 <p style={{ color: tk.textMuted, fontSize: "1.1rem" }}>
-                  No destinations found.
+                  {t("home.destinations.noDestinationsFound", "No destinations found.")}
                 </p>
               </div>
             )}

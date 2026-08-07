@@ -100,7 +100,136 @@
       "readMore": "Read more",
       "showLess": "Show less",
       "noResultsTitle": "No destinations match your filters",
-      "noResultsDescription": "Try another keyword or switch to a different category."
+      "noResultsDescription": "Try another keyword or switch to a different category.",
+      "viewAllCount": "View all {{count}}",
+      "exploreHeroTitle": "Explore the best of Albania",
+      "exploreHeroDescription": "From crystal clear beaches to majestic mountains, discover the most beautiful places in Albania.",
+      "seeMore": "See more",
+      "noDestinationsFound": "No destinations found.",
+      "viewAll": "View all",
+      "quickFacts": {
+        "location": "Location",
+        "region": "Region",
+        "type": "Type",
+        "built": "Built",
+        "founded": "Founded",
+        "historicalPeriod": "Historical Period",
+        "beachType": "Beach Type",
+        "cuisineType": "Cuisine Type",
+        "howToBook": "How to Book",
+        "water": "Water",
+        "bestFor": "Best For",
+        "crowdLevel": "Crowd Level",
+        "bestMonths": "Best Months",
+        "priceLevel": "Price Level",
+        "population": "Population",
+        "elevation": "Elevation",
+        "heritageStatus": "Heritage Status",
+        "duration": "Duration",
+        "activities": "Activities",
+        "highlight": "Highlight",
+        "difficulty": "Difficulty",
+        "siteType": "Site Type",
+        "museumType": "Museum Type",
+        "established": "Established",
+        "admission": "Admission",
+        "unescoYearInscribed": "UNESCO Year Inscribed",
+        "activityType": "Activity Type",
+        "eventType": "Event Type",
+        "seeLess": "See less",
+        "seeMore": "See more"
+      },
+      "transport": {
+        "byCar": "By Car",
+        "byFoot": "By Foot",
+        "byBoat": "By Boat"
+      },
+      "contact": {
+        "instagram": "Instagram",
+        "facebook": "Facebook",
+        "website": "Website",
+        "whatsapp": "WhatsApp",
+        "tripadvisor": "TripAdvisor"
+      },
+      "tipsForVisitors": {
+        "title": "Tips for Visitors",
+        "description": "Practical notes to help plan a smoother visit before you go."
+      },
+      "howToReach": {
+        "title": "How to Reach",
+        "description": "Quick transport options and a map preview to make arrival easier.",
+        "noTransportDetails": "Transport details will appear here once routes are added for this destination.",
+        "mapPreview": "Map preview",
+        "mapPreviewDescription": "A quick look at the destination area before you head out.",
+        "directions": "Directions"
+      },
+      "nearbyAttractions": {
+        "title": "Nearby Attractions",
+        "description": "Other attractions close to {{name}}."
+      },
+      "nearbyApartments": {
+        "title": "Nearby Apartments",
+        "description": "Apartments close to {{name}}."
+      },
+      "subCategories": {
+        "defaultHeroDescription": "Discover amazing destinations across Albania.",
+        "noDestinationsAvailable": "No {{subcategory}} destinations available yet.",
+        "noDestinationsMatch": "No {{subcategory}} destinations match your filters.",
+        "common": {
+          "backToCategories": "Back to categories",
+          "showList": "Show List",
+          "showMap": "Show Map",
+          "seeAllCount": "See All ({{count}})",
+          "onceAdded": "Once destinations are added, they will appear here.",
+          "tryAdjustFilters": "Try adjusting your search or clear filters."
+        },
+        "historic": {
+          "alt": "Historic Albania",
+          "kicker": "Heritage Collection",
+          "title": "Historic Albania",
+          "description": "Step back in time to discover centuries-old castles, ancient ruins, intricate architecture, and towns where history lives on.",
+          "breadcrumbLabel": "History & culture",
+          "emptyTitle": "No historic destinations available yet.",
+          "noMatchTitle": "No historic destinations match your filters."
+        },
+        "eatDrink": {
+          "alt": "Eat, drink & dance in Albania",
+          "kicker": "Flavours & Nights",
+          "title": "Eat, Drink & Dance",
+          "description": "Savor Albania's vibrant culinary scene, sip through bustling bars, and dance the night away at the country's best spots.",
+          "breadcrumbLabel": "Eat, drink & dance",
+          "emptyTitle": "No eat, drink & dance spots available yet.",
+          "noMatchTitle": "No eat, drink & dance spots match your filters."
+        },
+        "experiences": {
+          "alt": "Experiences in Albania",
+          "kicker": "Adventure Awaits",
+          "title": "Experiences",
+          "description": "Dive into unforgettable adventures — from hiking rugged peaks and exploring ancient trails to kayaking crystal-clear waters.",
+          "breadcrumbLabel": "Experiences",
+          "emptyTitle": "No experiences available yet.",
+          "emptyDescription": "Once experiences are added, they will appear here.",
+          "noMatchTitle": "No experiences match your filters."
+        },
+        "landscapes": {
+          "alt": "Beaches in Albania",
+          "kicker": "Coastal collection",
+          "title": "Landscapes of Albania",
+          "description": "Discover the Riviera through bright coves, long swimming days, hidden bays, and shoreline escapes collected in one place.",
+          "breadcrumbLabel": "Beaches",
+          "emptyTitle": "No beaches available yet.",
+          "emptyDescription": "Once beach destinations are added, they will appear here.",
+          "noMatchTitle": "No beaches match your filters."
+        },
+        "adventure": {
+          "alt": "Adventure in Albania",
+          "kicker": "Wild Collection",
+          "title": "Adventure Albania",
+          "description": "Explore the rugged peaks, hike the cursed mountains, raft through deep canyons, and find adrenaline-filled experiences outdoors.",
+          "breadcrumbLabel": "Adventure",
+          "emptyTitle": "No adventure destinations available yet."
+        }
+      }
     },
     "culture": {
       "title": "Culture & Cuisine",
@@ -199,7 +328,34 @@
     "phoneRequired": "Phone number required",
     "invalidPhone": "Invalid phone number",
     "ownPropertyTitle": "Cannot book own property",
-    "ownPropertyMessage": "You cannot book a property that you own. Please choose a different listing."
+    "ownPropertyMessage": "You cannot book a property that you own. Please choose a different listing.",
+    "notAvailable": "Not Available",
+    "propertyUnavailableMessage": "This property is currently unavailable for booking.",
+    "goBack": "Go Back",
+    "apartmentBookingSuccess": "Your apartment booking has been created successfully.",
+    "hotelBookingSuccess": "Your hotel booking has been created successfully.",
+    "selectCheckInCheckOutDates": "Please select check-in and check-out dates.",
+    "loadingApartmentDetails": "Loading apartment details…",
+    "apartmentNotFound": "Apartment not found",
+    "loadingHotelDetails": "Loading hotel details…",
+    "hotelNotFound": "Hotel not found",
+    "checkInCheckOutDates": "Check-in & Check-out Dates",
+    "selectStayDates": "Select stay dates",
+    "checkInTime": "Check-in Time",
+    "checkOutTime": "Check-out Time",
+    "stayDuration": "Stay Duration",
+    "locationNotSpecified": "Location not specified",
+    "rooms": "Rooms",
+    "beds": "Beds",
+    "noImagesAvailable": "No images available",
+    "carNotFoundTitle": "Car Not Found",
+    "carNotFoundMessage": "The car you're looking for doesn't exist or has been removed.",
+    "pickUpLocationNotSpecified": "Pick-up location not specified",
+    "basePricePerDay": "Base: ${{price}}/day",
+    "apartmentNotFoundTitle": "Apartment Not Found",
+    "apartmentNotFoundMessage": "The apartment you're looking for doesn't exist or has been removed.",
+    "plusUtilities": "+ utilities",
+    "apartmentDefaultDescription": "A beautiful and comfortable apartment perfect for your needs. This property offers modern amenities and a great location for convenient living."
   },
   "terms": {
     "minimumRentalPeriod": "Minimum Rental Period",
@@ -454,12 +610,37 @@
     "more": "More",
     "day": "day",
     "days": "days",
+    "night": "night",
+    "nights": "nights",
+    "amenities": {
+      "wifi": "WiFi",
+      "airConditioning": "Air Conditioning",
+      "heating": "Heating",
+      "parking": "Parking",
+      "elevator": "Elevator",
+      "kitchen": "Kitchen",
+      "washingMachine": "Washing Machine",
+      "tv": "TV",
+      "workspace": "Workspace",
+      "balcony": "Balcony",
+      "pool": "Pool",
+      "security": "Security"
+    },
     "destinations": "Destinations",
     "pageNotFound": "Oops! Page not found",
     "returnToHome": "Return to Home",
     "accountSuspended": "Oops! Looks like your account has been suspended for some reasons by an Admin",
     "unauthorizedAccess": "Oops! You are not authorized to access this page",
-    "seeAll": "See All"
+    "seeAll": "See All",
+    "userAvatar": "User avatar",
+    "anonymousUser": "Anonymous User",
+    "toggleFilters": "Toggle filters",
+    "closeFilters": "Close filters",
+    "toggleMenu": "Toggle menu",
+    "albania": "Albania",
+    "scrollDown": "Scroll down",
+    "albanianLandscapeAlt": "Albanian Landscape",
+    "albanianCultureAlt": "Albanian culture and traditions"
   },
   "letUsInspireYou":{
     "title": "Let Us Inspire You",
@@ -575,6 +756,9 @@
     "noImagesAvailable": "No images available",
     "reservation": "Reservation",
     "reservationComingSoon": "Reservation feature coming soon!",
+    "percentOccupied": "{{percent}}% occupied",
+    "defaultDescription": "Experience luxury and comfort at this exceptional hotel. Our dedicated staff ensures your stay is memorable with top-notch service and modern amenities.",
+    "completeAddressFallback": "{{location}}, Complete Address",
     "amenities": {
       "freeWifi": "Free WiFi",
       "parking": "Parking",
@@ -1503,5 +1687,20 @@
       "fall": "Fall"
     },
     "tip": "💡 Tip: Set different prices for peak seasons (summer) and off-peak periods. The base price will be used as fallback if no monthly price is set."
+  },
+  "chat": {
+    "failedToLoadConversation": "Failed to load conversation",
+    "failedToSendMessage": "Failed to send message",
+    "questionAboutTitle": "Question about {{title}}",
+    "supportRequest": "Support Request",
+    "suggestionPrefillText": "Hi, I have a question about this car: {{title}}\n{{url}}",
+    "supportChat": "Support Chat",
+    "askAboutPrefix": "Ask about",
+    "askAboutThisCar": "Ask about this car",
+    "typeYourMessage": "Type your message...",
+    "pleaseLogInToSendMessages": "Please log in to send messages",
+    "noMessagesYet": "No messages yet. Start the conversation!",
+    "read": "Read",
+    "sent": "Sent"
   }
 }

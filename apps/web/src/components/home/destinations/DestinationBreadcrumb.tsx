@@ -1,6 +1,7 @@
 import { Fragment } from "react";
 import { Link } from "react-router-dom";
 import { Home, ChevronRight } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import {
   Breadcrumb,
   BreadcrumbList,
@@ -29,8 +30,9 @@ export function DestinationBreadcrumb({
   items,
   variant = "translucent",
 }: DestinationBreadcrumbProps) {
+  const { t } = useTranslation();
   const allItems: DestinationBreadcrumbItem[] = [
-    { label: "Home", to: "/" },
+    { label: t("home.appBar.Home"), to: "/" },
     ...items,
   ];
 

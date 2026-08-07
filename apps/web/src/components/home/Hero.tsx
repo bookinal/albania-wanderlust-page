@@ -28,7 +28,7 @@ const Hero = () => {
         <img
           src={slide1}
           className="w-full h-full object-cover"
-          alt="Albania"
+          alt={t("common.albania", "Albania")}
         />
         <div
           className="absolute inset-0"
@@ -138,7 +138,7 @@ const Hero = () => {
       {/* <button
         onClick={() => scrollToSection("hotels")}
         className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 animate-bounce cursor-pointer group"
-        aria-label="Scroll down"
+        aria-label={t("common.scrollDown", "Scroll down")}
       >
         <div className="flex flex-col items-center gap-2">
           <span className="text-xs text-white/60 uppercase tracking-widest group-hover:text-white/80 transition-colors">

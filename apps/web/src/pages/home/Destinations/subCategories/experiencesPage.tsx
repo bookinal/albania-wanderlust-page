@@ -162,7 +162,7 @@ const ExperiencesPage = () => {
         {heroImage ? (
           <img
             src={heroImage}
-            alt="Experiences in Albania"
+            alt={t("home.destinations.subCategories.experiences.alt", "Experiences in Albania")}
             style={{
               position: "absolute",
               inset: 0,
@@ -213,7 +213,7 @@ const ExperiencesPage = () => {
             }}
           >
             <ArrowLeft className="w-4 h-4" />
-            Back to categories
+            {t("home.destinations.subCategories.common.backToCategories", "Back to categories")}
           </button>
 
           <div style={{ maxWidth: "52rem" }}>
@@ -227,7 +227,7 @@ const ExperiencesPage = () => {
                 marginBottom: "0.9rem",
               }}
             >
-              Adventure Awaits
+              {t("home.destinations.subCategories.experiences.kicker", "Adventure Awaits")}
             </p>
             <h1
               style={{
@@ -238,7 +238,7 @@ const ExperiencesPage = () => {
                 marginBottom: "0.85rem",
               }}
             >
-              Experiences
+              {t("home.destinations.subCategories.experiences.title", "Experiences")}
             </h1>
             <p
               style={{
@@ -248,8 +248,10 @@ const ExperiencesPage = () => {
                 maxWidth: "42rem",
               }}
             >
-              Dive into unforgettable adventures — from hiking rugged peaks and
-              exploring ancient trails to kayaking crystal-clear waters.
+              {t(
+                "home.destinations.subCategories.experiences.description",
+                "Dive into unforgettable adventures — from hiking rugged peaks and exploring ancient trails to kayaking crystal-clear waters.",
+              )}
             </p>
           </div>
         </div>
@@ -260,8 +262,8 @@ const ExperiencesPage = () => {
         <DestinationBreadcrumb
           variant="page"
           items={[
-            { label: "Destinations", to: "/destinations" },
-            { label: "Experiences" },
+            { label: t("common.destinations"), to: "/destinations" },
+            { label: t("home.destinations.subCategories.experiences.breadcrumbLabel", "Experiences") },
           ]}
         />
       </div>
@@ -331,9 +333,9 @@ const ExperiencesPage = () => {
                 marginBottom: "0.55rem",
               }}
             >
-              No experiences available yet.
+              {t("home.destinations.subCategories.experiences.emptyTitle", "No experiences available yet.")}
             </div>
-            <div>Once experiences are added, they will appear here.</div>
+            <div>{t("home.destinations.subCategories.experiences.emptyDescription", "Once experiences are added, they will appear here.")}</div>
           </div>
         )}
 
@@ -384,9 +386,9 @@ const ExperiencesPage = () => {
                     marginBottom: "0.55rem",
                   }}
                 >
-                  No experiences match your filters.
+                  {t("home.destinations.subCategories.experiences.noMatchTitle", "No experiences match your filters.")}
                 </div>
-                <div>Try adjusting your search or clear filters.</div>
+                <div>{t("home.destinations.subCategories.common.tryAdjustFilters", "Try adjusting your search or clear filters.")}</div>
               </div>
             )}
 
@@ -430,7 +432,9 @@ const ExperiencesPage = () => {
                       ) : (
                         <MapIcon className="w-4 h-4" />
                       )}
-                      {showMapMobile ? "Show List" : "Show Map"}
+                      {showMapMobile
+                        ? t("home.destinations.subCategories.common.showList", "Show List")
+                        : t("home.destinations.subCategories.common.showMap", "Show Map")}
                     </button>
                   </div>
                 )}
@@ -494,7 +498,7 @@ const ExperiencesPage = () => {
                                 fontSize: "0.9rem",
                               }}
                             >
-                              See All ({dests.length})
+                              {t("home.destinations.subCategories.common.seeAllCount", "See All ({{count}})", { count: dests.length })}
                             </button>
                           </div>
                         )}

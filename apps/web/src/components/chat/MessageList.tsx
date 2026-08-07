@@ -5,6 +5,7 @@ import { Loader2 } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useTheme } from "@/context/ThemeContext";
 import { getChatThemeTokens } from "./chatTheme";
+import { useTranslation } from "react-i18next";
 
 interface MessageListProps {
   messages: ChatMessage[];
@@ -17,6 +18,7 @@ export const MessageList: React.FC<MessageListProps> = ({
   currentUserId,
   isLoading = false,
 }) => {
+  const { t } = useTranslation();
   const { isDark, isBlue } = useTheme();
   const scrollRef = useRef<HTMLDivElement>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
@@ -40,7 +42,7 @@ export const MessageList: React.FC<MessageListProps> = ({
   if (messages.length === 0) {
     return (
       <div style={{ display: "flex", alignItems: "center", justifyContent: "center", flex: 1, color: tk.emptyText, background: tk.bodyBg }}>
-        <p>No messages yet. Start the conversation!</p>
+        <p>{t("chat.noMessagesYet", "No messages yet. Start the conversation!")}</p>
       </div>
     );
   }

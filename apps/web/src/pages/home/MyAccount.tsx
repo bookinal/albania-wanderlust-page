@@ -334,7 +334,7 @@ export default function MyAccount() {
                     {user?.avatar_url ? (
                       <img
                         src={user.avatar_url}
-                        alt={user.full_name || "User avatar"}
+                        alt={user.full_name || t("common.userAvatar", "User avatar")}
                         className="w-full h-full object-cover"
                       />
                     ) : (
@@ -375,7 +375,7 @@ export default function MyAccount() {
                       color: tk.pageText,
                     }}
                   >
-                    {user.full_name || "Anonymous User"}
+                    {user.full_name || t("common.anonymousUser", "Anonymous User")}
                   </h2>
                   <p
                     className="flex items-center mt-1 text-sm sm:text-base"

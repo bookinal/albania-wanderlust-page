@@ -22,13 +22,8 @@ import { DestinationBreadcrumb } from "../../../../components/home/destinations/
 import { SUBCATEGORIES, CATEGORY_ROUTES } from "@/lib/destinationManagement";
 // import DestinationMap from "../DestinationMap";
 
-const SUB_HERO: Record<string, { gradient: string; description: string }> = {
-  default: {
-    gradient:
-      "linear-gradient(135deg, #1e3a5f 0%, #3b82f6 50%, #93c5fd 100%)",
-    description: "Discover amazing destinations across Albania.",
-  },
-};
+const SUB_HERO_DEFAULT_GRADIENT =
+  "linear-gradient(135deg, #1e3a5f 0%, #3b82f6 50%, #93c5fd 100%)";
 
 const subCategoryDetails = () => {
   const { t } = useTranslation();
@@ -50,7 +45,10 @@ const subCategoryDetails = () => {
   const isMobile = useIsMobile();
   const { data: destinations = [], isLoading, error } = useDestinations();
 
-  const heroConfig = SUB_HERO[decodedSubcategory] || SUB_HERO.default;
+  const heroDescription = t(
+    "home.destinations.subCategories.defaultHeroDescription",
+    "Discover amazing destinations across Albania.",
+  );
 
   const tk = {
     pageBg: isDark
@@ -58,7 +56,7 @@ const subCategoryDetails = () => {
       : isBlue
         ? "linear-gradient(180deg, hsl(205 55% 96%) 0%, hsl(204 60% 98%) 100%)"
         : "#f5f4f1",
-    heroGradient: heroConfig.gradient,
+    heroGradient: SUB_HERO_DEFAULT_GRADIENT,
     heroSoft: homeTk.textSoftOnMedia,
     textMain: homeTk.textMain,
     textMuted: homeTk.textMuted,
@@ -208,7 +206,7 @@ const subCategoryDetails = () => {
             }}
           >
             <ArrowLeft className="w-4 h-4" />
-            Back to categories
+            {t("home.destinations.subCategories.common.backToCategories", "Back to categories")}
           </button>
 
           <div style={{ maxWidth: "52rem" }}>
@@ -232,7 +230,7 @@ const subCategoryDetails = () => {
                 maxWidth: "42rem",
               }}
             >
-              {heroConfig.description}
+              {heroDescription}
             </p>
           </div>
         </div>
@@ -243,7 +241,7 @@ const subCategoryDetails = () => {
         <DestinationBreadcrumb
           variant="page"
           items={[
-            { label: "Destinations", to: "/destinations" },
+            { label: t("common.destinations"), to: "/destinations" },
             ...(parentCategory
               ? [{ label: parentCategory, to: CATEGORY_ROUTES[parentCategory] }]
               : []),
@@ -317,9 +315,13 @@ const subCategoryDetails = () => {
                 marginBottom: "0.55rem",
               }}
             >
-              No {decodedSubcategory.toLowerCase()} destinations available yet.
+              {t(
+                "home.destinations.subCategories.noDestinationsAvailable",
+                "No {{subcategory}} destinations available yet.",
+                { subcategory: decodedSubcategory.toLowerCase() },
+              )}
             </div>
-            <div>Once destinations are added, they will appear here.</div>
+            <div>{t("home.destinations.subCategories.common.onceAdded", "Once destinations are added, they will appear here.")}</div>
           </div>
         )}
 
@@ -370,9 +372,13 @@ const subCategoryDetails = () => {
                     marginBottom: "0.55rem",
                   }}
                 >
-                  No {decodedSubcategory.toLowerCase()} destinations match your filters.
+                  {t(
+                    "home.destinations.subCategories.noDestinationsMatch",
+                    "No {{subcategory}} destinations match your filters.",
+                    { subcategory: decodedSubcategory.toLowerCase() },
+                  )}
                 </div>
-                <div>Try adjusting your search or clear filters.</div>
+                <div>{t("home.destinations.subCategories.common.tryAdjustFilters", "Try adjusting your search or clear filters.")}</div>
               </div>
             )}
 
@@ -416,7 +422,9 @@ const subCategoryDetails = () => {
                       ) : (
                         <MapIcon className="w-4 h-4" />
                       )}
-                      {showMapMobile ? "Show List" : "Show Map"}
+                      {showMapMobile
+                        ? t("home.destinations.subCategories.common.showList", "Show List")
+                        : t("home.destinations.subCategories.common.showMap", "Show Map")}
                     </button>
                   </div>
                 )}

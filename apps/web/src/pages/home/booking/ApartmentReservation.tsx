@@ -48,10 +48,12 @@ function MosaicGallery({
   images,
   onOpen,
   alt,
+  t,
 }: {
   images: string[];
   onOpen: (index: number) => void;
   alt: string;
+  t: any;
 }) {
   const total = images.length;
   if (total === 0) return null;
@@ -126,7 +128,7 @@ function MosaicGallery({
           }}
         >
           <Images className="w-4 h-4" />
-          View all {total}
+          {t("home.destinations.viewAllCount", "View all {{count}}", { count: total })}
         </span>
       </div>
     ) : null;
@@ -417,7 +419,9 @@ const ApartmentReservation = () => {
       <div style={{ background: tk.pageBg }} className="flex items-center justify-center h-screen">
         <div className="text-center">
           <Loader2 style={{ color: tk.brand }} className="animate-spin mx-auto mb-4" size={48} />
-          <p style={{ color: tk.mutedText }} className="font-medium">Loading apartment details...</p>
+          <p style={{ color: tk.mutedText }} className="font-medium">
+            {t("billing.loadingApartmentDetails")}
+          </p>
         </div>
       </div>
     );
@@ -430,8 +434,15 @@ const ApartmentReservation = () => {
           <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: tk.brandSoftStrong }}>
             <Home style={{ color: tk.brand }} size={40} />
           </div>
-          <h3 style={{ color: tk.pageText }} className="text-2xl font-bold mb-2">Apartment Not Found</h3>
-          <p style={{ color: tk.mutedText }} className="mb-6">The apartment you're looking for doesn't exist or has been removed.</p>
+          <h3 style={{ color: tk.pageText }} className="text-2xl font-bold mb-2">
+            {t("billing.apartmentNotFoundTitle", "Apartment Not Found")}
+          </h3>
+          <p style={{ color: tk.mutedText }} className="mb-6">
+            {t(
+              "billing.apartmentNotFoundMessage",
+              "The apartment you're looking for doesn't exist or has been removed.",
+            )}
+          </p>
           <button
             onClick={() => navigate("/searchResults")}
             style={{ background: tk.brand, color: '#fff' }}
@@ -446,18 +457,23 @@ const ApartmentReservation = () => {
   }
 
   const amenitiesMap: { [key: string]: { icon?: any; label: string } } = {
-    WiFi: { icon: Wifi, label: "WiFi" },
-    "Air Conditioning": { icon: AirVent, label: "Air Conditioning" },
-    Heating: { icon: Flame, label: "Heating" },
-    Parking: { icon: Car, label: "Parking" },
-    Elevator: { icon: Building, label: "Elevator" },
-    Kitchen: { icon: ChefHat, label: "Kitchen" },
-    "Washing Machine": { label: "Washing Machine" },
-    TV: { icon: Tv, label: "TV" },
-    Workspace: { icon: Briefcase, label: "Workspace" },
-    Balcony: { icon: Wind, label: "Balcony" },
-    Pool: { icon: Pool, label: "Pool" },
-    Security: { icon: Shield, label: "Security" },
+    WiFi: { icon: Wifi, label: t("common.amenities.wifi", "WiFi") },
+    "Air Conditioning": {
+      icon: AirVent,
+      label: t("common.amenities.airConditioning", "Air Conditioning"),
+    },
+    Heating: { icon: Flame, label: t("common.amenities.heating", "Heating") },
+    Parking: { icon: Car, label: t("common.amenities.parking", "Parking") },
+    Elevator: { icon: Building, label: t("common.amenities.elevator", "Elevator") },
+    Kitchen: { icon: ChefHat, label: t("common.amenities.kitchen", "Kitchen") },
+    "Washing Machine": {
+      label: t("common.amenities.washingMachine", "Washing Machine"),
+    },
+    TV: { icon: Tv, label: t("common.amenities.tv", "TV") },
+    Workspace: { icon: Briefcase, label: t("common.amenities.workspace", "Workspace") },
+    Balcony: { icon: Wind, label: t("common.amenities.balcony", "Balcony") },
+    Pool: { icon: Pool, label: t("common.amenities.pool", "Pool") },
+    Security: { icon: Shield, label: t("common.amenities.security", "Security") },
   };
 
   const availableAmenities = (apartment.amenities || [])
@@ -497,10 +513,13 @@ const ApartmentReservation = () => {
                 images={images}
                 onOpen={(idx) => setLightboxIndex(idx)}
                 alt={apartment.name}
+                t={t}
               />
             ) : (
               <div className="h-full flex items-center justify-center" style={{ background: tk.statBg }}>
-                <p style={{ color: tk.mutedText }}>No images available</p>
+                <p style={{ color: tk.mutedText }}>
+                  {t("billing.noImagesAvailable", "No images available")}
+                </p>
               </div>
             )}
 
@@ -529,7 +548,10 @@ const ApartmentReservation = () => {
                   <h1 className="text-3xl sm:text-5xl font-bold mb-3 drop-shadow-lg">{apartment.name}</h1>
                   <div className="flex items-center gap-2 text-base sm:text-lg mb-4">
                     <MapPin size={20} />
-                    <span className="drop-shadow">{apartment.location || "Location not specified"}</span>
+                    <span className="drop-shadow">
+                      {apartment.location ||
+                        t("billing.locationNotSpecified", "Location not specified")}
+                    </span>
                   </div>
                   <div className="flex items-center gap-4 sm:gap-6 flex-wrap">
                     <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full">
@@ -569,7 +591,9 @@ const ApartmentReservation = () => {
                   <DollarSign size={32} className="text-emerald-500" />
                   <span style={{ color: tk.pageText }} className="text-5xl font-bold">{apartment.price}</span>
                 </div>
-                <p style={{ color: tk.mutedText }} className="text-sm mt-2">+ utilities</p>
+                <p style={{ color: tk.mutedText }} className="text-sm mt-2">
+                  {t("billing.plusUtilities", "+ utilities")}
+                </p>
               </div>
 
               <div className="space-y-4 mb-6">
@@ -660,7 +684,11 @@ const ApartmentReservation = () => {
                 {t("billing.aboutThisApartment")}
               </h2>
               <p style={{ color: tk.dimText }} className="leading-relaxed text-lg">
-                {apartment.description || "A beautiful and comfortable apartment perfect for your needs. This property offers modern amenities and a great location for convenient living."}
+                {apartment.description ||
+                  t(
+                    "billing.apartmentDefaultDescription",
+                    "A beautiful and comfortable apartment perfect for your needs. This property offers modern amenities and a great location for convenient living.",
+                  )}
               </p>
             </div>
 

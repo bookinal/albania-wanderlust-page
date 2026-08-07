@@ -18,8 +18,10 @@ import { userService } from "@/services/api/userService";
 import { useTheme } from "@/context/ThemeContext";
 import { useChatSuggestion } from "@/context/ChatSuggestionContext";
 import { getChatThemeTokens } from "./chatTheme";
+import { useTranslation } from "react-i18next";
 
 export const UserChatWidget: React.FC = () => {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
   const [conversation, setConversation] = useState<ChatConversation | null>(
@@ -78,8 +80,8 @@ export const UserChatWidget: React.FC = () => {
     } catch (error) {
       console.error("Error loading conversation:", error);
       toast({
-        title: "Error",
-        description: "Failed to load conversation",
+        title: t("common.error"),
+        description: t("chat.failedToLoadConversation", "Failed to load conversation"),
         variant: "destructive",
       });
     } finally {
@@ -140,7 +142,11 @@ export const UserChatWidget: React.FC = () => {
       // Create conversation if it doesn't exist
       if (!convId) {
         const newConv = await chatService.createConversation({
-          title: suggestion ? `Question about ${suggestion.title}` : "Support Request",
+          title: suggestion
+            ? t("chat.questionAboutTitle", "Question about {{title}}", {
+                title: suggestion.title,
+              })
+            : t("chat.supportRequest", "Support Request"),
         });
         setConversation(newConv);
         convId = newConv.id;
@@ -155,8 +161,8 @@ export const UserChatWidget: React.FC = () => {
     } catch (error) {
       console.error("Error sending message:", error);
       toast({
-        title: "Error",
-        description: "Failed to send message",
+        title: t("common.error"),
+        description: t("chat.failedToSendMessage", "Failed to send message"),
         variant: "destructive",
       });
     }
@@ -185,7 +191,11 @@ export const UserChatWidget: React.FC = () => {
   const handleUseSuggestion = () => {
     if (!suggestion) return;
     setPrefill({
-      text: `Hi, I have a question about this car: ${suggestion.title}\n${suggestion.url}`,
+      text: t(
+        "chat.suggestionPrefillText",
+        "Hi, I have a question about this car: {{title}}\n{{url}}",
+        { title: suggestion.title, url: suggestion.url },
+      ),
       token: Date.now(),
     });
   };
@@ -245,7 +255,7 @@ export const UserChatWidget: React.FC = () => {
           >
             <div className="flex items-center gap-2" style={{ color: tk.headerText }}>
               <MessageCircle className="h-5 w-5" style={{ color: tk.brand }} />
-              <h3 className="font-semibold">Support Chat</h3>
+              <h3 className="font-semibold">{t("chat.supportChat", "Support Chat")}</h3>
             </div>
             <div className="flex items-center gap-1">
               <Button
@@ -298,7 +308,8 @@ export const UserChatWidget: React.FC = () => {
               <Sparkles className="h-4 w-4" style={{ color: tk.brand, flexShrink: 0, marginTop: "2px" }} />
               <div style={{ flex: 1, minWidth: 0 }}>
                 <p style={{ margin: 0, fontSize: "13px", color: tk.otherBubbleText }}>
-                  Ask about <strong>{suggestion.title}</strong>
+                  {t("chat.askAboutPrefix", "Ask about")}{" "}
+                  <strong>{suggestion.title}</strong>
                 </p>
                 <button
                   type="button"
@@ -315,7 +326,7 @@ export const UserChatWidget: React.FC = () => {
                     cursor: "pointer",
                   }}
                 >
-                  Ask about this car
+                  {t("chat.askAboutThisCar", "Ask about this car")}
                 </button>
               </div>
             </div>
@@ -335,8 +346,8 @@ export const UserChatWidget: React.FC = () => {
                 onSendMessage={handleSendMessage}
                 placeholder={
                   currentUserId
-                    ? "Type your message..."
-                    : "Please log in to send messages"
+                    ? t("chat.typeYourMessage", "Type your message...")
+                    : t("chat.pleaseLogInToSendMessages", "Please log in to send messages")
                 }
                 disabled={!currentUserId}
                 prefill={prefill}

@@ -162,7 +162,7 @@ const groupedBySubcategory = useMemo(() => {
         {heroImage ? (
           <img
             src={heroImage}
-            alt="Beaches in Albania"
+            alt={t("home.destinations.subCategories.landscapes.alt", "Beaches in Albania")}
             style={{
               position: "absolute",
               inset: 0,
@@ -213,7 +213,7 @@ const groupedBySubcategory = useMemo(() => {
             }}
           >
             <ArrowLeft className="w-4 h-4" />
-            Back to categories
+            {t("home.destinations.subCategories.common.backToCategories", "Back to categories")}
           </button>
 
           <div style={{ maxWidth: "52rem" }}>
@@ -227,7 +227,7 @@ const groupedBySubcategory = useMemo(() => {
                 marginBottom: "0.9rem",
               }}
             >
-              Coastal collection
+              {t("home.destinations.subCategories.landscapes.kicker", "Coastal collection")}
             </p>
             <h1
               style={{
@@ -238,7 +238,7 @@ const groupedBySubcategory = useMemo(() => {
                 marginBottom: "0.85rem",
               }}
             >
-              Landscapes of Albania
+              {t("home.destinations.subCategories.landscapes.title", "Landscapes of Albania")}
             </h1>
             <p
               style={{
@@ -248,8 +248,10 @@ const groupedBySubcategory = useMemo(() => {
                 maxWidth: "42rem",
               }}
             >
-              Discover the Riviera through bright coves, long swimming days,
-              hidden bays, and shoreline escapes collected in one place.
+              {t(
+                "home.destinations.subCategories.landscapes.description",
+                "Discover the Riviera through bright coves, long swimming days, hidden bays, and shoreline escapes collected in one place.",
+              )}
             </p>
           </div>
         </div>
@@ -260,8 +262,8 @@ const groupedBySubcategory = useMemo(() => {
         <DestinationBreadcrumb
           variant="page"
           items={[
-            { label: "Destinations", to: "/destinations" },
-            { label: "Destinations" },
+            { label: t("common.destinations"), to: "/destinations" },
+            { label: t("home.destinations.subCategories.landscapes.breadcrumbLabel", "Beaches") },
           ]}
         />
       </div>
@@ -331,9 +333,9 @@ const groupedBySubcategory = useMemo(() => {
                 marginBottom: "0.55rem",
               }}
             >
-              No beaches available yet.
+              {t("home.destinations.subCategories.landscapes.emptyTitle", "No beaches available yet.")}
             </div>
-            <div>Once beach destinations are added, they will appear here.</div>
+            <div>{t("home.destinations.subCategories.landscapes.emptyDescription", "Once beach destinations are added, they will appear here.")}</div>
           </div>
         )}
 
@@ -384,9 +386,9 @@ const groupedBySubcategory = useMemo(() => {
                     marginBottom: "0.55rem",
                   }}
                 >
-                  No beaches match your filters.
+                  {t("home.destinations.subCategories.landscapes.noMatchTitle", "No beaches match your filters.")}
                 </div>
-                <div>Try adjusting your search or clear filters.</div>
+                <div>{t("home.destinations.subCategories.common.tryAdjustFilters", "Try adjusting your search or clear filters.")}</div>
               </div>
             )}
 
@@ -430,7 +432,9 @@ const groupedBySubcategory = useMemo(() => {
                       ) : (
                         <MapIcon className="w-4 h-4" />
                       )}
-                      {showMapMobile ? "Show List" : "Show Map"}
+                      {showMapMobile
+                        ? t("home.destinations.subCategories.common.showList", "Show List")
+                        : t("home.destinations.subCategories.common.showMap", "Show Map")}
                     </button>
                   </div>
                 )}
@@ -494,7 +498,7 @@ const groupedBySubcategory = useMemo(() => {
                                 fontSize: "0.9rem",
                               }}
                             >
-                              See All ({dests.length})
+                              {t("home.destinations.subCategories.common.seeAllCount", "See All ({{count}})", { count: dests.length })}
                             </button>
                           </div>
                         )}

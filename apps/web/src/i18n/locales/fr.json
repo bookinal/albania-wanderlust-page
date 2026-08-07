@@ -100,7 +100,136 @@
       "readMore": "Lire la suite",
       "showLess": "Afficher moins",
       "noResultsTitle": "Aucune destination ne correspond aux filtres",
-      "noResultsDescription": "Essayez un autre mot-cle ou choisissez une autre categorie."
+      "noResultsDescription": "Essayez un autre mot-cle ou choisissez une autre categorie.",
+      "viewAllCount": "Voir tout ({{count}})",
+      "exploreHeroTitle": "Explorez le meilleur de l'Albanie",
+      "exploreHeroDescription": "Des plages cristallines aux montagnes majestueuses, découvrez les plus beaux endroits d'Albanie.",
+      "seeMore": "Voir plus",
+      "noDestinationsFound": "Aucune destination trouvée.",
+      "viewAll": "Voir tout",
+      "quickFacts": {
+        "location": "Emplacement",
+        "region": "Région",
+        "type": "Type",
+        "built": "Construit",
+        "founded": "Fondé",
+        "historicalPeriod": "Période historique",
+        "beachType": "Type de plage",
+        "cuisineType": "Type de cuisine",
+        "howToBook": "Comment réserver",
+        "water": "Eau",
+        "bestFor": "Idéal pour",
+        "crowdLevel": "Niveau d'affluence",
+        "bestMonths": "Meilleurs mois",
+        "priceLevel": "Niveau de prix",
+        "population": "Population",
+        "elevation": "Altitude",
+        "heritageStatus": "Statut patrimonial",
+        "duration": "Durée",
+        "activities": "Activités",
+        "highlight": "Point fort",
+        "difficulty": "Difficulté",
+        "siteType": "Type de site",
+        "museumType": "Type de musée",
+        "established": "Créé en",
+        "admission": "Entrée",
+        "unescoYearInscribed": "Année d'inscription UNESCO",
+        "activityType": "Type d'activité",
+        "eventType": "Type d'événement",
+        "seeLess": "Voir moins",
+        "seeMore": "Voir plus"
+      },
+      "transport": {
+        "byCar": "En voiture",
+        "byFoot": "À pied",
+        "byBoat": "En bateau"
+      },
+      "contact": {
+        "instagram": "Instagram",
+        "facebook": "Facebook",
+        "website": "Site web",
+        "whatsapp": "WhatsApp",
+        "tripadvisor": "TripAdvisor"
+      },
+      "tipsForVisitors": {
+        "title": "Conseils pour les visiteurs",
+        "description": "Des notes pratiques pour planifier une visite plus sereine avant de partir."
+      },
+      "howToReach": {
+        "title": "Comment s'y rendre",
+        "description": "Options de transport rapides et aperçu de la carte pour faciliter l'arrivée.",
+        "noTransportDetails": "Les détails de transport apparaîtront ici une fois les itinéraires ajoutés pour cette destination.",
+        "mapPreview": "Aperçu de la carte",
+        "mapPreviewDescription": "Un rapide coup d'œil sur la zone de destination avant de partir.",
+        "directions": "Itinéraire"
+      },
+      "nearbyAttractions": {
+        "title": "Attractions à proximité",
+        "description": "Autres attractions proches de {{name}}."
+      },
+      "nearbyApartments": {
+        "title": "Appartements à proximité",
+        "description": "Appartements proches de {{name}}."
+      },
+      "subCategories": {
+        "defaultHeroDescription": "Découvrez des destinations incroyables à travers l'Albanie.",
+        "noDestinationsAvailable": "Aucune destination {{subcategory}} disponible pour le moment.",
+        "noDestinationsMatch": "Aucune destination {{subcategory}} ne correspond à vos filtres.",
+        "common": {
+          "backToCategories": "Retour aux catégories",
+          "showList": "Afficher la liste",
+          "showMap": "Afficher la carte",
+          "seeAllCount": "Voir tout ({{count}})",
+          "onceAdded": "Une fois les destinations ajoutées, elles apparaîtront ici.",
+          "tryAdjustFilters": "Essayez d'ajuster votre recherche ou effacez les filtres."
+        },
+        "historic": {
+          "alt": "Albanie historique",
+          "kicker": "Collection patrimoniale",
+          "title": "Albanie historique",
+          "description": "Remontez le temps pour découvrir des châteaux séculaires, des ruines antiques, une architecture raffinée et des villes où l'histoire perdure.",
+          "breadcrumbLabel": "Histoire & culture",
+          "emptyTitle": "Aucune destination historique disponible pour le moment.",
+          "noMatchTitle": "Aucune destination historique ne correspond à vos filtres."
+        },
+        "eatDrink": {
+          "alt": "Manger, boire et danser en Albanie",
+          "kicker": "Saveurs & Nuits",
+          "title": "Manger, Boire & Danser",
+          "description": "Savourez la scène culinaire vibrante de l'Albanie, sirotez dans des bars animés et dansez toute la nuit dans les meilleurs endroits du pays.",
+          "breadcrumbLabel": "Manger, boire et danser",
+          "emptyTitle": "Aucun lieu pour manger, boire ou danser disponible pour le moment.",
+          "noMatchTitle": "Aucun lieu ne correspond à vos filtres."
+        },
+        "experiences": {
+          "alt": "Expériences en Albanie",
+          "kicker": "L'aventure vous attend",
+          "title": "Expériences",
+          "description": "Plongez dans des aventures inoubliables — de la randonnée sur des sommets escarpés à l'exploration de sentiers anciens en passant par le kayak dans des eaux cristallines.",
+          "breadcrumbLabel": "Expériences",
+          "emptyTitle": "Aucune expérience disponible pour le moment.",
+          "emptyDescription": "Une fois les expériences ajoutées, elles apparaîtront ici.",
+          "noMatchTitle": "Aucune expérience ne correspond à vos filtres."
+        },
+        "landscapes": {
+          "alt": "Plages en Albanie",
+          "kicker": "Collection côtière",
+          "title": "Paysages d'Albanie",
+          "description": "Découvrez la Riviera à travers des criques lumineuses, de longues journées de baignade, des baies cachées et des escapades côtières réunies en un seul endroit.",
+          "breadcrumbLabel": "Plages",
+          "emptyTitle": "Aucune plage disponible pour le moment.",
+          "emptyDescription": "Une fois les destinations balnéaires ajoutées, elles apparaîtront ici.",
+          "noMatchTitle": "Aucune plage ne correspond à vos filtres."
+        },
+        "adventure": {
+          "alt": "Aventure en Albanie",
+          "kicker": "Collection sauvage",
+          "title": "Albanie Aventure",
+          "description": "Explorez les sommets escarpés, gravissez les montagnes maudites, descendez des canyons profonds et vivez des expériences pleines d'adrénaline en plein air.",
+          "breadcrumbLabel": "Aventure",
+          "emptyTitle": "Aucune destination d'aventure disponible pour le moment."
+        }
+      }
     },
     "culture": {
       "title": "Culture & Cuisine",
@@ -199,7 +328,34 @@
     "phoneRequired": "Numéro de téléphone requis",
     "invalidPhone": "Numéro de téléphone invalide",
     "ownPropertyTitle": "Impossible de réserver votre propre propriété",
-    "ownPropertyMessage": "Vous ne pouvez pas réserver une propriété que vous possédez. Veuillez choisir une autre annonce."
+    "ownPropertyMessage": "Vous ne pouvez pas réserver une propriété que vous possédez. Veuillez choisir une autre annonce.",
+    "notAvailable": "Non disponible",
+    "propertyUnavailableMessage": "Cette propriété n'est actuellement pas disponible à la réservation.",
+    "goBack": "Retour",
+    "apartmentBookingSuccess": "Votre réservation d'appartement a été créée avec succès.",
+    "hotelBookingSuccess": "Votre réservation d'hôtel a été créée avec succès.",
+    "selectCheckInCheckOutDates": "Veuillez sélectionner les dates d'arrivée et de départ.",
+    "loadingApartmentDetails": "Chargement des détails de l'appartement…",
+    "apartmentNotFound": "Appartement introuvable",
+    "loadingHotelDetails": "Chargement des détails de l'hôtel…",
+    "hotelNotFound": "Hôtel introuvable",
+    "checkInCheckOutDates": "Dates d'arrivée et de départ",
+    "selectStayDates": "Sélectionner les dates de séjour",
+    "checkInTime": "Heure d'arrivée",
+    "checkOutTime": "Heure de départ",
+    "stayDuration": "Durée du séjour",
+    "locationNotSpecified": "Lieu non précisé",
+    "rooms": "Chambres",
+    "beds": "Lits",
+    "noImagesAvailable": "Aucune image disponible",
+    "carNotFoundTitle": "Voiture introuvable",
+    "carNotFoundMessage": "La voiture que vous recherchez n'existe pas ou a été supprimée.",
+    "pickUpLocationNotSpecified": "Lieu de prise en charge non précisé",
+    "basePricePerDay": "Base : {{price}} $/jour",
+    "apartmentNotFoundTitle": "Appartement introuvable",
+    "apartmentNotFoundMessage": "L'appartement que vous recherchez n'existe pas ou a été supprimé.",
+    "plusUtilities": "+ charges",
+    "apartmentDefaultDescription": "Un appartement magnifique et confortable, parfait pour vos besoins. Cette propriété offre des équipements modernes et un excellent emplacement pour un séjour pratique."
   },
   "terms": {
     "minimumRentalPeriod": "Période de location minimale",
@@ -454,12 +610,37 @@
     "more": "Plus",
     "day": "jour",
     "days": "jours",
+    "night": "nuit",
+    "nights": "nuits",
+    "amenities": {
+      "wifi": "WiFi",
+      "airConditioning": "Climatisation",
+      "heating": "Chauffage",
+      "parking": "Parking",
+      "elevator": "Ascenseur",
+      "kitchen": "Cuisine",
+      "washingMachine": "Lave-linge",
+      "tv": "Télévision",
+      "workspace": "Espace de travail",
+      "balcony": "Balcon",
+      "pool": "Piscine",
+      "security": "Sécurité"
+    },
     "destinations": "Destinations",
     "pageNotFound": "Oups ! Page non trouvée",
     "returnToHome": "Retour à l'accueil",
     "accountSuspended": "Oups ! Il semble que votre compte ait été suspendu pour certaines raisons par un administrateur",
     "unauthorizedAccess": "Oups ! Vous n'êtes pas autorisé à accéder à cette page",
-    "seeAll": "Voir tout"
+    "seeAll": "Voir tout",
+    "userAvatar": "Avatar de l'utilisateur",
+    "anonymousUser": "Utilisateur anonyme",
+    "toggleFilters": "Afficher/masquer les filtres",
+    "closeFilters": "Fermer les filtres",
+    "toggleMenu": "Afficher/masquer le menu",
+    "albania": "Albanie",
+    "scrollDown": "Faire défiler vers le bas",
+    "albanianLandscapeAlt": "Paysage albanais",
+    "albanianCultureAlt": "Culture et traditions albanaises"
   },
   "letUsInspireYou": {
     "title": "Laissez-nous vous inspirer",
@@ -575,6 +756,9 @@
     "noImagesAvailable": "Aucune image disponible",
     "reservation": "Réservation",
     "reservationComingSoon": "Fonctionnalité de réservation bientôt disponible !",
+    "percentOccupied": "{{percent}} % occupé",
+    "defaultDescription": "Profitez du luxe et du confort dans cet hôtel exceptionnel. Notre personnel dévoué veille à ce que votre séjour soit mémorable grâce à un service haut de gamme et des équipements modernes.",
+    "completeAddressFallback": "{{location}}, adresse complète",
     "amenities": {
       "freeWifi": "WiFi gratuit",
       "parking": "Parking",
@@ -1503,5 +1687,20 @@
       "fall": "Automne"
     },
     "tip": "💡 Astuce : Définissez différents prix pour les hautes saisons (été) et les périodes creuses. Le prix de base sera utilisé comme valeur par défaut si aucun prix mensuel n'est défini."
+  },
+  "chat": {
+    "failedToLoadConversation": "Échec du chargement de la conversation",
+    "failedToSendMessage": "Échec de l'envoi du message",
+    "questionAboutTitle": "Question à propos de {{title}}",
+    "supportRequest": "Demande d'assistance",
+    "suggestionPrefillText": "Bonjour, j'ai une question à propos de cette voiture : {{title}}\n{{url}}",
+    "supportChat": "Chat d'assistance",
+    "askAboutPrefix": "Demander à propos de",
+    "askAboutThisCar": "Demander à propos de cette voiture",
+    "typeYourMessage": "Écrivez votre message...",
+    "pleaseLogInToSendMessages": "Veuillez vous connecter pour envoyer des messages",
+    "noMessagesYet": "Aucun message pour le moment. Démarrez la conversation !",
+    "read": "Lu",
+    "sent": "Envoyé"
   }
 }

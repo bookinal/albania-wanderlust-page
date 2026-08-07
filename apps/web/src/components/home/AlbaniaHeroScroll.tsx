@@ -3,10 +3,12 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import BigFlag from "@/assets/albaniaBigFlag.jpg";
 import AlbaniaMiniMap from "@/assets/albaniaMiniMap.webp";
+import { useTranslation } from "react-i18next";
 
 gsap.registerPlugin(ScrollTrigger);
 
 const AlbaniaHeroScroll = () => {
+  const { t } = useTranslation();
   const containerRef = useRef<HTMLDivElement>(null);
   const backgroundRef = useRef<HTMLDivElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
@@ -130,7 +132,7 @@ const AlbaniaHeroScroll = () => {
             <img
               ref={imageRef}
               src={AlbaniaMiniMap}
-              alt="Albanian Landscape"
+              alt={t("common.albanianLandscapeAlt", "Albanian Landscape")}
               className="w-64 h-64 md:w-80 md:h-80 object-cover rounded-full shadow-2xl border-4 border-white"
             />
           </div>

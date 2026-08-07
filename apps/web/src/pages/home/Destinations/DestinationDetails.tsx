@@ -231,10 +231,12 @@ function MosaicGallery({
   images,
   onOpen,
   alt,
+  t,
 }: {
   images: string[];
   onOpen: (index: number) => void;
   alt: string;
+  t: any;
 }) {
   const total = images.length;
   if (total === 0) return null;
@@ -306,7 +308,7 @@ function MosaicGallery({
           }}
         >
           <Images className="w-4 h-4" />
-          View all
+          {t("home.destinations.viewAll", "View all")}
         </span>
       </div>
     ) : null;
@@ -823,22 +825,22 @@ const DestinationDetails = () => {
   const quickFacts = [
     {
       icon: MapPin,
-      label: "Location",
+      label: t("home.destinations.quickFacts.location", "Location"),
       value: destination.location ? String(destination.location) : "",
     },
     {
       icon: MapPin,
-      label: "Region",
+      label: t("home.destinations.quickFacts.region", "Region"),
       value: destination.region ? String(destination.region) : "",
     },
     {
       icon: Compass,
-      label: "Type",
+      label: t("home.destinations.quickFacts.type", "Type"),
       value: destination.destinationType ? String(destination.destinationType) : "",
     },
     {
       icon: Landmark,
-      label: "Built",
+      label: t("home.destinations.quickFacts.built", "Built"),
       value: destination.built != null
         ? String(destination.built)
         : (destination as any).built_year != null
@@ -847,122 +849,122 @@ const DestinationDetails = () => {
     },
     {
       icon: CalendarRange,
-      label: "Founded",
+      label: t("home.destinations.quickFacts.founded", "Founded"),
       value: destination.founded ? String(destination.founded) : "",
     },
     {
       icon: CalendarRange,
-      label: "Historical Period",
+      label: t("home.destinations.quickFacts.historicalPeriod", "Historical Period"),
       value: destination.historicalPeriod ? String(destination.historicalPeriod) : "",
     },
     {
       icon: Waves,
-      label: "Beach Type",
+      label: t("home.destinations.quickFacts.beachType", "Beach Type"),
       value: destination.beachType,
     },
     {
       icon: ChefHat,
-      label: "Cuisine Type",
+      label: t("home.destinations.quickFacts.cuisineType", "Cuisine Type"),
       value: destination.cuisineType,
     },
     {
       icon: CalendarCheck,
-      label: "How to Book",
+      label: t("home.destinations.quickFacts.howToBook", "How to Book"),
       value: destination.howToBook,
     },
     {
       icon: Droplets,
-      label: "Water",
+      label: t("home.destinations.quickFacts.water", "Water"),
       value: destination.water,
     },
     {
       icon: Star,
-      label: "Best For",
+      label: t("home.destinations.quickFacts.bestFor", "Best For"),
       value: destination.bestFor,
     },
     {
       icon: Users,
-      label: "Crowd Level",
+      label: t("home.destinations.quickFacts.crowdLevel", "Crowd Level"),
       value: destination.crowdLevel,
     },
     {
       icon: CalendarRange,
-      label: "Best Months",
+      label: t("home.destinations.quickFacts.bestMonths", "Best Months"),
       value: destination.bestMonths,
     },
     {
       icon: Wallet,
-      label: "Price Level",
+      label: t("home.destinations.quickFacts.priceLevel", "Price Level"),
       value: destination.priceLevel,
     },
     {
       icon: Users,
-      label: "Population",
+      label: t("home.destinations.quickFacts.population", "Population"),
       value: destination.population ? String(destination.population) : "",
     },
     {
       icon: Navigation,
-      label: "Elevation",
+      label: t("home.destinations.quickFacts.elevation", "Elevation"),
       value: destination.elevation ? String(destination.elevation) : "",
     },
     {
       icon: Star,
-      label: "Heritage Status",
+      label: t("home.destinations.quickFacts.heritageStatus", "Heritage Status"),
       value: destination.heritageStatus,
     },
     {
       icon: CalendarCheck,
-      label: "Duration",
+      label: t("home.destinations.quickFacts.duration", "Duration"),
       value: destination.duration,
     },
     {
       icon: Footprints,
-      label: "Activities",
+      label: t("home.destinations.quickFacts.activities", "Activities"),
       value: destination.activities,
     },
     {
       icon: Star,
-      label: "Highlight",
+      label: t("home.destinations.quickFacts.highlight", "Highlight"),
       value: destination.highlight,
     },
     {
       icon: Zap,
-      label: "Difficulty",
+      label: t("home.destinations.quickFacts.difficulty", "Difficulty"),
       value: destination.difficultyLevel,
     },
     {
       icon: Compass,
-      label: "Site Type",
+      label: t("home.destinations.quickFacts.siteType", "Site Type"),
       value: destination.siteType,
     },
     {
       icon: Compass,
-      label: "Museum Type",
+      label: t("home.destinations.quickFacts.museumType", "Museum Type"),
       value: destination.museumType,
     },
     {
       icon: CalendarRange,
-      label: "Established",
+      label: t("home.destinations.quickFacts.established", "Established"),
       value: destination.established ? String(destination.established) : "",
     },
     {
       icon: Wallet,
-      label: "Admission",
+      label: t("home.destinations.quickFacts.admission", "Admission"),
       value: destination.admission,
     },
     {
       icon: CalendarRange,
-      label: "UNESCO Year Inscribed",
+      label: t("home.destinations.quickFacts.unescoYearInscribed", "UNESCO Year Inscribed"),
       value: destination.yearInscribed ? String(destination.yearInscribed) : "",
     },
     {
       icon: Footprints,
-      label: "Activity Type",
+      label: t("home.destinations.quickFacts.activityType", "Activity Type"),
       value: destination.activityType,
     },
     {
       icon: CalendarCheck,
-      label: "Event Type",
+      label: t("home.destinations.quickFacts.eventType", "Event Type"),
       value: destination.eventType,
     },
   ].filter(
@@ -976,17 +978,17 @@ const DestinationDetails = () => {
   const transportOptions = [
     {
       icon: Car,
-      title: "By Car",
+      title: t("home.destinations.transport.byCar", "By Car"),
       description: destination.byCar,
     },
     {
       icon: Footprints,
-      title: "By Foot",
+      title: t("home.destinations.transport.byFoot", "By Foot"),
       description: destination.byFoot,
     },
     {
       icon: Sailboat,
-      title: "By Boat",
+      title: t("home.destinations.transport.byBoat", "By Boat"),
       description: destination.byBoat,
     },
   ].filter(
@@ -1024,6 +1026,7 @@ const DestinationDetails = () => {
             }
             onOpen={setLightboxIndex}
             alt={localize(destination.name)}
+            t={t}
           />
           <div
             style={{
@@ -1229,14 +1232,14 @@ const DestinationDetails = () => {
                     }}
                   >
                     <Icon className="w-4 h-4" style={{ color: tk.brand }} />
-                    {key === "instagram" && "Instagram"}
-                    {key === "facebook" && "Facebook"}
-                    {key === "website" && "Website"}
+                    {key === "instagram" && t("home.destinations.contact.instagram", "Instagram")}
+                    {key === "facebook" && t("home.destinations.contact.facebook", "Facebook")}
+                    {key === "website" && t("home.destinations.contact.website", "Website")}
                     {key === "phone" && val}
                     {key === "email" && val}
-                    {key === "whatsapp" && "WhatsApp"}
-                    {key === "tripadvisor" && "TripAdvisor"}
-                    {key === "bookingUrl" && "Book Now"}
+                    {key === "whatsapp" && t("home.destinations.contact.whatsapp", "WhatsApp")}
+                    {key === "tripadvisor" && t("home.destinations.contact.tripadvisor", "TripAdvisor")}
+                    {key === "bookingUrl" && t("common.bookNow")}
                   </a>
                 );
               })}
@@ -1362,7 +1365,9 @@ const DestinationDetails = () => {
                     cursor: "pointer",
                   }}
                 >
-                  {quickFactsExpanded ? "See less" : "See more"}
+                  {quickFactsExpanded
+                    ? t("home.destinations.quickFacts.seeLess", "See less")
+                    : t("home.destinations.quickFacts.seeMore", "See more")}
                 </button>
               </div>
             )}
@@ -1444,7 +1449,9 @@ const DestinationDetails = () => {
                     textUnderlineOffset: "2px",
                   }}
                 >
-                  {descriptionExpanded ? "Show less" : "Read more"}
+                  {descriptionExpanded
+                    ? t("home.destinations.showLess")
+                    : t("home.destinations.readMore")}
                 </button>
               )}
             </div>
@@ -1612,7 +1619,7 @@ const DestinationDetails = () => {
               color: tk.pageText,
             }}
           >
-            Tips for Visitors
+            {t("home.destinations.tipsForVisitors.title", "Tips for Visitors")}
           </h2>
           <p
             style={{
@@ -1622,7 +1629,10 @@ const DestinationDetails = () => {
               color: tk.dimText,
             }}
           >
-            Practical notes to help plan a smoother visit before you go.
+            {t(
+              "home.destinations.tipsForVisitors.description",
+              "Practical notes to help plan a smoother visit before you go.",
+            )}
           </p>
         </div>
         <div
@@ -1702,7 +1712,7 @@ const DestinationDetails = () => {
               color: tk.pageText,
             }}
           >
-            How to Reach
+            {t("home.destinations.howToReach.title", "How to Reach")}
           </h2>
           <p
             style={{
@@ -1712,7 +1722,10 @@ const DestinationDetails = () => {
               color: tk.dimText,
             }}
           >
-            Quick transport options and a map preview to make arrival easier.
+            {t(
+              "home.destinations.howToReach.description",
+              "Quick transport options and a map preview to make arrival easier.",
+            )}
           </p>
         </div>
         <div
@@ -1836,8 +1849,10 @@ const DestinationDetails = () => {
                       color: "#4b5563",
                     }}
                   >
-                    Transport details will appear here once routes are added for
-                    this destination.
+                    {t(
+                      "home.destinations.howToReach.noTransportDetails",
+                      "Transport details will appear here once routes are added for this destination.",
+                    )}
                   </p>
                 </div>
               )}
@@ -1904,7 +1919,7 @@ const DestinationDetails = () => {
                     color: "#111827",
                   }}
                 >
-                  Map preview
+                  {t("home.destinations.howToReach.mapPreview", "Map preview")}
                 </h3>
                 <p
                   style={{
@@ -1913,7 +1928,10 @@ const DestinationDetails = () => {
                     color: "#6b7280",
                   }}
                 >
-                  A quick look at the destination area before you head out.
+                  {t(
+                    "home.destinations.howToReach.mapPreviewDescription",
+                    "A quick look at the destination area before you head out.",
+                  )}
                 </p>
               </div>
               <div
@@ -2051,7 +2069,7 @@ const DestinationDetails = () => {
                 }}
               >
                 <Navigation className="w-4 h-4" />
-                Directions
+                {t("home.destinations.howToReach.directions", "Directions")}
               </button>
             </div>
           </div>
@@ -2070,7 +2088,7 @@ const DestinationDetails = () => {
                 color: tk.pageText,
               }}
             >
-              Nearby Attractions
+              {t("home.destinations.nearbyAttractions.title", "Nearby Attractions")}
             </h2>
             <p
               style={{
@@ -2080,7 +2098,11 @@ const DestinationDetails = () => {
                 color: tk.dimText,
               }}
             >
-              Other attractions close to {localize(destination.name)}.
+              {t(
+                "home.destinations.nearbyAttractions.description",
+                "Other attractions close to {{name}}.",
+                { name: localize(destination.name) },
+              )}
             </p>
           </div>
           {isMobile ? (
@@ -2130,7 +2152,7 @@ const DestinationDetails = () => {
                 color: tk.pageText,
               }}
             >
-              Nearby Apartments
+              {t("home.destinations.nearbyApartments.title", "Nearby Apartments")}
             </h2>
             <p
               style={{
@@ -2140,7 +2162,11 @@ const DestinationDetails = () => {
                 color: tk.dimText,
               }}
             >
-              Apartments close to {localize(destination.name)}.
+              {t(
+                "home.destinations.nearbyApartments.description",
+                "Apartments close to {{name}}.",
+                { name: localize(destination.name) },
+              )}
             </p>
           </div>
           {isMobile ? (

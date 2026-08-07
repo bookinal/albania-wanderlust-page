@@ -3,6 +3,7 @@ import { ChatMessage } from "@albania/shared-types";
 import { format } from "date-fns";
 import { useTheme } from "@/context/ThemeContext";
 import { getChatThemeTokens } from "./chatTheme";
+import { useTranslation } from "react-i18next";
 
 interface MessageBubbleProps {
   message: ChatMessage;
@@ -15,6 +16,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
   isOwnMessage,
   showAvatar = true,
 }) => {
+  const { t } = useTranslation();
   const { isDark, isBlue } = useTheme();
   const isAdmin = message.role === "admin";
   const formattedTime = format(new Date(message.created_at), "p");
@@ -74,7 +76,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
           <span style={{ fontSize: "11px", color: tk.timeText }}>{formattedTime}</span>
           {isOwnMessage && (
             <span style={{ fontSize: "11px", color: tk.timeText }}>
-              {message.is_read ? "Read" : "Sent"}
+              {message.is_read ? t("chat.read", "Read") : t("chat.sent", "Sent")}
             </span>
           )}
         </div>

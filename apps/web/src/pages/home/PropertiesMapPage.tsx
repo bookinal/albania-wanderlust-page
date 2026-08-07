@@ -82,7 +82,7 @@ const PropertiesMapPage = () => {
         <button
           onClick={() => setIsMobileFilterOpen(true)}
           className="lg:hidden absolute top-4 left-4 z-[1000] rounded-full p-2 bg-white text-gray-800 shadow-md border-none"
-          aria-label="Toggle filters"
+          aria-label={t("common.toggleFilters", "Toggle filters")}
         >
           <Filter size={20} />
         </button>
@@ -105,7 +105,7 @@ const PropertiesMapPage = () => {
               <button
                 onClick={() => setIsMobileFilterOpen(false)}
                 className="p-1 rounded-full text-white bg-transparent border-none"
-                aria-label="Close filters"
+                aria-label={t("common.closeFilters", "Close filters")}
               >
                 <X size={20} />
               </button>

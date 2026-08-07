@@ -162,7 +162,7 @@ const EatDrinkDancePage = () => {
         {heroImage ? (
           <img
             src={heroImage}
-            alt="Eat, drink & dance in Albania"
+            alt={t("home.destinations.subCategories.eatDrink.alt", "Eat, drink & dance in Albania")}
             style={{
               position: "absolute",
               inset: 0,
@@ -213,7 +213,7 @@ const EatDrinkDancePage = () => {
             }}
           >
             <ArrowLeft className="w-4 h-4" />
-            Back to categories
+            {t("home.destinations.subCategories.common.backToCategories", "Back to categories")}
           </button>
 
           <div style={{ maxWidth: "52rem" }}>
@@ -227,7 +227,7 @@ const EatDrinkDancePage = () => {
                 marginBottom: "0.9rem",
               }}
             >
-              Flavours & Nights
+              {t("home.destinations.subCategories.eatDrink.kicker", "Flavours & Nights")}
             </p>
             <h1
               style={{
@@ -238,7 +238,7 @@ const EatDrinkDancePage = () => {
                 marginBottom: "0.85rem",
               }}
             >
-              Eat, Drink & Dance
+              {t("home.destinations.subCategories.eatDrink.title", "Eat, Drink & Dance")}
             </h1>
             <p
               style={{
@@ -248,8 +248,10 @@ const EatDrinkDancePage = () => {
                 maxWidth: "42rem",
               }}
             >
-              Savor Albania's vibrant culinary scene, sip through bustling bars,
-              and dance the night away at the country's best spots.
+              {t(
+                "home.destinations.subCategories.eatDrink.description",
+                "Savor Albania's vibrant culinary scene, sip through bustling bars, and dance the night away at the country's best spots.",
+              )}
             </p>
           </div>
         </div>
@@ -260,8 +262,8 @@ const EatDrinkDancePage = () => {
         <DestinationBreadcrumb
           variant="page"
           items={[
-            { label: "Destinations", to: "/destinations" },
-            { label: "Eat, drink & dance" },
+            { label: t("common.destinations"), to: "/destinations" },
+            { label: t("home.destinations.subCategories.eatDrink.breadcrumbLabel", "Eat, drink & dance") },
           ]}
         />
       </div>
@@ -331,9 +333,9 @@ const EatDrinkDancePage = () => {
                 marginBottom: "0.55rem",
               }}
             >
-              No eat, drink & dance spots available yet.
+              {t("home.destinations.subCategories.eatDrink.emptyTitle", "No eat, drink & dance spots available yet.")}
             </div>
-            <div>Once destinations are added, they will appear here.</div>
+            <div>{t("home.destinations.subCategories.common.onceAdded", "Once destinations are added, they will appear here.")}</div>
           </div>
         )}
 
@@ -384,9 +386,9 @@ const EatDrinkDancePage = () => {
                     marginBottom: "0.55rem",
                   }}
                 >
-                  No eat, drink & dance spots match your filters.
+                  {t("home.destinations.subCategories.eatDrink.noMatchTitle", "No eat, drink & dance spots match your filters.")}
                 </div>
-                <div>Try adjusting your search or clear filters.</div>
+                <div>{t("home.destinations.subCategories.common.tryAdjustFilters", "Try adjusting your search or clear filters.")}</div>
               </div>
             )}
 
@@ -430,7 +432,9 @@ const EatDrinkDancePage = () => {
                       ) : (
                         <MapIcon className="w-4 h-4" />
                       )}
-                      {showMapMobile ? "Show List" : "Show Map"}
+                      {showMapMobile
+                        ? t("home.destinations.subCategories.common.showList", "Show List")
+                        : t("home.destinations.subCategories.common.showMap", "Show Map")}
                     </button>
                   </div>
                 )}
@@ -494,7 +498,7 @@ const EatDrinkDancePage = () => {
                                 fontSize: "0.9rem",
                               }}
                             >
-                              See All ({dests.length})
+                              {t("home.destinations.subCategories.common.seeAllCount", "See All ({{count}})", { count: dests.length })}
                             </button>
                           </div>
                         )}

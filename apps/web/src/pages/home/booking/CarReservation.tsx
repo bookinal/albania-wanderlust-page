@@ -47,10 +47,12 @@ function MosaicGallery({
   images,
   onOpen,
   alt,
+  t,
 }: {
   images: string[];
   onOpen: (index: number) => void;
   alt: string;
+  t: any;
 }) {
   const total = images.length;
   if (total === 0) return null;
@@ -125,7 +127,7 @@ function MosaicGallery({
           }}
         >
           <Images className="w-4 h-4" />
-          View all {total}
+          {t("home.destinations.viewAllCount", "View all {{count}}", { count: total })}
         </span>
       </div>
     ) : null;
@@ -419,7 +421,9 @@ const CarReservation = () => {
       <div style={{ background: tk.pageBg }} className="flex items-center justify-center h-screen">
         <div className="text-center">
           <Loader2 style={{ color: tk.brand }} className="animate-spin mx-auto mb-4" size={48} />
-          <p style={{ color: tk.mutedText }} className="font-medium">Loading car details...</p>
+          <p style={{ color: tk.mutedText }} className="font-medium">
+            {t("billing.loadingCarDetails")}
+          </p>
         </div>
       </div>
     );
@@ -432,8 +436,15 @@ const CarReservation = () => {
           <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: tk.brandSoftStrong }}>
             <CarIcon style={{ color: tk.brand }} size={40} />
           </div>
-          <h3 style={{ color: tk.pageText }} className="text-2xl font-bold mb-2">Car Not Found</h3>
-          <p style={{ color: tk.mutedText }} className="mb-6">The car you're looking for doesn't exist or has been removed.</p>
+          <h3 style={{ color: tk.pageText }} className="text-2xl font-bold mb-2">
+            {t("billing.carNotFoundTitle", "Car Not Found")}
+          </h3>
+          <p style={{ color: tk.mutedText }} className="mb-6">
+            {t(
+              "billing.carNotFoundMessage",
+              "The car you're looking for doesn't exist or has been removed.",
+            )}
+          </p>
           <button
             onClick={() => navigate("/searchCarResults")}
             style={{ background: tk.brand, color: '#fff' }}
@@ -499,10 +510,13 @@ const CarReservation = () => {
                 images={images}
                 onOpen={(idx) => setLightboxIndex(idx)}
                 alt={`${car.brand} ${car.name}`}
+                t={t}
               />
             ) : (
               <div className="h-full flex items-center justify-center" style={{ background: tk.statBg }}>
-                <p style={{ color: tk.mutedText }}>No images available</p>
+                <p style={{ color: tk.mutedText }}>
+                  {t("billing.noImagesAvailable", "No images available")}
+                </p>
               </div>
             )}
 
@@ -536,7 +550,10 @@ const CarReservation = () => {
                   <h1 className="text-3xl sm:text-5xl font-bold mb-3 drop-shadow-lg">{car.name}</h1>
                   <div className="flex items-center gap-2 text-base sm:text-lg mb-4">
                     <MapPin size={20} />
-                    <span className="drop-shadow">{car.pickUpLocation || "Pick-up location not specified"}</span>
+                    <span className="drop-shadow">
+                      {car.pickUpLocation ||
+                        t("billing.pickUpLocationNotSpecified", "Pick-up location not specified")}
+                    </span>
                   </div>
                   <div className="flex items-center gap-3 sm:gap-4 flex-wrap">
                     <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full">
@@ -595,7 +612,11 @@ const CarReservation = () => {
                       <span style={{ color: tk.pageText }} className="text-5xl font-bold">{displayPrice}</span>
                     </div>
                     {hasSeasonalPrice && (
-                      <p style={{ color: tk.mutedText }} className="text-sm mt-1 line-through">Base: ${car.pricePerDay}/day</p>
+                      <p style={{ color: tk.mutedText }} className="text-sm mt-1 line-through">
+                        {t("billing.basePricePerDay", "Base: ${{price}}/day", {
+                          price: car.pricePerDay,
+                        })}
+                      </p>
                     )}
                     <p style={{ color: tk.mutedText }} className="text-sm mt-2">+ {car.insurance ? `$${car.insurance} ` : ""}{t("billing.insurance")}</p>
                   </div>
@@ -696,7 +717,10 @@ const CarReservation = () => {
                   </div>
                   <div>
                     <p style={{ color: tk.mutedText }} className="text-sm font-medium mb-1">{t("billing.pickUpLocation")}</p>
-                    <p style={{ color: tk.pageText }} className="font-medium">{car.pickUpLocation || "Location not specified"}</p>
+                    <p style={{ color: tk.pageText }} className="font-medium">
+                      {car.pickUpLocation ||
+                        t("billing.locationNotSpecified", "Location not specified")}
+                    </p>
                   </div>
                 </div>
 

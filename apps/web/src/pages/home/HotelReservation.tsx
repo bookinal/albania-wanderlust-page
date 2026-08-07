@@ -39,10 +39,12 @@ function MosaicGallery({
   images,
   onOpen,
   alt,
+  t,
 }: {
   images: string[];
   onOpen: (index: number) => void;
   alt: string;
+  t: any;
 }) {
   const total = images.length;
   if (total === 0) return null;
@@ -117,7 +119,7 @@ function MosaicGallery({
           }}
         >
           <Images className="w-4 h-4" />
-          View all {total}
+          {t("hotel.viewAllPhotos", "View All {{count}} Photos", { count: total })}
         </span>
       </div>
     ) : null;
@@ -477,7 +479,7 @@ const HotelReservation = () => {
           style={{ background: tk.backBg, color: tk.dimText }}
         >
           <ArrowLeft size={16} />
-          Back to Hotels
+          {t("hotel.backToHotels")}
         </button>
 
         {/* Hero Gallery Section */}
@@ -495,6 +497,7 @@ const HotelReservation = () => {
                 images={images}
                 onOpen={(idx) => setLightboxIndex(idx)}
                 alt={hotel.name}
+                t={t}
               />
             ) : (
               <div className="h-full flex items-center justify-center" style={{ background: tk.statBg }}>
@@ -539,7 +542,11 @@ const HotelReservation = () => {
                 </div>
                 <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full">
                   <Users size={20} />
-                  <span className="font-medium">{hotel.occupancy}% occupied</span>
+                  <span className="font-medium">
+                    {t("hotel.percentOccupied", "{{percent}}% occupied", {
+                      percent: hotel.occupancy,
+                    })}
+                  </span>
                 </div>
               </div>
             </div>
@@ -619,7 +626,11 @@ const HotelReservation = () => {
                 {t("hotel.aboutThisHotel")}
               </h2>
               <p className="leading-relaxed text-lg" style={{ color: tk.dimText }}>
-                {hotel.description || "Experience luxury and comfort at this exceptional hotel. Our dedicated staff ensures your stay is memorable with top-notch service and modern amenities."}
+                {hotel.description ||
+                  t(
+                    "hotel.defaultDescription",
+                    "Experience luxury and comfort at this exceptional hotel. Our dedicated staff ensures your stay is memorable with top-notch service and modern amenities.",
+                  )}
               </p>
             </div>
 
@@ -678,7 +689,12 @@ const HotelReservation = () => {
                   </div>
                   <div>
                     <p className="text-sm font-medium mb-1" style={{ color: tk.mutedText }}>{t("hotel.address")}</p>
-                    <p className="font-medium" style={{ color: tk.pageText }}>{hotel.address || `${hotel.location}, Complete Address`}</p>
+                    <p className="font-medium" style={{ color: tk.pageText }}>
+                      {hotel.address ||
+                        t("hotel.completeAddressFallback", "{{location}}, Complete Address", {
+                          location: hotel.location,
+                        })}
+                    </p>
                   </div>
                 </div>
               </div>

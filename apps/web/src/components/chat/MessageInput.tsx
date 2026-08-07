@@ -4,6 +4,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Send } from "lucide-react";
 import { useTheme } from "@/context/ThemeContext";
 import { getChatThemeTokens } from "./chatTheme";
+import { useTranslation } from "react-i18next";
 
 export interface MessageInputPrefill {
   text: string;
@@ -20,12 +21,15 @@ interface MessageInputProps {
 export const MessageInput: React.FC<MessageInputProps> = ({
   onSendMessage,
   disabled = false,
-  placeholder = "Type your message...",
+  placeholder,
   prefill,
 }) => {
+  const { t } = useTranslation();
   const [message, setMessage] = useState("");
   const { isDark, isBlue } = useTheme();
   const tk = getChatThemeTokens({ isDark, isBlue });
+  const resolvedPlaceholder =
+    placeholder ?? t("chat.typeYourMessage", "Type your message...");
 
   useEffect(() => {
     if (prefill) {
@@ -61,7 +65,7 @@ export const MessageInput: React.FC<MessageInputProps> = ({
         value={message}
         onChange={(e) => setMessage(e.target.value)}
         onKeyDown={handleKeyDown}
-        placeholder={placeholder}
+        placeholder={resolvedPlaceholder}
         disabled={disabled}
         className="resize-none min-h-[60px] max-h-[120px]"
         rows={2}

@@ -101,7 +101,136 @@
       "readMore": "Lexo më shumë",
       "showLess": "Shfaq më pak",
       "noResultsTitle": "Asnjë destinacion nuk përputhet me filtrat",
-      "noResultsDescription": "Provoni një fjalë tjetër kyçe ose kaloni në një kategori tjetër."
+      "noResultsDescription": "Provoni një fjalë tjetër kyçe ose kaloni në një kategori tjetër.",
+      "viewAllCount": "Shiko të gjitha ({{count}})",
+      "exploreHeroTitle": "Eksploroni më të mirën e Shqipërisë",
+      "exploreHeroDescription": "Nga plazhet kristal deri te malet madhështore, zbuloni vendet më të bukura të Shqipërisë.",
+      "seeMore": "Shiko më shumë",
+      "noDestinationsFound": "Nuk u gjetën destinacione.",
+      "viewAll": "Shiko të gjitha",
+      "quickFacts": {
+        "location": "Vendndodhja",
+        "region": "Rajoni",
+        "type": "Lloji",
+        "built": "Ndërtuar",
+        "founded": "Themeluar",
+        "historicalPeriod": "Periudha historike",
+        "beachType": "Lloji i plazhit",
+        "cuisineType": "Lloji i kuzhinës",
+        "howToBook": "Si të rezervoni",
+        "water": "Uji",
+        "bestFor": "Më i miri për",
+        "crowdLevel": "Niveli i turmës",
+        "bestMonths": "Muajt më të mirë",
+        "priceLevel": "Niveli i çmimit",
+        "population": "Popullsia",
+        "elevation": "Lartësia",
+        "heritageStatus": "Statusi i trashëgimisë",
+        "duration": "Kohëzgjatja",
+        "activities": "Aktivitetet",
+        "highlight": "Pika kryesore",
+        "difficulty": "Vështirësia",
+        "siteType": "Lloji i vendit",
+        "museumType": "Lloji i muzeut",
+        "established": "Themeluar",
+        "admission": "Hyrja",
+        "unescoYearInscribed": "Viti i regjistrimit UNESCO",
+        "activityType": "Lloji i aktivitetit",
+        "eventType": "Lloji i eventit",
+        "seeLess": "Shiko më pak",
+        "seeMore": "Shiko më shumë"
+      },
+      "transport": {
+        "byCar": "Me makinë",
+        "byFoot": "Me këmbë",
+        "byBoat": "Me varkë"
+      },
+      "contact": {
+        "instagram": "Instagram",
+        "facebook": "Facebook",
+        "website": "Faqja e internetit",
+        "whatsapp": "WhatsApp",
+        "tripadvisor": "TripAdvisor"
+      },
+      "tipsForVisitors": {
+        "title": "Këshilla për vizitorët",
+        "description": "Shënime praktike për të planifikuar një vizitë më të lehtë përpara se të niseni."
+      },
+      "howToReach": {
+        "title": "Si të arrini",
+        "description": "Opsione të shpejta transporti dhe një pamje paraprake e hartës për ta bërë mbërritjen më të lehtë.",
+        "noTransportDetails": "Detajet e transportit do të shfaqen këtu sapo të shtohen itineraret për këtë destinacion.",
+        "mapPreview": "Pamje paraprake e hartës",
+        "mapPreviewDescription": "Një vështrim i shpejtë i zonës së destinacionit përpara se të niseni.",
+        "directions": "Drejtimet"
+      },
+      "nearbyAttractions": {
+        "title": "Atraksione afër",
+        "description": "Atraksione të tjera afër {{name}}."
+      },
+      "nearbyApartments": {
+        "title": "Apartamente afër",
+        "description": "Apartamente afër {{name}}."
+      },
+      "subCategories": {
+        "defaultHeroDescription": "Zbuloni destinacione të mahnitshme në të gjithë Shqipërinë.",
+        "noDestinationsAvailable": "Ende nuk ka destinacione {{subcategory}} të disponueshme.",
+        "noDestinationsMatch": "Asnjë destinacion {{subcategory}} nuk përputhet me filtrat tuaja.",
+        "common": {
+          "backToCategories": "Kthehu te kategoritë",
+          "showList": "Shfaq listën",
+          "showMap": "Shfaq hartën",
+          "seeAllCount": "Shiko të gjitha ({{count}})",
+          "onceAdded": "Sapo të shtohen destinacionet, ato do të shfaqen këtu.",
+          "tryAdjustFilters": "Provoni të rregulloni kërkimin ose pastroni filtrat."
+        },
+        "historic": {
+          "alt": "Shqipëria historike",
+          "kicker": "Koleksioni i trashëgimisë",
+          "title": "Shqipëria Historike",
+          "description": "Udhëtoni në kohë për të zbuluar kështjella shekullore, rrënoja të lashta, arkitekturë të hollësishme dhe qytete ku historia vazhdon të jetojë.",
+          "breadcrumbLabel": "Histori & kulturë",
+          "emptyTitle": "Ende nuk ka destinacione historike të disponueshme.",
+          "noMatchTitle": "Asnjë destinacion historik nuk përputhet me filtrat tuaja."
+        },
+        "eatDrink": {
+          "alt": "Ha, pi dhe kërce në Shqipëri",
+          "kicker": "Shije & Net",
+          "title": "Ha, Pi & Kërce",
+          "description": "Shijoni skenën e gjallë kulinare të Shqipërisë, pini në bare të gjalla dhe kërceni gjithë natën në vendet më të mira të vendit.",
+          "breadcrumbLabel": "Ha, pi dhe kërce",
+          "emptyTitle": "Ende nuk ka vende për të ngrënë, pirë apo kërcyer.",
+          "noMatchTitle": "Asnjë vend nuk përputhet me filtrat tuaja."
+        },
+        "experiences": {
+          "alt": "Përvoja në Shqipëri",
+          "kicker": "Aventura ju pret",
+          "title": "Përvoja",
+          "description": "Zhytuni në aventura të paharrueshme — nga ecja në maja të thepisura dhe eksplorimi i shtigjeve të lashta deri te kajaku në ujëra kristal.",
+          "breadcrumbLabel": "Përvoja",
+          "emptyTitle": "Ende nuk ka përvoja të disponueshme.",
+          "emptyDescription": "Sapo të shtohen përvojat, ato do të shfaqen këtu.",
+          "noMatchTitle": "Asnjë përvojë nuk përputhet me filtrat tuaja."
+        },
+        "landscapes": {
+          "alt": "Plazhet në Shqipëri",
+          "kicker": "Koleksioni bregdetar",
+          "title": "Peizazhet e Shqipërisë",
+          "description": "Zbuloni Rivierën përmes gjireve të ndritshme, ditëve të gjata not, gjireve të fshehura dhe shpëtimeve bregdetare të mbledhura në një vend.",
+          "breadcrumbLabel": "Plazhet",
+          "emptyTitle": "Ende nuk ka plazhe të disponueshme.",
+          "emptyDescription": "Sapo të shtohen destinacionet bregdetare, ato do të shfaqen këtu.",
+          "noMatchTitle": "Asnjë plazh nuk përputhet me filtrat tuaja."
+        },
+        "adventure": {
+          "alt": "Aventurë në Shqipëri",
+          "kicker": "Koleksioni i egër",
+          "title": "Shqipëria e Aventurës",
+          "description": "Eksploroni majat e thepisura, ngjituni në malet e mallkuara, bëni rafting në kanione të thella dhe gjeni përvoja plot adrenalinë në natyrë.",
+          "breadcrumbLabel": "Aventurë",
+          "emptyTitle": "Ende nuk ka destinacione aventure të disponueshme."
+        }
+      }
     },
     "culture": {
       "title": "Kultura & Kuzhina",
@@ -200,7 +329,34 @@
     "phoneRequired": "Numri i telefonit është i kërkuar",
     "invalidPhone": "Numër telefoni i pavlefshëm",
     "ownPropertyTitle": "Nuk mund të rezervoni pronën tuaj",
-    "ownPropertyMessage": "Nuk mund të rezervoni një pronë që ju e zotëroni. Ju lutemi zgjidhni një listim tjetër."
+    "ownPropertyMessage": "Nuk mund të rezervoni një pronë që ju e zotëroni. Ju lutemi zgjidhni një listim tjetër.",
+    "notAvailable": "Nuk është e disponueshme",
+    "propertyUnavailableMessage": "Kjo pronë aktualisht nuk është e disponueshme për rezervim.",
+    "goBack": "Kthehu",
+    "apartmentBookingSuccess": "Rezervimi juaj i apartamentit u krijua me sukses.",
+    "hotelBookingSuccess": "Rezervimi juaj i hotelit u krijua me sukses.",
+    "selectCheckInCheckOutDates": "Ju lutemi zgjidhni datat e hyrjes dhe daljes.",
+    "loadingApartmentDetails": "Duke ngarkuar detajet e apartamentit…",
+    "apartmentNotFound": "Apartamenti nuk u gjet",
+    "loadingHotelDetails": "Duke ngarkuar detajet e hotelit…",
+    "hotelNotFound": "Hoteli nuk u gjet",
+    "checkInCheckOutDates": "Datat e hyrjes dhe daljes",
+    "selectStayDates": "Zgjidhni datat e qëndrimit",
+    "checkInTime": "Ora e hyrjes",
+    "checkOutTime": "Ora e daljes",
+    "stayDuration": "Kohëzgjatja e qëndrimit",
+    "locationNotSpecified": "Vendndodhja nuk është specifikuar",
+    "rooms": "Dhoma",
+    "beds": "Shtretër",
+    "noImagesAvailable": "Nuk ka imazhe të disponueshme",
+    "carNotFoundTitle": "Makina nuk u gjet",
+    "carNotFoundMessage": "Makina që po kërkoni nuk ekziston ose është hequr.",
+    "pickUpLocationNotSpecified": "Vendndodhja e marrjes nuk është specifikuar",
+    "basePricePerDay": "Bazë: ${{price}}/ditë",
+    "apartmentNotFoundTitle": "Apartamenti nuk u gjet",
+    "apartmentNotFoundMessage": "Apartamenti që po kërkoni nuk ekziston ose është hequr.",
+    "plusUtilities": "+ shpenzime shtesë",
+    "apartmentDefaultDescription": "Një apartament i bukur dhe i rehatshëm, perfekt për nevojat tuaja. Kjo pronë ofron pajisje moderne dhe një vendndodhje të shkëlqyer për një qëndrim të përshtatshëm."
   },
   "terms": {
     "minimumRentalPeriod": "Periudha minimale e qirasë",
@@ -462,12 +618,37 @@
     "more": "Më shumë",
     "day": "ditë",
     "days": "ditë",
+    "night": "natë",
+    "nights": "netë",
+    "amenities": {
+      "wifi": "WiFi",
+      "airConditioning": "Kondicioner",
+      "heating": "Ngrohje",
+      "parking": "Parkim",
+      "elevator": "Ashensor",
+      "kitchen": "Kuzhinë",
+      "washingMachine": "Makinë larëse",
+      "tv": "TV",
+      "workspace": "Hapësirë pune",
+      "balcony": "Ballkon",
+      "pool": "Pishinë",
+      "security": "Siguri"
+    },
     "destinations": "Destinacione",
     "pageNotFound": "Oops! Faqja nuk u gjet",
     "returnToHome": "Kthehu në Faqen Kryesore",
     "accountSuspended": "Oops! Duket se llogaria juaj është pezulluar për disa arsye nga një Admin",
     "unauthorizedAccess": "Oops! Ju nuk jeni të autorizuar të hyni në këtë faqe",
-    "seeAll": "Shiko të Gjitha"
+    "seeAll": "Shiko të Gjitha",
+    "userAvatar": "Avatari i përdoruesit",
+    "anonymousUser": "Përdorues anonim",
+    "toggleFilters": "Shfaq/fshih filtrat",
+    "closeFilters": "Mbyll filtrat",
+    "toggleMenu": "Shfaq/fshih menynë",
+    "albania": "Shqipëria",
+    "scrollDown": "Rrëshqit poshtë",
+    "albanianLandscapeAlt": "Peizazhi shqiptar",
+    "albanianCultureAlt": "Kultura dhe traditat shqiptare"
   },
   "letUsInspireYou": {
     "title": "Lëreni të jemi të inspiruar",
@@ -583,6 +764,9 @@
     "noImagesAvailable": "Nuk ka imazhe të disponueshme",
     "reservation": "Rezervimi",
     "reservationComingSoon": "Funksioni i rezervimit vjen së shpejti!",
+    "percentOccupied": "{{percent}}% e zënë",
+    "defaultDescription": "Përjetoni luks dhe rehati në këtë hotel të jashtëzakonshëm. Stafi ynë i përkushtuar siguron që qëndrimi juaj të jetë i paharrueshëm me shërbim cilësor dhe pajisje moderne.",
+    "completeAddressFallback": "{{location}}, Adresa e plotë",
     "amenities": {
       "freeWifi": "WiFi Falas",
       "parking": "Parking",
@@ -1520,5 +1704,20 @@
       "fall": "Vjeshtë"
     },
     "tip": "💡 Këshillë: Vendosni çmime të ndryshme për sezonet kulmore (vera) dhe periudhat jashtë sezonit. Çmimi bazë do të përdoret si alternativë nëse nuk është vendosur çmim mujor."
+  },
+  "chat": {
+    "failedToLoadConversation": "Ngarkimi i bisedës dështoi",
+    "failedToSendMessage": "Dërgimi i mesazhit dështoi",
+    "questionAboutTitle": "Pyetje rreth {{title}}",
+    "supportRequest": "Kërkesë për mbështetje",
+    "suggestionPrefillText": "Përshëndetje, kam një pyetje rreth kësaj makine: {{title}}\n{{url}}",
+    "supportChat": "Bisedë mbështetjeje",
+    "askAboutPrefix": "Pyet rreth",
+    "askAboutThisCar": "Pyet rreth kësaj makine",
+    "typeYourMessage": "Shkruani mesazhin tuaj...",
+    "pleaseLogInToSendMessages": "Ju lutemi kyçuni për të dërguar mesazhe",
+    "noMessagesYet": "Ende nuk ka mesazhe. Filloni bisedën!",
+    "read": "Lexuar",
+    "sent": "Dërguar"
   }
 }

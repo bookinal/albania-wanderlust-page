@@ -50,10 +50,13 @@ export default function ApartmentBilling() {
           setApartment(null);
         } else if (data.status === "maintenance" || data.status === "review") {
           Swal.fire({
-            title: "Not Available",
-            text: "This property is currently unavailable for booking.",
+            title: t("billing.notAvailable", "Not Available"),
+            text: t(
+              "billing.propertyUnavailableMessage",
+              "This property is currently unavailable for booking.",
+            ),
             icon: "error",
-            confirmButtonText: "Go Back",
+            confirmButtonText: t("billing.goBack", "Go Back"),
             confirmButtonColor: tk.brand,
           }).then(() => navigate(`/apartmentReservation/${id}`));
           return;
@@ -115,8 +118,11 @@ export default function ApartmentBilling() {
     onSuccess: () => {
       Swal.fire({
         icon: "success",
-        title: "Booking confirmed",
-        text: "Your apartment booking has been created successfully.",
+        title: t("billing.bookingConfirmed"),
+        text: t(
+          "billing.apartmentBookingSuccess",
+          "Your apartment booking has been created successfully.",
+        ),
       });
       navigate("/myBookings");
     },
@@ -124,10 +130,8 @@ export default function ApartmentBilling() {
       console.error("Error creating booking:", error);
       Swal.fire({
         icon: "error",
-        title: "Booking failed",
-        text:
-          error?.message ||
-          "We couldn't create your booking. Please try again or log in again.",
+        title: t("billing.bookingFailed"),
+        text: error?.message || t("billing.bookingFailedMessage"),
       });
     },
   });
@@ -173,16 +177,19 @@ export default function ApartmentBilling() {
     if (!formData.phone || !isValidPhoneNumber(formData.phone)) {
       Swal.fire({
         icon: "warning",
-        title: "Invalid phone number",
-        text: "Please enter a valid phone number before confirming your booking.",
+        title: t("billing.invalidPhoneNumber"),
+        text: t("billing.enterValidPhoneNumber"),
       });
       return;
     }
     if (!dateRange?.from || !dateRange?.to) {
       Swal.fire({
         icon: "warning",
-        title: "Missing dates",
-        text: "Please select check-in and check-out dates.",
+        title: t("billing.missingDates"),
+        text: t(
+          "billing.selectCheckInCheckOutDates",
+          "Please select check-in and check-out dates.",
+        ),
       });
       return;
     }
@@ -239,7 +246,9 @@ export default function ApartmentBilling() {
             style={{ borderColor: tk.brand }}
             className="inline-block animate-spin rounded-full h-10 w-10 border-b-2 mb-4"
           ></div>
-          <p style={{ color: tk.mutedText }}>Loading apartment details…</p>
+          <p style={{ color: tk.mutedText }}>
+            {t("billing.loadingApartmentDetails", "Loading apartment details…")}
+          </p>
         </div>
       </div>
     );
@@ -251,7 +260,9 @@ export default function ApartmentBilling() {
         style={{ background: tk.pageBg, minHeight: "100vh" }}
         className="flex items-center justify-center"
       >
-        <p style={{ color: tk.pageText }}>Apartment not found</p>
+        <p style={{ color: tk.pageText }}>
+          {t("billing.apartmentNotFound", "Apartment not found")}
+        </p>
       </div>
     );
   }
@@ -321,7 +332,7 @@ export default function ApartmentBilling() {
                       name="fullName"
                       value={formData.fullName}
                       onChange={handleInputChange}
-                      placeholder="John Doe"
+                      placeholder={t("billing.fullNamePlaceholder")}
                       style={inputStyle}
                       required
                     />
@@ -345,7 +356,7 @@ export default function ApartmentBilling() {
                           name="email"
                           value={formData.email}
                           onChange={handleInputChange}
-                          placeholder="john@example.com"
+                          placeholder={t("billing.emailPlaceholder")}
                           style={inputWithIconStyle}
                           required
                         />
@@ -362,15 +373,15 @@ export default function ApartmentBilling() {
                       <PhoneInput
                         international
                         countryCallingCodeEditable={false}
-                        placeholder="Enter phone number"
+                        placeholder={t("billing.phonePlaceholder")}
                         value={formData.phone}
                         onChange={handlePhoneChange}
                         error={
                           formData.phone
                             ? isValidPhoneNumber(formData.phone)
                               ? undefined
-                              : "Invalid phone number"
-                            : "Phone number required"
+                              : t("billing.invalidPhone")
+                            : t("billing.phoneRequired")
                         }
                       />
                     </div>
@@ -399,12 +410,12 @@ export default function ApartmentBilling() {
                       style={{ color: tk.labelText }}
                       className="block text-sm font-medium mb-2"
                     >
-                      Check-in & Check-out Dates *
+                      {t("billing.checkInCheckOutDates", "Check-in & Check-out Dates")} *
                     </label>
                     <DateRangePicker
                       dateRange={dateRange}
                       onDateRangeChange={setDateRange}
-                      placeholder="Select stay dates"
+                      placeholder={t("billing.selectStayDates", "Select stay dates")}
                       minDate={new Date()}
                       disabledDates={unavailabilityDates.map(
                         (date) => new Date(date),
@@ -418,7 +429,7 @@ export default function ApartmentBilling() {
                         style={{ color: tk.labelText }}
                         className="block text-sm font-medium mb-2"
                       >
-                        Check-in Time
+                        {t("billing.checkInTime", "Check-in Time")}
                       </label>
                       <div className="relative">
                         <Clock
@@ -439,7 +450,7 @@ export default function ApartmentBilling() {
                         style={{ color: tk.labelText }}
                         className="block text-sm font-medium mb-2"
                       >
-                        Check-out Time
+                        {t("billing.checkOutTime", "Check-out Time")}
                       </label>
                       <div className="relative">
                         <Clock
@@ -466,8 +477,13 @@ export default function ApartmentBilling() {
                       className="mt-4 p-4 rounded-lg"
                     >
                       <p style={{ color: tk.infoText }} className="text-sm">
-                        <span className="font-semibold">Stay Duration:</span>{" "}
-                        {totalDays} {totalDays === 1 ? "night" : "nights"}
+                        <span className="font-semibold">
+                          {t("billing.stayDuration", "Stay Duration")}:
+                        </span>{" "}
+                        {totalDays}{" "}
+                        {totalDays === 1
+                          ? t("common.night", "night")
+                          : t("common.nights", "nights")}
                       </p>
                     </div>
                   )}
@@ -503,7 +519,7 @@ export default function ApartmentBilling() {
                     <p style={{ color: tk.mutedText }} className="text-sm mb-4">
                       {apartment.location ||
                         apartment.address ||
-                        "Location not specified"}
+                        t("billing.locationNotSpecified", "Location not specified")}
                     </p>
                     <div className="space-y-2 mb-4">
                       <div
@@ -511,7 +527,9 @@ export default function ApartmentBilling() {
                         style={{ color: tk.dimText }}
                       >
                         <Home className="w-4 h-4" />
-                        <span>{apartment.rooms} Rooms</span>
+                        <span>
+                          {apartment.rooms} {t("billing.rooms", "Rooms")}
+                        </span>
                       </div>
                       {apartment.beds && (
                         <div
@@ -519,7 +537,9 @@ export default function ApartmentBilling() {
                           style={{ color: tk.dimText }}
                         >
                           <span>•</span>
-                          <span>{apartment.beds} Beds</span>
+                          <span>
+                            {apartment.beds} {t("billing.beds", "Beds")}
+                          </span>
                         </div>
                       )}
                       {apartment.amenities &&
@@ -561,7 +581,7 @@ export default function ApartmentBilling() {
                       className="w-5 h-5"
                       style={{ color: tk.brand }}
                     />
-                    Price Summary
+                    {t("billing.priceSummary")}
                   </h3>
 
                   <div className="space-y-3 mb-4">
@@ -571,7 +591,9 @@ export default function ApartmentBilling() {
                     >
                       <span>
                         ${apartment.price}/day × {totalDays || 1}{" "}
-                        {totalDays === 1 ? "day" : "days"}
+                        {totalDays === 1
+                          ? t("common.day")
+                          : t("common.days")}
                       </span>
                       <span className="font-medium">
                         ${totalPrice.toFixed(2)}
@@ -603,7 +625,7 @@ export default function ApartmentBilling() {
                         style={{ color: tk.pageText }}
                         className="text-lg font-semibold"
                       >
-                        Total
+                        {t("billing.total")}
                       </span>
                       <span
                         style={{ color: tk.brand }}
@@ -637,15 +659,15 @@ export default function ApartmentBilling() {
                   >
                     <Check className="w-5 h-5" />
                     {bookingMutation.isPending
-                      ? "Processing..."
-                      : "Confirm Booking"}
+                      ? t("billing.processing")
+                      : t("billing.confirmBooking")}
                   </button>
 
                   <p
                     style={{ color: tk.mutedText }}
                     className="text-xs text-center mt-4"
                   >
-                    You won't be charged yet
+                    {t("billing.paymentNote")}
                   </p>
                 </div>
               </div>
