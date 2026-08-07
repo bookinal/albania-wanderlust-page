@@ -31,6 +31,7 @@ import Swal from "sweetalert2";
 import { userService } from "@/services/api/userService";
 import { User } from "@/types/user.types";
 import { useTheme } from "@/context/ThemeContext";
+import { usePageChatSuggestion } from "@/context/ChatSuggestionContext";
 
 // Helper to get current month as Month type
 const getCurrentMonth = (): Month => {
@@ -351,6 +352,15 @@ const CarReservation = () => {
   const [images, setImages] = useState<string[]>([]);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const [user, setUser] = useState<User | null>(null);
+
+  usePageChatSuggestion(
+    car
+      ? {
+          title: `${car.brand} ${car.name}`,
+          url: `${window.location.origin}/carReservation/${car.id}`,
+        }
+      : null,
+  );
 
   useEffect(() => {
     const fetchCar = async () => {

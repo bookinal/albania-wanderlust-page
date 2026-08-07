@@ -17,6 +17,16 @@
       "title": "Gjeni Marrëveshjen Tuaj të Përkryer",
       "description": "Nga hotelet luksusë deri te apartamentet të rehatshme, zbuloni në qëndrime që përshkruhen me stilin dhe buxhetin tuaj"
     },
+    "trustBar": {
+      "verifiedTitle": "Destinacione të Verifikuara",
+      "verifiedDesc": "Vende të përzgjedhura & përvoja autentike vendase",
+      "priceTitle": "Garanci për Çmimin më të Mirë",
+      "priceDesc": "Çmime transparente pa tarifa të fshehura",
+      "supportTitle": "Mbështetje Lokale 24/7",
+      "supportDesc": "Asistencë e përkushtuar gjatë gjithë udhëtimit",
+      "securePaymentTitle": "Pagesë e Sigurt",
+      "securePaymentDesc": "Transaksione të sigurta dhe të enkriptuara"
+    },
     "hero": {
       "badge": "Gjemica e Lindore e Evropës - Këmb i Fshehur",
       "discover": "Zbuloni",

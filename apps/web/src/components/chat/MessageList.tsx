@@ -4,6 +4,7 @@ import { MessageBubble } from "./MessageBubble";
 import { Loader2 } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useTheme } from "@/context/ThemeContext";
+import { getChatThemeTokens } from "./chatTheme";
 
 interface MessageListProps {
   messages: ChatMessage[];
@@ -16,14 +17,11 @@ export const MessageList: React.FC<MessageListProps> = ({
   currentUserId,
   isLoading = false,
 }) => {
-  const { isDark } = useTheme();
+  const { isDark, isBlue } = useTheme();
   const scrollRef = useRef<HTMLDivElement>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
-  const tk = {
-    emptyText: isDark ? "rgba(255,255,255,0.45)" : "#6b6663",
-    loaderColor: "#E8192C",
-  };
+  const tk = getChatThemeTokens({ isDark, isBlue });
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -33,7 +31,7 @@ export const MessageList: React.FC<MessageListProps> = ({
 
   if (isLoading) {
     return (
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", flex: 1 }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", flex: 1, background: tk.bodyBg }}>
         <Loader2 style={{ width: "32px", height: "32px", color: tk.loaderColor, animation: "spin 1s linear infinite" }} />
       </div>
     );
@@ -41,14 +39,14 @@ export const MessageList: React.FC<MessageListProps> = ({
 
   if (messages.length === 0) {
     return (
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", flex: 1, color: tk.emptyText }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", flex: 1, color: tk.emptyText, background: tk.bodyBg }}>
         <p>No messages yet. Start the conversation!</p>
       </div>
     );
   }
 
   return (
-    <ScrollArea className="flex-1 px-4 py-2" ref={scrollAreaRef}>
+    <ScrollArea className="flex-1 px-4 py-2" style={{ background: tk.bodyBg }} ref={scrollAreaRef}>
       <div className="space-y-1">
         {messages.map((message) => (
           <MessageBubble

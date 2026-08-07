@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, MapPin, ChevronDown } from "lucide-react";
-import slide1 from "@/assets/home/slide1.jpg";
+import slide1 from "@/assets/home/s1.jpeg";
 import ReservationPickerValue from "./reservationPicker";
 import HeroInventoryPreview from "./HeroInventoryPreview";
 import { useTheme } from "@/context/ThemeContext";

@@ -2,6 +2,7 @@ import React from "react";
 import { ChatMessage } from "@albania/shared-types";
 import { format } from "date-fns";
 import { useTheme } from "@/context/ThemeContext";
+import { getChatThemeTokens } from "./chatTheme";
 
 interface MessageBubbleProps {
   message: ChatMessage;
@@ -14,20 +15,11 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
   isOwnMessage,
   showAvatar = true,
 }) => {
-  const { isDark } = useTheme();
+  const { isDark, isBlue } = useTheme();
   const isAdmin = message.role === "admin";
   const formattedTime = format(new Date(message.created_at), "p");
 
-  const tk = {
-    ownBubbleBg: "#E8192C",
-    ownBubbleText: "#ffffff",
-    otherBubbleBg: isDark ? "rgba(255,255,255,0.08)" : "#f0ece8",
-    otherBubbleText: isDark ? "#ffffff" : "#111115",
-    timeText: isDark ? "rgba(255,255,255,0.35)" : "#9e9994",
-    adminAvatarBg: "#E8192C",
-    userAvatarBg: isDark ? "rgba(255,255,255,0.12)" : "#d1cdc9",
-    avatarText: "#ffffff",
-  };
+  const tk = getChatThemeTokens({ isDark, isBlue });
 
   return (
     <div

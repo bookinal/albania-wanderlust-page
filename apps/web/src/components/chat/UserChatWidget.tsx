@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { MessageCircle, X, Minimize2 } from "lucide-react";
+import { MessageCircle, X, Minimize2, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { MessageList } from "./MessageList";
-import { MessageInput } from "./MessageInput";
+import { MessageInput, MessageInputPrefill } from "./MessageInput";
 import { chatService } from "@albania/api-client";
 import {
   ChatConversation,
@@ -15,6 +15,9 @@ import { apiClient } from "@albania/api-client";
 import { RealtimeChannel } from "@supabase/supabase-js";
 import { useToast } from "@/hooks/use-toast";
 import { userService } from "@/services/api/userService";
+import { useTheme } from "@/context/ThemeContext";
+import { useChatSuggestion } from "@/context/ChatSuggestionContext";
+import { getChatThemeTokens } from "./chatTheme";
 
 export const UserChatWidget: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -28,6 +31,10 @@ export const UserChatWidget: React.FC = () => {
   const [currentUserId, setCurrentUserId] = useState<string>("");
   const [isAdmin, setIsAdmin] = useState(false);
   const { toast } = useToast();
+  const { isDark, isBlue } = useTheme();
+  const tk = getChatThemeTokens({ isDark, isBlue });
+  const { suggestion } = useChatSuggestion();
+  const [prefill, setPrefill] = useState<MessageInputPrefill | null>(null);
 
   // Realtime channel
   const [channel, setChannel] = useState<RealtimeChannel | null>(null);
@@ -133,7 +140,7 @@ export const UserChatWidget: React.FC = () => {
       // Create conversation if it doesn't exist
       if (!convId) {
         const newConv = await chatService.createConversation({
-          title: "Support Request",
+          title: suggestion ? `Question about ${suggestion.title}` : "Support Request",
         });
         setConversation(newConv);
         convId = newConv.id;
@@ -175,6 +182,14 @@ export const UserChatWidget: React.FC = () => {
     setIsMinimized(!isMinimized);
   };
 
+  const handleUseSuggestion = () => {
+    if (!suggestion) return;
+    setPrefill({
+      text: `Hi, I have a question about this car: ${suggestion.title}\n${suggestion.url}`,
+      token: Date.now(),
+    });
+  };
+
   // Don't render for admin users
   if (isAdmin) {
     return null;
@@ -186,14 +201,24 @@ export const UserChatWidget: React.FC = () => {
       {!isOpen && (
         <Button
           onClick={handleOpen}
-          className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg z-50"
+          className="fixed bottom-6 right-6 h-14 w-14 rounded-full z-50"
           size="icon"
+          style={{
+            background: tk.fabBg,
+            color: tk.fabIcon,
+            boxShadow: tk.fabShadow,
+            border: "none",
+          }}
         >
           <MessageCircle className="h-6 w-6" />
           {unreadCount > 0 && (
             <Badge
-              variant="destructive"
               className="absolute -top-2 -right-2 h-6 w-6 flex items-center justify-center p-0"
+              style={{
+                background: tk.unreadBadgeBg,
+                color: tk.unreadBadgeText,
+                border: "none",
+              }}
             >
               {unreadCount}
             </Badge>
@@ -204,14 +229,22 @@ export const UserChatWidget: React.FC = () => {
       {/* Chat Panel */}
       {isOpen && (
         <Card
-          className={`fixed bottom-6 right-6 w-96 shadow-2xl z-50 flex flex-col transition-all ${
+          className={`fixed bottom-6 right-6 w-96 z-50 flex flex-col transition-all ${
             isMinimized ? "h-14" : "h-[600px]"
           }`}
+          style={{
+            background: tk.panelBg,
+            borderColor: tk.panelBorder,
+            boxShadow: tk.panelShadow,
+          }}
         >
           {/* Header */}
-          <div className="flex items-center justify-between p-4 border-b">
-            <div className="flex items-center gap-2">
-              <MessageCircle className="h-5 w-5" />
+          <div
+            className="flex items-center justify-between p-4"
+            style={{ background: tk.headerBg, borderBottom: `1px solid ${tk.headerBorder}` }}
+          >
+            <div className="flex items-center gap-2" style={{ color: tk.headerText }}>
+              <MessageCircle className="h-5 w-5" style={{ color: tk.brand }} />
               <h3 className="font-semibold">Support Chat</h3>
             </div>
             <div className="flex items-center gap-1">
@@ -220,6 +253,13 @@ export const UserChatWidget: React.FC = () => {
                 size="icon"
                 onClick={handleMinimize}
                 className="h-8 w-8"
+                style={{ color: tk.headerIconText }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = tk.headerIconBtnHover;
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = "transparent";
+                }}
               >
                 <Minimize2 className="h-4 w-4" />
               </Button>
@@ -228,11 +268,58 @@ export const UserChatWidget: React.FC = () => {
                 size="icon"
                 onClick={handleClose}
                 className="h-8 w-8"
+                style={{ color: tk.headerIconText }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = tk.headerIconBtnHover;
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = "transparent";
+                }}
               >
                 <X className="h-4 w-4" />
               </Button>
             </div>
           </div>
+
+          {/* Contextual Suggestion */}
+          {!isMinimized && suggestion && !isLoading && (
+            <div
+              style={{
+                margin: "12px 16px 0",
+                padding: "10px 12px",
+                borderRadius: "10px",
+                background: tk.otherBubbleBg,
+                border: `1px solid ${tk.panelBorder}`,
+                display: "flex",
+                alignItems: "flex-start",
+                gap: "8px",
+              }}
+            >
+              <Sparkles className="h-4 w-4" style={{ color: tk.brand, flexShrink: 0, marginTop: "2px" }} />
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <p style={{ margin: 0, fontSize: "13px", color: tk.otherBubbleText }}>
+                  Ask about <strong>{suggestion.title}</strong>
+                </p>
+                <button
+                  type="button"
+                  onClick={handleUseSuggestion}
+                  style={{
+                    marginTop: "6px",
+                    padding: "4px 10px",
+                    borderRadius: "9999px",
+                    border: "none",
+                    background: tk.brand,
+                    color: "#ffffff",
+                    fontSize: "12px",
+                    fontWeight: 600,
+                    cursor: "pointer",
+                  }}
+                >
+                  Ask about this car
+                </button>
+              </div>
+            </div>
+          )}
 
           {/* Messages */}
           {!isMinimized && (
@@ -252,6 +339,7 @@ export const UserChatWidget: React.FC = () => {
                     : "Please log in to send messages"
                 }
                 disabled={!currentUserId}
+                prefill={prefill}
               />
             </>
           )}

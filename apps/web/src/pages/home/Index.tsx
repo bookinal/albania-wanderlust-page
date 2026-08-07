@@ -1,4 +1,5 @@
 import Hero from "@/components/home/Hero";
+import TrustBar from "@/components/home/TrustBar";
 import Destinations from "@/components/home/DestinationsHomePreview";
 import Culture from "@/components/home/Culture";
 import PrimarySearchAppBar from "@/components/home/AppBar";
@@ -20,6 +21,7 @@ const Index = () => {
       {/* <LoadingScreen /> */}
       <PrimarySearchAppBar />
       <Hero />
+      <TrustBar />
 
       {/* Destinations Section */}
       <Destinations />

@@ -10,6 +10,7 @@ import ScrollToTop from "./components/ScrollToTop";
 import i18n from "./i18n/i18n";
 import { ThemeProvider } from "./context/ThemeContext";
 import { AuthProvider } from "./context/AuthContext";
+import { ChatSuggestionProvider } from "./context/ChatSuggestionContext";
 import Index from "./pages/home/Index";
 import OAuthSignInPage from "./pages/home/Auth";
 import NotFound from "./pages/NotFound";
@@ -99,6 +100,7 @@ const App = () => (
               <Toaster />
               <Sonner />
               <Analytics />
+              <ChatSuggestionProvider>
               <BrowserRouter>
                 <ScrollToTop />
                 <Routes>
@@ -255,6 +257,7 @@ const App = () => (
                 <UserChatWidget />
                 <Footer />
               </BrowserRouter>
+              </ChatSuggestionProvider>
             </TooltipProvider>
             <SpeedInsights />
           </QueryClientProvider>

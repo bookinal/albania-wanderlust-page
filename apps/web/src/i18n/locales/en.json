@@ -17,6 +17,16 @@
       "title": "Find Your Perfect Deal",
       "description": "From luxury hotels to cozy apartments, discover accommodations that match your style and budget"
     },
+    "trustBar": {
+      "verifiedTitle": "Verified Destinations",
+      "verifiedDesc": "Handpicked spots & authentic local experiences",
+      "priceTitle": "Best Price Guarantee",
+      "priceDesc": "Transparent local pricing with zero hidden fees",
+      "supportTitle": "24/7 Local Support",
+      "supportDesc": "Dedicated assistance throughout your journey",
+      "securePaymentTitle": "Secure Payment",
+      "securePaymentDesc": "Safe & encrypted transactions guaranteed"
+    },
     "hero": {
       "badge": "Southeast Europe's Hidden Gem",
       "discover": "Discover",

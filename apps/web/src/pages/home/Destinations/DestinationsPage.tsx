@@ -345,8 +345,6 @@ const DestinationsPage = () => {
             {t("home.destinations.backToHome")}
           </button>
 
-          <DestinationBreadcrumb items={[{ label: t("common.destinations") }]} />
-
           <div
             className="destinations-hero-grid"
             style={{ display: "grid", gap: "1rem", alignItems: "end" }}
@@ -394,9 +392,14 @@ const DestinationsPage = () => {
         </div>
       </section>
 
+      {/* Breadcrumb Section under Hero */}
+      <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "1.5rem 1rem 0" }}>
+        <DestinationBreadcrumb variant="page" items={[{ label: t("common.destinations") }]} />
+      </div>
+
       {/* Categories Content */}
       <section
-        style={{ padding: "4rem 1rem", maxWidth: "1280px", margin: "0 auto" }}
+        style={{ padding: "2.5rem 1rem 4rem", maxWidth: "1280px", margin: "0 auto" }}
       >
         {isLoading ? (
           <div className="flex justify-center items-center py-20">

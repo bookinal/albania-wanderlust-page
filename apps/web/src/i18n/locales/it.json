@@ -17,6 +17,16 @@
       "title": "Trova la Tua Offerta Perfetta",
       "description": "Dagli hotel di lusso agli accoglienti appartamenti, scopri strutture che corrispondono al tuo stile e budget"
     },
+    "trustBar": {
+      "verifiedTitle": "Destinazioni Verificate",
+      "verifiedDesc": "Luoghi selezionati & esperienze locali autentiche",
+      "priceTitle": "Miglior Prezzo Garantito",
+      "priceDesc": "Prezzi locali trasparenti senza costi nascosti",
+      "supportTitle": "Supporto Locale 24/7",
+      "supportDesc": "Assistenza dedicata durante tutto il tuo viaggio",
+      "securePaymentTitle": "Pagamento Sicuro",
+      "securePaymentDesc": "Transazioni sicure e crittografate garantite"
+    },
     "hero": {
       "badge": "La Perla Nascosta del Sud-Est Europa",
       "discover": "Scopri",

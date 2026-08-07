@@ -209,19 +209,12 @@ const groupedBySubcategory = useMemo(() => {
               background: "rgba(255,255,255,0.08)",
               color: "#ffffff",
               cursor: "pointer",
-              marginBottom: "5.5rem",
+              marginBottom: "3rem",
             }}
           >
             <ArrowLeft className="w-4 h-4" />
             Back to categories
           </button>
-
-          <DestinationBreadcrumb
-            items={[
-              { label: "Destinations", to: "/destinations" },
-              { label: "Destinations" },
-            ]}
-          />
 
           <div style={{ maxWidth: "52rem" }}>
             <p
@@ -262,11 +255,22 @@ const groupedBySubcategory = useMemo(() => {
         </div>
       </section>
 
+      {/* Breadcrumb Section under Hero */}
+      <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "1.5rem 1rem 0" }}>
+        <DestinationBreadcrumb
+          variant="page"
+          items={[
+            { label: "Destinations", to: "/destinations" },
+            { label: "Destinations" },
+          ]}
+        />
+      </div>
+
       <section
         style={{
           maxWidth: "1280px",
           margin: "0 auto",
-          padding: "2rem 1rem 4rem",
+          padding: "1rem 1rem 4rem",
         }}
       >
         {isLoading && (

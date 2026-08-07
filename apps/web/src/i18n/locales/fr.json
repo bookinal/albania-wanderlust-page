@@ -17,6 +17,16 @@
       "title": "Trouvez votre offre parfaite",
       "description": "Des hôtels de luxe aux appartements cosy, découvrez des hébergements qui correspondent à votre style et à votre budget"
     },
+    "trustBar": {
+      "verifiedTitle": "Destinations Vérifiées",
+      "verifiedDesc": "Lieux sélectionnés & expériences locales authentiques",
+      "priceTitle": "Meilleur Prix Garanti",
+      "priceDesc": "Tarifs locaux transparents sans frais cachés",
+      "supportTitle": "Assistance Locale 24/7",
+      "supportDesc": "Accompagnement dédié tout au long de votre séjour",
+      "securePaymentTitle": "Paiement Sécurisé",
+      "securePaymentDesc": "Transactions sécurisées et cryptées garanties"
+    },
     "hero": {
       "badge": "Joyau caché d'Europe du Sud-Est",
       "discover": "Découvrez",
