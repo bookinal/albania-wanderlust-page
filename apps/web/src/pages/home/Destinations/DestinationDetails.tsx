@@ -680,7 +680,31 @@ const DestinationDetails = () => {
         : "linear-gradient(135deg, rgba(232,25,44,0.88), rgba(127,29,29,0.72), rgba(17,17,21,0.5))",
     brand: homeTk.brand,
     brandSoft: homeTk.brandSoft,
+    brandSoftStrong: homeTk.brandSoftStrong,
     pillText: "#ffffff",
+    factCardBg: isDark
+      ? "linear-gradient(180deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%)"
+      : isBlue
+        ? "linear-gradient(180deg, rgba(224,242,254,0.7) 0%, rgba(255,255,255,1) 100%)"
+        : "linear-gradient(180deg, rgba(254,242,242,0.7) 0%, rgba(255,255,255,1) 100%)",
+    factCardBorder: isDark
+      ? "rgba(255,255,255,0.08)"
+      : isBlue
+        ? "rgba(2,132,199,0.14)"
+        : "rgba(232,25,44,0.12)",
+    subtleBg: isDark
+      ? "rgba(255,255,255,0.04)"
+      : isBlue
+        ? "rgba(2,132,199,0.05)"
+        : "rgba(15,23,42,0.03)",
+    subtleBorder: isDark
+      ? "rgba(255,255,255,0.08)"
+      : isBlue
+        ? "rgba(2,132,199,0.12)"
+        : "rgba(15,23,42,0.06)",
+    timelineGradient: isDark
+      ? "linear-gradient(180deg, rgba(255,255,255,0.2), rgba(255,255,255,0.04))"
+      : `linear-gradient(180deg, ${homeTk.brandSoftStrong}, ${homeTk.brandSoft})`,
   };
 
   const cardTk = {
@@ -1261,10 +1285,10 @@ const DestinationDetails = () => {
         >
           <div
             style={{
-              background: "#ffffff",
+              background: tk.cardBg,
               borderRadius: "1.75rem",
-              boxShadow: "0 24px 60px rgba(15,23,42,0.12)",
-              border: "1px solid rgba(15,23,42,0.06)",
+              boxShadow: tk.cardShadow,
+              border: `1px solid ${tk.cardBorder}`,
               padding: "1.25rem",
             }}
           >
@@ -1292,9 +1316,8 @@ const DestinationDetails = () => {
                       gap: "0.9rem",
                       padding: "1rem",
                       borderRadius: "1.25rem",
-                      background:
-                        "linear-gradient(180deg, rgba(240,253,250,0.92) 0%, rgba(255,255,255,1) 100%)",
-                      border: "1px solid rgba(13,148,136,0.12)",
+                      background: tk.factCardBg,
+                      border: `1px solid ${tk.factCardBorder}`,
                     }}
                   >
                     <div
@@ -1305,8 +1328,8 @@ const DestinationDetails = () => {
                         width: "2.5rem",
                         height: "2.5rem",
                         borderRadius: "0.9rem",
-                        background: "rgba(13,148,136,0.12)",
-                        color: "#0f766e",
+                        background: tk.brandSoft,
+                        color: tk.brand,
                         flexShrink: 0,
                       }}
                     >
@@ -1320,7 +1343,7 @@ const DestinationDetails = () => {
                           fontWeight: 700,
                           letterSpacing: "0.08em",
                           textTransform: "uppercase",
-                          color: "#6b7280",
+                          color: tk.mutedText,
                         }}
                       >
                         {fact.label}
@@ -1331,7 +1354,7 @@ const DestinationDetails = () => {
                           fontSize: "1rem",
                           lineHeight: 1.45,
                           fontWeight: 600,
-                          color: "#111827",
+                          color: tk.pageText,
                         }}
                       >
                         {fact.value}
@@ -1357,9 +1380,9 @@ const DestinationDetails = () => {
                     gap: "0.4rem",
                     padding: "0.6rem 1.1rem",
                     borderRadius: "9999px",
-                    border: "1px solid rgba(13,148,136,0.25)",
-                    background: "rgba(13,148,136,0.06)",
-                    color: "#0f766e",
+                    border: `1px solid ${tk.brandSoftStrong}`,
+                    background: tk.brandSoft,
+                    color: tk.brand,
                     fontWeight: 700,
                     fontSize: "0.85rem",
                     cursor: "pointer",
@@ -1649,10 +1672,10 @@ const DestinationDetails = () => {
               <div
                 key={tip.title}
                 style={{
-                  background: "#ffffff",
+                  background: tk.cardBg,
                   borderRadius: "1.25rem",
-                  border: "1px solid rgba(15,23,42,0.06)",
-                  boxShadow: "0 14px 34px rgba(15,23,42,0.06)",
+                  border: `1px solid ${tk.cardBorder}`,
+                  boxShadow: tk.cardShadow,
                   padding: "1.2rem",
                   display: "flex",
                   flexDirection: "column",
@@ -1667,8 +1690,8 @@ const DestinationDetails = () => {
                     width: "2.75rem",
                     height: "2.75rem",
                     borderRadius: "0.95rem",
-                    background: "rgba(15,118,110,0.1)",
-                    color: "#0f766e",
+                    background: tk.brandSoft,
+                    color: tk.brand,
                   }}
                 >
                   <Icon className="w-5 h-5" />
@@ -1679,7 +1702,7 @@ const DestinationDetails = () => {
                       margin: 0,
                       fontSize: "1rem",
                       fontWeight: 700,
-                      color: "#111827",
+                      color: tk.pageText,
                     }}
                   >
                     {tip.title}
@@ -1689,7 +1712,7 @@ const DestinationDetails = () => {
                       margin: "0.45rem 0 0",
                       fontSize: "0.92rem",
                       lineHeight: 1.65,
-                      color: "#4b5563",
+                      color: tk.dimText,
                     }}
                   >
                     {tip.description}
@@ -1739,10 +1762,10 @@ const DestinationDetails = () => {
         >
           <div
             style={{
-              background: "#ffffff",
+              background: tk.cardBg,
               borderRadius: "1.5rem",
-              border: "1px solid rgba(15,23,42,0.06)",
-              boxShadow: "0 16px 40px rgba(15,23,42,0.07)",
+              border: `1px solid ${tk.cardBorder}`,
+              boxShadow: tk.cardShadow,
               padding: "1.25rem",
             }}
           >
@@ -1761,8 +1784,7 @@ const DestinationDetails = () => {
                   top: "0.4rem",
                   bottom: "0.4rem",
                   width: "2px",
-                  background:
-                    "linear-gradient(180deg, rgba(13,148,136,0.24), rgba(13,148,136,0.08))",
+                  background: tk.timelineGradient,
                 }}
               />
               {transportOptions.length > 0 ? (
@@ -1789,9 +1811,9 @@ const DestinationDetails = () => {
                           width: "2.25rem",
                           height: "2.25rem",
                           borderRadius: "9999px",
-                          background: "#ccfbf1",
-                          color: "#0f766e",
-                          border: "6px solid #ffffff",
+                          background: tk.brandSoftStrong,
+                          color: tk.brand,
+                          border: `6px solid ${tk.cardBg}`,
                           boxSizing: "content-box",
                         }}
                       >
@@ -1800,9 +1822,9 @@ const DestinationDetails = () => {
                       <div
                         style={{
                           flex: 1,
-                          background: "rgba(248,250,252,0.9)",
+                          background: tk.subtleBg,
                           borderRadius: "1rem",
-                          border: "1px solid rgba(15,23,42,0.06)",
+                          border: `1px solid ${tk.subtleBorder}`,
                           padding: "1rem 1rem 1rem 1.05rem",
                         }}
                       >
@@ -1811,7 +1833,7 @@ const DestinationDetails = () => {
                             margin: 0,
                             fontSize: "1rem",
                             fontWeight: 700,
-                            color: "#111827",
+                            color: tk.pageText,
                           }}
                         >
                           {option.title}
@@ -1821,7 +1843,7 @@ const DestinationDetails = () => {
                             margin: "0.45rem 0 0",
                             fontSize: "0.93rem",
                             lineHeight: 1.65,
-                            color: "#4b5563",
+                            color: tk.dimText,
                           }}
                         >
                           {option.description}
@@ -1835,9 +1857,9 @@ const DestinationDetails = () => {
                   style={{
                     position: "relative",
                     marginLeft: "3.25rem",
-                    background: "rgba(248,250,252,0.9)",
+                    background: tk.subtleBg,
                     borderRadius: "1rem",
-                    border: "1px solid rgba(15,23,42,0.06)",
+                    border: `1px solid ${tk.subtleBorder}`,
                     padding: "1rem 1.05rem",
                   }}
                 >
@@ -1846,7 +1868,7 @@ const DestinationDetails = () => {
                       margin: 0,
                       fontSize: "0.93rem",
                       lineHeight: 1.65,
-                      color: "#4b5563",
+                      color: tk.dimText,
                     }}
                   >
                     {t(
@@ -1892,10 +1914,10 @@ const DestinationDetails = () => {
 
           <div
             style={{
-              background: "#ffffff",
+              background: tk.cardBg,
               borderRadius: "1.5rem",
-              border: "1px solid rgba(15,23,42,0.06)",
-              boxShadow: "0 16px 40px rgba(15,23,42,0.07)",
+              border: `1px solid ${tk.cardBorder}`,
+              boxShadow: tk.cardShadow,
               padding: "1rem",
               display: "flex",
               flexDirection: "column",
@@ -1916,7 +1938,7 @@ const DestinationDetails = () => {
                     margin: 0,
                     fontSize: "1rem",
                     fontWeight: 700,
-                    color: "#111827",
+                    color: tk.pageText,
                   }}
                 >
                   {t("home.destinations.howToReach.mapPreview", "Map preview")}
@@ -1925,7 +1947,7 @@ const DestinationDetails = () => {
                   style={{
                     margin: "0.35rem 0 0",
                     fontSize: "0.9rem",
-                    color: "#6b7280",
+                    color: tk.mutedText,
                   }}
                 >
                   {t(
@@ -1952,9 +1974,9 @@ const DestinationDetails = () => {
                     alignItems: "center",
                     justifyContent: "center",
                     borderRadius: "0.8rem",
-                    border: "1px solid rgba(15,23,42,0.08)",
-                    background: "#ffffff",
-                    color: "#0f172a",
+                    border: `1px solid ${tk.cardBorder}`,
+                    background: tk.cardBg,
+                    color: tk.pageText,
                     cursor: "pointer",
                   }}
                 >
@@ -1971,9 +1993,9 @@ const DestinationDetails = () => {
                     alignItems: "center",
                     justifyContent: "center",
                     borderRadius: "0.8rem",
-                    border: "1px solid rgba(15,23,42,0.08)",
-                    background: "#ffffff",
-                    color: "#0f172a",
+                    border: `1px solid ${tk.cardBorder}`,
+                    background: tk.cardBg,
+                    color: tk.pageText,
                     cursor: "pointer",
                   }}
                 >
@@ -2055,9 +2077,9 @@ const DestinationDetails = () => {
                   alignItems: "center",
                   gap: "0.5rem",
                   padding: "0.8rem 1rem",
-                  background: "rgba(255,255,255,0.92)",
-                  color: "#0f172a",
-                  border: "1px solid rgba(15,23,42,0.08)",
+                  background: tk.cardBg,
+                  color: tk.pageText,
+                  border: `1px solid ${tk.cardBorder}`,
                   borderRadius: "9999px",
                   fontWeight: 700,
                   cursor:

@@ -55,6 +55,29 @@ export const authService = {
   },
 
   /**
+   * Send a password reset email. The link in the email redirects the user
+   * to `redirectTo` with a recovery session that authService.updatePassword
+   * can then use to set a new password.
+   */
+  async resetPasswordForEmail(email: string, redirectTo: string) {
+    const { data, error } = await apiClient.auth.resetPasswordForEmail(
+      email,
+      { redirectTo },
+    );
+    return { data, error };
+  },
+
+  /**
+   * Update the password of the currently authenticated (recovery) session.
+   */
+  async updatePassword(newPassword: string): Promise<AuthResponse> {
+    const { data, error } = await apiClient.auth.updateUser({
+      password: newPassword,
+    });
+    return { user: data.user, session: null, error };
+  },
+
+  /**
    * Sign out
    */
   async signOut() {

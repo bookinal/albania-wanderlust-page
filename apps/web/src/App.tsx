@@ -13,6 +13,8 @@ import { AuthProvider } from "./context/AuthContext";
 import { ChatSuggestionProvider } from "./context/ChatSuggestionContext";
 import Index from "./pages/home/Index";
 import OAuthSignInPage from "./pages/home/Auth";
+import ForgotPasswordPage from "./pages/home/ForgotPassword";
+import ResetPasswordPage from "./pages/home/ResetPassword";
 import NotFound from "./pages/NotFound";
 import Footer from "./components/home/Footer";
 import CultureDetails from "./pages/home/CultureDetails";
@@ -106,6 +108,8 @@ const App = () => (
                 <Routes>
                   <Route path="/" element={<Index />} />
                   <Route path="/auth" element={<OAuthSignInPage />} />
+                  <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+                  <Route path="/reset-password" element={<ResetPasswordPage />} />
                   <Route path="/myAccount" element={<MyAccount />} />
                   <Route path="/CultureDetails" element={<CultureDetails />} />
                   <Route path="/destinations" element={<DestinationsPage />} />

@@ -6,6 +6,7 @@ import Swal from "sweetalert2";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@/context/ThemeContext";
 import { Hotel, Home, Car, ArrowLeft, Loader2, KeyRound, MapPin, Mail, User, ShieldCheck } from "lucide-react";
+import PrimarySearchAppBar from "@/components/home/AppBar";
 
 const PageMotionStyles = () => (
   <style>{`
@@ -375,6 +376,7 @@ export default function AuthPage() {
   if (initialLoading) {
     return (
       <div className="min-h-screen relative overflow-hidden flex items-center justify-center animate-fade-in" style={{ background: primaryBg }}>
+        <PrimarySearchAppBar />
         {/* Background gradient overlay */}
         <div className="absolute inset-0 transition-opacity duration-300" style={{ background: overlayGradient }} />
         {/* Vignette */}
@@ -401,6 +403,7 @@ export default function AuthPage() {
 
   return (
     <div className="min-h-screen relative overflow-hidden transition-colors duration-300" style={{ background: primaryBg }}>
+      <PrimarySearchAppBar />
       {/* Background gradient overlay */}
       <div className="absolute inset-0 transition-all duration-300" style={{ background: overlayGradient }} />
 
@@ -425,7 +428,7 @@ export default function AuthPage() {
           <div className="grid lg:grid-cols-12 gap-8 items-stretch">
             {/* Brand panel */}
             <div
-              className="lg:col-span-5 rounded-3xl border backdrop-blur-md p-7 md:p-9 shadow-2xl flex flex-col justify-between transition-all duration-300 animate-fade-in"
+              className="order-2 lg:order-1 lg:col-span-5 rounded-3xl border backdrop-blur-md p-7 md:p-9 shadow-2xl flex flex-col justify-between transition-all duration-300 animate-fade-in"
               style={{
                 borderColor: brandPanelBorder,
                 background: brandPanelBg,
@@ -537,7 +540,7 @@ export default function AuthPage() {
             </div>
 
             {/* Auth card */}
-            <div className="lg:col-span-7 animate-fade-in-up" style={{ animationDelay: "80ms" }}>
+            <div className="order-1 lg:order-2 lg:col-span-7 animate-fade-in-up" style={{ animationDelay: "80ms" }}>
               <div
                 className="rounded-3xl overflow-hidden shadow-2xl transition-all duration-300"
                 style={{
@@ -699,6 +702,20 @@ export default function AuthPage() {
                           required
                         />
                       </div>
+                      {!isSignUp && (
+                        <div className="mt-2 text-right">
+                          <button
+                            type="button"
+                            onClick={() => navigate("/forgot-password")}
+                            className="text-xs font-semibold transition-colors hover:underline"
+                            style={{ color: linkText, background: "transparent", border: "none", cursor: "pointer", padding: 0 }}
+                            onMouseEnter={(e) => (e.currentTarget.style.color = linkTextHover)}
+                            onMouseLeave={(e) => (e.currentTarget.style.color = linkText)}
+                          >
+                            {t("user.forgotPassword")}
+                          </button>
+                        </div>
+                      )}
                     </div>
 
                     {isSignUp && (
