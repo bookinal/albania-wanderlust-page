@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { SpeedInsights } from "@vercel/speed-insights/react";
 import { PayPalScriptProvider } from "@paypal/react-paypal-js";
 import { I18nextProvider } from "react-i18next";
@@ -20,7 +20,7 @@ import Footer from "./components/home/Footer";
 import CultureDetails from "./pages/home/CultureDetails";
 import DestinationDetails from "./pages/home/Destinations/DestinationDetails";
 import DestinationsPage from "./pages/home/Destinations/DestinationsPage";
-import BeachDestinationsPage from "./pages/home/Destinations/subCategories/LDestinationsPage";
+import LandscapeDestinationsPage from "./pages/home/Destinations/subCategories/LandscapeDestinationsPage";
 import AdventureDestinationsPage from "./pages/home/Destinations/subCategories/AdventureDestinationsPage";
 import EatDrinkDancePage from "./pages/home/Destinations/subCategories/EatDrink&Dance";
 import ExperiencesPage from "./pages/home/Destinations/subCategories/experiencesPage";
@@ -114,8 +114,13 @@ const App = () => (
                   <Route path="/CultureDetails" element={<CultureDetails />} />
                   <Route path="/destinations" element={<DestinationsPage />} />
                   <Route
+                    path="/destinations/landscape"
+                    element={<LandscapeDestinationsPage />}
+                  />
+                  {/* Legacy URL — category was renamed from "Destinations" to "Landscape" */}
+                  <Route
                     path="/destinations/destinations"
-                    element={<BeachDestinationsPage />}
+                    element={<Navigate to="/destinations/landscape" replace />}
                   />
                   <Route
                     path="/destinations/adventure"

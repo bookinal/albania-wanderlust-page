@@ -80,7 +80,7 @@ export interface SearchFiltersState {
 }
 
 export const ALL_DESTINATION_CATEGORIES = [
-  "Destinations",
+  "Landscape",
   "Eat, drink & dance",
   "History & culture",
   "Experiences",

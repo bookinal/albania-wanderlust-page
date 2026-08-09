@@ -1025,8 +1025,8 @@ export default function DestinationsManagement() {
             color: "#E8192C",
           },
           {
-            label: "Destinations",
-            value: destinations.filter((d) => d.category === "Destinations")
+            label: "Landscape",
+            value: destinations.filter((d) => d.category === "Landscape")
               .length,
             color: "#16a34a",
           },
@@ -2018,7 +2018,7 @@ function DestinationCard({
         light: { bg: string; text: string };
       }
     > = {
-      Destinations: {
+      Landscape: {
         dark: { bg: "rgba(34,197,94,0.15)", text: "#4ade80" },
         light: { bg: "#dcfce7", text: "#166534" },
       },

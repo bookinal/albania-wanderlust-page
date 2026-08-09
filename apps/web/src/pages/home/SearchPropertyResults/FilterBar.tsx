@@ -558,7 +558,7 @@ export const FilterBar = ({
         <AccSection label={t("searchResults.filters.categories", "Categories")} defaultOpen headerColor={tk.headerText} dividerColor={tk.sidebarBorder} iconColor={themeTk.brand}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 9 }}>
             {[
-              { id: "Destinations", label: t("searchResults.filters.catDestinations", "Destinations") },
+              { id: "Landscape", label: t("searchResults.filters.catLandscape", "Landscape") },
               { id: "Eat, drink & dance", label: t("searchResults.filters.catEatDrinkDance", "Eat, drink & dance") },
               { id: "History & culture", label: t("searchResults.filters.catHistoryCulture", "History & culture") },
               { id: "Experiences", label: t("searchResults.filters.catExperiences", "Experiences") },
@@ -609,7 +609,7 @@ export const FilterBar = ({
           iconColor={themeTk.brand}
         >
           <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-            {["Destinations", "Eat, drink & dance", "History & culture", "Experiences"].map(parentCat => {
+            {["Landscape", "Eat, drink & dance", "History & culture", "Experiences"].map(parentCat => {
               const subs = SUBCATEGORIES.filter(s => s.parent === parentCat);
               if (!subs.length) return null;
               return (

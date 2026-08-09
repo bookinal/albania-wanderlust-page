@@ -46,7 +46,7 @@ export default function PrimarySearchAppBar() {
   const [mobileDestinationsOpen, setMobileDestinationsOpen] = React.useState(false);
 
   const DESTINATION_CATEGORIES = [
-    { label: "Destinations", slug: "destinations" },
+    { label: "Landscape", slug: "landscape" },
     { label: "Eat, drink & dance", slug: "eat-drink-dance" },
     { label: "History & culture", slug: "history-culture" },
     { label: "Experiences", slug: "experiences" },

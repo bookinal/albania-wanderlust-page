@@ -75,7 +75,7 @@ const DestinationsHomePreview = () => {
   const categoryRoutes = CATEGORY_ROUTES;
 
   const categoryGradients: Record<string, string> = {
-    Destinations: "linear-gradient(135deg, #0f766e, #14b8a6)",
+    Landscape: "linear-gradient(135deg, #0f766e, #14b8a6)",
     "Eat, drink & dance": "linear-gradient(135deg, #be185d, #ec4899)",
     "History & culture": "linear-gradient(135deg, #92400e, #d97706)",
     Experiences: "linear-gradient(135deg, #065f46, #059669)",

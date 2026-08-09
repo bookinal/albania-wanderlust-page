@@ -1,12 +1,12 @@
 export const CATEGORIES = [
-  { id: "Destinations", label: "Destinations" },
+  { id: "Landscape", label: "Landscape" },
   { id: "Eat, drink & dance", label: "Eat, drink & dance" },
   { id: "History & culture", label: "History & culture" },
   { id: "Experiences", label: "Experiences" },
 ];
 
 export const CATEGORY_ROUTES: Record<string, string> = {
-  Destinations: "/destinations/destinations",
+  Landscape: "/destinations/landscape",
   "Eat, drink & dance": "/destinations/eat-drink-dance",
   "History & culture": "/destinations/history-culture",
   Experiences: "/destinations/experiences",
@@ -48,15 +48,15 @@ export const QUICK_FACT_FIELDS: QuickFactField[] = [
 ];
 
 export const SUBCATEGORIES = [
-  // Destinations
+  // Landscape
   {
     id: "Top cities & villages",
     label: "Top cities & villages",
-    parent: "Destinations",
+    parent: "Landscape",
   },
-  { id: "Mountains", label: "Mountains", parent: "Destinations" },
-  { id: "Beach", label: "Beach", parent: "Destinations" },
-  { id: "Lakes & canyons", label: "Lakes & canyons", parent: "Destinations" },
+  { id: "Mountains", label: "Mountains", parent: "Landscape" },
+  { id: "Beach", label: "Beach", parent: "Landscape" },
+  { id: "Lakes & canyons", label: "Lakes & canyons", parent: "Landscape" },
 
   // Eat, drink & dance
   { id: "Restaurants", label: "Restaurants", parent: "Eat, drink & dance" },

@@ -23,7 +23,7 @@ import { DestinationFilterBar } from "../../../../components/home/destinations/D
 import { DestinationBreadcrumb } from "../../../../components/home/destinations/DestinationBreadcrumb";
 import MapPreviewCard from "../../SearchPropertyResults/MapPreviewCard";
 
-const LDestinationsPage = () => {
+const LandscapeDestinationsPage = () => {
   const { t } = useTranslation();
   const { localize } = useLocalized();
   const navigate = useNavigate();
@@ -75,7 +75,7 @@ const [selectedLocation, setSelectedLocation] = useState("");
   const beaches = useMemo(
     () =>
       destinations.filter(
-        (destination) => destination.category === "Destinations",
+        (destination) => destination.category === "Landscape",
       ),
     [destinations],
   );
@@ -263,7 +263,7 @@ const groupedBySubcategory = useMemo(() => {
           variant="page"
           items={[
             { label: t("common.destinations"), to: "/destinations" },
-            { label: t("home.destinations.subCategories.landscapes.breadcrumbLabel", "Beaches") },
+            { label: t("home.destinations.subCategories.landscapes.breadcrumbLabel", "Landscape") },
           ]}
         />
       </div>
@@ -516,7 +516,7 @@ const groupedBySubcategory = useMemo(() => {
                       flexShrink: 0,
                     }}
                   >
-                    <MapPreviewCard category="Destinations" />
+                    <MapPreviewCard category="Landscape" />
                   </div>
                 )}
               </div>
@@ -528,4 +528,4 @@ const groupedBySubcategory = useMemo(() => {
   );
 };
 
-export default LDestinationsPage;
+export default LandscapeDestinationsPage;
