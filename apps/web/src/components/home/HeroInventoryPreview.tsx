@@ -276,7 +276,7 @@ const HeroInventoryPreview = ({
                 className={`font-semibold ${isStacked ? "text-xs sm:text-sm" : "text-sm sm:text-base"}`}
                 style={{ color: tk.textStrongOnMedia }}
               >
-                ${stay.price}
+                €{stay.price}
               </p>
               <p className="text-[10px]" style={{ color: tk.textMutedOnMedia }}>
                 {t("home.hero.perNight", "per night")}
@@ -389,7 +389,7 @@ const HeroInventoryPreview = ({
                 className={`font-semibold ${isStacked ? "text-xs sm:text-sm" : "text-sm sm:text-base"}`}
                 style={{ color: tk.textStrongOnMedia }}
               >
-                ${car.pricePerDay}
+                €{car.pricePerDay}
               </p>
               <p className="text-[10px]" style={{ color: tk.textMutedOnMedia }}>
                 {t("home.hero.perDay", "per day")}
@@ -557,7 +557,7 @@ const HeroInventoryPreview = ({
                       className="text-xs font-semibold"
                       style={{ color: tk.textStrongOnMedia }}
                     >
-                      ${isStay ? item.price : item.pricePerDay}
+                      €{isStay ? item.price : item.pricePerDay}
                     </p>
                     <p
                       className="text-[9px]"

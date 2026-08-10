@@ -352,7 +352,7 @@
     "carNotFoundTitle": "Makina nuk u gjet",
     "carNotFoundMessage": "Makina që po kërkoni nuk ekziston ose është hequr.",
     "pickUpLocationNotSpecified": "Vendndodhja e marrjes nuk është specifikuar",
-    "basePricePerDay": "Bazë: ${{price}}/ditë",
+    "basePricePerDay": "Bazë: €{{price}}/ditë",
     "apartmentNotFoundTitle": "Apartamenti nuk u gjet",
     "apartmentNotFoundMessage": "Apartamenti që po kërkoni nuk ekziston ose është hequr.",
     "plusUtilities": "+ shpenzime shtesë",
@@ -803,7 +803,7 @@
     "address": "Adresa",
     "cityLocation": "Qyteti/Vendndodhja",
     "rating": "Vlerësimi (0-5)",
-    "pricePerDay": "Çmimi për Ditë ($)",
+    "pricePerDay": "Çmimi për Ditë (€)",
     "status": "Statusi",
     "available": "I Disponueshëm",
     "rented": "I Qiruar",
@@ -981,7 +981,7 @@
         "year": "Viti",
         "transmission": "Transmisioni",
         "fuelType": "Lloji i Karburantit",
-        "basePrice": "Çmimi Bazë për Ditë ($)",
+        "basePrice": "Çmimi Bazë për Ditë (€)",
         "priceHelp": "Ky është çmimi i paracaktuar. Mund të vendosni çmime sezonale më poshtë.",
         "status": "Statusi",
         "childSeatPrice": "Shto Ndenjëse për Fëmijë",
@@ -1104,7 +1104,7 @@
         "mapLabel": "Vendndodhja e Makina në Hartë"
       },
       "pricing": {
-        "noSeasonal": "Nuk ka çmime sezonale të konfiguruar. Duke përdorur çmimin bazë të ${{price}}/ditë për të gjithë muajt."
+        "noSeasonal": "Nuk ka çmime sezonale të konfiguruar. Duke përdorur çmimin bazë të €{{price}}/ditë për të gjithë muajt."
       }
     }
   },
@@ -1207,7 +1207,7 @@
         "locationPlaceholder": "Tiranë, Shqipëri",
         "rating": "Vlerësimi (0-5)",
         "ratingPlaceholder": "4.5",
-        "price": "Çmimi për Natë ($)",
+        "price": "Çmimi për Natë (€)",
         "pricePlaceholder": "299",
         "rooms": "Numri Total i Dhoma",
         "roomsPlaceholder": "150",
@@ -1707,7 +1707,7 @@
   "monthlyPricingEditor": {
     "title": "Çmimet Mujore",
     "buttons": {
-      "applyBase": "Apliko Bazën (${{basePrice}}) për të Gjitha",
+      "applyBase": "Apliko Bazën (€{{basePrice}}) për të Gjitha",
       "summerPremium": "Premium Verës (+20%)"
     },
     "stats": {

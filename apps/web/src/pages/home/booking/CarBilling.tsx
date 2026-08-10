@@ -555,7 +555,7 @@ export default function CarBilling() {
                             </option>
                             {DELIVERY_LOCATIONS.map((loc) => (
                               <option key={loc.name} value={loc.name}>
-                                {loc.name} — {loc.price > 0 ? `$${loc.price}` : t("billing.free", "Free")}
+                                {loc.name} — {loc.price > 0 ? `€${loc.price}` : t("billing.free", "Free")}
                               </option>
                             ))}
                           </select>
@@ -729,11 +729,11 @@ export default function CarBilling() {
                               {item.pricePerDay !== car.pricePerDay && (
                                 <TrendingUp className="w-3 h-3 text-amber-500" />
                               )}
-                              {MONTH_NAMES[item.month]}: ${item.pricePerDay} ×{" "}
+                              {MONTH_NAMES[item.month]}: €{item.pricePerDay} ×{" "}
                               {item.days} {item.days === 1 ? "day" : "days"}
                             </span>
                             <span className="font-medium">
-                              ${item.subtotal.toFixed(2)}
+                              €{item.subtotal.toFixed(2)}
                             </span>
                           </div>
                         ))}
@@ -754,7 +754,7 @@ export default function CarBilling() {
                                 : t("common.days")}
                               )
                             </span>
-                            <span>${totalPrice.toFixed(2)}</span>
+                            <span>€{totalPrice.toFixed(2)}</span>
                           </div>
                         </div>
                         <p style={{ color: tk.mutedText }} className="text-xs">
@@ -768,10 +768,10 @@ export default function CarBilling() {
                           style={{ color: tk.dimText }}
                         >
                           <span>
-                            ${car.pricePerDay} × {totalDays || 0} days
+                            €{car.pricePerDay} × {totalDays || 0} days
                           </span>
                           <span className="font-medium">
-                            ${totalPrice.toFixed(2)}
+                            €{totalPrice.toFixed(2)}
                           </span>
                         </div>
                         <p
@@ -790,7 +790,7 @@ export default function CarBilling() {
                       >
                         <span>{t("billing.serviceFee")} (5%)</span>
                         <span className="font-medium">
-                          ${serviceFee.toFixed(2)}
+                          €{serviceFee.toFixed(2)}
                         </span>
                       </div>
                       <p
@@ -809,7 +809,7 @@ export default function CarBilling() {
                         >
                           <span>{t("billing.insurance")}</span>
                           <span className="font-medium">
-                            ${insuranceFee.toFixed(2)}
+                            €{insuranceFee.toFixed(2)}
                           </span>
                         </div>
                         <p
@@ -829,7 +829,7 @@ export default function CarBilling() {
                         >
                           <span>{t("billing.deliveryFee", "Delivery fee")}</span>
                           <span className="font-medium">
-                            {deliveryFee > 0 ? `$${deliveryFee.toFixed(2)}` : t("billing.free", "Free")}
+                            {deliveryFee > 0 ? `€${deliveryFee.toFixed(2)}` : t("billing.free", "Free")}
                           </span>
                         </div>
                         <p
@@ -870,7 +870,7 @@ export default function CarBilling() {
                               </span>
                             </span>
                             <span className="font-medium">
-                              +${(car.childSeatPrice ?? 0).toFixed(2)}
+                              +€{(car.childSeatPrice ?? 0).toFixed(2)}
                             </span>
                           </label>
                         )}
@@ -892,7 +892,7 @@ export default function CarBilling() {
                               </span>
                             </span>
                             <span className="font-medium">
-                              +${(car.additionalDriverPrice ?? 0).toFixed(2)}
+                              +€{(car.additionalDriverPrice ?? 0).toFixed(2)}
                             </span>
                           </label>
                         )}
@@ -918,7 +918,7 @@ export default function CarBilling() {
                         style={{ color: tk.brand }}
                         className="text-2xl font-bold"
                       >
-                        ${finalTotal.toFixed(2)}
+                        €{finalTotal.toFixed(2)}
                       </span>
                     </div>
                   </div>

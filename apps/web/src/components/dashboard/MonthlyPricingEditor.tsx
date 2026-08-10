@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import {
-  DollarSign,
+  Euro,
   Calendar,
   Copy,
   Check,
@@ -203,15 +203,15 @@ export const MonthlyPricingEditor: React.FC<MonthlyPricingEditorProps> = ({
         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
           <TrendingUp size={14} style={{ color: tk.statsText }} />
           <span style={{ color: tk.statsText }}>{t("monthlyPricingEditor.stats.avg")}</span>
-          <span style={{ fontWeight: 700, color: tk.statsValue }}>${avgPrice}</span>
+          <span style={{ fontWeight: 700, color: tk.statsValue }}>€{avgPrice}</span>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
           <span style={{ color: tk.statsText }}>{t("monthlyPricingEditor.stats.min")}</span>
-          <span style={{ fontWeight: 700, color: tk.statsMin }}>${minPrice}</span>
+          <span style={{ fontWeight: 700, color: tk.statsMin }}>€{minPrice}</span>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
           <span style={{ color: tk.statsText }}>{t("monthlyPricingEditor.stats.max")}</span>
-          <span style={{ fontWeight: 700, color: tk.statsMax }}>${maxPrice}</span>
+          <span style={{ fontWeight: 700, color: tk.statsMax }}>€{maxPrice}</span>
         </div>
       </div>
 
@@ -240,7 +240,7 @@ export const MonthlyPricingEditor: React.FC<MonthlyPricingEditorProps> = ({
                 {MONTH_NAMES[month]}
               </div>
               <div style={{ position: "relative" }}>
-                <DollarSign
+                <Euro
                   size={14}
                   style={{ position: "absolute", left: "6px", top: "50%", transform: "translateY(-50%)", color: tk.statsText }}
                 />

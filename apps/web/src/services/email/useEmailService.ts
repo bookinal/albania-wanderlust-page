@@ -132,7 +132,7 @@ export const getBookingConfirmationTemplate = (data: {
             </div>
             <div class="detail-row">
               <span class="detail-label">Total Price:</span>
-              <span class="detail-value">$${data.totalPrice.toFixed(2)}</span>
+              <span class="detail-value">€${data.totalPrice.toFixed(2)}</span>
             </div>
           </div>
 

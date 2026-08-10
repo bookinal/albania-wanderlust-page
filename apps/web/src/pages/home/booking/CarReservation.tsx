@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import {
   ArrowLeft,
   MapPin,
-  DollarSign,
+  Euro,
   Loader2,
   Calendar,
   Car as CarIcon,
@@ -608,17 +608,17 @@ const CarReservation = () => {
                       )}
                     </div>
                     <div className="flex items-center justify-center gap-2">
-                      <DollarSign size={32} className="text-emerald-500" />
+                      <Euro size={32} className="text-emerald-500" />
                       <span style={{ color: tk.pageText }} className="text-5xl font-bold">{displayPrice}</span>
                     </div>
                     {hasSeasonalPrice && (
                       <p style={{ color: tk.mutedText }} className="text-sm mt-1 line-through">
-                        {t("billing.basePricePerDay", "Base: ${{price}}/day", {
+                        {t("billing.basePricePerDay", "Base: €{{price}}/day", {
                           price: car.pricePerDay,
                         })}
                       </p>
                     )}
-                    <p style={{ color: tk.mutedText }} className="text-sm mt-2">+ {car.insurance ? `$${car.insurance} ` : ""}{t("billing.insurance")}</p>
+                    <p style={{ color: tk.mutedText }} className="text-sm mt-2">+ {car.insurance ? `€${car.insurance} ` : ""}{t("billing.insurance")}</p>
                   </div>
                 );
               })()}
@@ -626,8 +626,8 @@ const CarReservation = () => {
               <div className="space-y-4 mb-6">
                 {[
                   { icon: <Hash size={20} style={{ color: tk.brand }} />, label: t("searchResults.cars.plate"), value: car.plateNumber },
-                  { icon: <Baby size={20} style={{ color: tk.brand }} />, label: t("searchResults.cars.childSeat", "Child seat"), value: car.childSeatPrice > 0 ? `+$${car.childSeatPrice}` : t("cars.carDetails.fields.notOffered", "Not offered") },
-                  { icon: <UserPlus size={20} style={{ color: tk.brand }} />, label: t("searchResults.cars.additionalDriver", "Additional driver"), value: car.additionalDriverPrice > 0 ? `+$${car.additionalDriverPrice}` : t("cars.carDetails.fields.notOffered", "Not offered") },
+                  { icon: <Baby size={20} style={{ color: tk.brand }} />, label: t("searchResults.cars.childSeat", "Child seat"), value: car.childSeatPrice > 0 ? `+€${car.childSeatPrice}` : t("cars.carDetails.fields.notOffered", "Not offered") },
+                  { icon: <UserPlus size={20} style={{ color: tk.brand }} />, label: t("searchResults.cars.additionalDriver", "Additional driver"), value: car.additionalDriverPrice > 0 ? `+€${car.additionalDriverPrice}` : t("cars.carDetails.fields.notOffered", "Not offered") },
                 ].map(({ icon, label, value }, i) => (
                   <div key={i} style={{ background: tk.statBg, border: `1px solid ${tk.statBorder}` }} className="flex items-center justify-between p-4 rounded-xl">
                     <div className="flex items-center gap-3">

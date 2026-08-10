@@ -14,7 +14,7 @@ import {
   Filter,
   Fuel,
   Settings,
-  DollarSign,
+  Euro,
   Edit,
   Trash2,
   Eye,
@@ -380,7 +380,7 @@ const AllCars = () => {
               {t("cars.allCars.stats.avgRate")}
             </div>
             <div style={{ fontSize: "28px", fontWeight: 700 }}>
-              ${stats.avgPrice.toFixed(0)}
+              €{stats.avgPrice.toFixed(0)}
             </div>
             <div style={{ fontSize: "12px", opacity: 0.8, marginTop: "4px" }}>
               {t("cars.allCars.stats.avgRateDesc")}
@@ -609,13 +609,13 @@ const AllCars = () => {
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <Baby size={16} style={{ color: tk.mutedText, flexShrink: 0 }} />
                       <span style={{ fontSize: '0.8rem', color: tk.bodyText, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                        {car.childSeatPrice > 0 ? `${t("cars.allCars.card.childSeat", "Child seat")}: $${car.childSeatPrice}` : t("cars.carDetails.fields.notOffered", "Not offered")}
+                        {car.childSeatPrice > 0 ? `${t("cars.allCars.card.childSeat", "Child seat")}: €${car.childSeatPrice}` : t("cars.carDetails.fields.notOffered", "Not offered")}
                       </span>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <UserPlus size={16} style={{ color: tk.mutedText, flexShrink: 0 }} />
                       <span style={{ fontSize: '0.8rem', color: tk.bodyText, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                        {car.additionalDriverPrice > 0 ? `${t("cars.allCars.card.additionalDriver", "Extra driver")}: $${car.additionalDriverPrice}` : t("cars.carDetails.fields.notOffered", "Not offered")}
+                        {car.additionalDriverPrice > 0 ? `${t("cars.allCars.card.additionalDriver", "Extra driver")}: €${car.additionalDriverPrice}` : t("cars.carDetails.fields.notOffered", "Not offered")}
                       </span>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', gridColumn: 'span 2' }}>
@@ -672,7 +672,7 @@ const AllCars = () => {
                         {t("cars.allCars.card.basePrice")}
                       </div>
                       <div style={{ fontSize: '1.4rem', fontWeight: 700, color: tk.priceText }}>
-                        ${car.pricePerDay}
+                        €{car.pricePerDay}
                       </div>
                     </div>
                     <div style={{ display: 'flex', gap: '8px' }}>

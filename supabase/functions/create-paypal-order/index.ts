@@ -62,7 +62,7 @@ async function getPayPalAccessToken(): Promise<string> {
 async function createPayPalOrder(
   accessToken: string,
   amount: number,
-  currency: string = "USD",
+  currency: string = "EUR",
 ): Promise<PayPalOrderResponse> {
   // Get the frontend origin for return URLs
   const frontendUrl = Deno.env.get("FRONTEND_URL") || "http://localhost:8081";
@@ -389,7 +389,7 @@ Deno.serve(async (req: Request) => {
       paypalOrder = await createPayPalOrder(
         accessToken,
         feeAmount,
-        "USD",
+        "EUR",
       );
     } catch (error) {
       console.error(
@@ -432,7 +432,7 @@ Deno.serve(async (req: Request) => {
         booking_id: bookingId,
         paypal_order_id: paypalOrder.id,
         amount: feeAmount,
-        currency: "USD",
+        currency: "EUR",
         status: "pending",
       });
 

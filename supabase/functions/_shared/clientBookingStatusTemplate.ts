@@ -6,7 +6,7 @@ const escapeHtml = (value: string): string =>
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#39;");
 
-const formatPrice = (value: number): string => `$${value.toFixed(2)}`;
+const formatPrice = (value: number): string => `€${value.toFixed(2)}`;
 
 type BookingStatusType = "confirmed" | "pending" | "canceled" | "completed";
 

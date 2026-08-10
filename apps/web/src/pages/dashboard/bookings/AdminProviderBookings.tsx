@@ -13,7 +13,7 @@ import {
   Building2,
   Home,
   Calendar,
-  DollarSign,
+  Euro,
   Loader2,
   AlertCircle,
   CheckCircle2,
@@ -275,7 +275,7 @@ const AdminProviderBookings: React.FC = () => {
                 { label: t("adminProviderBookings.stats.pending"), value: stats.pending, color: "#f59e0b" },
                 { label: t("adminProviderBookings.stats.confirmed"), value: stats.confirmed, color: "#10b981" },
                 { label: t("adminProviderBookings.stats.canceled"), value: stats.canceled, color: "#f87171" },
-                { label: t("adminProviderBookings.stats.revenue"), value: `$${stats.revenue.toLocaleString()}`, color: "#e41e20" },
+                { label: t("adminProviderBookings.stats.revenue"), value: `€${stats.revenue.toLocaleString()}`, color: "#e41e20" },
               ].map((s) => (
                 <div key={s.label} className="rounded-xl px-4 py-3" style={{ background: tk.statBg, border: `1px solid ${tk.statBorder}` }}>
                   <p className="text-[10px] uppercase tracking-widest" style={{ color: tk.labelText }}>{s.label}</p>
@@ -456,7 +456,7 @@ const AdminProviderBookings: React.FC = () => {
                           {t("adminProviderBookings.table.total")}
                         </p>
                         <p className="mt-1 flex items-center gap-1.5 text-xl font-bold" style={{ color: tk.pageText }}>
-                          <DollarSign className="h-4 w-4 text-[#e41e20]" />
+                          <Euro className="h-4 w-4 text-[#e41e20]" />
                           {(booking.totalPrice || 0).toLocaleString()}
                         </p>
                         <p className={`mt-0.5 flex items-center gap-1 text-xs ${paymentCfg.cls}`}>

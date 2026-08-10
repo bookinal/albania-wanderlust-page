@@ -93,7 +93,7 @@ const App = () => (
         <PayPalScriptProvider
           options={{
             clientId: paypalClientId,
-            currency: "USD",
+            currency: "EUR",
             intent: "capture",
           }}
         >

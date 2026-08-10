@@ -141,7 +141,7 @@ export const getClientBookingStatusTemplate = (data: {
             </div>
             <div class="detail-row">
               <span class="detail-label">Total Price:</span>
-              <span class="detail-value">$${data.totalPrice}</span>
+              <span class="detail-value">€${data.totalPrice}</span>
             </div>
           </div>
 

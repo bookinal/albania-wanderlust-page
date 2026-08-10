@@ -6,7 +6,7 @@ import {
   MapPin,
   Star,
   Bed,
-  DollarSign,
+  Euro,
   Edit,
   Trash2,
   Eye,
@@ -475,7 +475,7 @@ const ApartmentCard: React.FC<CardProps> = ({
 
         {/* Price */}
         <div className="mt-3 flex items-center gap-1">
-          <DollarSign className="h-4 w-4 text-[#e41e20]" />
+          <Euro className="h-4 w-4 text-[#e41e20]" />
           <span className="text-xl font-bold" style={{ color: tk.priceText }}>
             {apartment.price}
           </span>

@@ -251,7 +251,7 @@ const generateInvoicePDF = async (booking: Booking) => {
     doc.text(label, 20, yPos);
     doc.setTextColor(30, 41, 59);
     doc.setFont("helvetica", "bold");
-    doc.text(`$${amount.toFixed(2)}`, pageWidth - 25, yPos, { align: "right" });
+    doc.text(`€${amount.toFixed(2)}`, pageWidth - 25, yPos, { align: "right" });
     yPos += 10;
     priceRowIdx++;
   };
@@ -276,7 +276,7 @@ const generateInvoicePDF = async (booking: Booking) => {
   doc.setTextColor(255, 255, 255);
   doc.text("TOTAL", pageWidth - 85, yPos + 8);
   doc.setFontSize(14);
-  doc.text(`$${booking.totalPrice.toFixed(2)}`, pageWidth - 20, yPos + 8, { align: "right" });
+  doc.text(`€${booking.totalPrice.toFixed(2)}`, pageWidth - 20, yPos + 8, { align: "right" });
 
   // Payment status
   yPos += 30;
@@ -1285,14 +1285,14 @@ export default function BookingsSummary() {
                                 {/* Rental Price */}
                                 <div style={{ display: "flex", justifyContent: "space-between", gap: 16, width: "100%", fontSize: 13 }}>
                                   <span style={{ color: tk.dimText }}>{t("billing.rentalPrice", "Rental")}</span>
-                                  <span style={{ fontWeight: 600, color: tk.pageText }}>${rentalSubtotal > 0 ? rentalSubtotal.toFixed(2) : "0.00"}</span>
+                                  <span style={{ fontWeight: 600, color: tk.pageText }}>€{rentalSubtotal > 0 ? rentalSubtotal.toFixed(2) : "0.00"}</span>
                                 </div>
 
                                 {/* Child Seat */}
                                 {childSeat > 0 && (
                                   <div style={{ display: "flex", justifyContent: "space-between", gap: 16, width: "100%", fontSize: 13 }}>
                                     <span style={{ color: tk.dimText }}>{t("billing.childSeat", "Child Seat")}</span>
-                                    <span style={{ fontWeight: 600, color: tk.pageText }}>${childSeat.toFixed(2)}</span>
+                                    <span style={{ fontWeight: 600, color: tk.pageText }}>€{childSeat.toFixed(2)}</span>
                                   </div>
                                 )}
 
@@ -1300,7 +1300,7 @@ export default function BookingsSummary() {
                                 {additionalDriver > 0 && (
                                   <div style={{ display: "flex", justifyContent: "space-between", gap: 16, width: "100%", fontSize: 13 }}>
                                     <span style={{ color: tk.dimText }}>{t("billing.additionalDriver", "Additional Driver")}</span>
-                                    <span style={{ fontWeight: 600, color: tk.pageText }}>${additionalDriver.toFixed(2)}</span>
+                                    <span style={{ fontWeight: 600, color: tk.pageText }}>€{additionalDriver.toFixed(2)}</span>
                                   </div>
                                 )}
 
@@ -1308,7 +1308,7 @@ export default function BookingsSummary() {
                                 {insurance > 0 && (
                                   <div style={{ display: "flex", justifyContent: "space-between", gap: 16, width: "100%", fontSize: 13 }}>
                                     <span style={{ color: tk.dimText }}>{t("billing.insurance", "Insurance")}</span>
-                                    <span style={{ fontWeight: 600, color: tk.pageText }}>${insurance.toFixed(2)}</span>
+                                    <span style={{ fontWeight: 600, color: tk.pageText }}>€{insurance.toFixed(2)}</span>
                                   </div>
                                 )}
 
@@ -1316,7 +1316,7 @@ export default function BookingsSummary() {
                                 {fee > 0 && (
                                   <div style={{ display: "flex", justifyContent: "space-between", gap: 16, width: "100%", fontSize: 13 }}>
                                     <span style={{ color: tk.dimText }}>{t("billing.serviceFee", "Service Fee")} (5%)</span>
-                                    <span style={{ fontWeight: 600, color: tk.pageText }}>${fee.toFixed(2)}</span>
+                                    <span style={{ fontWeight: 600, color: tk.pageText }}>€{fee.toFixed(2)}</span>
                                   </div>
                                 )}
 
@@ -1329,7 +1329,7 @@ export default function BookingsSummary() {
                                     {t("billing.total", "Total")}
                                   </span>
                                   <span style={{ fontSize: 22, fontWeight: 900, color: tk.pageText, lineHeight: 1 }}>
-                                    ${booking.totalPrice.toFixed(2)}
+                                    €{booking.totalPrice.toFixed(2)}
                                   </span>
                                 </div>
                               </div>

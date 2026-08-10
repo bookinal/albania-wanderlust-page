@@ -568,13 +568,13 @@ export default function HotelBilling() {
                       style={{ color: tk.dimText }}
                     >
                       <span>
-                        ${hotel.price}/day × {totalDays || 1}{" "}
+                        €{hotel.price}/day × {totalDays || 1}{" "}
                         {totalDays === 1
                           ? t("common.day")
                           : t("common.days")}
                       </span>
                       <span className="font-medium">
-                        ${totalPrice.toFixed(2)}
+                        €{totalPrice.toFixed(2)}
                       </span>
                     </div>
                     <div
@@ -583,7 +583,7 @@ export default function HotelBilling() {
                     >
                       <span>{t("billing.serviceFee")} (5%)</span>
                       <span className="font-medium">
-                        ${serviceFee.toFixed(2)}
+                        €{serviceFee.toFixed(2)}
                       </span>
                     </div>
                     <div
@@ -609,7 +609,7 @@ export default function HotelBilling() {
                         style={{ color: tk.brand }}
                         className="text-2xl font-bold"
                       >
-                        ${finalTotal.toFixed(2)}
+                        €{finalTotal.toFixed(2)}
                       </span>
                     </div>
                   </div>

@@ -313,7 +313,7 @@ export default function PropertiesMap({ onSelect, filters }: PropertiesMapProps)
               position={[hotel.lat || 0, hotel.lng || 0]}
               icon={createPriceMarker(
                 "hotel",
-                hotel.price ? `$${hotel.price}` : "Hotel",
+                hotel.price ? `€${hotel.price}` : "Hotel",
                 tk.markerAccent,
               )}
               eventHandlers={{
@@ -332,7 +332,7 @@ export default function PropertiesMap({ onSelect, filters }: PropertiesMapProps)
               position={[apartment.lat, apartment.lng]}
               icon={createPriceMarker(
                 "apartment",
-                apartment.price ? `$${apartment.price}` : "Apartment",
+                apartment.price ? `€${apartment.price}` : "Apartment",
                 tk.markerAccent,
               )}
               eventHandlers={{

@@ -351,7 +351,7 @@
     "carNotFoundTitle": "Car Not Found",
     "carNotFoundMessage": "The car you're looking for doesn't exist or has been removed.",
     "pickUpLocationNotSpecified": "Pick-up location not specified",
-    "basePricePerDay": "Base: ${{price}}/day",
+    "basePricePerDay": "Base: €{{price}}/day",
     "apartmentNotFoundTitle": "Apartment Not Found",
     "apartmentNotFoundMessage": "The apartment you're looking for doesn't exist or has been removed.",
     "plusUtilities": "+ utilities",
@@ -795,7 +795,7 @@
     "address": "Address",
     "cityLocation": "City/Location",
     "rating": "Rating (0-5)",
-    "pricePerDay": "Price per Day ($)",
+    "pricePerDay": "Price per Day (€)",
     "status": "Status",
     "available": "Available",
     "rented": "Rented",
@@ -973,7 +973,7 @@
         "year": "Year",
         "transmission": "Transmission",
         "fuelType": "Fuel Type",
-        "basePrice": "Base Price per Day ($)",
+        "basePrice": "Base Price per Day (€)",
         "priceHelp": "This is the default price. You can set seasonal prices below.",
         "status": "Status",
         "childSeatPrice": "Add Child Seat",
@@ -1096,7 +1096,7 @@
         "mapLabel": "Car Location on Map"
       },
       "pricing": {
-        "noSeasonal": "No seasonal pricing configured. Using base price of ${{price}}/day for all months."
+        "noSeasonal": "No seasonal pricing configured. Using base price of €{{price}}/day for all months."
       }
     }
   },
@@ -1199,7 +1199,7 @@
         "locationPlaceholder": "Tirana, Albania",
         "rating": "Rating (0-5)",
         "ratingPlaceholder": "4.5",
-        "price": "Price per Night ($)",
+        "price": "Price per Night (€)",
         "pricePlaceholder": "299",
         "rooms": "Total Rooms",
         "roomsPlaceholder": "150",
@@ -1690,7 +1690,7 @@
   "monthlyPricingEditor": {
     "title": "Monthly Pricing",
     "buttons": {
-      "applyBase": "Apply Base (${{basePrice}}) to All",
+      "applyBase": "Apply Base (€{{basePrice}}) to All",
       "summerPremium": "Summer Premium (+20%)"
     },
     "stats": {

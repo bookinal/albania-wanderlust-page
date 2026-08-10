@@ -18,7 +18,7 @@ import {
   Home,
   Mail,
   Phone,
-  DollarSign,
+  Euro,
   Loader2,
   CheckCircle2,
   Clock,
@@ -616,7 +616,7 @@ export default function BookingsManagement() {
                 📅 ${start} → ${end}
               </div>
               <div style="font-size:13px;color:#78350f;">
-                💰 $${cb.totalPrice.toFixed(2)}
+                💰 €${cb.totalPrice.toFixed(2)}
               </div>
             </div>`;
         })
@@ -851,7 +851,7 @@ export default function BookingsManagement() {
             },
             {
               label: t("bookingManagement.stats.totalRevenue"),
-              value: `$${bookings.reduce((s, b) => s + b.totalPrice, 0).toFixed(2)}`,
+              value: `€${bookings.reduce((s, b) => s + b.totalPrice, 0).toFixed(2)}`,
               color: "#e41e20",
             },
           ].map((s) => (
@@ -1167,7 +1167,7 @@ export default function BookingsManagement() {
                         className="mt-1 flex items-center gap-1 text-xl font-bold"
                         style={{ color: tk.pageText }}
                       >
-                        <DollarSign className="h-4 w-4 text-[#e41e20]" />
+                        <Euro className="h-4 w-4 text-[#e41e20]" />
                         {booking.totalPrice.toFixed(2)}
                       </p>
 

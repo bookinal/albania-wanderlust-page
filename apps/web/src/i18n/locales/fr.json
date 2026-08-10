@@ -351,7 +351,7 @@
     "carNotFoundTitle": "Voiture introuvable",
     "carNotFoundMessage": "La voiture que vous recherchez n'existe pas ou a été supprimée.",
     "pickUpLocationNotSpecified": "Lieu de prise en charge non précisé",
-    "basePricePerDay": "Base : {{price}} $/jour",
+    "basePricePerDay": "Base : {{price}} €/jour",
     "apartmentNotFoundTitle": "Appartement introuvable",
     "apartmentNotFoundMessage": "L'appartement que vous recherchez n'existe pas ou a été supprimé.",
     "plusUtilities": "+ charges",
@@ -795,7 +795,7 @@
     "address": "Adresse",
     "cityLocation": "Ville/Lieu",
     "rating": "Note (0-5)",
-    "pricePerDay": "Prix par jour ($)",
+    "pricePerDay": "Prix par jour (€)",
     "status": "Statut",
     "available": "Disponible",
     "rented": "Loué",
@@ -973,7 +973,7 @@
         "year": "Année",
         "transmission": "Transmission",
         "fuelType": "Type de carburant",
-        "basePrice": "Prix de base par jour ($)",
+        "basePrice": "Prix de base par jour (€)",
         "priceHelp": "C'est le prix par défaut. Vous pouvez définir des prix saisonniers ci-dessous.",
         "status": "Statut",
         "childSeatPrice": "Ajouter un siège enfant",
@@ -1096,7 +1096,7 @@
         "mapLabel": "Localisation de la voiture sur la carte"
       },
       "pricing": {
-        "noSeasonal": "Aucune tarification saisonnière configurée. Utilisation du prix de base de ${{price}}/jour pour tous les mois."
+        "noSeasonal": "Aucune tarification saisonnière configurée. Utilisation du prix de base de €{{price}}/jour pour tous les mois."
       }
     }
   },
@@ -1199,7 +1199,7 @@
         "locationPlaceholder": "Tirana, Albanie",
         "rating": "Note (0-5)",
         "ratingPlaceholder": "4,5",
-        "price": "Prix par nuit ($)",
+        "price": "Prix par nuit (€)",
         "pricePlaceholder": "299",
         "rooms": "Total des chambres",
         "roomsPlaceholder": "150",
@@ -1690,7 +1690,7 @@
   "monthlyPricingEditor": {
     "title": "Tarification mensuelle",
     "buttons": {
-      "applyBase": "Appliquer le prix de base (${{basePrice}}) à tous",
+      "applyBase": "Appliquer le prix de base (€{{basePrice}}) à tous",
       "summerPremium": "Supplété été (+20%)"
     },
     "stats": {

@@ -8,7 +8,7 @@ import {
   Star,
   Users,
   Bed,
-  DollarSign,
+  Euro,
   Edit,
   Trash2,
   Eye,
@@ -575,8 +575,8 @@ const HotelCard: React.FC<HotelCardProps> = ({ hotel, onDelete, onView, onEdit, 
             <span>{t("hotels.allHotels.card.occupancy", { percentage: hotel.occupancy })}</span>
           </div>
           <div className="flex items-center gap-2 text-sm" style={{ color: tk.dimText }}>
-            <DollarSign size={16} className="text-emerald-500" />
-            <span className="font-bold" style={{ color: tk.pageText }}>${hotel.price}</span>
+            <Euro size={16} className="text-emerald-500" />
+            <span className="font-bold" style={{ color: tk.pageText }}>€{hotel.price}</span>
             <span className="text-xs" style={{ color: tk.cardMetaText }}>
               {t("hotels.allHotels.card.perNight")}
             </span>

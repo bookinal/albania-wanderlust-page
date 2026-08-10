@@ -9,7 +9,7 @@ import {
   Star,
   Users,
   Bed,
-  DollarSign,
+  Euro,
   Mail,
   Home,
   Phone,
@@ -630,7 +630,7 @@ const HotelDetails = () => {
                       gap: 6,
                     }}
                   >
-                    <DollarSign size={14} style={{ color: "#10b981" }} />{" "}
+                    <Euro size={14} style={{ color: "#10b981" }} />{" "}
                     {t("hotels.hotelDetails.fields.pricePerNight")}
                   </p>
                   {isEditing ? (
@@ -650,7 +650,7 @@ const HotelDetails = () => {
                         color: tk.pageText,
                       }}
                     >
-                      ${hotel.price}
+                      €{hotel.price}
                     </p>
                   )}
                 </div>

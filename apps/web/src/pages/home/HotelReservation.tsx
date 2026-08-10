@@ -6,7 +6,7 @@ import {
   Star,
   Users,
   Bed,
-  DollarSign,
+  Euro,
   Mail,
   Home,
   Loader2,
@@ -575,7 +575,7 @@ const HotelReservation = () => {
               <div className="text-center mb-6">
                 <p className="text-sm mb-2" style={{ color: tk.mutedText }}>{t("hotel.pricePerNight")}</p>
                 <div className="flex items-center justify-center gap-2">
-                  <DollarSign size={32} className="text-emerald-500" />
+                  <Euro size={32} className="text-emerald-500" />
                   <span className="text-5xl font-bold" style={{ color: tk.pageText }}>{hotel.price}</span>
                 </div>
                 <p className="text-sm mt-2" style={{ color: tk.mutedText }}>{t("hotel.taxesAndFees")}</p>

@@ -282,7 +282,7 @@ Deno.serve(async (req) => {
 
     const paymentIntent = await stripe.paymentIntents.create({
       amount: amountInCents,
-      currency: "usd",
+      currency: "eur",
       automatic_payment_methods: {
         enabled: true,
       },
@@ -305,7 +305,7 @@ Deno.serve(async (req) => {
         booking_id: bookingId,
         stripe_payment_intent_id: paymentIntent.id,
         amount: feeAmount,
-        currency: "USD",
+        currency: "EUR",
         status: "pending",
         payment_provider: "stripe",
       });

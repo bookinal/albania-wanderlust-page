@@ -15,7 +15,7 @@ import {
   Eye,
   Phone,
   MapPin,
-  DollarSign,
+  Euro,
   Image as ImageIcon,
   X,
   Star,
@@ -495,8 +495,8 @@ export default function PropertyRequestsManagement() {
                     { label: "Year", value: propertyDetails.year },
                     { label: "Transmission", value: propertyDetails.transmission },
                     { label: "Fuel Type", value: propertyDetails.fuelType },
-                    { label: "Child Seat", value: propertyDetails.childSeatPrice > 0 ? `$${propertyDetails.childSeatPrice}` : "Not offered" },
-                    { label: "Additional Driver", value: propertyDetails.additionalDriverPrice > 0 ? `$${propertyDetails.additionalDriverPrice}` : "Not offered" },
+                    { label: "Child Seat", value: propertyDetails.childSeatPrice > 0 ? `€${propertyDetails.childSeatPrice}` : "Not offered" },
+                    { label: "Additional Driver", value: propertyDetails.additionalDriverPrice > 0 ? `€${propertyDetails.additionalDriverPrice}` : "Not offered" },
                     { label: "Plate Number", value: propertyDetails.plateNumber },
                     { label: "Status", value: propertyDetails.status },
                   ].map(({ label, value }) => (
@@ -506,8 +506,8 @@ export default function PropertyRequestsManagement() {
                     </div>
                   ))}
                   <div className="space-y-1">
-                    <p className="text-xs flex items-center gap-1" style={{ color: tk.labelText }}><DollarSign className="w-3 h-3" /> Price Per Day</p>
-                    <p className="font-medium text-sm text-green-500">${propertyDetails.pricePerDay}</p>
+                    <p className="text-xs flex items-center gap-1" style={{ color: tk.labelText }}><Euro className="w-3 h-3" /> Price Per Day</p>
+                    <p className="font-medium text-sm text-green-500">€{propertyDetails.pricePerDay}</p>
                   </div>
                 </div>
 
@@ -595,8 +595,8 @@ export default function PropertyRequestsManagement() {
                     </div>
                   ))}
                   <div className="space-y-1">
-                    <p className="text-xs flex items-center gap-1" style={{ color: tk.labelText }}><DollarSign className="w-3 h-3" /> Price Per Day</p>
-                    <p className="font-medium text-sm text-green-500">${propertyDetails.price}</p>
+                    <p className="text-xs flex items-center gap-1" style={{ color: tk.labelText }}><Euro className="w-3 h-3" /> Price Per Day</p>
+                    <p className="font-medium text-sm text-green-500">€{propertyDetails.price}</p>
                   </div>
                 </div>
 

@@ -9,7 +9,7 @@ const escapeHtml = (value: string): string =>
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#39;");
 
-const formatPrice = (value: number): string => `$${value.toLocaleString("en-US")}`;
+const formatPrice = (value: number): string => `€${value.toLocaleString("en-US")}`;
 
 export const getProviderBookingNotificationTemplate = (data: {
   providerName: string;

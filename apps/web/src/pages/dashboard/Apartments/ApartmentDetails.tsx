@@ -8,7 +8,7 @@ import {
   MapPin,
   Star,
   Bed,
-  DollarSign,
+  Euro,
   Home,
   Loader2,
   Image as ImageIcon,
@@ -629,7 +629,7 @@ const ApartmentDetails = () => {
                       gap: 6,
                     }}
                   >
-                    <DollarSign size={14} style={{ color: "#10b981" }} />{" "}
+                    <Euro size={14} style={{ color: "#10b981" }} />{" "}
                     {t("apartment.pricePerDay")}
                   </p>
                   {isEditing ? (
@@ -648,7 +648,7 @@ const ApartmentDetails = () => {
                         color: tk.pageText,
                       }}
                     >
-                      ${apartment.price}
+                      €{apartment.price}
                     </p>
                   )}
                 </div>

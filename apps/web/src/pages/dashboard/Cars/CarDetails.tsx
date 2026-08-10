@@ -8,7 +8,7 @@ import {
   X,
   MapPin,
   Star,
-  DollarSign,
+  Euro,
   Car as CarIcon,
   Loader2,
   Fuel,
@@ -392,14 +392,14 @@ const CarDetails = () => {
                   {/* Base Price */}
                   <div>
                     <p style={{ fontSize: 13, color: tk.labelText, marginBottom: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <DollarSign size={14} style={{ color: '#10b981' }} /> {t("cars.carDetails.fields.basePrice")}
+                      <Euro size={14} style={{ color: '#10b981' }} /> {t("cars.carDetails.fields.basePrice")}
                     </p>
                     {isEditing ? (
                       <>
                         <input name="pricePerDay" type="number" min="0" value={formData.pricePerDay || 0} onChange={handleChange} style={inputStyle} />
                         <p style={{ fontSize: 12, color: tk.mutedText, marginTop: 4 }}>{t("cars.carDetails.fields.priceHelp")}</p>
                       </>
-                    ) : <p style={{ fontSize: 18, fontWeight: 700, color: tk.pageText }}>${car.pricePerDay}</p>}
+                    ) : <p style={{ fontSize: 18, fontWeight: 700, color: tk.pageText }}>€{car.pricePerDay}</p>}
                   </div>
                   {/* Insurance */}
                   <div>
@@ -411,7 +411,7 @@ const CarDetails = () => {
                         <input name="insurance" type="number" min="0" value={formData.insurance ?? 0} onChange={handleChange} style={inputStyle} />
                         <p style={{ fontSize: 12, color: tk.mutedText, marginTop: 4 }}>{t("cars.carDetails.fields.insuranceHelp", "Fixed insurance price per booking")}</p>
                       </>
-                    ) : <p style={{ fontSize: 18, fontWeight: 700, color: tk.pageText }}>${car.insurance ?? 0}</p>}
+                    ) : <p style={{ fontSize: 18, fontWeight: 700, color: tk.pageText }}>€{car.insurance ?? 0}</p>}
                   </div>
                   {/* Child Seat Add-on */}
                   <div>
@@ -423,7 +423,7 @@ const CarDetails = () => {
                         <input name="childSeatPrice" type="number" min="0" value={formData.childSeatPrice ?? 0} onChange={handleChange} style={inputStyle} />
                         <p style={{ fontSize: 12, color: tk.mutedText, marginTop: 4 }}>{t("cars.carDetails.fields.childSeatPriceHelp", "Optional price for a child seat. 0 means not offered.")}</p>
                       </>
-                    ) : <p style={{ fontSize: 18, fontWeight: 700, color: tk.pageText }}>{car.childSeatPrice > 0 ? `$${car.childSeatPrice}` : t("cars.carDetails.fields.notOffered", "Not offered")}</p>}
+                    ) : <p style={{ fontSize: 18, fontWeight: 700, color: tk.pageText }}>{car.childSeatPrice > 0 ? `€${car.childSeatPrice}` : t("cars.carDetails.fields.notOffered", "Not offered")}</p>}
                   </div>
                   {/* Additional Driver Add-on */}
                   <div>
@@ -435,7 +435,7 @@ const CarDetails = () => {
                         <input name="additionalDriverPrice" type="number" min="0" value={formData.additionalDriverPrice ?? 0} onChange={handleChange} style={inputStyle} />
                         <p style={{ fontSize: 12, color: tk.mutedText, marginTop: 4 }}>{t("cars.carDetails.fields.additionalDriverPriceHelp", "Optional price for an additional driver. 0 means not offered.")}</p>
                       </>
-                    ) : <p style={{ fontSize: 18, fontWeight: 700, color: tk.pageText }}>{car.additionalDriverPrice > 0 ? `$${car.additionalDriverPrice}` : t("cars.carDetails.fields.notOffered", "Not offered")}</p>}
+                    ) : <p style={{ fontSize: 18, fontWeight: 700, color: tk.pageText }}>{car.additionalDriverPrice > 0 ? `€${car.additionalDriverPrice}` : t("cars.carDetails.fields.notOffered", "Not offered")}</p>}
                   </div>
                 </div>
               </div>
@@ -456,7 +456,7 @@ const CarDetails = () => {
                           return (
                             <div key={month} style={{ padding: 12, borderRadius: 8, border: `1px solid ${isDifferent ? tk.seasonCellBorder : tk.baseCellBorder}`, background: isDifferent ? tk.seasonCellBg : tk.baseCellBg, textAlign: 'center' }}>
                               <div style={{ fontSize: 11, fontWeight: 500, color: tk.mutedText, marginBottom: 4 }}>{MONTH_NAMES[month]}</div>
-                              <div style={{ fontSize: 18, fontWeight: 700, color: isDifferent ? tk.seasonCellText : tk.baseCellText }}>${price}</div>
+                              <div style={{ fontSize: 18, fontWeight: 700, color: isDifferent ? tk.seasonCellText : tk.baseCellText }}>€{price}</div>
                             </div>
                           );
                         })}

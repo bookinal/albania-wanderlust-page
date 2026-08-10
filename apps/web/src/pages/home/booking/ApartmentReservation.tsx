@@ -5,7 +5,7 @@ import {
   MapPin,
   Star,
   Bed,
-  DollarSign,
+  Euro,
   Home,
   Loader2,
   Calendar,
@@ -588,7 +588,7 @@ const ApartmentReservation = () => {
               <div className="text-center mb-6">
                 <p style={{ color: tk.mutedText }} className="text-sm mb-2">{t("billing.pricePerDay")}</p>
                 <div className="flex items-center justify-center gap-2">
-                  <DollarSign size={32} className="text-emerald-500" />
+                  <Euro size={32} className="text-emerald-500" />
                   <span style={{ color: tk.pageText }} className="text-5xl font-bold">{apartment.price}</span>
                 </div>
                 <p style={{ color: tk.mutedText }} className="text-sm mt-2">
