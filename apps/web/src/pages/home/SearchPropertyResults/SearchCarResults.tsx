@@ -14,6 +14,7 @@ import { useTheme } from "@/context/ThemeContext";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useInView } from "react-intersection-observer";
 import { getSearchResultsThemeTokens } from "./searchResultsTheme";
+import { buildCarSearchQuery } from "@/lib/carSearchParams";
 
 interface LocationState {
   type?: string;
@@ -151,7 +152,7 @@ const SearchCarResults = () => {
   };
 
   const handleCarClick = (id: number) => {
-    navigate(`/carReservation/${id}`);
+    navigate(`/carReservation/${id}${buildCarSearchQuery(filters)}`);
   };
 
   // Theme tokens

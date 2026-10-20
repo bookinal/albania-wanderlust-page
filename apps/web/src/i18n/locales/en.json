@@ -478,6 +478,7 @@
   },
   "booking": {
     "bookNow": "Book Now",
+    "proceed": "Proceed",
     "completeYourBooking": "Complete Your Booking",
     "justAFewMoreDetails": "Just a few more details and you're ready to go",
     "personalInformation": "Personal Information",

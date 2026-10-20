@@ -16,7 +16,9 @@ import { Car } from "@/types/car.types";
 import { Month, MONTHS, MONTH_NAMES } from "@/types/price.type";
 import { getCarById } from "@/services/api/carService";
 import { getCarUnavailabilityDates } from "@/services/api/carService";
-import { useNavigate, useParams } from "react-router";
+import { useLocation, useNavigate, useParams } from "react-router";
+import { parseCarSearchQuery } from "@/lib/carSearchParams";
+import { TIRANA_AIRPORT } from "@/lib/albanianCities";
 import PrimarySearchAppBar from "@/components/home/AppBar";
 import "react-phone-number-input/style.css";
 import PhoneInput, { isValidPhoneNumber } from "react-phone-number-input";
@@ -54,6 +56,20 @@ const DELIVERY_LOCATIONS: DeliveryLocation[] = [
 
 const getDeliveryPrice = (locationName: string): number =>
   DELIVERY_LOCATIONS.find((loc) => loc.name === locationName)?.price ?? 0;
+
+/** Search picker location (albanianCities) -> delivery location of this form. */
+const SEARCH_TO_DELIVERY_LOCATION: Record<string, string> = {
+  [TIRANA_AIRPORT]: "Tirana (airport)",
+  Tirana: "Tirana",
+  Durrës: "Durres",
+  Vlorë: "Vlore",
+  Sarandë: "Saranda",
+  Shkodër: "Shkoder",
+  Kukës: "Kukes (airport)",
+  Lezhë: "Lezhe",
+  Ksamil: "Ksamil",
+  Korçë: "Korçë",
+};
 
 export default function CarBilling() {
   const { t } = useTranslation();
@@ -117,7 +133,19 @@ export default function CarBilling() {
     fetchCar();
   }, [id]);
 
-  const [dateRange, setDateRange] = useState<DateRange | undefined>();
+  // Pre-fill from the search the user came from (see buildCarSearchQuery)
+  const { search } = useLocation();
+  const searchSelection = useMemo(() => parseCarSearchQuery(search), [search]);
+  const initialPickUpLocation =
+    (searchSelection.location &&
+      SEARCH_TO_DELIVERY_LOCATION[searchSelection.location]) ||
+    "";
+
+  const [dateRange, setDateRange] = useState<DateRange | undefined>(
+    searchSelection.from && searchSelection.to
+      ? { from: searchSelection.from, to: searchSelection.to }
+      : undefined,
+  );
   const [addChildSeat, setAddChildSeat] = useState(false);
   const [addAdditionalDriver, setAddAdditionalDriver] = useState(false);
   const [formData, setFormData] = useState({
@@ -126,9 +154,27 @@ export default function CarBilling() {
     phone: "",
     pickUpTime: "10:00",
     dropOffTime: "10:00",
-    pickUpLocation: "",
-    dropOffLocation: "",
+    pickUpLocation: initialPickUpLocation,
+    dropOffLocation: initialPickUpLocation,
   });
+
+  // Drop pre-filled dates that overlap an existing booking of this car
+  useEffect(() => {
+    if (!dateRange?.from || !dateRange?.to || unavailableDates.length === 0) {
+      return;
+    }
+    const unavailable = new Set(unavailableDates);
+    const day = new Date(dateRange.from);
+    while (day <= dateRange.to) {
+      if (unavailable.has(formatDateLocal(day))) {
+        setDateRange(undefined);
+        return;
+      }
+      day.setDate(day.getDate() + 1);
+    }
+    // Only re-check when the booked dates arrive, not on every user pick
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [unavailableDates]);
 
   useEffect(() => {
     if (user) {

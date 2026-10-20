@@ -478,6 +478,7 @@
   },
   "booking": {
     "bookNow": "Réserver maintenant",
+    "proceed": "Continuer",
     "completeYourBooking": "Finalisez votre réservation",
     "justAFewMoreDetails": "Encore quelques détails et vous êtes prêt à partir",
     "personalInformation": "Informations personnelles",

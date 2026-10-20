@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import {
   ArrowLeft,
+  ArrowRight,
   MapPin,
   Euro,
   Loader2,
@@ -13,12 +14,9 @@ import {
   ChevronLeft,
   ChevronRight,
   Settings,
-  Hash,
   Package,
   MapPinned,
   TrendingUp,
-  Baby,
-  UserPlus,
   Images,
   X,
 } from "lucide-react";
@@ -38,7 +36,6 @@ const getCurrentMonth = (): Month => {
   const monthIndex = new Date().getMonth();
   return MONTHS[monthIndex];
 };
-import { MapPicker } from "@/components/dashboard/mapPicker";
 import PrimarySearchAppBar from "@/components/home/AppBar";
 import ReviewsSection from "@/components/reviews/ReviewsSection";
 import { getBookingThemeTokens } from "./bookingTheme";
@@ -346,6 +343,7 @@ const CarReservation = () => {
   const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
   const { isDark, isBlue } = useTheme();
   const tk = getBookingThemeTokens({ isDark, isBlue });
 
@@ -397,8 +395,10 @@ const CarReservation = () => {
   }, [id]);
 
   const handleReservation = () => {
+    // Keep the search selection (dates, pick-up location) for the billing form
+    const billingUrl = `/carBilling/${id}${location.search}`;
     if (!user) {
-      localStorage.setItem("redirectAfterLogin", `/carBilling/${id}`);
+      localStorage.setItem("redirectAfterLogin", billingUrl);
       Swal.fire({
         title: t("auth.loginRequired"),
         text: t("auth.loginToBook"),
@@ -413,7 +413,7 @@ const CarReservation = () => {
       });
       return;
     }
-    navigate(`/carBilling/${id}`);
+    navigate(billingUrl);
   };
 
   if (loading) {
@@ -502,94 +502,71 @@ const CarReservation = () => {
           {t("navigation.backToCars")}
         </button>
 
-        {/* Mosaic Gallery Hero Section */}
-        <div style={{ background: tk.cardBg, border: `1px solid ${tk.cardBorder}`, boxShadow: tk.cardShadow }} className="rounded-3xl overflow-hidden mb-8">
-          <div className="relative h-96 sm:h-[500px]">
-            {images.length > 0 ? (
-              <MosaicGallery
-                images={images}
-                onOpen={(idx) => setLightboxIndex(idx)}
-                alt={`${car.brand} ${car.name}`}
-                t={t}
-              />
-            ) : (
-              <div className="h-full flex items-center justify-center" style={{ background: tk.statBg }}>
-                <p style={{ color: tk.mutedText }}>
-                  {t("billing.noImagesAvailable", "No images available")}
-                </p>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
+          {/* Gallery + car info */}
+          <div className="lg:col-span-2 space-y-6">
+            <div style={{ background: tk.cardBg, border: `1px solid ${tk.cardBorder}`, boxShadow: tk.cardShadow }} className="rounded-3xl overflow-hidden">
+              <div className="relative h-72 sm:h-[420px]">
+                {images.length > 0 ? (
+                  <MosaicGallery
+                    images={images}
+                    onOpen={(idx) => setLightboxIndex(idx)}
+                    alt={`${car.brand} ${car.name}`}
+                    t={t}
+                  />
+                ) : (
+                  <div className="h-full flex items-center justify-center" style={{ background: tk.statBg }}>
+                    <p style={{ color: tk.mutedText }}>
+                      {t("billing.noImagesAvailable", "No images available")}
+                    </p>
+                  </div>
+                )}
               </div>
-            )}
-
-            {/* Gradient Overlay for Text Visibility */}
-            <div
-              style={{
-                position: "absolute",
-                inset: 0,
-                pointerEvents: "none",
-                background: `linear-gradient(180deg, rgba(0,0,0,0.18) 0%, rgba(0,0,0,0.01) 35%, rgba(0,0,0,0.65) 100%)`,
-              }}
-            />
-
-            {/* Top Right Status & Type Badges */}
-            <div className="absolute top-6 right-6 flex flex-col gap-3 pointer-events-none z-10">
-              <span className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-bold uppercase tracking-wider shadow-lg backdrop-blur-sm ${getStatusColor()}`}>
-                <CheckCircle2 size={16} className="mr-2" />
-                {car.status}
-              </span>
-              <span className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-bold uppercase tracking-wider shadow-lg backdrop-blur-sm ${getTypeColor()}`}>
-                <Package size={16} className="mr-2" />
-                {car.type}
-              </span>
             </div>
 
-            {/* Bottom Overlay Info */}
-            <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-8 text-white pointer-events-none z-10">
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <div className="text-lg font-semibold mb-1 opacity-90">{car.brand}</div>
-                  <h1 className="text-3xl sm:text-5xl font-bold mb-3 drop-shadow-lg">{car.name}</h1>
-                  <div className="flex items-center gap-2 text-base sm:text-lg mb-4">
-                    <MapPin size={20} />
-                    <span className="drop-shadow">
+            {/* Car Info */}
+            <div style={{ background: tk.cardBg, border: `1px solid ${tk.cardBorder}`, boxShadow: tk.cardShadow }} className="rounded-2xl p-6 sm:p-8">
+              <div className="flex flex-col-reverse sm:flex-row sm:items-start sm:justify-between gap-4">
+                <div className="min-w-0">
+                  <div style={{ color: tk.mutedText }} className="text-base font-semibold mb-1">{car.brand}</div>
+                  <h1 style={{ color: tk.pageText }} className="text-3xl sm:text-4xl font-bold mb-3">{car.name}</h1>
+                  <div style={{ color: tk.dimText }} className="flex items-center gap-2 text-base">
+                    <MapPin size={18} style={{ color: tk.brand }} className="flex-shrink-0" />
+                    <span>
                       {car.pickUpLocation ||
                         t("billing.pickUpLocationNotSpecified", "Pick-up location not specified")}
                     </span>
                   </div>
-                  <div className="flex items-center gap-3 sm:gap-4 flex-wrap">
-                    <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full">
-                      <Calendar size={18} />
-                      <span className="font-medium text-sm">{car.year}</span>
-                    </div>
-                    <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full">
-                      <Settings size={18} />
-                      <span className="font-medium text-sm">{car.transmission}</span>
-                    </div>
-                    <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full">
-                      <FuelIcon size={18} />
-                      <span className="font-medium text-sm">{car.fuelType}</span>
-                    </div>
-                  </div>
                 </div>
+                <div className="flex flex-wrap sm:flex-col sm:items-end gap-2 flex-shrink-0">
+                  <span className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider ${getStatusColor()}`}>
+                    <CheckCircle2 size={14} className="mr-1.5" />
+                    {car.status}
+                  </span>
+                  <span className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider ${getTypeColor()}`}>
+                    <Package size={14} className="mr-1.5" />
+                    {car.type}
+                  </span>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 sm:gap-3 flex-wrap mt-5">
+                {[
+                  { icon: <Calendar size={16} />, value: String(car.year) },
+                  { icon: <Settings size={16} />, value: car.transmission },
+                  { icon: <FuelIcon size={16} />, value: car.fuelType },
+                ].map(({ icon, value }, i) => (
+                  <div key={i} style={{ background: tk.statBg, border: `1px solid ${tk.statBorder}`, color: tk.dimText }} className="flex items-center gap-2 px-4 py-2 rounded-full">
+                    <span style={{ color: tk.brand }}>{icon}</span>
+                    <span className="font-medium text-sm">{value}</span>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Fullscreen Lightbox Modal */}
-        {lightboxIndex !== null && (
-          <LightboxModal
-            images={images.length > 0 ? images : ["/placeholder.svg"]}
-            initialIndex={lightboxIndex}
-            onClose={() => setLightboxIndex(null)}
-            alt={`${car.brand} ${car.name}`}
-          />
-        )}
-
-        {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Left Column - Reservation Card */}
-          <div className="lg:col-span-1">
-            <div style={{ background: tk.cardBg, border: `1px solid ${tk.cardBorder}`, boxShadow: tk.cardShadow }} className="rounded-2xl p-6 sticky top-8">
+          {/* Price Card (right of the gallery, sticky on desktop) */}
+          <div className="lg:col-start-3 lg:row-start-1 lg:row-span-2">
+            <div style={{ background: tk.cardBg, border: `1px solid ${tk.cardBorder}`, boxShadow: tk.cardShadow }} className="rounded-2xl p-6 lg:sticky lg:top-24">
               {(() => {
                 const currentMonth = getCurrentMonth();
                 const monthlyPrice = car.monthlyPrices?.find((p) => p.month === currentMonth);
@@ -623,22 +600,6 @@ const CarReservation = () => {
                 );
               })()}
 
-              <div className="space-y-4 mb-6">
-                {[
-                  { icon: <Hash size={20} style={{ color: tk.brand }} />, label: t("searchResults.cars.plate"), value: car.plateNumber },
-                  { icon: <Baby size={20} style={{ color: tk.brand }} />, label: t("searchResults.cars.childSeat", "Child seat"), value: car.childSeatPrice > 0 ? `+€${car.childSeatPrice}` : t("cars.carDetails.fields.notOffered", "Not offered") },
-                  { icon: <UserPlus size={20} style={{ color: tk.brand }} />, label: t("searchResults.cars.additionalDriver", "Additional driver"), value: car.additionalDriverPrice > 0 ? `+€${car.additionalDriverPrice}` : t("cars.carDetails.fields.notOffered", "Not offered") },
-                ].map(({ icon, label, value }, i) => (
-                  <div key={i} style={{ background: tk.statBg, border: `1px solid ${tk.statBorder}` }} className="flex items-center justify-between p-4 rounded-xl">
-                    <div className="flex items-center gap-3">
-                      {icon}
-                      <span style={{ color: tk.dimText }} className="font-medium">{label}</span>
-                    </div>
-                    <span style={{ color: tk.pageText }} className="font-bold font-mono">{value}</span>
-                  </div>
-                ))}
-              </div>
-
               {car.status === "rented" && (
                 <div className="mb-4 flex items-center justify-center gap-2 rounded-xl border border-amber-400/30 bg-amber-400/10 px-4 py-2">
                   <span className="h-2 w-2 rounded-full bg-amber-400 animate-pulse" />
@@ -656,10 +617,14 @@ const CarReservation = () => {
                 }}
                 className="w-full flex items-center justify-center gap-2 py-4 rounded-xl font-bold text-lg transition-opacity hover:opacity-90"
               >
-                <Calendar size={20} />
-                {car.status === "maintenance" || car.status === "review"
-                  ? t("booking.underMaintenance")
-                  : t("booking.bookNow")}
+                {car.status === "maintenance" || car.status === "review" ? (
+                  t("booking.underMaintenance")
+                ) : (
+                  <>
+                    {t("booking.proceed", "Proceed")}
+                    <ArrowRight size={20} />
+                  </>
+                )}
               </button>
 
               {(car.status === "available" || car.status === "rented") && (
@@ -668,7 +633,7 @@ const CarReservation = () => {
             </div>
           </div>
 
-          {/* Right Column - Details */}
+          {/* Details */}
           <div className="lg:col-span-2 space-y-6">
             {/* Vehicle Specifications */}
             <div style={{ background: tk.cardBg, border: `1px solid ${tk.cardBorder}`, boxShadow: tk.cardShadow }} className="rounded-2xl p-8">
@@ -683,6 +648,9 @@ const CarReservation = () => {
                   { label: t("searchResults.filters.carType"), value: car.type },
                   { label: t("searchResults.filters.transmission"), value: car.transmission },
                   { label: t("searchResults.filters.fuelType"), value: car.fuelType },
+                  { label: t("searchResults.cars.plate"), value: car.plateNumber },
+                  { label: t("searchResults.cars.childSeat", "Child seat"), value: car.childSeatPrice > 0 ? `+€${car.childSeatPrice}` : t("cars.carDetails.fields.notOffered", "Not offered") },
+                  { label: t("searchResults.cars.additionalDriver", "Additional driver"), value: car.additionalDriverPrice > 0 ? `+€${car.additionalDriverPrice}` : t("cars.carDetails.fields.notOffered", "Not offered") },
                 ].map(({ label, value }, i) => (
                   <div key={i} className="flex flex-col gap-2">
                     <span style={{ color: tk.mutedText }} className="text-sm font-medium">{label}</span>
@@ -727,28 +695,6 @@ const CarReservation = () => {
               </div>
             </div>
 
-            {/* Map Location */}
-            {car.lat !== undefined && car.lng !== undefined && (
-              <div style={{ background: tk.cardBg, border: `1px solid ${tk.cardBorder}`, boxShadow: tk.cardShadow }} className="rounded-2xl p-8">
-                <h2 style={{ color: tk.pageText }} className="text-2xl font-bold mb-6 flex items-center gap-2">
-                  <MapPin style={{ color: tk.brand }} size={24} />
-                  {t("map.locationOnMap")}
-                </h2>
-                <div className="rounded-xl overflow-hidden shadow-md">
-                  <MapPicker
-                    lat={car.lat}
-                    lng={car.lng}
-                    onLocationSelect={() => {}}
-                    label=""
-                    defaultCenter={[car.lat, car.lng]}
-                    defaultZoom={15}
-                    showCoordinates={false}
-                    openOnGoogleMaps={true}
-                  />
-                </div>
-              </div>
-            )}
-
             <div style={{ background: tk.cardBg, border: `1px solid ${tk.cardBorder}` }} className="rounded-xl p-6">
               <AvailabilityCalendar propertyId={parseInt(id!)} propertyType="car" />
             </div>
@@ -776,6 +722,16 @@ const CarReservation = () => {
             </div>
           </div>
         </div>
+
+        {/* Fullscreen Lightbox Modal */}
+        {lightboxIndex !== null && (
+          <LightboxModal
+            images={images.length > 0 ? images : ["/placeholder.svg"]}
+            initialIndex={lightboxIndex}
+            onClose={() => setLightboxIndex(null)}
+            alt={`${car.brand} ${car.name}`}
+          />
+        )}
       </div>
     </div>
   );

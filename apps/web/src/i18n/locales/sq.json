@@ -479,6 +479,7 @@
   },
   "booking": {
     "bookNow": "Rezervo Tani",
+    "proceed": "Vazhdo",
     "completeYourBooking": "Plotëso Rezervimin Tuaj",
     "justAFewMoreDetails": "Vetëm disa detaje të tjera dhe jeni gati të shkoni",
     "personalInformation": "Informacion Personal",
