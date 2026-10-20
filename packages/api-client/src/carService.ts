@@ -8,6 +8,7 @@ import { MonthlyPriceInput, Month, MONTHS } from "@albania/shared-types";
 
 export interface SearchCarFilters {
   searchTerm?: string;
+  pickupLocation?: string;
   status?: string;
   type?: string;
   transmission?: string;
@@ -99,6 +100,11 @@ export const searchCars = async (
   // Features (contains all selected features)
   if (filters.features && filters.features.length > 0) {
     query = query.contains("features", filters.features);
+  }
+
+  // Pick-up location (exact match on the location chosen from the list)
+  if (filters.pickupLocation) {
+    query = query.eq("pickUpLocation", filters.pickupLocation);
   }
 
   // SearchTerm

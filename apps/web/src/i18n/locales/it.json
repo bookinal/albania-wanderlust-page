@@ -31,7 +31,7 @@
       "badge": "La Perla Nascosta del Sud-Est Europa",
       "discover": "Scopri",
       "albania": "l'Albania",
-      "subheading": "Dalle Alpi Albanesi alla costa della Riviera. Esplora le migliori destinazioni, prenota appartamenti e auto per la tua perfetta avventura albanese.",
+      "subheading": "Noleggia auto, prenota appartamenti e scopri le migliori destinazioni in Albania",
       "exploreMap": "Esplora Mappa",
       "exploreDestinations": "Esplora Destinazioni",
       "browseProperties": "Sfoglia Strutture"
@@ -45,6 +45,7 @@
     },
     "reservationPicker": {
       "carModel": "Modello Auto",
+      "pickupLocation": "Luogo di ritiro",
       "Destination": "Destinazione",
       "carDate": "Seleziona date di ritiro e riconsegna",
       "period": "Periodo",
@@ -370,6 +371,8 @@
       "reset": "Reimposta",
       "search": "Cerca",
       "searchPlaceholderCars": "Marca, modello o località...",
+      "pickupLocation": "Luogo di ritiro",
+      "allLocations": "Tutte le località",
       "searchPlaceholderProperties": "Nome o località...",
       "rentalDates": "Date di Noleggio",
       "pickupDate": "Data di Ritiro",

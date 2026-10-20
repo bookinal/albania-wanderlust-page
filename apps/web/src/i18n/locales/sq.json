@@ -31,7 +31,7 @@
       "badge": "Gjemica e Lindore e Evropës - Këmb i Fshehur",
       "discover": "Zbuloni",
       "albania": "Shqipërinë",
-      "subheading": "Nga Alpet Shqiptare deri te bregdeti i Rivierës. Eksploroni destinacionet më të mira, rezervoni apartamente dhe makina për aventurën tuaj të përsosur shqiptare.",
+      "subheading": "Merrni makina me qira, rezervoni apartamente dhe zbuloni destinacionet më të mira në Shqipëri",
       "exploreMap": "Shploro Hartën",
       "exploreDestinations": "Shploro Destinacionet",
       "browseProperties": "Shfleto Prona"
@@ -45,6 +45,7 @@
     },
     "reservationPicker": {
       "carModel": "Modeli i Makina",
+      "pickupLocation": "Vendi i marrjes",
       "Destination": "Destinacioni",
       "carDate": "Zgjidh datat e marrjes dhe kthimit",
       "period": "Periudha",
@@ -371,6 +372,8 @@
       "reset": "Rivendos",
       "search": "Kërko",
       "searchPlaceholderCars": "Marka, modeli ose vendndodhja...",
+      "pickupLocation": "Vendi i marrjes",
+      "allLocations": "Të gjitha vendndodhjet",
       "searchPlaceholderProperties": "Emri ose vendndodhja...",
       "rentalDates": "Datat e qirasë",
       "pickupDate": "Data e marrjes",

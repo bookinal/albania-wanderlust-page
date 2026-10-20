@@ -18,6 +18,7 @@ import { getSearchResultsThemeTokens } from "./searchResultsTheme";
 interface LocationState {
   type?: string;
   destination?: string;
+  pickupLocation?: string;
   pickupDate?: string | null;
   returnDate?: string | null;
 }
@@ -39,6 +40,7 @@ const SearchCarResults = () => {
   // Filter State
   const [filters, setFilters] = useState<CarFilterState>({
     searchTerm: initialDestination,
+    pickupLocation: state?.pickupLocation || "",
     status: "all",
     type: "all",
     transmission: "all",
@@ -63,6 +65,7 @@ const SearchCarResults = () => {
       // Map frontend CarFilterState to api-client SearchCarFilters
       const apiFilters: SearchCarFilters = {
         searchTerm: filters.searchTerm,
+        pickupLocation: filters.pickupLocation,
         status: filters.status,
         type: filters.type,
         transmission: filters.transmission,
@@ -135,6 +138,7 @@ const SearchCarResults = () => {
   const handleResetFilters = () => {
     setFilters({
       searchTerm: "",
+      pickupLocation: "",
       status: "all",
       type: "all",
       transmission: "all",

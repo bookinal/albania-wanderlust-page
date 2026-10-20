@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, type ReactNode } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link, useNavigate } from "react-router-dom";
 import {
@@ -46,7 +46,7 @@ const panelBase = {
 };
 
 interface HeroInventoryPreviewProps {
-  layout?: "stacked" | "split";
+  layout?: "stacked" | "split" | "horizontal";
   side?: "stays" | "cars" | "both";
 }
 
@@ -400,6 +400,220 @@ const HeroInventoryPreview = ({
       </div>
     </div>
   );
+
+  if (layout === "horizontal") {
+    const panelHeader = (
+      eyebrow: string,
+      title: string,
+      linkTo: string,
+      linkLabel: string,
+    ) => (
+      <div className="mb-3 flex items-end justify-between gap-3">
+        <div>
+          <p
+            className="text-[10px] uppercase tracking-[0.24em]"
+            style={{ color: tk.badgeText }}
+          >
+            {eyebrow}
+          </p>
+          <h3
+            className="mt-0.5 text-base font-semibold"
+            style={{ color: tk.textStrongOnMedia }}
+          >
+            {title}
+          </h3>
+        </div>
+        <Link
+          to={linkTo}
+          className="inline-flex shrink-0 items-center gap-1.5 text-xs font-medium transition-opacity hover:opacity-80"
+          style={{ color: tk.textSoftOnMedia }}
+        >
+          {linkLabel}
+          <ArrowRight className="h-3.5 w-3.5" />
+        </Link>
+      </div>
+    );
+
+    const tile = ({
+      key,
+      href,
+      image,
+      alt,
+      fallbackIcon,
+      badge,
+      rating,
+      name,
+      subtitle,
+      price,
+      unit,
+    }: {
+      key: string;
+      href: string;
+      image?: string;
+      alt: string;
+      fallbackIcon: ReactNode;
+      badge: string;
+      rating?: number;
+      name: string;
+      subtitle: string;
+      price: number;
+      unit: string;
+    }) => (
+      <button
+        key={key}
+        onClick={() => navigate(href)}
+        className="group flex min-w-0 flex-col overflow-hidden rounded-[16px] border text-left transition-all hover:-translate-y-0.5"
+        style={{
+          background: tk.glassCardBg,
+          borderColor: tk.glassCardBorder,
+        }}
+      >
+        <div
+          className="relative h-20 w-full overflow-hidden"
+          style={{ background: tk.thumbBg }}
+        >
+          {image ? (
+            <img
+              src={image}
+              alt={alt}
+              className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+            />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center">
+              {fallbackIcon}
+            </div>
+          )}
+          <span className="absolute left-1.5 top-1.5 rounded-full bg-black/45 px-1.5 py-0.5 text-[8px] uppercase tracking-[0.18em] text-white backdrop-blur-md">
+            {badge}
+          </span>
+          {typeof rating === "number" && rating > 0 && (
+            <span className="absolute right-1.5 top-1.5 inline-flex items-center gap-0.5 rounded-full bg-black/45 px-1.5 py-0.5 text-[9px] text-white backdrop-blur-md">
+              <Star className="h-2.5 w-2.5 fill-amber-400 text-amber-400" />
+              {rating.toFixed(1)}
+            </span>
+          )}
+        </div>
+
+        <div className="flex min-w-0 flex-1 flex-col p-2">
+          <p
+            className="truncate text-xs font-semibold"
+            style={{ color: tk.textStrongOnMedia }}
+          >
+            {name}
+          </p>
+          <p
+            className="mt-0.5 flex items-center gap-1 truncate text-[10px]"
+            style={{ color: tk.textMutedOnMedia }}
+          >
+            <MapPin className="h-2.5 w-2.5 shrink-0" />
+            <span className="truncate">{subtitle}</span>
+          </p>
+          <p className="mt-1 text-[10px]" style={{ color: tk.textMutedOnMedia }}>
+            <span
+              className="text-sm font-semibold"
+              style={{ color: tk.textStrongOnMedia }}
+            >
+              €{price}
+            </span>{" "}
+            / {unit}
+          </p>
+        </div>
+      </button>
+    );
+
+    const horizontalPanel = (content: ReactNode) => (
+      <div
+        className="flex w-full flex-col overflow-hidden rounded-[24px] border p-3"
+        style={{
+          ...panelBase,
+          background: tk.glassPanelBg,
+          borderColor: tk.glassPanelBorder,
+          boxShadow: tk.glassPanelShadow,
+        }}
+      >
+        {content}
+      </div>
+    );
+
+    return (
+      <div className="grid w-full grid-cols-2 gap-3">
+        {horizontalPanel(
+          <>
+            {panelHeader(
+              t("home.hero.staysEyebrow", "Stay Preview"),
+              t("home.hero.staysTitle", "Stays for every trip"),
+              "/searchResults",
+              t("home.hero.viewStays", "View stays"),
+            )}
+            <div className="grid grid-cols-4 gap-2">
+              {stays.map((stay) =>
+                tile({
+                  key: `${stay.type}-${stay.id}`,
+                  href:
+                    stay.type === "hotel"
+                      ? `/hotelReservation/${stay.id}`
+                      : `/apartmentReservation/${stay.id}`,
+                  image: stay.image,
+                  alt: stay.name,
+                  fallbackIcon:
+                    stay.type === "hotel" ? (
+                      <Building2
+                        className="h-5 w-5"
+                        style={{ color: tk.textMutedOnMedia }}
+                      />
+                    ) : (
+                      <Home
+                        className="h-5 w-5"
+                        style={{ color: tk.textMutedOnMedia }}
+                      />
+                    ),
+                  badge: stay.type === "hotel" ? "Hotel" : "Apartment",
+                  rating: stay.rating,
+                  name: stay.name,
+                  subtitle:
+                    stay.location ||
+                    t("home.hero.flexibleStay", "Across Albania"),
+                  price: stay.price,
+                  unit: t("home.hero.perNight", "per night"),
+                }),
+              )}
+            </div>
+          </>,
+        )}
+        {horizontalPanel(
+          <>
+            {panelHeader(
+              t("home.hero.carsEyebrow", "Drive Preview"),
+              t("home.hero.carsTitle", "Cars ready when you land"),
+              "/searchCarResults",
+              t("home.hero.viewCars", "View cars"),
+            )}
+            <div className="grid grid-cols-4 gap-2">
+              {topCars.map((car) =>
+                tile({
+                  key: `car-${car.id}`,
+                  href: `/carReservation/${car.id}`,
+                  image: car.image,
+                  alt: `${car.brand} ${car.name}`,
+                  fallbackIcon: (
+                    <CarFront
+                      className="h-5 w-5"
+                      style={{ color: tk.textMutedOnMedia }}
+                    />
+                  ),
+                  badge: car.type,
+                  name: `${car.brand} ${car.name}`,
+                  subtitle: car.pickUpLocation,
+                  price: car.pricePerDay,
+                  unit: t("home.hero.perDay", "per day"),
+                }),
+              )}
+            </div>
+          </>,
+        )}
+      </div>
+    );
+  }
 
   if (layout === "split") {
     if (side === "stays") {

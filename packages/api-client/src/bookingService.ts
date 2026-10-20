@@ -479,18 +479,18 @@ export const updateBookingStatus = async (
 };
 
 /**
- * Get Booking by property id and type - Only confirmed bookings block availability
+ * Get Booking by property id and type - Only confirmed bookings block availability.
+ * Booking rows are private (RLS), so this uses the `get_booked_date_ranges` RPC
+ * which only exposes the booked date ranges.
  */
 export const getBookingsByPropertyIdAndType = async (
   propertyId: string,
   propertyType: Booking["propertyType"],
-): Promise<Booking[] | null> => {
-  const { data, error } = await apiClient
-    .from("booking")
-    .select("*")
-    .eq("status", "confirmed")
-    .eq("propertyId", propertyId)
-    .eq("propertyType", propertyType);
+): Promise<Pick<Booking, "propertyId" | "startDate" | "endDate">[] | null> => {
+  const { data, error } = await apiClient.rpc("get_booked_date_ranges", {
+    p_property_type: propertyType,
+    p_property_id: propertyId,
+  });
 
   if (error) {
     console.error(
@@ -500,7 +500,7 @@ export const getBookingsByPropertyIdAndType = async (
     throw error;
   }
 
-  return data as Booking[] | null;
+  return data;
 };
 
 /**
@@ -518,13 +518,11 @@ export const getUnavailablePropertyIds = async (
 
   // We find any confirmed booking where the booking period overlaps with the requested period:
   // Overlap condition: booking.startDate <= requested.endDate AND booking.endDate >= requested.startDate
-  const { data, error } = await apiClient
-    .from("booking")
-    .select("propertyId")
-    .eq("propertyType", propertyType)
-    .eq("status", "confirmed")
-    .lte("startDate", endStr)
-    .gte("endDate", startStr);
+  const { data, error } = await apiClient.rpc("get_booked_date_ranges", {
+    p_property_type: propertyType,
+    p_start: startStr,
+    p_end: endStr,
+  });
 
   if (error) {
     console.error("[Booking Service] Error fetching unavailable property IDs:", error);

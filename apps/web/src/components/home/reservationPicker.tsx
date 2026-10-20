@@ -12,15 +12,30 @@ import {
   Button,
   Tabs,
   Tab,
+  MenuItem,
+  InputAdornment,
 } from "@mui/material";
-import { Add, Remove, DirectionsCar, Hotel } from "@mui/icons-material";
+import {
+  Add,
+  Remove,
+  DirectionsCar,
+  Hotel,
+  LocationOn,
+} from "@mui/icons-material";
 import { useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
+import {
+  CAR_PICKUP_LOCATIONS,
+  DEFAULT_CAR_PICKUP_LOCATION,
+} from "@/lib/albanianCities";
 
 export default function ReservationPickerValue() {
   const { t } = useTranslation();
   const [tabValue, setTabValue] = React.useState(0); // 0 = Car, 1 = Stay
   const [destination, setDestination] = React.useState("");
+  const [pickupLocation, setPickupLocation] = React.useState<string>(
+    DEFAULT_CAR_PICKUP_LOCATION,
+  );
   const [dateRange, setDateRange] = React.useState<DateRange | undefined>(
     undefined,
   );
@@ -42,6 +57,17 @@ export default function ReservationPickerValue() {
   };
 
   const navigate = useNavigate();
+
+  const firstFieldSx = {
+    width: { xs: "100%", sm: "auto" },
+    flex: { sm: "1.3 1 0" },
+    minWidth: { sm: 220 },
+    // 48px tall field, label re-centered to match
+    "& .MuiInputBase-input": { py: "12.5px" },
+    "& .MuiInputLabel-root:not(.MuiInputLabel-shrink)": {
+      transform: "translate(14px, 13px) scale(1)",
+    },
+  };
 
   // Helper function to format date as YYYY-MM-DD without timezone conversion
   const formatDateForSearch = (date: Date): string => {
@@ -75,7 +101,7 @@ export default function ReservationPickerValue() {
       navigate("/searchCarResults", {
         state: {
           type: "car",
-          destination,
+          pickupLocation,
           pickupDate: dateRange?.from
             ? formatDateForSearch(dateRange.from)
             : null,
@@ -93,8 +119,7 @@ export default function ReservationPickerValue() {
         opacity: 0.85,
         borderRadius: { xs: 2, md: 3 },
         boxShadow: 3,
-        maxWidth: { xs: "100%", sm: "90%", md: "fit-content" },
-        width: { xs: "100%", sm: "auto" },
+        width: "100%",
         mx: "auto",
         my: { xs: 0.5, sm: 1, md: 1.5 },
         overflow: "hidden",
@@ -110,9 +135,9 @@ export default function ReservationPickerValue() {
           borderColor: "divider",
           "& .MuiTab-root": {
             fontWeight: 600,
-            fontSize: { xs: "0.7rem", sm: "0.85rem" },
-            minHeight: { xs: 36, sm: 42 },
-            py: 0.5,
+            fontSize: { xs: "0.75rem", sm: "0.9rem" },
+            minHeight: { xs: 42, sm: 50 },
+            py: 0.75,
           },
         }}
       >
@@ -133,34 +158,65 @@ export default function ReservationPickerValue() {
         sx={{
           display: "flex",
           flexDirection: "column",
-          gap: { xs: 1, sm: 1.5 },
-          p: { xs: 1, sm: 1.5, md: 2 },
+          gap: { xs: 1.25, sm: 1.75 },
+          p: { xs: 1.5, sm: 2, md: 2.5 },
         }}
       >
         <Box
           sx={{
             display: "flex",
-            flexDirection: { xs: "column", md: "row" },
+            flexDirection: { xs: "column", sm: "row" },
+            flexWrap: { sm: "wrap", md: "nowrap" },
             alignItems: "center",
             justifyContent: "center",
             gap: { xs: 1, sm: 1.5 },
             width: "100%",
           }}
         >
-          <TextField
-            label={
-              tabValue === 1
-                ? t("home.reservationPicker.Destination")
-                : t("home.reservationPicker.carModel")
-            }
-            value={destination}
-            onChange={(e) => setDestination(e.target.value)}
-            variant="outlined"
-            size="small"
-            sx={{ minWidth: { xs: "100%", sm: 170 } }}
-          />
+          {tabValue === 0 ? (
+            <TextField
+              select
+              label={t("home.reservationPicker.pickupLocation")}
+              value={pickupLocation}
+              onChange={(e) => setPickupLocation(e.target.value)}
+              variant="outlined"
+              size="small"
+              sx={firstFieldSx}
+              slotProps={{
+                input: {
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <LocationOn fontSize="small" color="primary" />
+                    </InputAdornment>
+                  ),
+                },
+                select: { MenuProps: { PaperProps: { sx: { maxHeight: 320 } } } },
+              }}
+            >
+              {CAR_PICKUP_LOCATIONS.map((location) => (
+                <MenuItem key={location} value={location}>
+                  {location}
+                </MenuItem>
+              ))}
+            </TextField>
+          ) : (
+            <TextField
+              label={t("home.reservationPicker.Destination")}
+              value={destination}
+              onChange={(e) => setDestination(e.target.value)}
+              variant="outlined"
+              size="small"
+              sx={firstFieldSx}
+            />
+          )}
 
-          <Box sx={{ width: { xs: "100%", sm: "auto" } }}>
+          <Box
+            sx={{
+              width: { xs: "100%", sm: "auto" },
+              flex: { sm: "1 1 0" },
+              minWidth: { sm: 200 },
+            }}
+          >
             <DateRangePicker
               dateRange={dateRange}
               onDateRangeChange={setDateRange}
@@ -170,7 +226,7 @@ export default function ReservationPickerValue() {
                   : t("home.reservationPicker.carDate")
               }
               minDate={new Date()}
-              className="w-full sm:w-auto h-9 text-sm [&_button]:!text-gray-900 [&_button]:!bg-white [&_button]:border-gray-300 [&_button:hover]:!bg-gray-50"
+              className="w-full text-sm [&_button]:!h-12 [&_button]:!text-gray-900 [&_button]:!bg-white [&_button]:border-gray-300 [&_button:hover]:!bg-gray-50"
             />
           </Box>
 
@@ -182,10 +238,12 @@ export default function ReservationPickerValue() {
               onClick={handleSearch}
               size="small"
               sx={{
-                px: 3,
-                py: 1,
+                px: 4,
+                height: 48,
+                minWidth: { md: 140 },
                 fontWeight: "bold",
-                width: { xs: "100%", sm: "auto" },
+                width: { xs: "100%", md: "auto" },
+                flexShrink: 0,
               }}
             >
               {loading
@@ -200,9 +258,10 @@ export default function ReservationPickerValue() {
           <Box
             sx={{
               display: "flex",
-              flexDirection: { xs: "column", md: "row" },
+              flexDirection: { xs: "column", sm: "row" },
+              flexWrap: { sm: "wrap", md: "nowrap" },
               alignItems: "center",
-              justifyContent: "center",
+              justifyContent: { xs: "center", sm: "space-around", md: "flex-start" },
               gap: { xs: 1.5, sm: 2 },
               width: "100%",
               mt: { md: 0.5 },
@@ -214,7 +273,7 @@ export default function ReservationPickerValue() {
                 alignItems: "center",
                 gap: { xs: 0.5, sm: 0 },
                 width: { xs: "100%", sm: "auto" },
-                justifyContent: { xs: "space-between", sm: "flex-start" },
+                justifyContent: "flex-start",
               }}
             >
               <Typography
@@ -222,7 +281,7 @@ export default function ReservationPickerValue() {
                   color: "text.primary",
                   fontWeight: 500,
                   fontSize: { xs: "0.75rem", sm: "0.875rem" },
-                  mr: { sm: 1 },
+                  mr: { xs: "auto", sm: 1 },
                 }}
               >
                 {t("home.reservationPicker.adults")}
@@ -258,7 +317,7 @@ export default function ReservationPickerValue() {
                 alignItems: "center",
                 gap: { xs: 0.5, sm: 0 },
                 width: { xs: "100%", sm: "auto" },
-                justifyContent: { xs: "space-between", sm: "flex-start" },
+                justifyContent: "flex-start",
               }}
             >
               <Typography
@@ -266,7 +325,7 @@ export default function ReservationPickerValue() {
                   color: "text.primary",
                   fontWeight: 500,
                   fontSize: { xs: "0.75rem", sm: "0.875rem" },
-                  mr: { sm: 1 },
+                  mr: { xs: "auto", sm: 1 },
                 }}
               >
                 {t("home.reservationPicker.children")}
@@ -302,7 +361,7 @@ export default function ReservationPickerValue() {
                 alignItems: "center",
                 gap: { xs: 0.5, sm: 0 },
                 width: { xs: "100%", sm: "auto" },
-                justifyContent: { xs: "space-between", sm: "flex-start" },
+                justifyContent: "flex-start",
               }}
             >
               <Typography
@@ -310,7 +369,7 @@ export default function ReservationPickerValue() {
                   color: "text.primary",
                   fontWeight: 500,
                   fontSize: { xs: "0.75rem", sm: "0.875rem" },
-                  mr: { sm: 1 },
+                  mr: { xs: "auto", sm: 1 },
                 }}
               >
                 {t("home.reservationPicker.rooms")}
@@ -347,11 +406,12 @@ export default function ReservationPickerValue() {
               onClick={handleSearch}
               size="small"
               sx={{
-                px: 3,
-                py: 1,
+                px: 4,
+                height: 48,
+                minWidth: { md: 140 },
                 fontWeight: "bold",
-                width: { xs: "100%", sm: "auto" },
-                ml: { md: 1.5 },
+                width: { xs: "100%", md: "auto" },
+                ml: { md: "auto" },
               }}
             >
               {loading

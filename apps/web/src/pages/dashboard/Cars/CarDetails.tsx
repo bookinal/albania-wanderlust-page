@@ -22,6 +22,7 @@ import {
 import { Car, UpdateCarDto } from "@/types/car.types";
 import { MonthlyPriceInput, MONTHS, MONTH_NAMES } from "@/types/price.type";
 import { MapPicker } from "@/components/dashboard/mapPicker";
+import { CAR_PICKUP_LOCATIONS, getPickupLocationCoords } from "@/lib/albanianCities";
 import { ImageUpload } from "@/components/dashboard/ImageUpload";
 import { AvailabilityCalendar } from "@/components/dashboard/AvailabilityCalendar";
 import { MonthlyPricingEditor } from "@/components/dashboard/MonthlyPricingEditor";
@@ -119,6 +120,11 @@ const CarDetails = () => {
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>,
   ) => {
     const { name, value } = e.target;
+    if (name === "pickUpLocation") {
+      // Map pin follows the chosen pick-up location
+      setFormData((prev) => ({ ...prev, pickUpLocation: value, ...getPickupLocationCoords(value) }));
+      return;
+    }
     setFormData((prev) => ({
       ...prev,
       [name]:
@@ -126,10 +132,6 @@ const CarDetails = () => {
           ? parseFloat(value) || 0
           : value,
     }));
-  };
-
-  const handleLocationSelect = (lat: number, lng: number) => {
-    setFormData((prev) => ({ ...prev, lat, lng }));
   };
 
   const handleEdit = () => setIsEditing(true);
@@ -484,7 +486,17 @@ const CarDetails = () => {
                     <p style={{ fontSize: 13, color: tk.labelText, marginBottom: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
                       <MapPin size={14} style={{ color: '#E8192C' }} /> {t("cars.carDetails.fields.pickupLocation")}
                     </p>
-                    {isEditing ? <input name="pickUpLocation" value={formData.pickUpLocation || ""} onChange={handleChange} style={inputStyle} /> : <p style={{ color: tk.dimText }}>{car.pickUpLocation}</p>}
+                    {isEditing ? (
+                      <select name="pickUpLocation" value={formData.pickUpLocation || ""} onChange={handleChange} style={selectStyle}>
+                        {/* Keep a legacy free-text value selectable until it is changed */}
+                        {formData.pickUpLocation && !(CAR_PICKUP_LOCATIONS as readonly string[]).includes(formData.pickUpLocation) && (
+                          <option value={formData.pickUpLocation} style={{ background: tk.optionBg }}>{formData.pickUpLocation}</option>
+                        )}
+                        {CAR_PICKUP_LOCATIONS.map((location) => (
+                          <option key={location} value={location} style={{ background: tk.optionBg }}>{location}</option>
+                        ))}
+                      </select>
+                    ) : <p style={{ color: tk.dimText }}>{car.pickUpLocation}</p>}
                   </div>
                 </div>
               </div>
@@ -548,10 +560,8 @@ const CarDetails = () => {
                 )}
               </div>
 
-              {/* Map */}
-              {isEditing ? (
-                <MapPicker lat={formData.lat} lng={formData.lng} onLocationSelect={handleLocationSelect} label={t("cars.carDetails.fields.mapLabel")} defaultCenter={[car.lat || 41.3275, car.lng || 19.8187]} defaultZoom={13} showCoordinates={true} />
-              ) : (
+              {/* Map (read-only; the pin follows the pick-up location) */}
+              {!isEditing && (
                 car.lat !== undefined && car.lng !== undefined && (
                   <div style={{ background: tk.cardBg, border: `1px solid ${tk.cardBorder}`, borderRadius: 12, padding: 24 }}>
                     <h2 style={{ fontSize: 20, fontWeight: 700, marginBottom: 16, color: tk.pageText }}>{t("cars.carDetails.sections.location")}</h2>

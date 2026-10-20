@@ -5,8 +5,10 @@ import { CarFilters } from "@/types/car.types";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@/context/ThemeContext";
 import { getSearchResultsThemeTokens } from "./searchResultsTheme";
+import { CAR_PICKUP_LOCATIONS } from "@/lib/albanianCities";
 
 export interface CarFilterState extends CarFilters {
+  pickupLocation?: string;
   priceRange?: { min: number; max: number };
   features?: string[];
   pickupDate?: Date | null;
@@ -150,6 +152,7 @@ export const CarFilterBar = ({
   const countActiveFilters = (): number => {
     let count = 0;
     if (filters.searchTerm) count++;
+    if (filters.pickupLocation) count++;
     if (filters.status && filters.status !== "all") count++;
     if (filters.type && filters.type !== "all") count++;
     if (filters.transmission && filters.transmission !== "all") count++;
@@ -232,6 +235,22 @@ export const CarFilterBar = ({
           onFocus={e => (e.currentTarget.style.borderColor = tk.focusBorder)}
           onBlur={e => (e.currentTarget.style.borderColor = tk.inputBorder)}
         />
+      </AccSection>
+
+      {/* Pick-up location */}
+      <AccSection label={t("searchResults.filters.pickupLocation")} defaultOpen headerColor={tk.headerText} dividerColor={tk.sidebarBorder} iconColor={themeTk.brand}>
+        <select
+          style={selectStyle}
+          value={filters.pickupLocation || ""}
+          onChange={e => onFilterChange({ pickupLocation: e.target.value })}
+          onFocus={e => (e.currentTarget.style.borderColor = tk.focusBorder)}
+          onBlur={e => (e.currentTarget.style.borderColor = tk.inputBorder)}
+        >
+          <option value="" style={{ background: tk.selectOptionBg }}>{t("searchResults.filters.allLocations")}</option>
+          {CAR_PICKUP_LOCATIONS.map(location => (
+            <option key={location} value={location} style={{ background: tk.selectOptionBg }}>{location}</option>
+          ))}
+        </select>
       </AccSection>
 
       {/* Dates */}

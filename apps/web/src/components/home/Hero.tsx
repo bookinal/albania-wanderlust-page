@@ -38,8 +38,8 @@ const Hero = () => {
 
       {/* Content */}
       <div className="relative z-10 container mx-auto flex flex-1 flex-col items-center px-3 sm:px-5 lg:px-6 text-white">
-        <div className="w-full xl:grid xl:grid-cols-[minmax(0,520px)_minmax(200px,1fr)_minmax(200px,1fr)] xl:items-stretch xl:gap-3">
-          <div className="animate-fade-in-up mx-auto max-w-2xl text-center xl:text-left xl:flex xl:min-h-[340px] xl:flex-col xl:justify-center xl:self-center xl:items-start">
+        <div className="w-full">
+          <div className="animate-fade-in-up mx-auto max-w-3xl text-center xl:mx-0 xl:max-w-[760px] xl:text-left xl:flex xl:flex-col xl:items-start">
             {/* Badge */}
             <div
               className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full mb-2.5 border backdrop-blur-md"
@@ -70,7 +70,10 @@ const Hero = () => {
             </h1>
 
             {/* Subheading */}
-            <p className="text-xs sm:text-sm md:text-base mb-3.5 max-w-lg mx-auto xl:mx-0 text-white/85 leading-relaxed">
+            <p
+              className="mb-4 max-w-xl mx-auto xl:mx-0 text-base sm:text-lg md:text-xl lg:text-2xl font-semibold text-white leading-snug"
+              style={{ textShadow: "0 2px 12px rgba(0, 0, 0, 0.45)" }}
+            >
               {t("home.hero.subheading")}
             </p>
 
@@ -79,7 +82,7 @@ const Hero = () => {
             </div>
 
             {/* Search Widget */}
-            <div className="mb-3 w-full scale-90 sm:scale-85 origin-center xl:origin-left -my-1 sm:-my-2">
+            <div className="mb-3 w-full">
               <ReservationPickerValue />
             </div>
 
@@ -125,11 +128,9 @@ const Hero = () => {
             </div>
           </div>
 
-          <div className="hidden h-full xl:flex scale-85 origin-top-left">
-            <HeroInventoryPreview layout="split" side="stays" />
-          </div>
-          <div className="hidden h-full xl:flex scale-85 origin-top-left">
-            <HeroInventoryPreview layout="split" side="cars" />
+          {/* Stay & Drive previews: horizontal band under the actions (desktop) */}
+          <div className="mt-4 hidden w-full xl:block">
+            <HeroInventoryPreview layout="horizontal" />
           </div>
         </div>
       </div>

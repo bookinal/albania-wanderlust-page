@@ -14,7 +14,11 @@ import { X } from "lucide-react";
 import { CreateCarDto } from "@/types/car.types";
 import { MonthlyPriceInput } from "@/types/price.type";
 import { addCar } from "@/services/api/carService";
-import { MapPicker } from "@/components/dashboard/mapPicker";
+import {
+  CAR_PICKUP_LOCATIONS,
+  DEFAULT_CAR_PICKUP_LOCATION,
+  getPickupLocationCoords,
+} from "@/lib/albanianCities";
 import { ImageUpload } from "@/components/dashboard/ImageUpload";
 import { MonthlyPricingEditor } from "@/components/dashboard/MonthlyPricingEditor";
 import { propertyRequestService } from "@/services/api/propertyRequest";
@@ -49,9 +53,8 @@ export const AddCarDialog: React.FC<AddCarDialogProps> = ({ onCarAdded }) => {
     plateNumber: "",
     features: [] as string[],
     imageUrls: [] as string[],
-    pickUpLocation: "Tirana International Airport",
-    lat: 41.4167 as number | undefined,
-    lng: 19.7125 as number | undefined,
+    pickUpLocation: DEFAULT_CAR_PICKUP_LOCATION as string,
+    ...getPickupLocationCoords(DEFAULT_CAR_PICKUP_LOCATION),
   });
 
   const tk = {
@@ -106,6 +109,11 @@ export const AddCarDialog: React.FC<AddCarDialogProps> = ({ onCarAdded }) => {
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>,
   ) => {
     const { name, value } = e.target;
+    if (name === "pickUpLocation") {
+      // Map pin follows the chosen pick-up location
+      setFormData((prev) => ({ ...prev, pickUpLocation: value, ...getPickupLocationCoords(value) }));
+      return;
+    }
     setFormData((prev) => ({
       ...prev,
       [name]: name === "year" || name === "pricePerDay" || name === "insurance" || name === "childSeatPrice" || name === "additionalDriverPrice"
@@ -114,17 +122,9 @@ export const AddCarDialog: React.FC<AddCarDialogProps> = ({ onCarAdded }) => {
     }));
   };
 
-  const handleLocationSelect = (lat: number, lng: number) => {
-    setFormData((prev) => ({ ...prev, lat, lng }));
-  };
-
   const handleSubmit = async () => {
     if (!formData.name || !formData.brand || !formData.plateNumber || formData.pricePerDay <= 0 || formData.insurance < 0) {
       alert(t("cars.addCarDialog.validation.requiredFields"));
-      return;
-    }
-    if (formData.lat === undefined || formData.lng === undefined) {
-      alert(t("cars.addCarDialog.validation.locationRequired"));
       return;
     }
     if (selectedImageFiles.length === 0) {
@@ -164,7 +164,7 @@ export const AddCarDialog: React.FC<AddCarDialogProps> = ({ onCarAdded }) => {
       );
       onCarAdded(newCar);
       setSubmissionSuccess(true);
-      setFormData({ name: "", brand: "", type: "Sedan", year: new Date().getFullYear(), transmission: "Manual", fuelType: "Petrol", pricePerDay: 10, insurance: 0, childSeatPrice: 0, additionalDriverPrice: 0, status: "review", plateNumber: "", features: [], imageUrls: [], pickUpLocation: "", lat: undefined, lng: undefined });
+      setFormData({ name: "", brand: "", type: "Sedan", year: new Date().getFullYear(), transmission: "Manual", fuelType: "Petrol", pricePerDay: 10, insurance: 0, childSeatPrice: 0, additionalDriverPrice: 0, status: "review", plateNumber: "", features: [], imageUrls: [], pickUpLocation: DEFAULT_CAR_PICKUP_LOCATION, ...getPickupLocationCoords(DEFAULT_CAR_PICKUP_LOCATION) });
       setSelectedImageFiles([]);
       setMonthlyPrices([]);
     } catch (error) {
@@ -381,11 +381,12 @@ export const AddCarDialog: React.FC<AddCarDialogProps> = ({ onCarAdded }) => {
               {/* Pick Up Location */}
               <div>
                 <p style={{ fontSize: 13, fontWeight: 500, color: tk.labelText, marginBottom: 6 }}>{t("cars.addCarDialog.form.pickupLocation")}</p>
-                <input id="pickUpLocation" name="pickUpLocation" value={formData.pickUpLocation} onChange={handleChange} placeholder="Tirana Airport, Albania" style={inputStyle} />
+                <select id="pickUpLocation" name="pickUpLocation" value={formData.pickUpLocation} onChange={handleChange} style={selectStyle}>
+                  {CAR_PICKUP_LOCATIONS.map((location) => (
+                    <option key={location} value={location} style={{ background: tk.optionBg }}>{location}</option>
+                  ))}
+                </select>
               </div>
-
-              {/* Map */}
-              <MapPicker lat={formData.lat} lng={formData.lng} onLocationSelect={handleLocationSelect} label={t("cars.addCarDialog.form.mapLabel")} defaultCenter={[41.327953, 19.819025]} defaultZoom={8} showCoordinates={true} />
             </div>
 
             <DialogFooter style={{ marginTop: 24 }}>

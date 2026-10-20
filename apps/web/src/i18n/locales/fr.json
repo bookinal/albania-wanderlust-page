@@ -31,7 +31,7 @@
       "badge": "Joyau caché d'Europe du Sud-Est",
       "discover": "Découvrez",
       "albania": "l'Albanie",
-      "subheading": "Des Alpes albanaises à la côte de la Riviera. Explorez les meilleures destinations, réservez des appartements et des voitures pour votre parfaite aventure albanaise.",
+      "subheading": "Louez des voitures, réservez des appartements et découvrez les meilleures destinations d'Albanie",
       "exploreMap": "Explorer la carte",
       "exploreDestinations": "Explorer les destinations",
       "browseProperties": "Parcourir les biens"
@@ -45,6 +45,7 @@
     },
     "reservationPicker": {
       "carModel": "Modèle de voiture",
+      "pickupLocation": "Lieu de prise en charge",
       "Destination": "Destination",
       "carDate": "Sélectionnez les dates de prise en charge et de retour",
       "period": "Période",
@@ -370,6 +371,8 @@
       "reset": "Réinitialiser",
       "search": "Rechercher",
       "searchPlaceholderCars": "Marque, modèle ou lieu...",
+      "pickupLocation": "Lieu de prise en charge",
+      "allLocations": "Tous les lieux",
       "searchPlaceholderProperties": "Nom ou lieu...",
       "rentalDates": "Dates de location",
       "pickupDate": "Date de prise en charge",
