@@ -1110,6 +1110,49 @@
       "pricing": {
         "noSeasonal": "Nuk ka çmime sezonale të konfiguruar. Duke përdorur çmimin bazë të €{{price}}/ditë për të gjithë muajt."
       }
+    },
+    "rentalTerms": {
+      "title": "Kushtet e qirasë",
+      "depositAmount": "Depozita e kërkuar (€)",
+      "depositHelp": "Mbahet në marrje. 0 do të thotë pa depozitë.",
+      "depositLabel": "Depozita",
+      "dailyKmLimit": "Kufiri ditor i km",
+      "dailyKmLimitHelp": "Lëreni bosh për kilometra të pakufizuara.",
+      "unlimited": "Të pakufizuara",
+      "kmPerDay": "{{count}} km / ditë",
+      "minimumAge": "Mosha minimale",
+      "drivingLicenseYears": "Patentë shoferi prej (vitesh)",
+      "drivingLicenseLabel": "Patentë shoferi prej",
+      "years_one": "{{count}} vit",
+      "years_other": "{{count}} vjet",
+      "fuelPolicy": "Politika e karburantit",
+      "fuelPolicies": {
+        "full_to_full": "Plot me plot",
+        "same_to_same": "I njëjti nivel",
+        "pre_purchase": "Parablerje (kthim bosh)"
+      },
+      "crossBorderDeposit": "Depozitë shtesë jashtë shtetit (€)",
+      "crossBorderDepositLabel": "Depozitë shtesë jashtë shtetit",
+      "crossBorderAssistance": "Asistencë jashtë shtetit",
+      "crossBorderAssistanceOffered": "Ofrohet asistencë jashtë shtetit",
+      "included": "Përfshihet",
+      "notIncluded": "Nuk përfshihet",
+      "noDeposit": "Asnjë",
+      "acceptedPaymentMethods": "Mënyrat e pagesës së pranuara",
+      "paymentMethodsHelp": "Zgjidhni të paktën një.",
+      "paymentMethods": {
+        "cash": "Para në dorë",
+        "debit_card": "Kartë debiti",
+        "credit_card": "Kartë krediti"
+      },
+      "paidAtPickUp": "Mënyrat e pagesës që pranon ofruesi në marrje.",
+      "validation": {
+        "negativeAmount": "Depozitat nuk mund të jenë negative.",
+        "kmLimit": "Kufiri ditor i km duhet të jetë më i madh se 0, ose bosh për të pakufizuara.",
+        "minimumAge": "Mosha minimale duhet të jetë midis 18 dhe 99.",
+        "licenseYears": "Vitet e patentës duhet të jenë midis 0 dhe 50.",
+        "paymentMethods": "Zgjidhni të paktën një mënyrë pagese të pranuar."
+      }
     }
   },
   "destinationsManagement": {

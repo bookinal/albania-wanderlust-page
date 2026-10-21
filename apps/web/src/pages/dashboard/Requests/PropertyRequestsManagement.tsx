@@ -28,6 +28,7 @@ import { Apartment as ApartmentType } from "@/types/apartment.type";
 import { getCarById } from "@/services/api/carService";
 import { getApartmentById } from "@/services/api/apartmentService";
 import { useTranslation } from "react-i18next";
+import { getCarRentalTerms } from "@/lib/carRentalTerms";
 import {
   Dialog,
   DialogContent,
@@ -499,6 +500,19 @@ export default function PropertyRequestsManagement() {
                     { label: "Additional Driver", value: propertyDetails.additionalDriverPrice > 0 ? `€${propertyDetails.additionalDriverPrice}` : "Not offered" },
                     { label: "Plate Number", value: propertyDetails.plateNumber },
                     { label: "Status", value: propertyDetails.status },
+                    ...(() => {
+                      const terms = getCarRentalTerms(propertyDetails as CarType);
+                      return [
+                        { label: t("cars.rentalTerms.depositLabel"), value: terms.depositAmount > 0 ? `€${terms.depositAmount}` : t("cars.rentalTerms.noDeposit") },
+                        { label: t("cars.rentalTerms.dailyKmLimit"), value: terms.dailyKmLimit !== null ? t("cars.rentalTerms.kmPerDay", { count: terms.dailyKmLimit }) : t("cars.rentalTerms.unlimited") },
+                        { label: t("cars.rentalTerms.minimumAge"), value: t("cars.rentalTerms.years", { count: terms.minimumAge }) },
+                        { label: t("cars.rentalTerms.drivingLicenseLabel"), value: t("cars.rentalTerms.years", { count: terms.drivingLicenseYears }) },
+                        { label: t("cars.rentalTerms.fuelPolicy"), value: t(`cars.rentalTerms.fuelPolicies.${terms.fuelPolicy}`) },
+                        { label: t("cars.rentalTerms.crossBorderDepositLabel"), value: terms.crossBorderDeposit > 0 ? `€${terms.crossBorderDeposit}` : t("cars.rentalTerms.noDeposit") },
+                        { label: t("cars.rentalTerms.crossBorderAssistance"), value: terms.crossBorderAssistance ? t("cars.rentalTerms.included") : t("cars.rentalTerms.notIncluded") },
+                        { label: t("cars.rentalTerms.acceptedPaymentMethods"), value: terms.acceptedPaymentMethods.map((m) => t(`cars.rentalTerms.paymentMethods.${m}`)).join(", ") },
+                      ];
+                    })(),
                   ].map(({ label, value }) => (
                     <div key={label} className="space-y-1">
                       <p className="text-xs" style={{ color: tk.labelText }}>{label}</p>

@@ -31,6 +31,7 @@ import { userService } from "@/services/api/userService";
 import { User } from "@/types/user.types";
 import { useTheme } from "@/context/ThemeContext";
 import { getBookingThemeTokens } from "./bookingTheme";
+import { CarRentalConditions } from "./CarRentalConditions";
 
 interface DeliveryLocation {
   name: string;
@@ -686,6 +687,23 @@ export default function CarBilling() {
                     </div>
                   )}
                 </div>
+              </div>
+
+              {/* Rental Conditions */}
+              <div
+                style={{
+                  background: tk.cardBg,
+                  border: `1px solid ${tk.cardBorder}`,
+                }}
+                className="rounded-2xl p-6"
+              >
+                <h2
+                  style={{ color: tk.pageText }}
+                  className="text-xl font-semibold mb-6"
+                >
+                  {t("cars.rentalTerms.title")}
+                </h2>
+                <CarRentalConditions car={car} tk={tk} compact />
               </div>
             </div>
 

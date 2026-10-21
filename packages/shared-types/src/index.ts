@@ -8,6 +8,9 @@ export {
   type CarFilters,
   type CreateCarDto,
   type UpdateCarDto,
+  type CarRentalTerms,
+  type FuelPolicy,
+  type CarPaymentMethod,
 } from "./car.types";
 export * from "./chat.types";
 export * from "./destination.types";

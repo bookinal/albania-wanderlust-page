@@ -1,6 +1,22 @@
 import { MonthlyPriceInput } from "./price.type";
 
-export interface Car {
+export type FuelPolicy = "full_to_full" | "same_to_same" | "pre_purchase";
+
+export type CarPaymentMethod = "cash" | "debit_card" | "credit_card";
+
+/** Rental conditions set by the provider for each car. */
+export interface CarRentalTerms {
+  depositAmount: number; // Security deposit required at pick-up; 0 means none
+  dailyKmLimit: number | null; // Kilometres allowed per day; null means unlimited
+  minimumAge: number; // Minimum driver age
+  drivingLicenseYears: number; // Driving licence held for at least N years
+  fuelPolicy: FuelPolicy;
+  crossBorderDeposit: number; // Extra deposit to take the car abroad; 0 means none
+  crossBorderAssistance: boolean; // Roadside assistance abroad
+  acceptedPaymentMethods: CarPaymentMethod[]; // Ways the provider accepts payment at pick-up
+}
+
+export interface Car extends CarRentalTerms {
   id: number;
   name: string;
   brand: string;
@@ -23,7 +39,7 @@ export interface Car {
   monthlyPrices?: MonthlyPriceInput[]; // Dynamic monthly pricing
 }
 
-export interface CreateCarDto {
+export interface CreateCarDto extends CarRentalTerms {
   name: string;
   brand: string;
   type: "Sedan" | "SUV" | "Sports";
@@ -45,7 +61,7 @@ export interface CreateCarDto {
   monthlyPrices?: MonthlyPriceInput[]; // Dynamic monthly pricing
 }
 
-export interface UpdateCarDto {
+export interface UpdateCarDto extends Partial<CarRentalTerms> {
   name?: string;
   brand?: string;
   type?: "Sedan" | "SUV" | "Sports";

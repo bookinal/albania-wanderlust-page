@@ -664,7 +664,7 @@
     "albanianLandscapeAlt": "Albanian Landscape",
     "albanianCultureAlt": "Albanian culture and traditions"
   },
-  "letUsInspireYou":{
+  "letUsInspireYou": {
     "title": "Let Us Inspire You",
     "description": "Discover amazing destinations and experiences tailored just for you."
   },
@@ -1101,6 +1101,49 @@
       },
       "pricing": {
         "noSeasonal": "No seasonal pricing configured. Using base price of €{{price}}/day for all months."
+      }
+    },
+    "rentalTerms": {
+      "title": "Rental conditions",
+      "depositAmount": "Deposit required (€)",
+      "depositHelp": "Held at pick-up. 0 means no deposit.",
+      "depositLabel": "Deposit",
+      "dailyKmLimit": "Daily km limit",
+      "dailyKmLimitHelp": "Leave empty for unlimited kilometres.",
+      "unlimited": "Unlimited",
+      "kmPerDay": "{{count}} km / day",
+      "minimumAge": "Minimum age",
+      "drivingLicenseYears": "Driving license since (years)",
+      "drivingLicenseLabel": "Driving license held for",
+      "years_one": "{{count}} year",
+      "years_other": "{{count}} years",
+      "fuelPolicy": "Fuel policy",
+      "fuelPolicies": {
+        "full_to_full": "Full to full",
+        "same_to_same": "Same to same",
+        "pre_purchase": "Pre-purchase (full to empty)"
+      },
+      "crossBorderDeposit": "Cross border extra deposit (€)",
+      "crossBorderDepositLabel": "Cross border extra deposit",
+      "crossBorderAssistance": "Cross border assistance",
+      "crossBorderAssistanceOffered": "Assistance offered abroad",
+      "included": "Included",
+      "notIncluded": "Not included",
+      "noDeposit": "None",
+      "acceptedPaymentMethods": "Accepted payment methods",
+      "paymentMethodsHelp": "Select at least one.",
+      "paymentMethods": {
+        "cash": "Cash",
+        "debit_card": "Debit card",
+        "credit_card": "Credit card"
+      },
+      "paidAtPickUp": "Payment methods accepted by the provider at pick-up.",
+      "validation": {
+        "negativeAmount": "Deposit amounts cannot be negative.",
+        "kmLimit": "The daily km limit must be greater than 0, or left empty for unlimited.",
+        "minimumAge": "The minimum age must be between 18 and 99.",
+        "licenseYears": "Driving license years must be between 0 and 50.",
+        "paymentMethods": "Select at least one accepted payment method."
       }
     }
   },

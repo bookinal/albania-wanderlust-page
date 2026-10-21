@@ -17,6 +17,7 @@ import {
   Package,
   MapPinned,
   TrendingUp,
+  ShieldCheck,
   Images,
   X,
 } from "lucide-react";
@@ -39,6 +40,7 @@ const getCurrentMonth = (): Month => {
 import PrimarySearchAppBar from "@/components/home/AppBar";
 import ReviewsSection from "@/components/reviews/ReviewsSection";
 import { getBookingThemeTokens } from "./bookingTheme";
+import { CarRentalConditions } from "./CarRentalConditions";
 
 function MosaicGallery({
   images,
@@ -658,6 +660,15 @@ const CarReservation = () => {
                   </div>
                 ))}
               </div>
+            </div>
+
+            {/* Rental Conditions */}
+            <div style={{ background: tk.cardBg, border: `1px solid ${tk.cardBorder}`, boxShadow: tk.cardShadow }} className="rounded-2xl p-8">
+              <h2 style={{ color: tk.pageText }} className="text-2xl font-bold mb-6 flex items-center gap-2">
+                <ShieldCheck style={{ color: tk.brand }} size={24} />
+                {t("cars.rentalTerms.title")}
+              </h2>
+              <CarRentalConditions car={car} tk={tk} />
             </div>
 
             {/* Features */}

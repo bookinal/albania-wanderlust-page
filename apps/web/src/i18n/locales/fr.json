@@ -1102,6 +1102,49 @@
       "pricing": {
         "noSeasonal": "Aucune tarification saisonnière configurée. Utilisation du prix de base de €{{price}}/jour pour tous les mois."
       }
+    },
+    "rentalTerms": {
+      "title": "Conditions de location",
+      "depositAmount": "Caution requise (€)",
+      "depositHelp": "Bloquée à la prise en charge. 0 = aucune caution.",
+      "depositLabel": "Caution",
+      "dailyKmLimit": "Limite de km par jour",
+      "dailyKmLimitHelp": "Laisser vide pour un kilométrage illimité.",
+      "unlimited": "Illimité",
+      "kmPerDay": "{{count}} km / jour",
+      "minimumAge": "Âge minimum",
+      "drivingLicenseYears": "Permis de conduire depuis (années)",
+      "drivingLicenseLabel": "Permis de conduire depuis",
+      "years_one": "{{count}} an",
+      "years_other": "{{count}} ans",
+      "fuelPolicy": "Politique de carburant",
+      "fuelPolicies": {
+        "full_to_full": "Plein / plein",
+        "same_to_same": "Même niveau",
+        "pre_purchase": "Plein prépayé (rendu vide)"
+      },
+      "crossBorderDeposit": "Caution supplémentaire à l'étranger (€)",
+      "crossBorderDepositLabel": "Caution supplémentaire à l'étranger",
+      "crossBorderAssistance": "Assistance à l'étranger",
+      "crossBorderAssistanceOffered": "Assistance proposée à l'étranger",
+      "included": "Incluse",
+      "notIncluded": "Non incluse",
+      "noDeposit": "Aucune",
+      "acceptedPaymentMethods": "Moyens de paiement acceptés",
+      "paymentMethodsHelp": "Sélectionnez au moins un moyen.",
+      "paymentMethods": {
+        "cash": "Espèces",
+        "debit_card": "Carte de débit",
+        "credit_card": "Carte de crédit"
+      },
+      "paidAtPickUp": "Moyens de paiement acceptés par le loueur à la prise en charge.",
+      "validation": {
+        "negativeAmount": "Les cautions ne peuvent pas être négatives.",
+        "kmLimit": "La limite de km par jour doit être supérieure à 0, ou vide pour illimité.",
+        "minimumAge": "L'âge minimum doit être compris entre 18 et 99 ans.",
+        "licenseYears": "L'ancienneté du permis doit être comprise entre 0 et 50 ans.",
+        "paymentMethods": "Sélectionnez au moins un moyen de paiement accepté."
+      }
     }
   },
   "destinationsManagement": {

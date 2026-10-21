@@ -1102,6 +1102,49 @@
       "pricing": {
         "noSeasonal": "Nessuna tariffa stagionale configurata. Utilizzo del prezzo base di €{{price}}/giorno per tutti i mesi."
       }
+    },
+    "rentalTerms": {
+      "title": "Condizioni di noleggio",
+      "depositAmount": "Deposito richiesto (€)",
+      "depositHelp": "Trattenuto al ritiro. 0 = nessun deposito.",
+      "depositLabel": "Deposito",
+      "dailyKmLimit": "Limite km giornaliero",
+      "dailyKmLimitHelp": "Lascia vuoto per chilometri illimitati.",
+      "unlimited": "Illimitati",
+      "kmPerDay": "{{count}} km / giorno",
+      "minimumAge": "Età minima",
+      "drivingLicenseYears": "Patente da (anni)",
+      "drivingLicenseLabel": "Patente da",
+      "years_one": "{{count}} anno",
+      "years_other": "{{count}} anni",
+      "fuelPolicy": "Politica carburante",
+      "fuelPolicies": {
+        "full_to_full": "Pieno / pieno",
+        "same_to_same": "Stesso livello",
+        "pre_purchase": "Pieno prepagato (riconsegna vuota)"
+      },
+      "crossBorderDeposit": "Deposito extra per l'estero (€)",
+      "crossBorderDepositLabel": "Deposito extra per l'estero",
+      "crossBorderAssistance": "Assistenza all'estero",
+      "crossBorderAssistanceOffered": "Assistenza offerta all'estero",
+      "included": "Inclusa",
+      "notIncluded": "Non inclusa",
+      "noDeposit": "Nessuno",
+      "acceptedPaymentMethods": "Metodi di pagamento accettati",
+      "paymentMethodsHelp": "Seleziona almeno un metodo.",
+      "paymentMethods": {
+        "cash": "Contanti",
+        "debit_card": "Carta di debito",
+        "credit_card": "Carta di credito"
+      },
+      "paidAtPickUp": "Metodi di pagamento accettati dal noleggiatore al ritiro.",
+      "validation": {
+        "negativeAmount": "I depositi non possono essere negativi.",
+        "kmLimit": "Il limite km giornaliero deve essere maggiore di 0, o vuoto per illimitati.",
+        "minimumAge": "L'età minima deve essere tra 18 e 99 anni.",
+        "licenseYears": "Gli anni di patente devono essere tra 0 e 50.",
+        "paymentMethods": "Seleziona almeno un metodo di pagamento accettato."
+      }
     }
   },
   "destinationsManagement": {

@@ -26,6 +26,10 @@ import { CAR_PICKUP_LOCATIONS, getPickupLocationCoords } from "@/lib/albanianCit
 import { ImageUpload } from "@/components/dashboard/ImageUpload";
 import { AvailabilityCalendar } from "@/components/dashboard/AvailabilityCalendar";
 import { MonthlyPricingEditor } from "@/components/dashboard/MonthlyPricingEditor";
+import { CarRentalTermsFields } from "@/components/dashboard/CarRentalTermsFields";
+import { getCarRentalTerms, validateCarRentalTerms } from "@/lib/carRentalTerms";
+import { CarRentalConditions } from "@/pages/home/booking/CarRentalConditions";
+import { getBookingThemeTokens } from "@/pages/home/booking/bookingTheme";
 import Swal from "sweetalert2";
 import { getCarById, updateCar } from "@/services/api/carService";
 import { useTheme } from "@/context/ThemeContext";
@@ -147,6 +151,11 @@ const CarDetails = () => {
 
   const handleSave = async () => {
     if (!id) return;
+    const rentalTermsError = validateCarRentalTerms(getCarRentalTerms(formData));
+    if (rentalTermsError) {
+      Swal.fire({ icon: "warning", title: t("cars.rentalTerms.title"), text: t(rentalTermsError) });
+      return;
+    }
     setSaving(true);
     try {
       const updatePayload: UpdateCarDto = {
@@ -440,6 +449,26 @@ const CarDetails = () => {
                     ) : <p style={{ fontSize: 18, fontWeight: 700, color: tk.pageText }}>{car.additionalDriverPrice > 0 ? `€${car.additionalDriverPrice}` : t("cars.carDetails.fields.notOffered", "Not offered")}</p>}
                   </div>
                 </div>
+              </div>
+
+              {/* Rental Conditions */}
+              <div style={{ background: tk.cardBg, border: `1px solid ${tk.cardBorder}`, borderRadius: 12, padding: 24 }}>
+                <h2 style={{ fontSize: 20, fontWeight: 700, marginBottom: 24, color: tk.pageText }}>{t("cars.rentalTerms.title")}</h2>
+                {isEditing ? (
+                  <CarRentalTermsFields
+                    value={getCarRentalTerms(formData)}
+                    onChange={(patch) => setFormData((prev) => ({ ...prev, ...patch }))}
+                    inputStyle={inputStyle}
+                    selectStyle={selectStyle}
+                    labelColor={tk.labelText}
+                    mutedColor={tk.mutedText}
+                    optionBg={tk.optionBg}
+                    disabled={saving}
+                    showTitle={false}
+                  />
+                ) : (
+                  <CarRentalConditions car={car} tk={getBookingThemeTokens({ isDark, isBlue: false })} compact />
+                )}
               </div>
 
               {/* Monthly Pricing */}

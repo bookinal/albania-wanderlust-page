@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { Plus, Loader2, Clock } from "lucide-react";
 import { X } from "lucide-react";
-import { CreateCarDto } from "@/types/car.types";
+import { CarRentalTerms, CreateCarDto } from "@/types/car.types";
 import { MonthlyPriceInput } from "@/types/price.type";
 import { addCar } from "@/services/api/carService";
 import {
@@ -21,6 +21,11 @@ import {
 } from "@/lib/albanianCities";
 import { ImageUpload } from "@/components/dashboard/ImageUpload";
 import { MonthlyPricingEditor } from "@/components/dashboard/MonthlyPricingEditor";
+import { CarRentalTermsFields } from "@/components/dashboard/CarRentalTermsFields";
+import {
+  DEFAULT_CAR_RENTAL_TERMS,
+  validateCarRentalTerms,
+} from "@/lib/carRentalTerms";
 import { propertyRequestService } from "@/services/api/propertyRequest";
 import { authService } from "@/services/api/authService";
 import { useTheme } from "@/context/ThemeContext";
@@ -38,6 +43,7 @@ export const AddCarDialog: React.FC<AddCarDialogProps> = ({ onCarAdded }) => {
   const [selectedImageFiles, setSelectedImageFiles] = useState<File[]>([]);
   const featureInputRef = React.useRef<HTMLInputElement>(null);
   const [monthlyPrices, setMonthlyPrices] = useState<MonthlyPriceInput[]>([]);
+  const [rentalTerms, setRentalTerms] = useState<CarRentalTerms>(DEFAULT_CAR_RENTAL_TERMS);
   const [formData, setFormData] = useState({
     name: "",
     brand: "",
@@ -127,6 +133,11 @@ export const AddCarDialog: React.FC<AddCarDialogProps> = ({ onCarAdded }) => {
       alert(t("cars.addCarDialog.validation.requiredFields"));
       return;
     }
+    const rentalTermsError = validateCarRentalTerms(rentalTerms);
+    if (rentalTermsError) {
+      alert(t(rentalTermsError));
+      return;
+    }
     if (selectedImageFiles.length === 0) {
       alert(t("cars.addCarDialog.validation.imageRequired"));
       return;
@@ -155,6 +166,7 @@ export const AddCarDialog: React.FC<AddCarDialogProps> = ({ onCarAdded }) => {
         lat: formData.lat,
         lng: formData.lng,
         monthlyPrices: monthlyPrices.length > 0 ? monthlyPrices : undefined,
+        ...rentalTerms,
       };
 
       const newCar = await addCar(carData, selectedImageFiles);
@@ -167,6 +179,7 @@ export const AddCarDialog: React.FC<AddCarDialogProps> = ({ onCarAdded }) => {
       setFormData({ name: "", brand: "", type: "Sedan", year: new Date().getFullYear(), transmission: "Manual", fuelType: "Petrol", pricePerDay: 10, insurance: 0, childSeatPrice: 0, additionalDriverPrice: 0, status: "review", plateNumber: "", features: [], imageUrls: [], pickUpLocation: DEFAULT_CAR_PICKUP_LOCATION, ...getPickupLocationCoords(DEFAULT_CAR_PICKUP_LOCATION) });
       setSelectedImageFiles([]);
       setMonthlyPrices([]);
+      setRentalTerms(DEFAULT_CAR_RENTAL_TERMS);
     } catch (error) {
       console.error("Error adding car:", error);
       alert(t("cars.carDetails.error.message"));
@@ -307,6 +320,20 @@ export const AddCarDialog: React.FC<AddCarDialogProps> = ({ onCarAdded }) => {
                   <p style={{ fontSize: 13, fontWeight: 500, color: tk.labelText, marginBottom: 6 }}>{t("cars.addCarDialog.form.plateNumber")} <span style={{ color: '#E8192C' }}>*</span></p>
                   <input id="plateNumber" name="plateNumber" value={formData.plateNumber} onChange={handleChange} placeholder="ABC-1234" style={inputStyle} />
                 </div>
+              </div>
+
+              {/* Rental Conditions */}
+              <div style={{ borderTop: `1px solid ${tk.divider}`, paddingTop: 24 }}>
+                <CarRentalTermsFields
+                  value={rentalTerms}
+                  onChange={(patch) => setRentalTerms((prev) => ({ ...prev, ...patch }))}
+                  inputStyle={inputStyle}
+                  selectStyle={selectStyle}
+                  labelColor={tk.labelText}
+                  mutedColor={tk.mutedText}
+                  optionBg={tk.optionBg}
+                  disabled={loading}
+                />
               </div>
 
               {/* Features */}
