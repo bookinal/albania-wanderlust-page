@@ -32,14 +32,16 @@ export const DEFAULT_CAR_RENTAL_TERMS: CarRentalTerms = {
 export const getCarRentalTerms = (
   car: Partial<CarRentalTerms> | null | undefined,
 ): CarRentalTerms => ({
-  depositAmount: car?.depositAmount ?? DEFAULT_CAR_RENTAL_TERMS.depositAmount,
+  // numeric columns: coerce in case they arrive as strings
+  depositAmount: Number(car?.depositAmount ?? DEFAULT_CAR_RENTAL_TERMS.depositAmount),
   dailyKmLimit: car?.dailyKmLimit ?? DEFAULT_CAR_RENTAL_TERMS.dailyKmLimit,
   minimumAge: car?.minimumAge ?? DEFAULT_CAR_RENTAL_TERMS.minimumAge,
   drivingLicenseYears:
     car?.drivingLicenseYears ?? DEFAULT_CAR_RENTAL_TERMS.drivingLicenseYears,
   fuelPolicy: car?.fuelPolicy ?? DEFAULT_CAR_RENTAL_TERMS.fuelPolicy,
-  crossBorderDeposit:
+  crossBorderDeposit: Number(
     car?.crossBorderDeposit ?? DEFAULT_CAR_RENTAL_TERMS.crossBorderDeposit,
+  ),
   crossBorderAssistance:
     car?.crossBorderAssistance ?? DEFAULT_CAR_RENTAL_TERMS.crossBorderAssistance,
   acceptedPaymentMethods: car?.acceptedPaymentMethods?.length

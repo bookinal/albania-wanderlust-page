@@ -9,6 +9,7 @@ export * from "./chatService";
 export * from "./destinationService";
 export * from "./emailService";
 export * from "./hotelService";
+export * from "./insuranceService";
 export * from "./monthlyPriceService";
 export * from "./paymentService";
 export * from "./propertyRequest";

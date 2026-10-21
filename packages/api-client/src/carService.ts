@@ -4,7 +4,8 @@ import { authService } from "./authService";
 import { uploadCarImages, deleteImagesByUrls } from "./storageService";
 import { getBookingsByPropertyIdAndType, getUnavailablePropertyIds } from "./bookingService";
 import { getMonthlyPrices, setMonthlyPrices, getPricesForPropertiesByMonth } from "./monthlyPriceService";
-import { MonthlyPriceInput, Month, MONTHS } from "@albania/shared-types";
+import { MonthlyPriceInput, Month, MONTHS, InsurancePlan } from "@albania/shared-types";
+import { getCarInsurancePlans, setCarInsurancePlans } from "./insuranceService";
 
 export interface SearchCarFilters {
   searchTerm?: string;
@@ -334,7 +335,18 @@ export const getCarById = async (id: number): Promise<Car | null> => {
     );
   }
 
-  return { ...data, monthlyPrices };
+  // Fetch the insurance plans offered with this car
+  let insurancePlans: InsurancePlan[] = [];
+  try {
+    insurancePlans = await getCarInsurancePlans(id);
+  } catch (planError) {
+    console.warn(
+      `[Car Service] Could not fetch insurance plans for car ${id}:`,
+      planError,
+    );
+  }
+
+  return { ...data, monthlyPrices, insurancePlans };
 };
 
 /*
@@ -394,8 +406,9 @@ export const addCar = async (
     }
   }
 
-  // Extract monthly prices from payload (they go to a separate table)
-  const { monthlyPrices, ...carData } = car;
+  // Extract monthly prices and insurance plans (they go to separate tables)
+  const { monthlyPrices, insurancePlanIds, ...carData } = car;
+  delete (carData as any).insurancePlans;
 
   // Drop legacy columns that no longer exist in Supabase (may come from stale cache)
   delete (carData as any).color;
@@ -432,7 +445,19 @@ export const addCar = async (
   // Invalidate cache after adding new car
   invalidateCarsCache();
 
-  return { ...data, monthlyPrices: monthlyPrices || [] };
+  // Attach the chosen insurance plans
+  let insurancePlans: InsurancePlan[] = [];
+  if (insurancePlanIds && insurancePlanIds.length > 0 && data?.id) {
+    try {
+      await setCarInsurancePlans(data.id, insurancePlanIds);
+      insurancePlans = await getCarInsurancePlans(data.id);
+    } catch (planError) {
+      console.error("[Car Service] Error attaching insurance plans:", planError);
+      throw planError;
+    }
+  }
+
+  return { ...data, monthlyPrices: monthlyPrices || [], insurancePlans };
 };
 
 /**
@@ -444,7 +469,8 @@ export const updateCar = async (
   newImageFiles?: File[],
 ): Promise<Car> => {
   // Remove system fields that shouldn't be updated
-  const { monthlyPrices, ...updateData } = car;
+  const { monthlyPrices, insurancePlanIds, ...updateData } = car;
+  delete (updateData as any).insurancePlans;
   delete (updateData as any).id;
   delete (updateData as any).created_at;
   // Drop legacy columns that no longer exist in Supabase (may come from stale cache)
@@ -489,9 +515,20 @@ export const updateCar = async (
     }
   }
 
+  // Replace the attached insurance plans if provided
+  if (insurancePlanIds) {
+    await setCarInsurancePlans(id, insurancePlanIds);
+  }
+  let insurancePlans: InsurancePlan[] = [];
+  try {
+    insurancePlans = await getCarInsurancePlans(id);
+  } catch (planError) {
+    console.warn(`[Car Service] Could not fetch insurance plans for car ${id}:`, planError);
+  }
+
   // Invalidate cache after updating car
   invalidateCarsCache();
-  return { ...data, monthlyPrices: monthlyPrices || [] };
+  return { ...data, monthlyPrices: monthlyPrices || [], insurancePlans };
 };
 
 /**

@@ -29,6 +29,7 @@ import { getCarById } from "@/services/api/carService";
 import { getApartmentById } from "@/services/api/apartmentService";
 import { useTranslation } from "react-i18next";
 import { getCarRentalTerms } from "@/lib/carRentalTerms";
+import { formatInsurancePrice, getInsurancePlanLabel } from "@/lib/insurancePlans";
 import {
   Dialog,
   DialogContent,
@@ -496,7 +497,7 @@ export default function PropertyRequestsManagement() {
                     { label: "Year", value: propertyDetails.year },
                     { label: "Transmission", value: propertyDetails.transmission },
                     { label: "Fuel Type", value: propertyDetails.fuelType },
-                    { label: "Child Seat", value: propertyDetails.childSeatPrice > 0 ? `€${propertyDetails.childSeatPrice}` : "Not offered" },
+                    { label: "Child Seat", value: propertyDetails.childSeatPrice > 0 ? t("common.pricePerDay", { price: propertyDetails.childSeatPrice }) : "Not offered" },
                     { label: "Additional Driver", value: propertyDetails.additionalDriverPrice > 0 ? `€${propertyDetails.additionalDriverPrice}` : "Not offered" },
                     { label: "Plate Number", value: propertyDetails.plateNumber },
                     { label: "Status", value: propertyDetails.status },
@@ -511,6 +512,12 @@ export default function PropertyRequestsManagement() {
                         { label: t("cars.rentalTerms.crossBorderDepositLabel"), value: terms.crossBorderDeposit > 0 ? `€${terms.crossBorderDeposit}` : t("cars.rentalTerms.noDeposit") },
                         { label: t("cars.rentalTerms.crossBorderAssistance"), value: terms.crossBorderAssistance ? t("cars.rentalTerms.included") : t("cars.rentalTerms.notIncluded") },
                         { label: t("cars.rentalTerms.acceptedPaymentMethods"), value: terms.acceptedPaymentMethods.map((m) => t(`cars.rentalTerms.paymentMethods.${m}`)).join(", ") },
+                        {
+                          label: t("insurance.title"),
+                          value: (propertyDetails as CarType).insurancePlans?.length
+                            ? (propertyDetails as CarType).insurancePlans!.map((p) => `${getInsurancePlanLabel(p, t)} (${formatInsurancePrice(p.pricePerDay, t)})`).join(", ")
+                            : t("insurance.noPlansOnCar"),
+                        },
                       ];
                     })(),
                   ].map(({ label, value }) => (

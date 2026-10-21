@@ -10,6 +10,7 @@ import {
   TrendingUp,
   Baby,
   UserPlus,
+  Globe,
 } from "lucide-react";
 import { DateRange } from "react-day-picker";
 import { Car } from "@/types/car.types";
@@ -32,6 +33,9 @@ import { User } from "@/types/user.types";
 import { useTheme } from "@/context/ThemeContext";
 import { getBookingThemeTokens } from "./bookingTheme";
 import { CarRentalConditions } from "./CarRentalConditions";
+import { getCarRentalTerms } from "@/lib/carRentalTerms";
+import { InsurancePlansTable } from "./InsurancePlansTable";
+import { formatInsurancePrice, getInsurancePlanLabel } from "@/lib/insurancePlans";
 
 interface DeliveryLocation {
   name: string;
@@ -149,6 +153,19 @@ export default function CarBilling() {
   );
   const [addChildSeat, setAddChildSeat] = useState(false);
   const [addAdditionalDriver, setAddAdditionalDriver] = useState(false);
+  const [addCrossBorder, setAddCrossBorder] = useState(false);
+  const [selectedInsurancePlanId, setSelectedInsurancePlanId] = useState<number | null>(null);
+
+  // Insurance plans offered with the car; the first (cheapest tier) is pre-selected
+  const insurancePlans = car?.insurancePlans ?? [];
+  const selectedInsurancePlan =
+    insurancePlans.find((p) => p.id === selectedInsurancePlanId) ?? null;
+  useEffect(() => {
+    if (insurancePlans.length > 0 && !selectedInsurancePlan) {
+      setSelectedInsurancePlanId(insurancePlans[0].id);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [car]);
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -306,6 +323,14 @@ export default function CarBilling() {
       });
       return;
     }
+    if (insurancePlans.length > 0 && !selectedInsurancePlan) {
+      Swal.fire({
+        icon: "warning",
+        title: t("insurance.chooseTitle"),
+        text: t("insurance.validation.chooseOne"),
+      });
+      return;
+    }
     if (!formData.pickUpLocation || !formData.dropOffLocation) {
       Swal.fire({
         icon: "warning",
@@ -331,21 +356,35 @@ export default function CarBilling() {
       contactMail: formData.email,
       contactPhone: formData.phone,
       requesterName: formData.fullName,
-      childSeatPrice: addChildSeat ? car?.childSeatPrice : undefined,
+      childSeatPrice: childSeatFee > 0 ? childSeatFee : undefined, // amount charged (per day x days)
       additionalDriverPrice: addAdditionalDriver ? car?.additionalDriverPrice : undefined,
       deliveryFee: deliveryFee > 0 ? deliveryFee : undefined,
+      crossBorderDeposit: crossBorderFee > 0 ? crossBorderFee : undefined,
+      insurancePlanId: selectedInsurancePlan?.id ?? null,
+      insurancePlanName: selectedInsurancePlan?.name ?? null,
+      insurancePricePerDay: selectedInsurancePlan ? selectedInsurancePlan.pricePerDay : null,
+      insuranceTotal: insuranceFee,
       fee: Math.round(serviceFee * 100) / 100,
     });
   };
 
-  const childSeatFee = addChildSeat ? (car?.childSeatPrice ?? 0) : 0;
+  // Child seat is priced per rental day
+  const childSeatFee = addChildSeat ? Math.round((car?.childSeatPrice ?? 0) * totalDays * 100) / 100 : 0;
   const additionalDriverFee = addAdditionalDriver ? (car?.additionalDriverPrice ?? 0) : 0;
   const deliveryFee = getDeliveryPrice(formData.pickUpLocation);
+  // Cross border extra deposit: optional, set by the provider; no service fee on it
+  const crossBorderDepositPrice = getCarRentalTerms(car).crossBorderDeposit;
+  const crossBorderFee = addCrossBorder ? crossBorderDepositPrice : 0;
+  // Security deposit: shown next to the total, not included in it (held at pick-up)
+  const securityDeposit = getCarRentalTerms(car).depositAmount;
   const feeBase = totalPrice + childSeatFee + additionalDriverFee;
   const rawFee = feeBase * 0.05;
   const serviceFee = rawFee < 2 && feeBase > 0 ? 2 : rawFee;
-  const insuranceFee = car?.insurance ?? 0;
-  const finalTotal = totalPrice + serviceFee + insuranceFee + childSeatFee + additionalDriverFee + deliveryFee;
+  // Insurance = chosen plan price per day x rental days (no fixed insurance fee)
+  const insuranceFee = selectedInsurancePlan
+    ? Math.round(selectedInsurancePlan.pricePerDay * totalDays * 100) / 100
+    : 0;
+  const finalTotal = totalPrice + serviceFee + insuranceFee + childSeatFee + additionalDriverFee + deliveryFee + crossBorderFee;
 
   const isSubmitDisabled =
     bookingMutation.isPending ||
@@ -689,6 +728,33 @@ export default function CarBilling() {
                 </div>
               </div>
 
+              {/* Insurance */}
+              {insurancePlans.length > 0 && (
+                <div
+                  style={{
+                    background: tk.cardBg,
+                    border: `1px solid ${tk.cardBorder}`,
+                  }}
+                  className="rounded-2xl p-6"
+                >
+                  <h2
+                    style={{ color: tk.pageText }}
+                    className="text-xl font-semibold mb-1"
+                  >
+                    {t("insurance.chooseTitle")}
+                  </h2>
+                  <p style={{ color: tk.mutedText }} className="text-sm mb-5">
+                    {t("insurance.chooseHelp")}
+                  </p>
+                  <InsurancePlansTable
+                    plans={insurancePlans}
+                    tk={tk}
+                    selectedId={selectedInsurancePlanId}
+                    onSelect={(plan) => setSelectedInsurancePlanId(plan.id)}
+                  />
+                </div>
+              )}
+
               {/* Rental Conditions */}
               <div
                 style={{
@@ -865,22 +931,49 @@ export default function CarBilling() {
                       </p>
                     </div>
 
-                    {insuranceFee > 0 && (
+                    {selectedInsurancePlan ? (
                       <div>
                         <div
-                          className="flex justify-between"
+                          className="flex justify-between gap-2"
                           style={{ color: tk.dimText }}
                         >
-                          <span>{t("billing.insurance")}</span>
-                          <span className="font-medium">
-                            €{insuranceFee.toFixed(2)}
+                          <span>
+                            {t("billing.insurance")} – {getInsurancePlanLabel(selectedInsurancePlan, t)}
+                          </span>
+                          <span className="font-medium whitespace-nowrap">
+                            {selectedInsurancePlan.pricePerDay > 0
+                              ? `€${insuranceFee.toFixed(2)}`
+                              : t("insurance.free")}
                           </span>
                         </div>
                         <p
                           style={{ color: tk.mutedText }}
                           className="text-xs mt-1"
                         >
-                          {t("billing.insuranceDescription", "Fixed insurance fee for this booking.")}
+                          {selectedInsurancePlan.pricePerDay > 0
+                            ? totalDays > 0
+                              ? t("insurance.summaryPerDay", {
+                                  price: formatInsurancePrice(selectedInsurancePlan.pricePerDay, t),
+                                  count: totalDays,
+                                })
+                              : `${formatInsurancePrice(selectedInsurancePlan.pricePerDay, t)} · ${t("insurance.selectDates")}`
+                            : t("insurance.includedFree")}
+                        </p>
+                      </div>
+                    ) : (
+                      <div>
+                        <div
+                          className="flex justify-between"
+                          style={{ color: tk.dimText }}
+                        >
+                          <span>{t("billing.insurance")}</span>
+                          <span className="font-medium">—</span>
+                        </div>
+                        <p
+                          style={{ color: tk.mutedText }}
+                          className="text-xs mt-1"
+                        >
+                          {t("insurance.noPlansForClient")}
                         </p>
                       </div>
                     )}
@@ -908,7 +1001,7 @@ export default function CarBilling() {
                       </div>
                     )}
 
-                    {((car.childSeatPrice ?? 0) > 0 || (car.additionalDriverPrice ?? 0) > 0) && (
+                    {((car.childSeatPrice ?? 0) > 0 || (car.additionalDriverPrice ?? 0) > 0 || crossBorderDepositPrice > 0) && (
                       <div
                         style={{
                           borderTop: `1px solid ${tk.divider}`,
@@ -917,26 +1010,40 @@ export default function CarBilling() {
                         className="space-y-3"
                       >
                         {(car.childSeatPrice ?? 0) > 0 && (
-                          <label
-                            className="flex items-start justify-between gap-2 cursor-pointer"
-                            style={{ color: tk.dimText }}
-                          >
-                            <span className="flex items-start gap-2">
-                              <input
-                                type="checkbox"
-                                checked={addChildSeat}
-                                onChange={(e) => setAddChildSeat(e.target.checked)}
-                                className="mt-0.5"
-                              />
-                              <span className="flex items-center gap-1.5">
-                                <Baby className="w-4 h-4" style={{ color: tk.brand }} />
-                                {t("billing.addChildSeat", "Add child seat")}
+                          <div>
+                            <label
+                              className="flex items-start justify-between gap-2 cursor-pointer"
+                              style={{ color: tk.dimText }}
+                            >
+                              <span className="flex items-start gap-2">
+                                <input
+                                  type="checkbox"
+                                  checked={addChildSeat}
+                                  onChange={(e) => setAddChildSeat(e.target.checked)}
+                                  className="mt-0.5"
+                                />
+                                <span className="flex items-center gap-1.5">
+                                  <Baby className="w-4 h-4" style={{ color: tk.brand }} />
+                                  {t("billing.addChildSeat", "Add child seat")}
+                                </span>
                               </span>
-                            </span>
-                            <span className="font-medium">
-                              +€{(car.childSeatPrice ?? 0).toFixed(2)}
-                            </span>
-                          </label>
+                              <span className="font-medium whitespace-nowrap">
+                                +{t("common.pricePerDay", { price: (car.childSeatPrice ?? 0).toFixed(2) })}
+                              </span>
+                            </label>
+                            {addChildSeat && totalDays > 0 && (
+                              <p
+                                style={{ color: tk.mutedText }}
+                                className="text-xs mt-1 ml-6"
+                              >
+                                {t("billing.perDayTimesDays", {
+                                  price: t("common.pricePerDay", { price: (car.childSeatPrice ?? 0).toFixed(2) }),
+                                  count: totalDays,
+                                  total: `€${childSeatFee.toFixed(2)}`,
+                                })}
+                              </p>
+                            )}
+                          </div>
                         )}
                         {(car.additionalDriverPrice ?? 0) > 0 && (
                           <label
@@ -960,6 +1067,42 @@ export default function CarBilling() {
                             </span>
                           </label>
                         )}
+                        {crossBorderDepositPrice > 0 && (
+                          <div>
+                            <label
+                              className="flex items-start justify-between gap-2 cursor-pointer"
+                              style={{ color: tk.dimText }}
+                            >
+                              <span className="flex items-start gap-2">
+                                <input
+                                  type="checkbox"
+                                  checked={addCrossBorder}
+                                  onChange={(e) => setAddCrossBorder(e.target.checked)}
+                                  className="mt-0.5"
+                                />
+                                <span className="flex items-center gap-1.5">
+                                  <Globe className="w-4 h-4" style={{ color: tk.brand }} />
+                                  {t("billing.addCrossBorder", "Cross border travel")}
+                                </span>
+                              </span>
+                              <span className="font-medium">
+                                +€{crossBorderDepositPrice.toFixed(2)}
+                              </span>
+                            </label>
+                            <p
+                              style={{ color: tk.mutedText }}
+                              className="text-xs mt-1 ml-6"
+                            >
+                              {t(
+                                "billing.crossBorderDescription",
+                                "Extra deposit to drive outside Albania.",
+                              )}{" "}
+                              {getCarRentalTerms(car).crossBorderAssistance
+                                ? t("billing.crossBorderAssistanceIncluded", "Assistance abroad included.")
+                                : t("billing.crossBorderAssistanceNotIncluded", "No assistance abroad.")}
+                            </p>
+                          </div>
+                        )}
                       </div>
                     )}
 
@@ -978,13 +1121,31 @@ export default function CarBilling() {
                       >
                         {t("billing.total")}
                       </span>
-                      <span
-                        style={{ color: tk.brand }}
-                        className="text-2xl font-bold"
-                      >
-                        €{finalTotal.toFixed(2)}
+                      <span className="text-right">
+                        <span
+                          style={{ color: tk.brand }}
+                          className="text-2xl font-bold"
+                        >
+                          €{finalTotal.toFixed(2)}
+                        </span>
+                        {securityDeposit > 0 && (
+                          <span
+                            style={{ color: tk.dimText }}
+                            className="ml-1.5 text-sm font-semibold whitespace-nowrap"
+                          >
+                            {t("billing.plusDeposit", { amount: `€${securityDeposit.toFixed(2).replace(/\.00$/, "")}` })}
+                          </span>
+                        )}
                       </span>
                     </div>
+                    {securityDeposit > 0 && (
+                      <p
+                        style={{ color: tk.mutedText }}
+                        className="text-xs mt-1 text-right"
+                      >
+                        {t("billing.depositNote")}
+                      </p>
+                    )}
                   </div>
 
                   <button

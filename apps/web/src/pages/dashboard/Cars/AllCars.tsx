@@ -609,7 +609,7 @@ const AllCars = () => {
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <Baby size={16} style={{ color: tk.mutedText, flexShrink: 0 }} />
                       <span style={{ fontSize: '0.8rem', color: tk.bodyText, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                        {car.childSeatPrice > 0 ? `${t("cars.allCars.card.childSeat", "Child seat")}: €${car.childSeatPrice}` : t("cars.carDetails.fields.notOffered", "Not offered")}
+                        {car.childSeatPrice > 0 ? `${t("cars.allCars.card.childSeat", "Child seat")}: ${t("common.pricePerDay", { price: car.childSeatPrice })}` : t("cars.carDetails.fields.notOffered", "Not offered")}
                       </span>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>

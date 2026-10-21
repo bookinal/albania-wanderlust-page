@@ -35,9 +35,14 @@ export interface Booking {
   updatedAt: string;
   propertyData?: Car | Apartment | Hotel | null;
   additionalDriverPrice?: number;
-  childSeatPrice?: number;
+  childSeatPrice?: number; // Child seat amount charged (price per day x rental days)
   fee?: number;
   deliveryFee?: number;
+  crossBorderDeposit?: number; // Optional cross border extra deposit chosen at booking
+  insurancePlanId?: number | null; // Insurance plan chosen by the client (cars)
+  insurancePlanName?: string | null; // Snapshot of the plan name at booking time
+  insurancePricePerDay?: number | null; // Snapshot of the plan price per day
+  insuranceTotal?: number | null; // pricePerDay x rental days, included in totalPrice
 }
 
 export interface CreateBookingDto {
@@ -55,7 +60,12 @@ export interface CreateBookingDto {
   contactPhone: string;
   requesterName: string;
   additionalDriverPrice?: number;
-  childSeatPrice?: number;
+  childSeatPrice?: number; // Child seat amount charged (price per day x rental days)
   fee?: number;
   deliveryFee?: number;
+  crossBorderDeposit?: number; // Optional cross border extra deposit chosen at booking
+  insurancePlanId?: number | null; // Insurance plan chosen by the client (cars)
+  insurancePlanName?: string | null; // Snapshot of the plan name at booking time
+  insurancePricePerDay?: number | null; // Snapshot of the plan price per day
+  insuranceTotal?: number | null; // pricePerDay x rental days, included in totalPrice
 }

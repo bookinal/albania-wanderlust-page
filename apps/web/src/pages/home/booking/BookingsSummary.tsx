@@ -39,6 +39,7 @@ import StripePaymentButton from "@/components/payments/StripePaymentButton";
 import { jsPDF } from "jspdf";
 import logoImage from "@/assets/logo/logoBOOKinAL.png";
 import { useTranslation } from "react-i18next";
+import { getInsurancePlanNameLabel } from "@/lib/insurancePlans";
 import ReviewModal from "@/components/reviews/ReviewModal";
 import { useTheme } from "@/context/ThemeContext";
 import { getBookingThemeTokens } from "./bookingTheme";
@@ -236,8 +237,9 @@ const generateInvoicePDF = async (booking: Booking) => {
   const fee = booking.fee ?? fallbackFee;
   const childSeat = booking.childSeatPrice ?? 0;
   const additionalDriver = booking.additionalDriverPrice ?? 0;
-  const insurance = booking.propertyType === "car" ? ((booking.propertyData as any)?.insurance ?? 0) : 0;
-  const rentalSubtotal = booking.totalPrice - fee - childSeat - additionalDriver - insurance;
+  const insurance = booking.insuranceTotal ?? 0;
+  const crossBorder = booking.crossBorderDeposit ?? 0;
+  const rentalSubtotal = booking.totalPrice - fee - childSeat - additionalDriver - insurance - crossBorder;
 
   let priceRowIdx = 0;
   const addPriceLine = (label: string, amount: number) => {
@@ -259,7 +261,8 @@ const generateInvoicePDF = async (booking: Booking) => {
   addPriceLine("Rental", rentalSubtotal > 0 ? rentalSubtotal : 0);
   if (childSeat > 0) addPriceLine("Child Seat", childSeat);
   if (additionalDriver > 0) addPriceLine("Additional Driver", additionalDriver);
-  if (insurance > 0) addPriceLine("Insurance", insurance);
+  if (insurance > 0) addPriceLine(booking.insurancePlanName ? `Insurance (${booking.insurancePlanName})` : "Insurance", insurance);
+  if (crossBorder > 0) addPriceLine("Cross Border Deposit", crossBorder);
   if (fee > 0) addPriceLine("Service Fee (5%)", fee);
 
   // Divider line
@@ -1278,8 +1281,9 @@ export default function BookingsSummary() {
                             const fee = booking.fee ?? fallbackFee;
                             const childSeat = booking.childSeatPrice ?? 0;
                             const additionalDriver = booking.additionalDriverPrice ?? 0;
-                            const insurance = booking.propertyType === "car" ? ((booking.propertyData as any)?.insurance ?? 0) : 0;
-                            const rentalSubtotal = booking.totalPrice - fee - childSeat - additionalDriver - insurance;
+                            const insurance = booking.insuranceTotal ?? 0;
+                            const crossBorder = booking.crossBorderDeposit ?? 0;
+                            const rentalSubtotal = booking.totalPrice - fee - childSeat - additionalDriver - insurance - crossBorder;
                             return (
                               <div style={{ display: "flex", flexDirection: "column", gap: 4, alignItems: "flex-end" }}>
                                 {/* Rental Price */}
@@ -1307,8 +1311,19 @@ export default function BookingsSummary() {
                                 {/* Insurance */}
                                 {insurance > 0 && (
                                   <div style={{ display: "flex", justifyContent: "space-between", gap: 16, width: "100%", fontSize: 13 }}>
-                                    <span style={{ color: tk.dimText }}>{t("billing.insurance", "Insurance")}</span>
+                                    <span style={{ color: tk.dimText }}>
+                                      {t("billing.insurance", "Insurance")}
+                                      {booking.insurancePlanName && ` – ${getInsurancePlanNameLabel(booking.insurancePlanName, t)}`}
+                                    </span>
                                     <span style={{ fontWeight: 600, color: tk.pageText }}>€{insurance.toFixed(2)}</span>
+                                  </div>
+                                )}
+
+                                {/* Cross Border Deposit */}
+                                {crossBorder > 0 && (
+                                  <div style={{ display: "flex", justifyContent: "space-between", gap: 16, width: "100%", fontSize: 13 }}>
+                                    <span style={{ color: tk.dimText }}>{t("billing.crossBorderDeposit", "Cross border deposit")}</span>
+                                    <span style={{ fontWeight: 600, color: tk.pageText }}>€{crossBorder.toFixed(2)}</span>
                                   </div>
                                 )}
 

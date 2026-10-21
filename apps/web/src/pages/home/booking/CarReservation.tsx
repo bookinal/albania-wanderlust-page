@@ -41,6 +41,8 @@ import PrimarySearchAppBar from "@/components/home/AppBar";
 import ReviewsSection from "@/components/reviews/ReviewsSection";
 import { getBookingThemeTokens } from "./bookingTheme";
 import { CarRentalConditions } from "./CarRentalConditions";
+import { InsurancePlansTable } from "./InsurancePlansTable";
+import { formatInsurancePrice } from "@/lib/insurancePlans";
 
 function MosaicGallery({
   images,
@@ -597,7 +599,16 @@ const CarReservation = () => {
                         })}
                       </p>
                     )}
-                    <p style={{ color: tk.mutedText }} className="text-sm mt-2">+ {car.insurance ? `€${car.insurance} ` : ""}{t("billing.insurance")}</p>
+                    {car.insurancePlans && car.insurancePlans.length > 0 && (
+                      <p style={{ color: tk.mutedText }} className="text-sm mt-2">
+                        {t("insurance.fromPrice", {
+                          price: formatInsurancePrice(
+                            Math.min(...car.insurancePlans.map((p) => p.pricePerDay)),
+                            t,
+                          ),
+                        })}
+                      </p>
+                    )}
                   </div>
                 );
               })()}
@@ -651,7 +662,7 @@ const CarReservation = () => {
                   { label: t("searchResults.filters.transmission"), value: car.transmission },
                   { label: t("searchResults.filters.fuelType"), value: car.fuelType },
                   { label: t("searchResults.cars.plate"), value: car.plateNumber },
-                  { label: t("searchResults.cars.childSeat", "Child seat"), value: car.childSeatPrice > 0 ? `+€${car.childSeatPrice}` : t("cars.carDetails.fields.notOffered", "Not offered") },
+                  { label: t("searchResults.cars.childSeat", "Child seat"), value: car.childSeatPrice > 0 ? `+${t("common.pricePerDay", { price: car.childSeatPrice })}` : t("cars.carDetails.fields.notOffered", "Not offered") },
                   { label: t("searchResults.cars.additionalDriver", "Additional driver"), value: car.additionalDriverPrice > 0 ? `+€${car.additionalDriverPrice}` : t("cars.carDetails.fields.notOffered", "Not offered") },
                 ].map(({ label, value }, i) => (
                   <div key={i} className="flex flex-col gap-2">
@@ -661,6 +672,18 @@ const CarReservation = () => {
                 ))}
               </div>
             </div>
+
+            {/* Insurance Plans */}
+            {car.insurancePlans && car.insurancePlans.length > 0 && (
+              <div style={{ background: tk.cardBg, border: `1px solid ${tk.cardBorder}`, boxShadow: tk.cardShadow }} className="rounded-2xl p-8">
+                <h2 style={{ color: tk.pageText }} className="text-2xl font-bold mb-2 flex items-center gap-2">
+                  <ShieldCheck style={{ color: tk.brand }} size={24} />
+                  {t("insurance.overviewTitle")}
+                </h2>
+                <p style={{ color: tk.mutedText }} className="text-sm mb-6">{t("insurance.overviewHelp")}</p>
+                <InsurancePlansTable plans={car.insurancePlans} tk={tk} />
+              </div>
+            )}
 
             {/* Rental Conditions */}
             <div style={{ background: tk.cardBg, border: `1px solid ${tk.cardBorder}`, boxShadow: tk.cardShadow }} className="rounded-2xl p-8">

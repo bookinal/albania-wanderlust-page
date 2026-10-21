@@ -27,6 +27,8 @@ import { ImageUpload } from "@/components/dashboard/ImageUpload";
 import { AvailabilityCalendar } from "@/components/dashboard/AvailabilityCalendar";
 import { MonthlyPricingEditor } from "@/components/dashboard/MonthlyPricingEditor";
 import { CarRentalTermsFields } from "@/components/dashboard/CarRentalTermsFields";
+import { InsurancePlansPicker } from "@/components/dashboard/InsurancePlansPicker";
+import { InsurancePlansTable } from "@/pages/home/booking/InsurancePlansTable";
 import { getCarRentalTerms, validateCarRentalTerms } from "@/lib/carRentalTerms";
 import { CarRentalConditions } from "@/pages/home/booking/CarRentalConditions";
 import { getBookingThemeTokens } from "@/pages/home/booking/bookingTheme";
@@ -99,6 +101,7 @@ const CarDetails = () => {
   const [saving, setSaving] = useState(false);
   const [formData, setFormData] = useState<UpdateCarDto>({});
   const [monthlyPrices, setMonthlyPrices] = useState<MonthlyPriceInput[]>([]);
+  const [insurancePlanIds, setInsurancePlanIds] = useState<number[]>([]);
   const [newImageFiles, setNewImageFiles] = useState<File[]>([]);
   const featureInputRef = React.useRef<HTMLInputElement>(null);
 
@@ -111,6 +114,7 @@ const CarDetails = () => {
         setCar(data);
         setFormData(data || {});
         if (data?.monthlyPrices) setMonthlyPrices(data.monthlyPrices);
+        setInsurancePlanIds((data?.insurancePlans || []).map((p) => p.id));
       } catch (error) {
         console.error("Error fetching car:", error);
       } finally {
@@ -132,7 +136,7 @@ const CarDetails = () => {
     setFormData((prev) => ({
       ...prev,
       [name]:
-        name === "year" || name === "pricePerDay" || name === "insurance" || name === "childSeatPrice" || name === "additionalDriverPrice" || name === "lat" || name === "lng"
+        name === "year" || name === "pricePerDay" || name === "childSeatPrice" || name === "additionalDriverPrice" || name === "lat" || name === "lng"
           ? parseFloat(value) || 0
           : value,
     }));
@@ -145,12 +149,17 @@ const CarDetails = () => {
     if (car) {
       setFormData(car);
       setMonthlyPrices(car.monthlyPrices || []);
+      setInsurancePlanIds((car.insurancePlans || []).map((p) => p.id));
     }
     setNewImageFiles([]);
   };
 
   const handleSave = async () => {
     if (!id) return;
+    if (insurancePlanIds.length === 0) {
+      Swal.fire({ icon: "warning", title: t("insurance.title"), text: t("insurance.validation.selectOne") });
+      return;
+    }
     const rentalTermsError = validateCarRentalTerms(getCarRentalTerms(formData));
     if (rentalTermsError) {
       Swal.fire({ icon: "warning", title: t("cars.rentalTerms.title"), text: t(rentalTermsError) });
@@ -161,11 +170,13 @@ const CarDetails = () => {
       const updatePayload: UpdateCarDto = {
         ...formData,
         monthlyPrices: monthlyPrices.length > 0 ? monthlyPrices : undefined,
+        insurancePlanIds,
       };
       const updatedCar = await updateCar(parseInt(id), updatePayload, newImageFiles);
       setCar(updatedCar);
       setFormData(updatedCar);
       setMonthlyPrices(updatedCar.monthlyPrices || []);
+      setInsurancePlanIds((updatedCar.insurancePlans || []).map((p) => p.id));
       setIsEditing(false);
       setNewImageFiles([]);
       Swal.fire({ icon: "success", title: t("cars.carDetails.success.title"), text: t("cars.carDetails.success.message") });
@@ -412,29 +423,17 @@ const CarDetails = () => {
                       </>
                     ) : <p style={{ fontSize: 18, fontWeight: 700, color: tk.pageText }}>€{car.pricePerDay}</p>}
                   </div>
-                  {/* Insurance */}
-                  <div>
-                    <p style={{ fontSize: 13, color: tk.labelText, marginBottom: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <ShieldCheck size={14} style={{ color: '#3b82f6' }} /> {t("cars.carDetails.fields.insurance", "Insurance Price")}
-                    </p>
-                    {isEditing ? (
-                      <>
-                        <input name="insurance" type="number" min="0" value={formData.insurance ?? 0} onChange={handleChange} style={inputStyle} />
-                        <p style={{ fontSize: 12, color: tk.mutedText, marginTop: 4 }}>{t("cars.carDetails.fields.insuranceHelp", "Fixed insurance price per booking")}</p>
-                      </>
-                    ) : <p style={{ fontSize: 18, fontWeight: 700, color: tk.pageText }}>€{car.insurance ?? 0}</p>}
-                  </div>
                   {/* Child Seat Add-on */}
                   <div>
                     <p style={{ fontSize: 13, color: tk.labelText, marginBottom: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <Baby size={14} style={{ color: '#3b82f6' }} /> {t("cars.carDetails.fields.childSeatPrice", "Add Child Seat")}
+                      <Baby size={14} style={{ color: '#3b82f6' }} /> {t("cars.carDetails.fields.childSeatPrice", "Child seat (€ per day)")}
                     </p>
                     {isEditing ? (
                       <>
                         <input name="childSeatPrice" type="number" min="0" value={formData.childSeatPrice ?? 0} onChange={handleChange} style={inputStyle} />
-                        <p style={{ fontSize: 12, color: tk.mutedText, marginTop: 4 }}>{t("cars.carDetails.fields.childSeatPriceHelp", "Optional price for a child seat. 0 means not offered.")}</p>
+                        <p style={{ fontSize: 12, color: tk.mutedText, marginTop: 4 }}>{t("cars.carDetails.fields.childSeatPriceHelp", "Optional price per rental day for a child seat. 0 means not offered.")}</p>
                       </>
-                    ) : <p style={{ fontSize: 18, fontWeight: 700, color: tk.pageText }}>{car.childSeatPrice > 0 ? `€${car.childSeatPrice}` : t("cars.carDetails.fields.notOffered", "Not offered")}</p>}
+                    ) : <p style={{ fontSize: 18, fontWeight: 700, color: tk.pageText }}>{car.childSeatPrice > 0 ? t("common.pricePerDay", { price: car.childSeatPrice }) : t("cars.carDetails.fields.notOffered", "Not offered")}</p>}
                   </div>
                   {/* Additional Driver Add-on */}
                   <div>
@@ -449,6 +448,34 @@ const CarDetails = () => {
                     ) : <p style={{ fontSize: 18, fontWeight: 700, color: tk.pageText }}>{car.additionalDriverPrice > 0 ? `€${car.additionalDriverPrice}` : t("cars.carDetails.fields.notOffered", "Not offered")}</p>}
                   </div>
                 </div>
+              </div>
+
+              {/* Insurance Plans */}
+              <div style={{ background: tk.cardBg, border: `1px solid ${tk.cardBorder}`, borderRadius: 12, padding: 24 }}>
+                <h2 style={{ fontSize: 20, fontWeight: 700, marginBottom: 12, color: tk.pageText, display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <ShieldCheck size={20} style={{ color: '#3b82f6' }} /> {t("insurance.title")}
+                </h2>
+                {isEditing ? (
+                  <InsurancePlansPicker
+                    selectedIds={insurancePlanIds}
+                    onChange={setInsurancePlanIds}
+                    inputStyle={inputStyle}
+                    selectStyle={selectStyle}
+                    labelColor={tk.labelText}
+                    mutedColor={tk.mutedText}
+                    optionBg={tk.optionBg}
+                    borderColor={tk.inputBorder}
+                    rowBg={tk.inputBg}
+                    disabled={saving}
+                    showTitle={false}
+                  />
+                ) : car.insurancePlans && car.insurancePlans.length > 0 ? (
+                  <InsurancePlansTable plans={car.insurancePlans} tk={getBookingThemeTokens({ isDark, isBlue: false })} />
+                ) : (
+                  <p style={{ color: tk.mutedText, fontSize: 14 }}>
+                    {t("insurance.noPlansOnCar")}
+                  </p>
+                )}
               </div>
 
               {/* Rental Conditions */}

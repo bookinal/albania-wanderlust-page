@@ -1,4 +1,5 @@
 import { MonthlyPriceInput } from "./price.type";
+import { InsurancePlan } from "./insurance.types";
 
 export type FuelPolicy = "full_to_full" | "same_to_same" | "pre_purchase";
 
@@ -25,8 +26,7 @@ export interface Car extends CarRentalTerms {
   transmission: "Manual" | "Automatic";
   fuelType: "Petrol" | "Diesel" | "Hybrid" | "Electric";
   pricePerDay: number; // Base/default price (can be used as fallback)
-  insurance: number; // Fixed insurance price for a car booking
-  childSeatPrice: number; // Price for adding a child seat; 0 means not offered
+  childSeatPrice: number; // Child seat price per rental day; 0 means not offered
   additionalDriverPrice: number; // Price for adding an additional driver; 0 means not offered
   status: "available" | "rented" | "maintenance" | "review";
   providerId: string;
@@ -37,6 +37,7 @@ export interface Car extends CarRentalTerms {
   lat?: number;
   lng?: number;
   monthlyPrices?: MonthlyPriceInput[]; // Dynamic monthly pricing
+  insurancePlans?: InsurancePlan[]; // Insurance plans offered with this car (loaded by getCarById)
 }
 
 export interface CreateCarDto extends CarRentalTerms {
@@ -47,8 +48,7 @@ export interface CreateCarDto extends CarRentalTerms {
   transmission: "Manual" | "Automatic";
   fuelType: "Petrol" | "Diesel" | "Hybrid" | "Electric";
   pricePerDay: number; // Base/default price
-  insurance: number; // Fixed insurance price for a car booking
-  childSeatPrice: number; // Price for adding a child seat; 0 means not offered
+  childSeatPrice: number; // Child seat price per rental day; 0 means not offered
   additionalDriverPrice: number; // Price for adding an additional driver; 0 means not offered
   status: "available" | "rented" | "maintenance" | "review";
   providerId?: string;
@@ -59,6 +59,7 @@ export interface CreateCarDto extends CarRentalTerms {
   lat: number;
   lng: number;
   monthlyPrices?: MonthlyPriceInput[]; // Dynamic monthly pricing
+  insurancePlanIds?: number[]; // Insurance plans to attach to the car
 }
 
 export interface UpdateCarDto extends Partial<CarRentalTerms> {
@@ -69,8 +70,7 @@ export interface UpdateCarDto extends Partial<CarRentalTerms> {
   transmission?: "Manual" | "Automatic";
   fuelType?: "Petrol" | "Diesel" | "Hybrid" | "Electric";
   pricePerDay?: number;
-  insurance?: number; // Fixed insurance price for a car booking
-  childSeatPrice?: number; // Price for adding a child seat; 0 means not offered
+  childSeatPrice?: number; // Child seat price per rental day; 0 means not offered
   additionalDriverPrice?: number; // Price for adding an additional driver; 0 means not offered
   imageUrls?: string[];
   status?: "available" | "rented" | "maintenance" | "review";
@@ -80,6 +80,7 @@ export interface UpdateCarDto extends Partial<CarRentalTerms> {
   lat?: number;
   lng?: number;
   monthlyPrices?: MonthlyPriceInput[]; // Dynamic monthly pricing
+  insurancePlanIds?: number[]; // Replaces the insurance plans attached to the car
 }
 
 export interface CarFilters {
