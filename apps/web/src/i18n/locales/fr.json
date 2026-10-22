@@ -1845,5 +1845,50 @@
       "saveFailed": "La formule n'a pas pu être enregistrée. Veuillez réessayer."
     },
     "noPlansForClient": "Le loueur n'a pas encore défini de formules d'assurance pour cette voiture."
+  },
+  "rentalTermsPage": {
+    "badge": "Politique de réservation",
+    "titleStart": "Comment fonctionne",
+    "titleHighlight": "la réservation",
+    "subtitle": "Un processus transparent et sécurisé pour les voyageurs comme pour les loueurs. Voici comment votre réservation est traitée, de la demande à la remise des clés.",
+    "stepLabel": "Étape {{n}}",
+    "steps": {
+      "choose": {
+        "title": "Choisissez votre voiture ou logement",
+        "description": "Choisissez une voiture ou un logement, vos dates et vos options (formule d'assurance, suppléments), puis envoyez votre demande de réservation."
+      },
+      "review": {
+        "title": "Le loueur l'examine",
+        "description": "Le loueur vérifie votre demande pour s'assurer que la voiture ou le logement est prêt et disponible à vos dates."
+      },
+      "confirm": {
+        "title": "E-mail de confirmation",
+        "description": "Dès que le loueur accepte, vous recevez un e-mail confirmant votre réservation."
+      },
+      "fee": {
+        "title": "Payez les frais de service de 5 % en ligne",
+        "description": "Pour garantir votre réservation, réglez en ligne et en toute sécurité les frais de service de la plateforme (5 % de la réservation, minimum 2 €)."
+      },
+      "meet": {
+        "title": "Rencontrez le loueur et réglez le reste",
+        "description": "Vous recevez ensuite les coordonnées du loueur. Réglez le solde directement auprès de lui à la prise en charge ou à l'arrivée."
+      }
+    },
+    "payTitle": "Ce que vous payez, et quand",
+    "payOnlineTitle": "En ligne, après confirmation",
+    "payOnlineItems": [
+      "Frais de service : 5 % de la réservation (minimum 2 €)"
+    ],
+    "payProviderTitle": "Au loueur, à la prise en charge ou à l'arrivée",
+    "payProviderItems": [
+      "Le prix de la location ou du séjour",
+      "Votre formule d'assurance et vos suppléments (siège enfant, conducteur supplémentaire, livraison)",
+      "La caution remboursable, si la voiture en demande une"
+    ],
+    "feeTitle": "Pourquoi des frais de service de 5 % ?",
+    "feeText": "Les frais de service financent notre processus de vérification, les paiements sécurisés et le support client. Tout le reste revient directement au loueur local.",
+    "ctaTitle": "Prêt à préparer votre voyage ?",
+    "ctaCars": "Voir les voitures",
+    "ctaStays": "Voir les logements"
   }
 }

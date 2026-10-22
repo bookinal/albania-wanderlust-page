@@ -1,160 +1,241 @@
-import { useTheme } from "@/context/ThemeContext";
-import { 
-  CheckCircle2, 
-  Car, 
-  Home, 
-  Mail, 
-  CreditCard, 
-  Phone, 
-  ShieldCheck
+import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import {
+  ArrowRight,
+  Car,
+  CheckCircle2,
+  CreditCard,
+  Handshake,
+  Home,
+  Lock,
+  Mail,
+  ShieldCheck,
+  UserCheck,
+  type LucideIcon,
 } from "lucide-react";
+import { useTheme } from "@/context/ThemeContext";
+import { getHomeThemeTokens } from "@/components/home/homeTheme";
+import { getBookingThemeTokens } from "@/pages/home/booking/bookingTheme";
+
+type StepKey = "choose" | "review" | "confirm" | "fee" | "meet";
+
+const STEPS: { key: StepKey; icons: LucideIcon[] }[] = [
+  { key: "choose", icons: [Car, Home] },
+  { key: "review", icons: [UserCheck] },
+  { key: "confirm", icons: [Mail] },
+  { key: "fee", icons: [CreditCard] },
+  { key: "meet", icons: [Handshake] },
+];
 
 const RentalTermsSection = () => {
-  const { isDark } = useTheme();
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const { isDark, isBlue } = useTheme();
+  const home = getHomeThemeTokens({ isDark, isBlue });
+  const tk = getBookingThemeTokens({ isDark, isBlue });
 
-  const steps = [
-    {
-      icon: <Car className="w-6 h-6 text-red-600" />,
-      icon2: <Home className="w-6 h-6 text-red-600" />,
-      title: "1. Choose Your Booking",
-      description: "Start by selecting the car or apartment you wish to book. Browse our extensive catalog and submit your booking request with your preferred dates."
-    },
-    {
-      icon: <CheckCircle2 className="w-6 h-6 text-red-600" />,
-      title: "2. Provider Review",
-      description: "The property owner (provider) will review your booking request. This ensures that the vehicle or apartment is perfectly ready and available for your requested dates."
-    },
-    {
-      icon: <Mail className="w-6 h-6 text-red-600" />,
-      title: "3. Confirmation Email",
-      description: "Once the provider confirms your request, you will receive an immediate email notification confirming that your booking has been accepted."
-    },
-    {
-      icon: <CreditCard className="w-6 h-6 text-red-600" />,
-      title: "4. Pay the 7% Platform Fee",
-      description: "To secure your reservation, you will pay a small 7% service fee of the total booking price directly through our secure platform."
-    },
-    {
-      icon: <Phone className="w-6 h-6 text-red-600" />,
-      title: "5. Direct Contact & Final Payment",
-      description: "After the 7% fee is paid, you will instantly receive the provider's direct contact details. You can then communicate directly with them and pay the remaining balance outside the platform upon arrival."
-    }
-  ];
+  const list = (key: string) =>
+    t(key, { returnObjects: true, defaultValue: [] }) as string[];
+
+  const cardStyle = {
+    background: tk.cardBg,
+    border: `1px solid ${tk.cardBorder}`,
+    boxShadow: tk.cardShadow,
+  };
 
   return (
-    <div
-      className="py-16"
-      style={{
-        background: isDark ? "#0a0a0c" : "#fafafa",
-        transition: "background 0.3s",
-      }}
-    >
-      {/* Hero Section */}
-      <section className="relative pb-16 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-red-50 to-transparent dark:from-red-950/20 dark:to-transparent" />
-        <div className="container relative z-10 mx-auto px-4 max-w-4xl text-center animate-fade-in-up">
-          <span className="inline-block px-4 py-1.5 rounded-full bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 text-sm font-bold tracking-widest uppercase mb-6">
-            Booking Policy
+    <div className="rt-page pb-16">
+      {/* Hero */}
+      <section className="relative overflow-hidden px-4 pt-10 pb-12 sm:pt-14 sm:pb-16">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute left-1/2 top-0 h-72 w-[42rem] max-w-full -translate-x-1/2 rounded-full blur-3xl"
+          style={{ background: tk.brandSoft }}
+        />
+        <div className="rt-fade relative mx-auto max-w-3xl text-center">
+          <span
+            className="mb-5 inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-bold uppercase tracking-widest"
+            style={{ background: home.badgeBg, color: home.badgeText }}
+          >
+            <ShieldCheck className="h-4 w-4" />
+            {t("rentalTermsPage.badge")}
           </span>
-          <h2 
-            className="text-4xl md:text-5xl font-black mb-6"
-            style={{ color: isDark ? "#ffffff" : "#111115" }}
+          <h1
+            className="mb-5 text-3xl font-black tracking-tight sm:text-4xl md:text-5xl"
+            style={{ color: tk.pageText }}
           >
-            How Booking <span className="text-red-600">Works</span>
-          </h2>
-          <p 
-            className="text-lg md:text-xl max-w-2xl mx-auto"
-            style={{ color: isDark ? "rgba(255,255,255,0.7)" : "#6b7280" }}
-          >
-            Our transparent and secure process ensures a smooth experience for both guests and property owners. Here is exactly how your reservation is handled from start to finish.
+            {t("rentalTermsPage.titleStart")}{" "}
+            <span style={{ color: tk.brand }}>{t("rentalTermsPage.titleHighlight")}</span>
+          </h1>
+          <p className="mx-auto max-w-2xl text-base leading-relaxed sm:text-lg" style={{ color: tk.dimText }}>
+            {t("rentalTermsPage.subtitle")}
           </p>
         </div>
       </section>
 
-      {/* Steps Section */}
-      <section className="pb-12 px-4">
-        <div className="container mx-auto max-w-4xl">
-          <div className="relative">
-            {/* Connecting line */}
-            <div className="absolute left-6 md:left-8 top-10 bottom-10 w-0.5 bg-gradient-to-b from-red-600/50 to-transparent hidden md:block" />
-
-            <div className="space-y-8">
-              {steps.map((step, index) => (
-                <div 
-                  key={index} 
-                  className="relative flex flex-col md:flex-row gap-6 md:gap-8 items-start group animate-fade-in-up"
-                  style={{ animationDelay: `${index * 150}ms` }}
-                >
-                  <div 
-                    className="flex-shrink-0 w-12 h-12 md:w-16 md:h-16 rounded-2xl flex items-center justify-center shadow-lg relative z-10 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3"
-                    style={{ 
-                      background: isDark ? "#1a1a1c" : "#ffffff",
-                      border: `1px solid ${isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.05)"}`
-                    }}
+      {/* Steps timeline */}
+      <section className="px-4">
+        <ol className="mx-auto max-w-3xl">
+          {STEPS.map(({ key, icons }, index) => {
+            const isLast = index === STEPS.length - 1;
+            return (
+              <li
+                key={key}
+                className="rt-fade relative grid grid-cols-[2.5rem_1fr] gap-4 pb-6 sm:grid-cols-[3rem_1fr] sm:gap-6 sm:pb-8"
+                style={{ animationDelay: `${(index + 1) * 90}ms` }}
+              >
+                {/* Number + connecting line */}
+                <div className="relative flex justify-center">
+                  {!isLast && (
+                    <span
+                      aria-hidden
+                      className="absolute top-10 bottom-[-0.25rem] w-0.5 sm:top-12"
+                      style={{ background: `linear-gradient(${tk.brandBorder}, ${tk.divider})` }}
+                    />
+                  )}
+                  <span
+                    className="relative z-10 flex h-10 w-10 items-center justify-center rounded-full text-base font-black text-white sm:h-12 sm:w-12 sm:text-lg"
+                    style={{ background: tk.brand, boxShadow: tk.primaryShadow }}
                   >
-                    <div className="flex gap-1">
-                      {step.icon}
-                      {step.icon2 && <span className="hidden md:block">{step.icon2}</span>}
-                    </div>
-                  </div>
-                  
-                  <div 
-                    className="flex-1 rounded-2xl p-6 md:p-8 transition-all duration-300 hover:shadow-xl"
-                    style={{ 
-                      background: isDark ? "rgba(255,255,255,0.03)" : "#ffffff",
-                      border: `1px solid ${isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)"}`
-                    }}
-                  >
-                    <h3 
-                      className="text-2xl font-bold mb-3"
-                      style={{ color: isDark ? "#ffffff" : "#111115" }}
-                    >
-                      {step.title}
-                    </h3>
-                    <p 
-                      className="text-base md:text-lg leading-relaxed"
-                      style={{ color: isDark ? "rgba(255,255,255,0.6)" : "#4b5563" }}
-                    >
-                      {step.description}
-                    </p>
-                  </div>
+                    {index + 1}
+                  </span>
                 </div>
-              ))}
+
+                {/* Card */}
+                <div
+                  className="rounded-2xl p-5 transition-transform duration-300 hover:-translate-y-0.5 sm:p-7"
+                  style={cardStyle}
+                >
+                  <div className="mb-3 flex items-center gap-3">
+                    <span
+                      className="flex h-10 items-center gap-1.5 rounded-xl px-2.5"
+                      style={{ background: tk.brandSoft, color: tk.brand }}
+                    >
+                      {icons.map((Icon, i) => (
+                        <Icon key={i} className="h-5 w-5" />
+                      ))}
+                    </span>
+                    <span className="text-xs font-bold uppercase tracking-widest" style={{ color: tk.mutedText }}>
+                      {t("rentalTermsPage.stepLabel", { n: index + 1 })}
+                    </span>
+                  </div>
+                  <h2 className="mb-2 text-xl font-bold sm:text-2xl" style={{ color: tk.pageText }}>
+                    {t(`rentalTermsPage.steps.${key}.title`)}
+                  </h2>
+                  <p className="text-sm leading-relaxed sm:text-base" style={{ color: tk.dimText }}>
+                    {t(`rentalTermsPage.steps.${key}.description`)}
+                  </p>
+                </div>
+              </li>
+            );
+          })}
+        </ol>
+      </section>
+
+      {/* What you pay, and when */}
+      <section className="rt-fade px-4 pt-6 sm:pt-10">
+        <div className="mx-auto max-w-3xl">
+          <h2 className="mb-5 text-center text-2xl font-bold sm:text-3xl" style={{ color: tk.pageText }}>
+            {t("rentalTermsPage.payTitle")}
+          </h2>
+          <div className="grid gap-4 md:grid-cols-2">
+            {[
+              { icon: Lock, title: t("rentalTermsPage.payOnlineTitle"), items: list("rentalTermsPage.payOnlineItems") },
+              { icon: Handshake, title: t("rentalTermsPage.payProviderTitle"), items: list("rentalTermsPage.payProviderItems") },
+            ].map(({ icon: Icon, title, items }) => (
+              <div key={title} className="rounded-2xl p-5 sm:p-6" style={cardStyle}>
+                <div className="mb-4 flex items-center gap-3">
+                  <span
+                    className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full"
+                    style={{ background: tk.brandSoftStrong, color: tk.brand }}
+                  >
+                    <Icon className="h-5 w-5" />
+                  </span>
+                  <h3 className="text-lg font-semibold" style={{ color: tk.pageText }}>
+                    {title}
+                  </h3>
+                </div>
+                <ul className="space-y-2.5">
+                  {items.map((item) => (
+                    <li key={item} className="flex items-start gap-2.5 text-sm sm:text-base" style={{ color: tk.dimText }}>
+                      <CheckCircle2 className="mt-0.5 h-4 w-4 flex-shrink-0" style={{ color: tk.brand }} />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Why the service fee */}
+      <section className="rt-fade px-4 pt-10">
+        <div className="mx-auto max-w-3xl">
+          <div
+            className="relative overflow-hidden rounded-3xl p-7 text-white sm:p-10"
+            style={{ background: tk.brand, boxShadow: tk.primaryShadow }}
+          >
+            <div
+              aria-hidden
+              className="absolute inset-0"
+              style={{ background: "linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(0,0,0,0.28) 100%)" }}
+            />
+            <div
+              aria-hidden
+              className="absolute inset-0 opacity-10"
+              style={{ backgroundImage: "radial-gradient(circle at 2px 2px, white 1px, transparent 0)", backgroundSize: "24px 24px" }}
+            />
+            <div className="relative flex flex-col items-center gap-6 text-center md:flex-row md:text-left">
+              <div className="flex-shrink-0 rounded-full bg-white/15 p-4 backdrop-blur-md">
+                <ShieldCheck className="h-10 w-10 sm:h-12 sm:w-12" />
+              </div>
+              <div>
+                <h2 className="mb-2 text-2xl font-bold sm:text-3xl">{t("rentalTermsPage.feeTitle")}</h2>
+                <p className="text-base leading-relaxed text-white/90 sm:text-lg">{t("rentalTermsPage.feeText")}</p>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Info Card */}
-      <section className="px-4">
-        <div className="container mx-auto max-w-4xl">
-          <div className="rounded-3xl p-8 md:p-12 bg-gradient-to-br from-red-600 to-red-900 text-white shadow-2xl relative overflow-hidden">
-            {/* Decorative pattern */}
-            <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '24px 24px' }} />
-            
-            <div className="relative z-10 flex flex-col md:flex-row items-center gap-8">
-              <div className="flex-shrink-0 p-4 bg-white/10 rounded-full backdrop-blur-md">
-                <ShieldCheck className="w-12 h-12 text-red-100" />
-              </div>
-              <div>
-                <h3 className="text-2xl md:text-3xl font-bold mb-3">Why 7%?</h3>
-                <p className="text-red-100/90 text-lg leading-relaxed">
-                  The 7% platform fee helps us maintain our secure verification process, provide 24/7 customer support, and keep the platform running smoothly. The remaining balance goes entirely to the local provider.
-                </p>
-              </div>
-            </div>
-          </div>
+      {/* Call to action */}
+      <section className="rt-fade px-4 pt-12 text-center">
+        <h2 className="mb-5 text-xl font-bold sm:text-2xl" style={{ color: tk.pageText }}>
+          {t("rentalTermsPage.ctaTitle")}
+        </h2>
+        <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
+          <Link
+            to="/searchCarResults"
+            className="inline-flex w-full items-center justify-center gap-2 rounded-xl px-6 py-3 font-semibold text-white transition-opacity hover:opacity-90 sm:w-auto"
+            style={{ background: tk.brand }}
+          >
+            <Car className="h-5 w-5" />
+            {t("rentalTermsPage.ctaCars")}
+          </Link>
+          <button
+            type="button"
+            onClick={() => navigate("/searchResults", { state: { type: "apartment" } })}
+            className="inline-flex w-full items-center justify-center gap-2 rounded-xl px-6 py-3 font-semibold transition-opacity hover:opacity-80 sm:w-auto"
+            style={{ background: tk.brandSoft, color: tk.brand, border: `1px solid ${tk.brandBorder}` }}
+          >
+            <Home className="h-5 w-5" />
+            {t("rentalTermsPage.ctaStays")}
+            <ArrowRight className="h-4 w-4" />
+          </button>
         </div>
       </section>
 
       <style>{`
-        @keyframes fade-in-up {
-          from { opacity: 0; transform: translateY(30px); }
+        @keyframes rt-fade-in-up {
+          from { opacity: 0; transform: translateY(18px); }
           to { opacity: 1; transform: translateY(0); }
         }
-        .animate-fade-in-up { 
-          animation: fade-in-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; 
-          opacity: 0; 
+        .rt-page .rt-fade {
+          animation: rt-fade-in-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .rt-page .rt-fade { animation: none; }
         }
       `}</style>
     </div>

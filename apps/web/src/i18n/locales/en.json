@@ -1845,5 +1845,50 @@
       "saveFailed": "The insurance plan could not be saved. Please try again."
     },
     "noPlansForClient": "The provider hasn't set insurance plans for this car yet."
+  },
+  "rentalTermsPage": {
+    "badge": "Booking policy",
+    "titleStart": "How booking",
+    "titleHighlight": "works",
+    "subtitle": "A transparent, secure process for guests and providers. Here is how your reservation is handled, from your request to the moment you get the keys.",
+    "stepLabel": "Step {{n}}",
+    "steps": {
+      "choose": {
+        "title": "Choose your car or stay",
+        "description": "Pick a car or a place to stay, select your dates and options (insurance plan, extras), then send your booking request."
+      },
+      "review": {
+        "title": "The provider reviews it",
+        "description": "The provider checks your request to make sure the car or the property is ready and available for your dates."
+      },
+      "confirm": {
+        "title": "Confirmation email",
+        "description": "As soon as the provider accepts, you receive an email confirming your booking."
+      },
+      "fee": {
+        "title": "Pay the 5% service fee online",
+        "description": "To secure your reservation, pay the platform service fee (5% of the booking, minimum €2) securely online."
+      },
+      "meet": {
+        "title": "Meet the provider and pay the rest",
+        "description": "You then get the provider's contact details. Pay the remaining balance directly to them at pick-up or check-in."
+      }
+    },
+    "payTitle": "What you pay, and when",
+    "payOnlineTitle": "Online, after confirmation",
+    "payOnlineItems": [
+      "Service fee: 5% of the booking (minimum €2)"
+    ],
+    "payProviderTitle": "To the provider, at pick-up or check-in",
+    "payProviderItems": [
+      "The rental or stay price",
+      "Your insurance plan and extras (child seat, additional driver, delivery)",
+      "The refundable security deposit, if the car requires one"
+    ],
+    "feeTitle": "Why a 5% service fee?",
+    "feeText": "The service fee keeps our verification process, secure payments and customer support running. Everything else goes directly to the local provider.",
+    "ctaTitle": "Ready to plan your trip?",
+    "ctaCars": "Browse cars",
+    "ctaStays": "Browse stays"
   }
 }

@@ -1,22 +1,20 @@
 import PrimarySearchAppBar from "@/components/home/AppBar";
 import { useTheme } from "@/context/ThemeContext";
 import RentalTermsSection from "@/components/home/RentalTermsSection";
+import { getBookingThemeTokens } from "@/pages/home/booking/bookingTheme";
 
 const RentalTerms = () => {
-  const { isDark } = useTheme();
+  const { isDark, isBlue } = useTheme();
+  const tk = getBookingThemeTokens({ isDark, isBlue });
 
   return (
     <div
-      className="min-h-screen pb-20"
-      style={{
-        background: isDark ? "#0a0a0c" : "#fafafa",
-        transition: "background 0.3s",
-      }}
+      className="min-h-screen"
+      style={{ background: tk.pageBg, transition: "background 0.3s" }}
     >
+      {/* AppBar renders its own spacer below the fixed nav */}
       <PrimarySearchAppBar />
-      <div className="pt-20">
-        <RentalTermsSection />
-      </div>
+      <RentalTermsSection />
     </div>
   );
 };

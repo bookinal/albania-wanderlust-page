@@ -1845,5 +1845,50 @@
       "saveFailed": "Impossibile salvare il piano. Riprova."
     },
     "noPlansForClient": "Il noleggiatore non ha ancora impostato piani assicurativi per questa auto."
+  },
+  "rentalTermsPage": {
+    "badge": "Politica di prenotazione",
+    "titleStart": "Come funziona",
+    "titleHighlight": "la prenotazione",
+    "subtitle": "Un processo trasparente e sicuro per ospiti e fornitori. Ecco come viene gestita la tua prenotazione, dalla richiesta alla consegna delle chiavi.",
+    "stepLabel": "Passo {{n}}",
+    "steps": {
+      "choose": {
+        "title": "Scegli l'auto o l'alloggio",
+        "description": "Scegli un'auto o un alloggio, le date e le opzioni (piano assicurativo, extra), poi invia la richiesta di prenotazione."
+      },
+      "review": {
+        "title": "Il fornitore la verifica",
+        "description": "Il fornitore controlla la tua richiesta per assicurarsi che l'auto o l'alloggio sia pronto e disponibile nelle tue date."
+      },
+      "confirm": {
+        "title": "Email di conferma",
+        "description": "Appena il fornitore accetta, ricevi un'email di conferma della prenotazione."
+      },
+      "fee": {
+        "title": "Paga online la commissione del 5%",
+        "description": "Per garantire la prenotazione, paga online in modo sicuro la commissione di servizio della piattaforma (5% della prenotazione, minimo €2)."
+      },
+      "meet": {
+        "title": "Incontra il fornitore e paga il resto",
+        "description": "Ricevi poi i contatti del fornitore. Paga il saldo direttamente a lui al ritiro o al check-in."
+      }
+    },
+    "payTitle": "Cosa paghi, e quando",
+    "payOnlineTitle": "Online, dopo la conferma",
+    "payOnlineItems": [
+      "Commissione di servizio: 5% della prenotazione (minimo €2)"
+    ],
+    "payProviderTitle": "Al fornitore, al ritiro o al check-in",
+    "payProviderItems": [
+      "Il prezzo del noleggio o del soggiorno",
+      "Il piano assicurativo e gli extra (seggiolino, guidatore aggiuntivo, consegna)",
+      "Il deposito cauzionale rimborsabile, se l'auto lo richiede"
+    ],
+    "feeTitle": "Perché una commissione del 5%?",
+    "feeText": "La commissione di servizio sostiene il nostro processo di verifica, i pagamenti sicuri e l'assistenza clienti. Tutto il resto va direttamente al fornitore locale.",
+    "ctaTitle": "Pronto a organizzare il viaggio?",
+    "ctaCars": "Vedi le auto",
+    "ctaStays": "Vedi gli alloggi"
   }
 }

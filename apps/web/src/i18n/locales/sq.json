@@ -1862,5 +1862,50 @@
       "saveFailed": "Plani nuk u ruajt. Provoni përsëri."
     },
     "noPlansForClient": "Ofruesi nuk ka vendosur ende plane sigurimi për këtë makinë."
+  },
+  "rentalTermsPage": {
+    "badge": "Politika e rezervimit",
+    "titleStart": "Si funksionon",
+    "titleHighlight": "rezervimi",
+    "subtitle": "Një proces i qartë dhe i sigurt për mysafirët dhe ofruesit. Ja si trajtohet rezervimi juaj, nga kërkesa deri te marrja e çelësave.",
+    "stepLabel": "Hapi {{n}}",
+    "steps": {
+      "choose": {
+        "title": "Zgjidhni makinën ose akomodimin",
+        "description": "Zgjidhni një makinë ose akomodim, datat dhe opsionet (planin e sigurimit, shtesat), pastaj dërgoni kërkesën për rezervim."
+      },
+      "review": {
+        "title": "Ofruesi e shqyrton",
+        "description": "Ofruesi kontrollon kërkesën tuaj për t'u siguruar që makina ose prona është gati dhe e lirë për datat tuaja."
+      },
+      "confirm": {
+        "title": "Email konfirmimi",
+        "description": "Sapo ofruesi e pranon, merrni një email që konfirmon rezervimin."
+      },
+      "fee": {
+        "title": "Paguani online tarifën 5%",
+        "description": "Për të siguruar rezervimin, paguani në mënyrë të sigurt online tarifën e shërbimit të platformës (5% e rezervimit, minimumi €2)."
+      },
+      "meet": {
+        "title": "Takoni ofruesin dhe paguani pjesën tjetër",
+        "description": "Më pas merrni kontaktet e ofruesit. Pjesën e mbetur ia paguani drejtpërdrejt atij në marrje ose në mbërritje."
+      }
+    },
+    "payTitle": "Çfarë paguani dhe kur",
+    "payOnlineTitle": "Online, pas konfirmimit",
+    "payOnlineItems": [
+      "Tarifa e shërbimit: 5% e rezervimit (minimumi €2)"
+    ],
+    "payProviderTitle": "Ofruesit, në marrje ose në mbërritje",
+    "payProviderItems": [
+      "Çmimi i qirasë ose i qëndrimit",
+      "Plani i sigurimit dhe shtesat (karrige për fëmijë, shofer shtesë, dorëzim)",
+      "Depozita e rimbursueshme, nëse makina e kërkon"
+    ],
+    "feeTitle": "Pse një tarifë shërbimi 5%?",
+    "feeText": "Tarifa e shërbimit mban në punë procesin tonë të verifikimit, pagesat e sigurta dhe mbështetjen e klientëve. Pjesa tjetër shkon drejtpërdrejt te ofruesi vendas.",
+    "ctaTitle": "Gati për të planifikuar udhëtimin?",
+    "ctaCars": "Shiko makinat",
+    "ctaStays": "Shiko akomodimet"
   }
 }
