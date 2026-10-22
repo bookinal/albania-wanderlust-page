@@ -39,7 +39,7 @@ const Hero = () => {
       {/* Content */}
       <div className="relative z-10 container mx-auto flex flex-1 flex-col items-center px-3 sm:px-5 lg:px-6 text-white">
         <div className="w-full">
-          <div className="animate-fade-in-up mx-auto max-w-3xl text-center xl:mx-0 xl:max-w-[760px] xl:text-left xl:flex xl:flex-col xl:items-start">
+          <div className="animate-fade-in-up mx-auto flex max-w-3xl flex-col items-center text-center xl:max-w-[760px]">
             {/* Badge */}
             <div
               className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full mb-2.5 border backdrop-blur-md"
@@ -71,7 +71,7 @@ const Hero = () => {
 
             {/* Subheading */}
             <p
-              className="mb-4 max-w-xl mx-auto xl:mx-0 text-base sm:text-lg md:text-xl lg:text-2xl font-semibold text-white leading-snug"
+              className="mb-4 max-w-xl mx-auto text-base sm:text-lg md:text-xl lg:text-2xl font-semibold text-white leading-snug"
               style={{ textShadow: "0 2px 12px rgba(0, 0, 0, 0.45)" }}
             >
               {t("home.hero.subheading")}
@@ -87,7 +87,7 @@ const Hero = () => {
             </div>
 
             {/* Secondary Actions */}
-            <div className="flex flex-col sm:flex-row gap-1.5 justify-center xl:justify-start items-center">
+            <div className="flex flex-col sm:flex-row gap-1.5 justify-center items-center">
               <Link to="/properties-map">
                 <Button
                   size="sm"

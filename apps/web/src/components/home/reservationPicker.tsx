@@ -25,6 +25,7 @@ import {
 import { useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
 import {
+  ALBANIAN_CITIES,
   CAR_PICKUP_LOCATIONS,
   DEFAULT_CAR_PICKUP_LOCATION,
 } from "@/lib/albanianCities";
@@ -201,13 +202,37 @@ export default function ReservationPickerValue() {
             </TextField>
           ) : (
             <TextField
+              select
               label={t("home.reservationPicker.Destination")}
               value={destination}
               onChange={(e) => setDestination(e.target.value)}
               variant="outlined"
               size="small"
               sx={firstFieldSx}
-            />
+              slotProps={{
+                input: {
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <LocationOn fontSize="small" color="primary" />
+                    </InputAdornment>
+                  ),
+                },
+                inputLabel: { shrink: true },
+                select: {
+                  displayEmpty: true,
+                  MenuProps: { PaperProps: { sx: { maxHeight: 320 } } },
+                },
+              }}
+            >
+              <MenuItem value="">
+                {t("home.reservationPicker.allDestinations")}
+              </MenuItem>
+              {ALBANIAN_CITIES.map((city) => (
+                <MenuItem key={city} value={city}>
+                  {city}
+                </MenuItem>
+              ))}
+            </TextField>
           )}
 
           <Box

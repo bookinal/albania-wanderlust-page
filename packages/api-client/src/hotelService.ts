@@ -1,4 +1,5 @@
 import { apiClient } from "./apiClient";
+import { buildLocationSearchFilter } from "./searchTerms";
 import { authService } from "./authService";
 import {
   Hotel,
@@ -398,8 +399,8 @@ export const searchHotels = async (
   // Search term
   const searchTerm = f.searchTerm || filters.destination || "";
   if (searchTerm && searchTerm.trim()) {
-    const term = `%${searchTerm}%`;
-    query = query.or(`name.ilike.${term},location.ilike.${term},address.ilike.${term}`);
+    // Also matches other spellings of a city (Durrës / Durres, Vlorë / Vlora…)
+    query = query.or(buildLocationSearchFilter(searchTerm, ["name", "location", "address"]));
   }
 
   // Rooms
