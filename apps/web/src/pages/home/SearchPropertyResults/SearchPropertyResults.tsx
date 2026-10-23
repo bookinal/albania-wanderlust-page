@@ -12,7 +12,6 @@ import { useNavigate } from "react-router-dom";
 import { useTheme } from "@/context/ThemeContext";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useInView } from "react-intersection-observer";
-import { searchHotels } from "@/services/api/hotelService";
 import { searchApartments } from "@/services/api/apartmentService";
 import { getSearchResultsThemeTokens } from "./searchResultsTheme";
 
@@ -34,9 +33,7 @@ const SearchPropertyResults = () => {
   } | null;
 
   const initialFilters = {
-    propertyType: (state?.type === "hotel" ? "hotel" : "apartment") as
-      | "hotel"
-      | "apartment",
+    propertyType: "apartment" as const,
     ...(state
       ? {
         destination: state.destination,
@@ -45,14 +42,6 @@ const SearchPropertyResults = () => {
         adults: state.adults,
         children: state.children,
         rooms: state.rooms,
-        hotelFilters: {
-          ...defaultSearchFilters.hotelFilters,
-          searchTerm:
-            state.destination || defaultSearchFilters.hotelFilters.searchTerm,
-          rooms: state.rooms
-            ? { ...defaultSearchFilters.hotelFilters.rooms, min: state.rooms }
-            : defaultSearchFilters.hotelFilters.rooms,
-        },
         apartmentFilters: {
           ...defaultSearchFilters.apartmentFilters,
           searchTerm:
@@ -80,7 +69,6 @@ const SearchPropertyResults = () => {
     filters,
     setFilters,
     setPropertyType,
-    setHotelFilters,
     setApartmentFilters,
     resetFilters,
   } = useSearchFilters(initialFilters);
@@ -98,24 +86,14 @@ const SearchPropertyResults = () => {
   } = useInfiniteQuery({
     queryKey: ["searchProperties", filters],
     queryFn: async ({ pageParam = 1 }) => {
-      const propertyType = filters.propertyType;
-      const shouldFetchHotels = propertyType === "hotel";
-      const shouldFetchApartments = propertyType === "apartment";
-
-      const [hotelsRes, apartmentsRes] = await Promise.all([
-        shouldFetchHotels
-          ? searchHotels(filters, pageParam, PROPERTIES_PER_PAGE)
-          : Promise.resolve({ data: [], total: 0 }),
-        shouldFetchApartments
-          ? searchApartments(filters, pageParam, PROPERTIES_PER_PAGE)
-          : Promise.resolve({ data: [], total: 0 }),
-      ]);
-
-      const combinedData = [...hotelsRes.data, ...apartmentsRes.data];
+      const apartmentsRes =
+        filters.propertyType === "apartment"
+          ? await searchApartments(filters, pageParam, PROPERTIES_PER_PAGE)
+          : { data: [], total: 0 };
 
       return {
-        combined: combinedData,
-        total: hotelsRes.total + apartmentsRes.total,
+        combined: apartmentsRes.data,
+        total: apartmentsRes.total,
       };
     },
     initialPageParam: 1,
@@ -188,23 +166,10 @@ const SearchPropertyResults = () => {
         max: filters.apartmentFilters.rooms?.max,
       },
     });
-
-    if (filters.propertyType === "hotel") {
-      setHotelFilters({
-        rooms: {
-          min: nextRooms,
-          max: filters.hotelFilters.rooms?.max,
-        },
-      });
-    }
   };
 
-  const handlePropertyClick = (id: number, isHotel: boolean) => {
-    if (isHotel) {
-      navigate(`/hotelReservation/${id}`);
-    } else {
-      navigate(`/apartmentReservation/${id}`);
-    }
+  const handlePropertyClick = (id: number) => {
+    navigate(`/apartmentReservation/${id}`);
   };
 
   // Theme tokens
@@ -358,7 +323,6 @@ const SearchPropertyResults = () => {
               <FilterBar
                 filters={filters}
                 onPropertyTypeChange={setPropertyType}
-                onHotelFiltersChange={setHotelFilters}
                 onApartmentFiltersChange={setApartmentFilters}
                 onDateChange={handleDateChange}
                 onGuestsChange={handleGuestsChange}
@@ -461,9 +425,7 @@ const SearchPropertyResults = () => {
               {/* Results Grid */}
               <div className="alb-card-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {combinedResults.map((property, index) => {
-                  const isHotel = "occupancy" in property;
-                  const propertyType = isHotel ? "hotel" : "apartment";
-                  const uniqueKey = `${propertyType}-${property.id}-${index}`;
+                  const uniqueKey = `apartment-${property.id}-${index}`;
                   return (
                     <div key={uniqueKey} style={{ animationDelay: `${(index % PROPERTIES_PER_PAGE) * 0.05}s`, animation: 'fadeUpGrid 0.5s ease both' }}>
                       <PropertyCard
@@ -471,14 +433,14 @@ const SearchPropertyResults = () => {
                         name={property.name}
                         image={property.imageUrls?.[0]}
                         rating={property.rating}
-                        price={'pricePerNight' in property ? property.pricePerNight : property.price}
+                        price={property.price}
                         location={property.location}
                         address={property.address}
                         rooms={property.rooms}
                         amenities={property.amenities || []}
                         status={property.status}
-                        propertyType={propertyType}
-                        onClick={() => handlePropertyClick(property.id, isHotel)}
+                        propertyType="apartment"
+                        onClick={() => handlePropertyClick(property.id)}
                       />
                     </div>
                   );

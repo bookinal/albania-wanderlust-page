@@ -27,8 +27,6 @@ import ExperiencesPage from "./pages/home/Destinations/subCategories/experiences
 import HistoricDestinationsPage from "./pages/home/Destinations/subCategories/HistoricDestinationsPage";
 import PropertiesMapPage from "./pages/home/PropertiesMapPage";
 import Dashboard from "./pages/dashboard/dashboard";
-import AllHotels from "./pages/dashboard/Hotels/all-hotels";
-import HotelDetails from "./pages/dashboard/Hotels/HotelDetails";
 import AllCars from "./pages/dashboard/Cars/AllCars";
 import UserManagement from "./pages/dashboard/Users/users-management";
 import UserDetails from "./pages/dashboard/Users/user-details";
@@ -38,7 +36,6 @@ import ArticleDetails from "./pages/home/ArticleDetails";
 import Unauthorized from "./pages/Unauthorized";
 import ProtectedRoute from "./components/ProtectedRoute";
 import CarDetails from "./pages/dashboard/Cars/CarDetails";
-import HotelReservation from "./pages/home/HotelReservation";
 import SuspendedPage from "./pages/SuspendedPage";
 import AllApartments from "./pages/dashboard/Apartments/all-apartmets";
 import ApartmentDetails from "./pages/dashboard/Apartments/ApartmentDetails";
@@ -49,7 +46,6 @@ import CarReservation from "./pages/home/booking/CarReservation";
 import CarBilling from "./pages/home/booking/CarBilling";
 import BookingsSummary from "./pages/home/booking/BookingsSummary";
 import ApartmentBilling from "./pages/home/booking/ApartmentBilling";
-import HotelBilling from "./pages/home/booking/HotelBilling";
 import BookingsManagement from "./pages/dashboard/bookings/BookingsManagement";
 import AdminProvidersList from "./pages/dashboard/bookings/AdminProvidersList";
 import AdminProviderBookings from "./pages/dashboard/bookings/AdminProviderBookings";
@@ -168,10 +164,6 @@ const App = () => (
                     element={<SearchCarResults />}
                   />
                   <Route
-                    path="/hotelReservation/:id"
-                    element={<HotelReservation />}
-                  />
-                  <Route
                     path="/apartmentReservation/:id"
                     element={<ApartmentReservation />}
                   />
@@ -184,7 +176,6 @@ const App = () => (
                     path="/apartmentBilling/:id"
                     element={<ApartmentBilling />}
                   />
-                  <Route path="/hotelBilling/:id" element={<HotelBilling />} />
                   <Route path="/myBookings" element={<BookingsSummary />} />
                   <Route
                     path="/ProviderRequest"
@@ -195,14 +186,6 @@ const App = () => (
                   <Route element={<ProtectedRoute />}>
                     <Route element={<DashboardLayout />}>
                       <Route path="/dashboard" element={<Dashboard />} />
-                      <Route
-                        path="/dashboard/HotelsList"
-                        element={<AllHotels />}
-                      />
-                      <Route
-                        path="/dashboard/hotels/:id"
-                        element={<HotelDetails />}
-                      />
                       <Route
                         path="/dashboard/ApartmentsList"
                         element={<AllApartments />}

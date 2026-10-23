@@ -1,10 +1,10 @@
-import { Star, MapPin, Zap, Building2, Home } from "lucide-react";
+import { Star, MapPin, Zap, Home } from "lucide-react";
 import { PropertyCardProps } from "@/types/search.types";
 import { useTheme } from "@/context/ThemeContext";
 import { getHomeThemeTokens } from "./homeTheme";
 
 /**
- * Reusable property card component for hotels and apartments — Albanian dark luxury theme
+ * Reusable property card component for apartments — Albanian dark luxury theme
  */
 export const PropertyCard = ({
   id,
@@ -23,12 +23,9 @@ export const PropertyCard = ({
   const { isDark, isBlue } = useTheme();
   const homeTk = getHomeThemeTokens({ isDark, isBlue });
 
-  const isAvailable =
-    propertyType === "hotel"
-      ? status?.toLowerCase() === "active"
-      : status?.toLowerCase() === "available";
+  const isAvailable = status?.toLowerCase() === "available";
 
-  const priceLabel = propertyType === "hotel" ? "per night" : "per day";
+  const priceLabel = "per day";
   const displayAmenities = amenities && amenities.length > 0 ? amenities.slice(0, 3) : [];
 
   const statusColor = isAvailable
@@ -103,7 +100,7 @@ export const PropertyCard = ({
         ) : (
           <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: tk.imageFallbackBg }}>
             <span style={{ fontFamily: 'Bebas Neue, Impact, sans-serif', fontSize: '2.5rem', color: tk.imageFallbackText, letterSpacing: '0.1em' }}>
-              {propertyType === 'hotel' ? 'HOTEL' : 'APT'}
+              APT
             </span>
           </div>
         )}
@@ -142,10 +139,8 @@ export const PropertyCard = ({
           alignItems: 'center',
           gap: 5,
         }}>
-          {propertyType === 'hotel'
-            ? <Building2 style={{ width: 11, height: 11 }} />
-            : <Home style={{ width: 11, height: 11 }} />}
-          {propertyType === 'hotel' ? 'Hotel' : 'Apartment'}
+          <Home style={{ width: 11, height: 11 }} />
+          Apartment
         </div>
 
         {/* Rating bottom left */}
@@ -177,7 +172,7 @@ export const PropertyCard = ({
              color: homeTk.brand,
             marginBottom: 3,
           }}>
-            {propertyType === 'hotel' ? 'Hotel' : 'Apartment'}
+            Apartment
           </p>
           <h3 style={{
             fontFamily: 'Crimson Pro, Georgia, serif',

@@ -49,7 +49,6 @@ const getPropertyIcon = (type: Booking["propertyType"]) => {
       return Car;
     case "apartment":
       return Building2;
-    case "hotel":
     default:
       return Home;
   }
@@ -696,8 +695,6 @@ export default function BookingsSummary() {
     switch (booking.propertyType) {
       case "apartment":
         return `/apartmentReservation/${id}`;
-      case "hotel":
-        return `/hotelReservation/${id}`;
       case "car":
         return `/carReservation/${id}`;
       default:

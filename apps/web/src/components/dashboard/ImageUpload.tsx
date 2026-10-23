@@ -30,7 +30,7 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
   isLoading = false,
   existingImages = [],
   onRemoveExisting,
-  propertyType = "Hotel",
+  propertyType = "Property",
   disableUpload = false,
 }) => {
   const { isDark } = useTheme();

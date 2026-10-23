@@ -15,7 +15,7 @@
     "accommodations": {
       "badge": "Handpicked For You",
       "title": "Find Your Perfect Deal",
-      "description": "From luxury hotels to cozy apartments, discover accommodations that match your style and budget"
+      "description": "From city studios to seaside apartments, discover accommodations that match your style and budget"
     },
     "trustBar": {
       "verifiedTitle": "Verified Destinations",
@@ -60,12 +60,6 @@
       "description": "Authentic Albanian hospitality in private residences",
       "viewAll": "View All Apartments",
       "noApartments": "No apartments available"
-    },
-    "hotelsPreview": {
-      "title": "Hotels",
-      "description": "Premium hotels in Albania's most iconic destinations",
-      "viewAll": "View All Hotels",
-      "noHotels": "No hotels available"
     },
     "carsPreview": {
       "chip": "Explore On Your Terms",
@@ -261,7 +255,6 @@
   "footer": {
     "description": "Your trusted platform for discovering and booking the best accommodations and car rentals in Albania.",
     "explore": "Explore",
-    "hotelsApartments": "Hotels & Apartments",
     "carRentals": "Car Rentals",
     "mapView": "Map View",
     "cultureCuisine": "Culture & Cuisine",
@@ -275,7 +268,8 @@
     "addressCity": "Tirana, Albania",
     "addressStreet": "Rruga e Kavajës",
     "rightsReserved": "All rights reserved.",
-    "securePayments": "Secure Payments"
+    "securePayments": "Secure Payments",
+    "apartments": "Apartments"
   },
   "billing": {
     "vehicleSpecifications": "Vehicle Specifications",
@@ -335,12 +329,9 @@
     "propertyUnavailableMessage": "This property is currently unavailable for booking.",
     "goBack": "Go Back",
     "apartmentBookingSuccess": "Your apartment booking has been created successfully.",
-    "hotelBookingSuccess": "Your hotel booking has been created successfully.",
     "selectCheckInCheckOutDates": "Please select check-in and check-out dates.",
     "loadingApartmentDetails": "Loading apartment details…",
     "apartmentNotFound": "Apartment not found",
-    "loadingHotelDetails": "Loading hotel details…",
-    "hotelNotFound": "Hotel not found",
     "checkInCheckOutDates": "Check-in & Check-out Dates",
     "selectStayDates": "Select stay dates",
     "checkInTime": "Check-in Time",
@@ -394,7 +385,6 @@
       "showingPropertiesForDates": "Showing properties available for selected dates",
       "propertyType": "Property Type",
       "all": "All",
-      "hotel": "Hotel",
       "apartment": "Apartment",
       "destination": "Destination",
       "guests": "Guests",
@@ -481,7 +471,6 @@
   "navigation": {
     "backToCars": "Back to Cars",
     "backToApartments": "Back to Apartments",
-    "backToHotels": "Back to Hotels",
     "backToDestinations": "Back to Destinations",
     "backToCulture": "Back to Culture",
     "backToHome": "Back to Home"
@@ -496,7 +485,7 @@
     "myBookings": "My Bookings",
     "noBookings": "You don't have any bookings yet. Start exploring properties and cars to create your first booking!",
     "startExploring": "Start exploring properties and cars to create your first booking.",
-    "bookingSummaryDescription": "Review all your bookings across cars, hotels, and apartments in one place.",
+    "bookingSummaryDescription": "Review all your bookings across cars and apartments in one place.",
     "cancelBooking": "Cancel Booking",
     "awaitingConfirmation": "Booking Awaiting Confirmation",
     "bookingStatus": "Booking Status",
@@ -583,7 +572,6 @@
     "termsOfService": "Terms of Service",
     "and": "and",
     "privacyPolicy": "Privacy Policy",
-    "hotels": "Hotels",
     "apartments": "Apartments",
     "carRentals": "Car Rentals",
     "fillAllFields": "Please fill in all fields",
@@ -635,7 +623,6 @@
     "loading": "Loading...",
     "car": "Car",
     "apartment": "Apartment",
-    "hotel": "Hotel",
     "stay": "Stay",
     "culture": "Culture",
     "map": "Map",
@@ -739,12 +726,9 @@
     "rejected": "Rejected"
   },
   "propertiesMap": {
-    "title": "Available Hotels & Apartments",
-    "description": "Explore our selection of hotels and apartments across Albania",
+    "description": "Explore our selection of apartments across Albania",
     "interactiveMap": "📍 Interactive Map",
-    "interactiveMapDescription": "Click on any marker to see more details about the hotel or apartment",
     "wideSelection": "🏨 Wide Selection",
-    "wideSelectionDescription": "From luxury hotels to budget-friendly hostels across Albania",
     "bestPrices": "💰 Best Prices",
     "bestPricesDescription": "Competitive pricing with transparent rates per night"
   },
@@ -774,42 +758,6 @@
     "accountInformation": "Account Information",
     "memberSince": "Member since:",
     "lastUpdated": "Last updated:"
-  },
-  "hotel": {
-    "loadingHotelDetails": "Loading hotel details...",
-    "hotelNotFound": "Hotel Not Found",
-    "hotelNotFoundDescription": "The hotel you're looking for doesn't exist or has been removed.",
-    "backToHotels": "Back to Hotels",
-    "viewAllPhotos": "View All {{count}} Photos",
-    "pricePerNight": "Price per night",
-    "taxesAndFees": "+ taxes & fees",
-    "roomsAvailable": "Rooms Available",
-    "checkIn": "Check-in",
-    "checkOut": "Check-out",
-    "bookNow": "Book Now",
-    "freeCancellation": "Free cancellation up to 24 hours before check-in",
-    "aboutThisHotel": "About This Hotel",
-    "amenitiesAndServices": "Amenities & Services",
-    "contactInformation": "Contact Information",
-    "emailAddress": "Email Address",
-    "phoneNumber": "Phone Number",
-    "address": "Address",
-    "location": "Location",
-    "noImagesAvailable": "No images available",
-    "reservation": "Reservation",
-    "reservationComingSoon": "Reservation feature coming soon!",
-    "percentOccupied": "{{percent}}% occupied",
-    "defaultDescription": "Experience luxury and comfort at this exceptional hotel. Our dedicated staff ensures your stay is memorable with top-notch service and modern amenities.",
-    "completeAddressFallback": "{{location}}, Complete Address",
-    "amenities": {
-      "freeWifi": "Free WiFi",
-      "parking": "Parking",
-      "fitnessCenter": "Fitness Center",
-      "restaurant": "Restaurant",
-      "bar": "Bar",
-      "spa": "Spa",
-      "swimmingPool": "Swimming Pool"
-    }
   },
   "apartment": {
     "addApartment": "Add Apartment",
@@ -921,8 +869,7 @@
       "allStatuses": "All Statuses",
       "allTypes": "All Types",
       "cars": "Cars",
-      "apartments": "Apartments",
-      "hotels": "Hotels"
+      "apartments": "Apartments"
     },
     "table": {
       "headers": {
@@ -1273,164 +1220,6 @@
       "next": "Next"
     }
   },
-  "hotels": {
-    "addHotelDialog": {
-      "title": "Add New Hotel",
-      "subtitle": "Fill in the details below to add a new hotel to your property list.",
-      "submitButton": "Add Hotel",
-      "adding": "Adding...",
-      "successTitle": "Hotel Added",
-      "successMessage": "Hotel has been successfully added to your property list.",
-      "validation": {
-        "requiredFields": "Please fill in all required fields",
-        "imageRequired": "Please upload at least one image"
-      },
-      "form": {
-        "hotelName": "Hotel Name",
-        "hotelNamePlaceholder": "Grand Plaza Hotel",
-        "location": "Location",
-        "locationPlaceholder": "Tirana, Albania",
-        "rating": "Rating (0-5)",
-        "ratingPlaceholder": "4.5",
-        "price": "Price per Night (€)",
-        "pricePlaceholder": "299",
-        "rooms": "Total Rooms",
-        "roomsPlaceholder": "150",
-        "occupancy": "Occupancy (%)",
-        "occupancyPlaceholder": "85",
-        "status": "Status",
-        "statusActive": "Active",
-        "statusMaintenance": "Maintenance",
-        "contactEmail": "Contact Email",
-        "contactEmailPlaceholder": "info@hotel.com",
-        "contactPhone": "Contact Phone",
-        "contactPhonePlaceholder": "+1 234 567 8900",
-        "address": "Full Address",
-        "addressPlaceholder": "123 Main Street, City, State, ZIP",
-        "mapLabel": "Select Hotel Location on Map",
-        "description": "Description",
-        "descriptionPlaceholder": "Describe the hotel amenities and features..."
-      },
-      "buttons": {
-        "cancel": "Cancel",
-        "addHotel": "Add Hotel"
-      },
-      "error": {
-        "addFailed": "Failed to add hotel"
-      }
-    },
-    "allHotels": {
-      "title": "All Hotels",
-      "subtitle": "Manage and monitor all your hotel properties",
-      "loading": "Loading hotels...",
-      "error": {
-        "title": "Error Loading Hotels"
-      },
-      "stats": {
-        "totalHotels": "Total Hotels",
-        "totalRooms": "Total Rooms",
-        "avgOccupancy": "Avg Occupancy",
-        "avgRating": "Avg Rating"
-      },
-      "search": {
-        "placeholder": "Search hotels by name or location..."
-      },
-      "filters": {
-        "status": {
-          "all": "All Status",
-          "active": "Active",
-          "maintenance": "Maintenance"
-        },
-        "rating": {
-          "all": "All Ratings",
-          "fourFivePlus": "4.5+ Stars",
-          "fourPlus": "4+ Stars"
-        }
-      },
-      "results": "{{count}} results",
-      "empty": {
-        "title": "No hotels found",
-        "message": "Try adjusting your search or filters"
-      },
-      "pagination": {
-        "previous": "Previous",
-        "next": "Next"
-      },
-      "card": {
-        "rooms": "{{count}} Rooms",
-        "occupancy": "{{percentage}}% Full",
-        "perNight": "/night",
-        "view": "View"
-      },
-      "confirmDelete": {
-        "title": "Are you sure?",
-        "message": "You won't be able to revert this!",
-        "confirmButton": "Yes, delete it!",
-        "successTitle": "Deleted!",
-        "successMessage": "Your hotel has been deleted."
-      }
-    },
-    "hotelDetails": {
-      "view": {
-        "title": "Hotel Details",
-        "subtitle": "View and manage hotel information"
-      },
-      "edit": {
-        "title": "Edit Hotel",
-        "subtitle": "Update hotel information and settings"
-      },
-      "backToHotels": "Back to Hotels",
-      "buttons": {
-        "editHotel": "Edit Hotel",
-        "cancel": "Cancel",
-        "saving": "Saving...",
-        "saveChanges": "Save Changes"
-      },
-      "success": {
-        "title": "Success",
-        "message": "Hotel updated successfully"
-      },
-      "error": {
-        "title": "Error",
-        "message": "Failed to update hotel"
-      },
-      "notFound": {
-        "title": "Hotel Not Found",
-        "description": "The hotel you're looking for doesn't exist or has been removed."
-      },
-      "sections": {
-        "status": "Status",
-        "basicInformation": "Basic Information",
-        "contactInformation": "Contact Information",
-        "location": "Location",
-        "description": "Description"
-      },
-      "fields": {
-        "hotelName": "Hotel Name",
-        "location": "Location",
-        "rating": "Rating",
-        "pricePerNight": "Price per Night",
-        "totalRooms": "Total Rooms",
-        "occupancyRate": "Occupancy Rate",
-        "email": "Email",
-        "phone": "Phone",
-        "fullAddress": "Full Address",
-        "hotelLocationOnMap": "Hotel Location on Map"
-      },
-      "statusOptions": {
-        "active": "Active",
-        "maintenance": "Maintenance"
-      },
-      "images": {
-        "noImagesAvailable": "No images available",
-        "photos": "{{count}} photos"
-      },
-      "display": {
-        "rooms": "Rooms",
-        "noDescription": "No description available."
-      }
-    }
-  },
   "userManagement": {
     "title": "User Management",
     "error": "Failed to load users",
@@ -1519,7 +1308,7 @@
   },
   "propertyRequestsManagement": {
     "title": "Property Requests Management",
-    "subtitle": "Review and manage provider property submissions for cars, apartments, and hotels",
+    "subtitle": "Review and manage provider property submissions for cars and apartments",
     "loading": "Loading property requests...",
     "error": "Failed to load property requests",
     "success": {
@@ -1548,8 +1337,7 @@
         "label": "Type:",
         "all": "All Types",
         "car": "Cars",
-        "apartment": "Apartments",
-        "hotel": "Hotels"
+        "apartment": "Apartments"
       }
     },
     "status": {
@@ -1559,8 +1347,7 @@
     },
     "propertyTypes": {
       "car": "Car",
-      "apartment": "Apartment",
-      "hotel": "Hotel"
+      "apartment": "Apartment"
     },
     "empty": {
       "title": "No property requests found",
@@ -1671,13 +1458,6 @@
       "bookings": "Bookings",
       "availability": "Availability"
     },
-    "hotels": {
-      "title": "Hotels",
-      "allHotels": "All Hotels",
-      "roomsManagement": "Rooms Management",
-      "bookings": "Bookings",
-      "availability": "Availability"
-    },
     "cars": {
       "title": "Car Rentals",
       "fleetManagement": "Fleet Management",
@@ -1758,8 +1538,7 @@
     },
     "propertyTypes": {
       "car": "Car",
-      "apartment": "Apartment",
-      "hotel": "Hotel"
+      "apartment": "Apartment"
     },
     "noBookings": "This provider has no bookings yet",
     "noBookingsSearch": "No bookings match your filters",

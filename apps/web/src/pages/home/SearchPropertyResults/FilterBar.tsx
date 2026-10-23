@@ -5,7 +5,6 @@ import { useTranslation } from "react-i18next";
 import { useTheme } from "@/context/ThemeContext";
 import { getSearchResultsThemeTokens } from "./searchResultsTheme";
 import {
-  HotelFiltersInput,
   ApartmentFiltersInput,
   DestinationFiltersInput,
   SearchFiltersState,
@@ -15,8 +14,7 @@ import { SUBCATEGORIES } from "@/lib/destinationManagement";
 
 interface FilterBarProps {
   filters: SearchFiltersState;
-  onPropertyTypeChange: (type: "hotel" | "apartment" | "destination") => void;
-  onHotelFiltersChange: (filters: Partial<HotelFiltersInput>) => void;
+  onPropertyTypeChange: (type: "apartment" | "destination") => void;
   onApartmentFiltersChange: (filters: Partial<ApartmentFiltersInput>) => void;
   onDestinationFiltersChange?: (filters: Partial<DestinationFiltersInput>) => void;
   onDateChange: (dates: {
@@ -32,7 +30,7 @@ interface FilterBarProps {
   onApplyFilters: () => void;
   loading: boolean;
   hideMapButton?: boolean;
-  availableTypes?: Array<"hotel" | "apartment" | "destination">;
+  availableTypes?: Array<"apartment" | "destination">;
   alwaysOpen?: boolean;
 }
 
@@ -97,7 +95,6 @@ const AccSection = ({
 export const FilterBar = ({
   filters,
   onPropertyTypeChange,
-  onHotelFiltersChange,
   onApartmentFiltersChange,
   onDestinationFiltersChange,
   onDateChange,
@@ -106,7 +103,7 @@ export const FilterBar = ({
   onApplyFilters,
   loading,
   hideMapButton,
-  availableTypes = ["hotel", "apartment"],
+  availableTypes = ["apartment"],
   alwaysOpen = false,
 }: FilterBarProps) => {
   const { t } = useTranslation();
@@ -183,7 +180,6 @@ export const FilterBar = ({
 
   const countActiveFilters = (): number => {
     let count = 0;
-    const hf = filters.hotelFilters;
     const af = filters.apartmentFilters;
     const df = filters.destinationFilters;
     
@@ -195,23 +191,14 @@ export const FilterBar = ({
         filters.rooms !== defaultSearchFilters.rooms
       ) count++;
       
-      if (filters.propertyType === "hotel") {
-        if (hf.searchTerm) count++;
-        if (hf.rating !== "all") count++;
-        if (hf.status !== "all") count++;
-        if (hf.rooms?.min || hf.rooms?.max) count++;
-        if (hf.priceRange?.min !== 0 || hf.priceRange?.max !== 500) count++;
-        if (hf.amenities && Object.values(hf.amenities).some((v) => v)) count++;
-      } else {
-        if (af.searchTerm) count++;
-        if (af.rating !== "all") count++;
-        if (af.status !== "all") count++;
-        if (af.rooms?.min || af.rooms?.max) count++;
-        if (af.beds?.min || af.beds?.max) count++;
-        if (af.bathrooms?.min || af.bathrooms?.max) count++;
-        if (af.priceRange?.min !== 0 || af.priceRange?.max !== 500) count++;
-        if (af.amenities && af.amenities.length > 0) count++;
-      }
+      if (af.searchTerm) count++;
+      if (af.rating !== "all") count++;
+      if (af.status !== "all") count++;
+      if (af.rooms?.min || af.rooms?.max) count++;
+      if (af.beds?.min || af.beds?.max) count++;
+      if (af.bathrooms?.min || af.bathrooms?.max) count++;
+      if (af.priceRange?.min !== 0 || af.priceRange?.max !== 500) count++;
+      if (af.amenities && af.amenities.length > 0) count++;
     } else {
       if (df?.searchTerm) count++;
       if (df?.categories && df.categories.length < 4) count++;
@@ -394,7 +381,8 @@ export const FilterBar = ({
 
       <div style={{ height: 1, background: `linear-gradient(90deg, ${themeTk.brand}, transparent)`, marginBottom: 20 }} />
 
-      {/* Property Type */}
+      {/* Property Type (only when there is a choice, e.g. apartments / destinations on the map) */}
+      {availableTypes.length > 1 && (
       <div style={{ marginBottom: 20 }}>
         <label style={labelStyle}>{t("searchResults.filters.propertyType")}</label>
         <div style={{ display: 'flex', gap: 6 }}>
@@ -424,6 +412,7 @@ export const FilterBar = ({
           })}
         </div>
       </div>
+      )}
 
       {/* Search */}
       <AccSection label={t("searchResults.filters.search")} defaultOpen headerColor={tk.headerText} dividerColor={tk.sidebarBorder} iconColor={themeTk.brand}>
@@ -431,16 +420,13 @@ export const FilterBar = ({
           style={inputStyle}
           placeholder={t("searchResults.filters.searchPlaceholderProperties")}
           value={
-            filters.propertyType === "hotel"
-              ? filters.hotelFilters.searchTerm || ""
-              : filters.propertyType === "apartment"
-                ? filters.apartmentFilters.searchTerm || ""
-                : filters.destinationFilters?.searchTerm || ""
+            filters.propertyType === "apartment"
+              ? filters.apartmentFilters.searchTerm || ""
+              : filters.destinationFilters?.searchTerm || ""
           }
           onChange={e => {
             const value = e.target.value;
-            if (filters.propertyType === "hotel") onHotelFiltersChange({ searchTerm: value });
-            else if (filters.propertyType === "apartment") onApartmentFiltersChange({ searchTerm: value });
+            if (filters.propertyType === "apartment") onApartmentFiltersChange({ searchTerm: value });
             else onDestinationFiltersChange?.({ searchTerm: value });
           }}
           onFocus={e => (e.currentTarget.style.borderColor = tk.focusBorder)}
@@ -673,33 +659,24 @@ export const FilterBar = ({
         <AccSection label={t("searchResults.filters.priceRange")} defaultOpen headerColor={tk.headerText} dividerColor={tk.sidebarBorder} iconColor={themeTk.brand}>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
             <span style={{ fontFamily: 'Bebas Neue, Impact, sans-serif', fontSize: '1rem', color: tk.priceText, letterSpacing: '0.05em' }}>
-              €{filters.propertyType === "hotel" ? (filters.hotelFilters.priceRange?.min || 0) : (filters.apartmentFilters.priceRange?.min || 0)}
+              €{filters.apartmentFilters.priceRange?.min || 0}
             </span>
             <span style={{ fontFamily: 'Bebas Neue, Impact, sans-serif', fontSize: '1rem', color: themeTk.brand, letterSpacing: '0.05em' }}>
-              €{filters.propertyType === "hotel" ? (filters.hotelFilters.priceRange?.max || 500) : (filters.apartmentFilters.priceRange?.max || 500)}
+              €{filters.apartmentFilters.priceRange?.max || 500}
             </span>
           </div>
           <Slider
             min={0}
             max={500}
             step={10}
-            value={filters.propertyType === "hotel" 
-              ? [filters.hotelFilters.priceRange?.min || 0, filters.hotelFilters.priceRange?.max || 500] 
-              : [filters.apartmentFilters.priceRange?.min || 0, filters.apartmentFilters.priceRange?.max || 500]
-            }
+            value={[filters.apartmentFilters.priceRange?.min || 0, filters.apartmentFilters.priceRange?.max || 500]}
             onValueChange={value => {
-              if (filters.propertyType === "hotel") {
-                onHotelFiltersChange({ priceRange: { min: value[0], max: value[1] } });
-              } else {
-                onApartmentFiltersChange({ priceRange: { min: value[0], max: value[1] } });
-              }
+              onApartmentFiltersChange({ priceRange: { min: value[0], max: value[1] } });
             }}
             className="py-1"
           />
           <p style={{ fontFamily: 'Crimson Pro, Georgia, serif', fontSize: '0.78rem', color: tk.minMaxLabel, marginTop: 8 }}>
-            {filters.propertyType === "hotel"
-              ? t("searchResults.filters.perNight")
-              : t("searchResults.filters.perDay")}
+            {t("searchResults.filters.perDay")}
           </p>
         </AccSection>
       )}
@@ -709,11 +686,10 @@ export const FilterBar = ({
         <AccSection label={t("searchResults.filters.rating")} headerColor={tk.headerText} dividerColor={tk.sidebarBorder} iconColor={themeTk.brand}>
           <select
             style={selectStyle}
-            value={filters.propertyType === "hotel" ? filters.hotelFilters.rating || "all" : filters.apartmentFilters.rating || "all"}
+            value={filters.apartmentFilters.rating || "all"}
             onChange={e => {
               const val = e.target.value as any;
-              if (filters.propertyType === "hotel") onHotelFiltersChange({ rating: val });
-              else onApartmentFiltersChange({ rating: val });
+              onApartmentFiltersChange({ rating: val });
             }}
             onFocus={e => (e.currentTarget.style.borderColor = tk.focusBorder)}
             onBlur={e => (e.currentTarget.style.borderColor = tk.inputBorder)}
@@ -732,65 +708,19 @@ export const FilterBar = ({
         <AccSection label={t("searchResults.filters.availability")} headerColor={tk.headerText} dividerColor={tk.sidebarBorder} iconColor={themeTk.brand}>
           <select
             style={selectStyle}
-            value={filters.propertyType === "hotel" ? filters.hotelFilters.status || "all" : filters.apartmentFilters.status || "all"}
+            value={filters.apartmentFilters.status || "all"}
             onChange={e => {
               const val = e.target.value as any;
-              if (filters.propertyType === "hotel") onHotelFiltersChange({ status: val });
-              else onApartmentFiltersChange({ status: val });
+              onApartmentFiltersChange({ status: val });
             }}
             onFocus={e => (e.currentTarget.style.borderColor = tk.focusBorder)}
             onBlur={e => (e.currentTarget.style.borderColor = tk.inputBorder)}
           >
             <option value="all" style={{ background: tk.selectOptionBg }}>{t("searchResults.filters.allStatus")}</option>
-            {filters.propertyType === "hotel" ? (
-              <>
-                <option value="active" style={{ background: tk.selectOptionBg }}>{t("searchResults.filters.active")}</option>
-                <option value="maintenance" style={{ background: tk.selectOptionBg }}>{t("searchResults.filters.maintenance")}</option>
-              </>
-            ) : (
-              <>
-                <option value="available" style={{ background: tk.selectOptionBg }}>{t("searchResults.filters.available")}</option>
-                <option value="rented" style={{ background: tk.selectOptionBg }}>{t("searchResults.filters.rented")}</option>
-                <option value="maintenance" style={{ background: tk.selectOptionBg }}>{t("searchResults.filters.maintenance")}</option>
-              </>
-            )}
+            <option value="available" style={{ background: tk.selectOptionBg }}>{t("searchResults.filters.available")}</option>
+            <option value="rented" style={{ background: tk.selectOptionBg }}>{t("searchResults.filters.rented")}</option>
+            <option value="maintenance" style={{ background: tk.selectOptionBg }}>{t("searchResults.filters.maintenance")}</option>
           </select>
-        </AccSection>
-      )}
-
-      {/* Hotel Rooms */}
-      {filters.propertyType === "hotel" && (
-        <AccSection label={t("searchResults.filters.rooms")} headerColor={tk.headerText} dividerColor={tk.sidebarBorder} iconColor={themeTk.brand}>
-          <MinMaxPair
-            minVal={filters.hotelFilters.rooms?.min}
-            maxVal={filters.hotelFilters.rooms?.max}
-            onMinChange={v => onHotelFiltersChange({ rooms: { min: v, max: filters.hotelFilters.rooms?.max } })}
-            onMaxChange={v => onHotelFiltersChange({ rooms: { min: filters.hotelFilters.rooms?.min, max: v } })}
-          />
-        </AccSection>
-      )}
-
-      {/* Hotel Amenities */}
-      {filters.propertyType === "hotel" && (
-        <AccSection label={t("searchResults.filters.amenities")} headerColor={tk.headerText} dividerColor={tk.sidebarBorder} iconColor={themeTk.brand}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 9 }}>
-            {[
-              { id: "wifi", label: t("searchResults.filters.amenityWifi") },
-              { id: "parking", label: t("searchResults.filters.amenityParking") },
-              { id: "pool", label: t("searchResults.filters.amenityPool") },
-              { id: "gym", label: t("searchResults.filters.amenityGym") },
-              { id: "spa", label: t("searchResults.filters.amenitySpa") },
-              { id: "restaurant", label: t("searchResults.filters.amenityRestaurant") },
-              { id: "bar", label: t("searchResults.filters.amenityBar") },
-            ].map(amenity => (
-              <CheckRow
-                key={amenity.id}
-                checked={filters.hotelFilters.amenities?.[amenity.id as keyof typeof filters.hotelFilters.amenities] || false}
-                label={amenity.label}
-                onChange={checked => onHotelFiltersChange({ amenities: { ...filters.hotelFilters.amenities, [amenity.id]: checked } })}
-              />
-            ))}
-          </div>
         </AccSection>
       )}
 

@@ -3,7 +3,6 @@ import TrustBar from "@/components/home/TrustBar";
 import Destinations from "@/components/home/DestinationsHomePreview";
 import Culture from "@/components/home/Culture";
 import PrimarySearchAppBar from "@/components/home/AppBar";
-import HotelsPreview from "@/components/home/HotelsPreview";
 import ApartmentsPreview from "@/components/home/ApartmentsPreview";
 import CarsPreview from "@/components/home/CarsPreview";
 //import LoadingScreen from "@/components/home/LoadingScreen";
@@ -98,8 +97,7 @@ const Index = () => {
               gap: "2rem 3rem",
             }}
           >
-            <div id="hotels">
-              {/* <HotelsPreview /> */}
+            <div id="cars">
               <CarsPreview />
             </div>
             <div

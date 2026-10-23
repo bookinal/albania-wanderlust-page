@@ -22,7 +22,7 @@ export interface PropertyRequest {
   id: string;
   provider: User;
   propertyId: string;
-  propertyType: "car" | "apartment" | "hotel";
+  propertyType: "car" | "apartment";
   status: "pending" | "approved" | "rejected";
   submittedAt: Date;
   reviewedAt?: Date;

@@ -10,7 +10,7 @@
 | Field           | Value                                                     |
 | --------------- | --------------------------------------------------------- |
 | Name            | **BOOKinAL** – Albania Booking Platform                   |
-| Type            | Tourism booking app (apartments, hotels, cars) in Albania |
+| Type            | Tourism booking app (apartments, cars) in Albania         |
 | Repo root       | `c:\Users\wolow\Desktop\Albania\FE-albania`               |
 | Package manager | npm 10 with **npm workspaces** (monorepo)                 |
 | Main app URL    | Deployed on Vercel                                        |
@@ -125,9 +125,8 @@ All accessed via `packages/api-client/src/apiClient.ts` (Supabase JS client).
 | `auth.users`        | Supabase auth table (managed)         | `id`, `email`                                                                                                                                                                                     |
 | `users` _(public)_  | Public user profiles                  | `id`, `email`, `full_name`, `role` (`user`/`admin`), `status` (`active`/`suspended`)                                                                                                              |
 | `apartments`        | Apartment listings                    | `id` (int), `name`, `providerId`, `imageUrls`, `location`, `lat`, `lng`, `pricePerNight`, `status`                                                                                                |
-| `hotels`            | Hotel listings                        | `id` (int), `name`, `providerId`, `imageUrls`, `location`                                                                                                                                         |
 | `cars`              | Car rental listings                   | `id` (int), `name`, `brand`, `type`, `transmission`, `fuelType`, `seats`, `pricePerDay`, `providerId`, `status` (`available`/`rented`/`maintenance`/`review`)                                     |
-| `booking`           | All bookings (unified)                | `id` (uuid), `userId`, `propertyId`, `propertyType` (`hotel`/`apartment`/`car`), `status` (`pending`/`confirmed`/`canceled`/`completed`), `payment_status` (`pending`/`paid`/`failed`/`refunded`) |
+| `booking`           | All bookings (unified)                | `id` (uuid), `userId`, `propertyId`, `propertyType` (`apartment`/`car`), `status` (`pending`/`confirmed`/`canceled`/`completed`), `payment_status` (`pending`/`paid`/`failed`/`refunded`) |
 | `destinations`      | Tourist destinations                  | `id`, `name`, `imageUrls`, `description`                                                                                                                                                          |
 | `monthly_prices`    | Dynamic pricing by month              | `propertyId`, `propertyType`, `month`, `price`                                                                                                                                                    |
 | `role_requests`     | Provider role upgrade requests        | `userId`, `status`                                                                                                                                                                                |
@@ -167,9 +166,8 @@ Roles:  "user" | "admin" | "provider"
 | `/destination/:id`          | `DestinationDetails`    | Destination detail         |
 | `/wishlist`                 | `Wishlist`              | Saved properties           |
 | `/properties-map`           | `PropertiesMapPage`     | Map view                   |
-| `/searchResults`            | `SearchPropertyResults` | Hotel/apartment search     |
+| `/searchResults`            | `SearchPropertyResults` | Apartment search           |
 | `/searchCarResults`         | `SearchCarResults`      | Car search                 |
-| `/hotelReservation/:id`     | `HotelReservation`      | Hotel detail page          |
 | `/apartmentReservation/:id` | `ApartmentReservation`  | Apartment detail + reviews |
 | `/carReservation/:id`       | `CarReservation`        | Car detail + reviews       |
 | `/carBilling/:id`           | `CarBilling`            | Car checkout/billing       |
@@ -182,8 +180,6 @@ Roles:  "user" | "admin" | "provider"
 | Path                                    | Component                    |
 | --------------------------------------- | ---------------------------- |
 | `/dashboard`                            | `Dashboard`                  |
-| `/dashboard/HotelsList`                 | `AllHotels`                  |
-| `/dashboard/hotels/:id`                 | `HotelDetails`               |
 | `/dashboard/ApartmentsList`             | `AllApartments`              |
 | `/dashboard/apartments/:id`             | `ApartmentDetails`           |
 | `/dashboard/carsList`                   | `AllCars`                    |
@@ -208,7 +204,6 @@ All in `packages/api-client/src/`. Always import in web via `@/services/api/<nam
 | `authService.ts`         | `authService` (object)         | `signUp`, `signIn`, `signInWithGoogle`, `signOut`, `getCurrentUser`, `getCurrentUserId`, `getCurrentUserRole`, `ensureUserProfile` |
 | `userService.ts`         | `userService` (class instance) | `getCurrentUser`, `getUserById`, `updateUser`, `getAllUsers`                                                                       |
 | `apartmentService.ts`    | named exports                  | `getApartments`, `getApartmentById`, `getApartmentUnavailabilityDates`, `createApartment`, `updateApartment`, `deleteApartment`    |
-| `hotelService.ts`        | named exports                  | `getHotels`, `getHotelById`, `createHotel`, `updateHotel`, `deleteHotel`                                                           |
 | `carService.ts`          | named exports                  | `getCars`, `getCarById`, `getCarUnavailabilityDates`, `createCar`, `updateCar`, `deleteCar`                                        |
 | `bookingService.ts`      | `default` (object) + named     | `createBooking`, `getCurrentUserBookings`, `getBookingById`, `updateBookingStatus`, `getAllBookings`                               |
 | `paymentService.ts`      | `default` (object)             | `createStripePaymentIntent`, `confirmStripePayment`, `createPayPalOrder`, `capturePayPalOrder`                                     |
@@ -231,7 +226,6 @@ All in `packages/shared-types/src/`. Import via `@/types/<file>`.
 | ---------------------- | ------------------------------------------------------------ |
 | `user.types.ts`        | `User`, `UserProfile`, `UpdateUser`, `UpdateUserProfileData` |
 | `apartment.type.ts`    | `Apartment`, `CreateApartmentDto`, `PREDEFINED_AMENITIES`    |
-| `hotel.types.ts`       | `Hotel`, `CreateHotelDto`, `UpdateHotelDto`, `HotelFilters`  |
 | `car.types.ts`         | `Car`, `CreateCarDto`, `UpdateCarDto`, `CarFilters`          |
 | `booking.type.ts`      | `Booking`, `CreateBookingDto`                                |
 | `review.type.ts`       | `Review`, `CreateReviewDto`                                  |
@@ -254,7 +248,7 @@ components/
 │   ├── AppBar.tsx         ← Top navigation bar (used on all public pages)
 │   ├── Footer.tsx         ← Global footer
 │   ├── Hero/              ← Landing hero section
-│   ├── PropertyCard/      ← Apartment/hotel card
+│   ├── PropertyCard/      ← Apartment card
 │   ├── data-map/          ← Map components (Leaflet)
 │   └── reservationPicker/ ← Date range picker for booking
 ├── dashboard/             ← Admin/provider UI
@@ -334,7 +328,7 @@ supabase functions deploy <function-name>
 ## 15. Booking Flow (User Journey)
 
 ```
-Browse property  →  Detail page (CarReservation / ApartmentReservation / HotelReservation)
+Browse property  →  Detail page (CarReservation / ApartmentReservation)
        ↓
 Select dates  (AvailabilityCalendar blocks already-booked dates)
        ↓
@@ -377,7 +371,7 @@ RLS: public read, owner write/update/delete.
 
 ### Who can review?
 
-Only users where `booking.payment_status === "paid"` AND `booking.propertyType === "car" | "apartment"`. Hotel reviews are **not implemented yet**.
+Only users where `booking.payment_status === "paid"` AND `booking.propertyType === "car" | "apartment"`.
 
 ### Files
 
@@ -487,7 +481,7 @@ Global QueryClient config (in `App.tsx`):
 2. **Dual router imports** — some files import from `react-router`, others from `react-router-dom`. Both work (v7 re-exports).
 3. **Packages resolve to `src/`** — In dev mode, aliases point to `packages/*/src/`, not `dist/`. No build step needed for packages during development.
 4. **`booking` table name** (singular) — The bookings table is called `booking` not `bookings`.
-5. **Hotels excluded from reviews** — Reviews only work for `car` and `apartment` property types.
+5. **No hotels** — Hotels were removed (Oct 2026); only `car` and `apartment` exist as property types. The storage bucket is still named `hotel-images` for historical reasons, but it holds the photos of all properties: do not rename or delete it.
 6. **PropertyId is a number (int) for cars/apartments** — But `booking.propertyId` is stored as a string. Parse with `parseInt()` when querying.
 7. **Email notifications** — Sent via Edge Function on booking creation, not client-side.
 8. **MUI and shadcn/ui coexist** — Dashboard uses MUI heavily; public pages use shadcn/ui + Tailwind.

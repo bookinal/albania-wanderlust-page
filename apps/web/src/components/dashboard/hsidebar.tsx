@@ -13,7 +13,7 @@ import { useTranslation } from "react-i18next";
 import {
   LayoutDashboard,
   Home,
-  Hotel,
+  MapPin,
   Car,
   Users,
   Calendar,
@@ -60,7 +60,6 @@ const COLORS = {
 const ICONS = {
   dashboard: <LayoutDashboard size={20} />,
   apartments: <Home size={20} />,
-  hotels: <Hotel size={20} />,
   cars: <Car size={20} />,
   users: <Users size={20} />,
   calendar: <Calendar size={20} />,
@@ -80,9 +79,6 @@ const ROUTES = {
   home: "/",
   apartments: {
     list: "/dashboard/ApartmentsList",
-  },
-  hotels: {
-    list: "/dashboard/HotelsList",
   },
   cars: {
     fleet: "/dashboard/carsList",
@@ -171,18 +167,6 @@ const Hsidebar = ({ children }) => {
           {
             label: t("sidebar.apartments.allApartments"),
             route: ROUTES.apartments.list,
-            roles: ["admin", "provider"],
-          },
-        ],
-      },
-      {
-        label: t("sidebar.hotels.title"),
-        icon: ICONS.hotels,
-        roles: ["admin", "provider"],
-        items: [
-          {
-            label: t("sidebar.hotels.allHotels"),
-            route: ROUTES.hotels.list,
             roles: ["admin", "provider"],
           },
         ],
@@ -345,14 +329,14 @@ const Hsidebar = ({ children }) => {
         >
           {!collapsed ? (
             <div className="flex items-center gap-3">
-              <Hotel size={32} style={{ color: COLORS.primary }} />
+              <MapPin size={32} style={{ color: COLORS.primary }} />
 
               <span className="text-xl font-semibold text-white">
                 {t("sidebar.brand")}
               </span>
             </div>
           ) : (
-            <Hotel size={28} style={{ color: COLORS.primary }} />
+            <MapPin size={28} style={{ color: COLORS.primary }} />
           )}
         </div>
 

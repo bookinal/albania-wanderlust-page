@@ -128,7 +128,7 @@ const Footer = () => {
             </h4>
             <ul className="space-y-3">
               {[
-                { to: "/searchResults", label: "footer.hotelsApartments" },
+                { to: "/searchResults", label: "footer.apartments" },
                 { to: "/searchCarResults", label: "footer.carRentals" },
                 { to: "/properties-map", label: "footer.mapView" },
                 { to: "/CultureDetails", label: "footer.cultureCuisine" },

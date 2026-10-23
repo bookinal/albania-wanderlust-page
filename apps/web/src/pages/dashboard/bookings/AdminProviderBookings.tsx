@@ -69,8 +69,8 @@ const getPropertyName = (booking: Booking): string => {
     const a = pd as any;
     return a.name || a.title || "Apartment";
   }
-  const h = pd as any;
-  return h.name || h.title || "Hotel";
+  const p = pd as any;
+  return p.name || p.title || "Property";
 };
 
 // ── status helpers ─────────────────────────────────────────────────────────
@@ -320,7 +320,6 @@ const AdminProviderBookings: React.FC = () => {
                 <option value="all">{t("adminProviderBookings.filters.allTypes")}</option>
                 <option value="car">{t("adminProviderBookings.propertyTypes.car")}</option>
                 <option value="apartment">{t("adminProviderBookings.propertyTypes.apartment")}</option>
-                <option value="hotel">{t("adminProviderBookings.propertyTypes.hotel")}</option>
               </select>
             </div>
           )}

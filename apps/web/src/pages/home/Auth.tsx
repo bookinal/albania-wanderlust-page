@@ -5,7 +5,7 @@ import { userService } from "@/services/api/userService";
 import Swal from "sweetalert2";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@/context/ThemeContext";
-import { Hotel, Home, Car, ArrowLeft, Loader2, KeyRound, MapPin, Mail, User, ShieldCheck } from "lucide-react";
+import { Home, Car, ArrowLeft, Loader2, KeyRound, MapPin, Mail, User, ShieldCheck } from "lucide-react";
 import PrimarySearchAppBar from "@/components/home/AppBar";
 
 const PageMotionStyles = () => (
@@ -480,9 +480,8 @@ export default function AuthPage() {
                     : t("user.continueExploringAlbania")}
                 </p>
 
-                <div className="mt-8 grid grid-cols-3 gap-3">
+                <div className="mt-8 grid grid-cols-2 gap-3">
                   {[
-                    { Icon: Hotel, label: t("user.hotels") },
                     { Icon: Home, label: t("user.apartments") },
                     { Icon: Car, label: t("user.carRentals") },
                   ].map((item, i) => {

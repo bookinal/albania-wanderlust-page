@@ -42,7 +42,7 @@ export const MONTH_NAMES: Record<Month, string> = {
   DEC: "December",
 };
 
-export type PropertyType = "car" | "apartment" | "hotel";
+export type PropertyType = "car" | "apartment";
 
 export interface MonthlyPrice {
   id?: number;

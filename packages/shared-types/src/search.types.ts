@@ -5,32 +5,6 @@
  */
 
 /**
- * Hotel-specific filter options
- */
-export interface HotelFiltersInput {
-  searchTerm?: string;
-  priceRange?: {
-    min: number;
-    max: number;
-  };
-  rating?: "all" | "3+" | "3.5+" | "4+" | "4.5+";
-  status?: "all" | "active" | "maintenance";
-  rooms?: {
-    min?: number;
-    max?: number;
-  };
-  amenities?: {
-    wifi?: boolean;
-    parking?: boolean;
-    pool?: boolean;
-    gym?: boolean;
-    spa?: boolean;
-    restaurant?: boolean;
-    bar?: boolean;
-  };
-}
-
-/**
  * Apartment-specific filter options
  */
 export interface ApartmentFiltersInput {
@@ -66,8 +40,7 @@ export interface DestinationFiltersInput {
  * Unified search filter state
  */
 export interface SearchFiltersState {
-  propertyType: "hotel" | "apartment" | "destination";
-  hotelFilters: HotelFiltersInput;
+  propertyType: "apartment" | "destination";
   apartmentFilters: ApartmentFiltersInput;
   destinationFilters: DestinationFiltersInput;
   // Date and guest filters from navigation state
@@ -108,22 +81,6 @@ export const ALL_DESTINATION_SUBCATEGORIES = [
  */
 export const defaultSearchFilters: SearchFiltersState = {
   propertyType: "destination",
-  hotelFilters: {
-    searchTerm: "",
-    priceRange: { min: 0, max: 500 },
-    rating: "all",
-    status: "all",
-    rooms: { min: undefined, max: undefined },
-    amenities: {
-      wifi: false,
-      parking: false,
-      pool: false,
-      gym: false,
-      spa: false,
-      restaurant: false,
-      bar: false,
-    },
-  },
   apartmentFilters: {
     searchTerm: "",
     priceRange: { min: 0, max: 500 },
@@ -161,7 +118,7 @@ export interface PropertyCardProps {
   rooms: number;
   amenities?: string[];
   status: string;
-  propertyType: "hotel" | "apartment";
+  propertyType: "apartment";
   onClick: (id: number) => void;
 }
 
@@ -169,7 +126,6 @@ export interface PropertyCardProps {
  * Search results state
  */
 export interface SearchResultsState {
-  hotels: Array<any>;
   apartments: Array<any>;
   loading: boolean;
   error: string | null;

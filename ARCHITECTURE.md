@@ -67,7 +67,6 @@ FE-albania/
 ### 1. Property Management
 
 - **Apartments** (apartments)
-- **Hotels**
 - **Destinations** (tourist locations)
 
 ### 2. Vehicle Rentals
@@ -140,7 +139,6 @@ FE-albania/
 - `authService` - Authentication & authorization
 - `userService` - User CRUD operations
 - `apartmentService` - Apartment management
-- `hotelService` - Hotel management
 - `carService` - Car management
 - `bookingService` - Booking operations
 - `destinationService` - Tourist destinations
@@ -165,7 +163,6 @@ FE-albania/
 **Type Files**:
 
 - `apartment.type.ts` - Apartment models
-- `hotel.types.ts` - Hotel models
 - `car.types.ts` - Car models
 - `booking.type.ts` - Booking models
 - `user.types.ts` - User & role models
@@ -197,7 +194,6 @@ FE-albania/
 
 - `users` - User accounts
 - `apartments` - Apartment listings
-- `hotels` - Hotel listings
 - `cars` - Car rentals
 - `destinations` - Tourist locations
 - `bookings` - Reservations
@@ -327,7 +323,6 @@ src/pages/
 │   └── MyAccount
 └── dashboard/             # Protected pages
     ├── Apartments/
-    ├── Hotels/
     ├── Cars/
     ├── bookings/
     ├── Destinations/

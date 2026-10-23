@@ -137,7 +137,7 @@ const Hero = () => {
 
       {/* Scroll Indicator */}
       {/* <button
-        onClick={() => scrollToSection("hotels")}
+        onClick={() => scrollToSection("cars")}
         className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 animate-bounce cursor-pointer group"
         aria-label={t("common.scrollDown", "Scroll down")}
       >

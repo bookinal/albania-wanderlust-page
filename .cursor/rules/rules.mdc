@@ -53,7 +53,7 @@ Cursor Rule: FE-albania (Discover Albania Frontend)
    Service/Data Boundary
    All Supabase calls must be made through service functions in src/services/api/** using the shared apiClient.
    Do not call createClient or apiClient directly from components/pages; encapsulate in services.
-   Business logic around entities (hotels, apartments, cars, users, auth) belongs in service modules, not in components.
+   Business logic around entities (apartments, cars, users, auth) belongs in service modules, not in components.
    UI & Domain Separation
    Pages (src/pages/**):
    Compose components, call hooks (including React Query hooks) and service functions.
@@ -76,14 +76,13 @@ Cursor Rule: FE-albania (Discover Albania Frontend)
    src/services/api/authService.ts
    src/services/api/userService.ts
    Core Domain Services
-   src/services/api/hotelService.ts
    src/services/api/apartmentService.ts
    src/services/api/carService.ts
    src/services/api/storageService.ts
    Shared Hooks & Search Logic
    src/hooks/useSearchFilters.ts
    Shared Types
-   Entire src/types/** directory (especially hotel.types.ts, apartment.type.ts, car.types.ts, user.types.ts, search.types.ts).
+   Entire src/types/** directory (especially apartment.type.ts, car.types.ts, user.types.ts, search.types.ts).
    UI Foundations
    src/components/ui/** (shadcn-like primitives; treat as mostly read-only except for necessary bug fixes).
    Dashboard Shell
@@ -99,11 +98,11 @@ Cursor Rule: FE-albania (Discover Albania Frontend)
 4. Project Structure & How to Add New Features
    Existing Structure (follow this)
    src/pages/home/**: Home-facing pages (landing, search results, reservations, culture details, etc.).
-   src/pages/dashboard/**: Admin/provider dashboard pages, segmented by domain (Hotels, Cars, Apartments, Users, etc.).
+   src/pages/dashboard/**: Admin/provider dashboard pages, segmented by domain (Cars, Apartments, Users, etc.).
    src/components/home/**: Reusable components for the home/marketing side.
    src/components/dashboard/**: Layout and components for the dashboard (e.g., hsidebar, ImageUpload, mapPicker).
    src/components/ui/**: Low-level reusable UI primitives (buttons, cards, modals, etc.).
-   src/services/api/**: Service modules per domain (hotels, apartments, cars, users, auth, storage).
+   src/services/api/**: Service modules per domain (apartments, cars, users, auth, storage).
    src/hooks/**: Shared hooks.
    src/assets/**: Static assets (images, icons).
    src/types/**: Types per domain.
@@ -118,9 +117,9 @@ Cursor Rule: FE-albania (Discover Albania Frontend)
 3) Add services (if needed)
    Create or extend a service file under src/services/api/yourDomainService.ts:
    Export domain functions (getX, createX, updateX, deleteX, and any search/filter functions).
-   Optionally export a default object aggregating those functions (copy existing pattern from hotelService or apartmentService).
+   Optionally export a default object aggregating those functions (copy existing pattern from apartmentService).
 4) Add types
-   Add or extend domain types in src/types/yourDomain.types.ts (follow naming like CreateHotelDto, UpdateHotelDto).
+   Add or extend domain types in src/types/yourDomain.types.ts (follow naming like CreateApartmentDto, UpdateApartmentDto).
 5) Add UI components
    Shared or reusable components: place in src/components/home or src/components/dashboard as appropriate.
    Keep components small, focused, and pass data via props.
@@ -128,20 +127,20 @@ Cursor Rule: FE-albania (Discover Albania Frontend)
    For complex shared state or logic, add a custom hook in src/hooks/YourHookName.ts:
    Use useSearchFilters as a reference for structure and error handling.
    Naming & Conventions
-   Components: PascalCase file name and component name (HotelsPreview.tsx, Hsidebar.tsx).
+   Components: PascalCase file name and component name (CarsPreview.tsx, Hsidebar.tsx).
    Hooks: camelCase starting with use (useSearchFilters.ts).
-   Services: camelCase exported functions (getAllHotels, createApartment) and optionally a default object hotelService/apartmentService.
-   Types: PascalCase with clear suffix (Hotel, CreateHotelDto, HotelFilters).
+   Services: camelCase exported functions (getAllCars, createApartment) and optionally a default object such as apartmentService.
+   Types: PascalCase with clear suffix (Apartment, CreateApartmentDto, ApartmentFilters).
    Routes: Keep consistent naming and capitalization with existing paths; do not arbitrarily change existing paths.
 
 5. Data Fetching, State Management & Async Safety
    React Query Usage
    Use useQuery, useMutation, and QueryClientProvider configured in App.tsx.
    Prefer React Query for:
-   Fetching lists or details from Supabase (e.g., hotels, apartments, cars, users).
+   Fetching lists or details from Supabase (e.g., apartments, cars, users).
    Any data that can be cached and shared across pages.
    Query functions should be service functions from src/services/api/\*\*.
-   Handle isLoading, isError, and error states in UI components (see HotelsPreview.tsx for a pattern).
+   Handle isLoading, isError, and error states in UI components (see CarsPreview.tsx for a pattern).
    Avoiding Anti-Patterns
    Do NOT:
    Mix raw fetch/axios calls in components for domains already covered by services.
@@ -152,7 +151,7 @@ Cursor Rule: FE-albania (Discover Albania Frontend)
    Always handle Supabase error responses:
    Log context and rethrow as Error or the original Supabase error.
    Return safe defaults where appropriate (e.g., data || [] for list fetches).
-   Wrap multi-step flows (upload + DB insert) in try/catch and provide useful error messages, similar to createHotel and createApartment.
+   Wrap multi-step flows (upload + DB insert) in try/catch and provide useful error messages, similar to addCar and createApartment.
    In components/hooks:
    Assume services may throw; wrap await calls in try/catch or rely on React Query’s error surface.
    Surface user-friendly error messages via existing toast/toaster components where appropriate.
@@ -166,12 +165,12 @@ Cursor Rule: FE-albania (Discover Albania Frontend)
    Code-Level Practices
    Despite relaxed compiler settings:
    Prefer explicit, non-any types for new functions, props, and service returns.
-   Always account for null/undefined from Supabase (e.g., data || [], Hotel | null).
+   Always account for null/undefined from Supabase (e.g., data || [], Apartment | null).
    Use narrowing and optional chaining instead of unsafe assumptions.
    Avoid casting with as any; use precise interfaces/types in src/types/\*\*.
 7. Styling Conventions
    Preferred Styling
-   Default to Tailwind CSS classes in JSX for layout and styling (see Index.tsx, HotelsPreview.tsx).
+   Default to Tailwind CSS classes in JSX for layout and styling (see Index.tsx, CarsPreview.tsx).
    Use existing shadcn-style components in src/components/ui/\*\* where appropriate instead of hand-rolling primitives.
    Conditional & Utility Classes
    Use existing helpers like clsx and Tailwind utilities; do not introduce new class-manipulation libraries.
@@ -186,7 +185,7 @@ Cursor Rule: FE-albania (Discover Albania Frontend)
    Extend service modules with new functions without breaking existing ones.
    Using existing hooks/services:
    Use useSearchFilters for property search features instead of duplicating filter logic.
-   Reuse hotelService, apartmentService, carService, userService, authService rather than creating parallel APIs.
+   Reuse apartmentService, carService, userService, authService rather than creating parallel APIs.
    UI Composition
    Building new pages from existing components in src/components/home/** and src/components/dashboard/**.
    Unacceptable (without explicit instruction)
@@ -217,7 +216,7 @@ Cursor Rule: FE-albania (Discover Albania Frontend)
    If you must change the shape of props or service return types, ensure all call sites are updated and the change is clearly explained.
 10. Error Handling, Logging & Observability
     Services
-    Follow patterns in hotelService, apartmentService, carService, userService, authService:
+    Follow patterns in apartmentService, carService, userService, authService:
     Check error after Supabase calls.
     Include descriptive console.error messages with context.
     Throw errors that provide enough information to act on.
@@ -240,7 +239,7 @@ Cursor Rule: FE-albania (Discover Albania Frontend)
     Alters routing in App.tsx.
     Modifies apiClient, authService, or userService.
     Changes data models in src/types/\*\*.
-    Changes patterns in core services (hotelService, apartmentService, carService, storageService).
+    Changes patterns in core services (apartmentService, carService, storageService).
     The AI agent must:
     Explain the intent, potential impact, and alternatives in natural language.
     Confirm how backward compatibility is preserved (or clearly note breaking changes if explicitly requested).

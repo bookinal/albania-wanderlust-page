@@ -10,7 +10,6 @@ import {
   Calendar,
   Car,
   Home,
-  Hotel,
   Filter,
   Eye,
   Phone,
@@ -47,8 +46,6 @@ const PropertyTypeIcon = ({ type }: { type: string }) => {
       return <Car className="w-5 h-5" />;
     case "apartment":
       return <Home className="w-5 h-5" />;
-    case "hotel":
-      return <Hotel className="w-5 h-5" />;
     default:
       return null;
   }
@@ -59,7 +56,7 @@ export default function PropertyRequestsManagement() {
   const [requests, setRequests] = useState<PropertyRequest[]>([]);
   const [filteredRequests, setFilteredRequests] = useState<PropertyRequest[]>([]);
   const [filter, setFilter] = useState<"all" | "pending" | "approved" | "rejected">("pending");
-  const [propertyTypeFilter, setPropertyTypeFilter] = useState<"all" | "car" | "apartment" | "hotel">("all");
+  const [propertyTypeFilter, setPropertyTypeFilter] = useState<"all" | "car" | "apartment">("all");
   const [processing, setProcessing] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -246,7 +243,6 @@ export default function PropertyRequestsManagement() {
     const styles: Record<string, { bg: string; text: string; border: string }> = {
       car: { bg: isDark ? 'rgba(59,130,246,0.10)' : '#eff6ff', text: isDark ? '#93c5fd' : '#1d4ed8', border: isDark ? 'rgba(59,130,246,0.25)' : '#bfdbfe' },
       apartment: { bg: isDark ? 'rgba(139,92,246,0.10)' : '#f5f3ff', text: isDark ? '#c4b5fd' : '#6d28d9', border: isDark ? 'rgba(139,92,246,0.25)' : '#ddd6fe' },
-      hotel: { bg: isDark ? 'rgba(249,115,22,0.10)' : '#fff7ed', text: isDark ? '#fdba74' : '#c2410c', border: isDark ? 'rgba(249,115,22,0.25)' : '#fed7aa' },
     };
     const s = styles[type] || { bg: tk.filterBtnBg, text: tk.filterBtnText, border: tk.cardBorder };
     return (
@@ -325,7 +321,6 @@ export default function PropertyRequestsManagement() {
               { key: "all", label: "All", activeColor: isDark ? '#374151' : '#374151', icon: null },
               { key: "car", label: t("propertyRequestsManagement.filters.type.car"), activeColor: '#2563eb', icon: <Car className="w-4 h-4" /> },
               { key: "apartment", label: t("propertyRequestsManagement.filters.type.apartment"), activeColor: '#7c3aed', icon: <Home className="w-4 h-4" /> },
-              { key: "hotel", label: t("propertyRequestsManagement.filters.type.hotel"), activeColor: '#ea580c', icon: <Hotel className="w-4 h-4" /> },
             ] as const).map(({ key, label, activeColor, icon }) => (
               <button
                 key={key}

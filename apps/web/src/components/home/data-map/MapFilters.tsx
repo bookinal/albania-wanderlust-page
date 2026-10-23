@@ -19,7 +19,6 @@ interface MapFiltersProps {
 }
 
 const PROPERTY_TYPES = [
-  { id: "hotel", label: "Hotels" },
   { id: "apartment", label: "Apartments" },
   { id: "destination", label: "Destinations" },
 ];

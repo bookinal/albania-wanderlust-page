@@ -3,7 +3,6 @@ import { useQuery } from "@tanstack/react-query";
 import { Link, useNavigate } from "react-router-dom";
 import {
   ArrowRight,
-  Building2,
   CarFront,
   Home,
   MapPin,
@@ -11,7 +10,6 @@ import {
 } from "lucide-react";
 import { useTheme } from "@/context/ThemeContext";
 import { useTranslation } from "react-i18next";
-import { getAllHotels } from "@/services/api/hotelService";
 import { getAllApartments } from "@/services/api/apartmentService";
 import { getAllCars } from "@/services/api/carService";
 import { getHomeThemeTokens } from "./homeTheme";
@@ -23,7 +21,7 @@ type StayPreview = {
   location?: string;
   price: number;
   rating?: number;
-  type: "hotel" | "apartment";
+  type: "apartment";
 };
 
 type CarPreview = {
@@ -58,12 +56,6 @@ const HeroInventoryPreview = ({
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  const { data: hotels = [] } = useQuery({
-    queryKey: ["hero-hotels"],
-    queryFn: getAllHotels,
-    staleTime: 10 * 60 * 1000,
-  });
-
   const { data: apartments = [] } = useQuery({
     queryKey: ["hero-apartments"],
     queryFn: getAllApartments,
@@ -77,24 +69,10 @@ const HeroInventoryPreview = ({
   });
 
   const stays = useMemo<StayPreview[]>(() => {
-    const topHotels = hotels
-      .filter((hotel) => hotel.status === "active")
-      .sort((a, b) => b.rating - a.rating)
-      .slice(0, 2)
-      .map((hotel) => ({
-        id: hotel.id,
-        name: hotel.name,
-        image: hotel.imageUrls?.[0],
-        location: hotel.location || hotel.address,
-        price: hotel.price,
-        rating: hotel.rating,
-        type: "hotel" as const,
-      }));
-
-    const topApartments = apartments
+    return apartments
       .filter((apartment) => apartment.status === "available")
-      .sort((a, b) => b.rating - a.rating)
-      .slice(0, 2)
+      .sort((a, b) => (b.rating || 0) - (a.rating || 0))
+      .slice(0, 4)
       .map((apartment) => ({
         id: apartment.id,
         name: apartment.name,
@@ -104,11 +82,7 @@ const HeroInventoryPreview = ({
         rating: apartment.rating,
         type: "apartment" as const,
       }));
-
-    return [...topHotels, ...topApartments]
-      .sort((a, b) => (b.rating || 0) - (a.rating || 0))
-      .slice(0, 4);
-  }, [apartments, hotels]);
+  }, [apartments]);
 
   const topCars = useMemo<CarPreview[]>(() => {
     return cars
@@ -194,11 +168,7 @@ const HeroInventoryPreview = ({
           <button
             key={`${stay.type}-${stay.id}`}
             onClick={() =>
-              navigate(
-                stay.type === "hotel"
-                  ? `/hotelReservation/${stay.id}`
-                  : `/apartmentReservation/${stay.id}`,
-              )
+              navigate(`/apartmentReservation/${stay.id}`)
             }
             className={`group w-full items-center gap-2.5 overflow-hidden rounded-[16px] border text-left transition-all hover:-translate-y-0.5 ${isStacked && index > 0 ? "hidden sm:flex" : "flex"} ${isStacked ? "p-2 sm:p-2.5" : "p-2.5"}`}
             style={{
@@ -218,17 +188,10 @@ const HeroInventoryPreview = ({
                 />
               ) : (
                 <div className="flex h-full w-full items-center justify-center">
-                  {stay.type === "hotel" ? (
-                    <Building2
-                      className="h-5 w-5"
-                      style={{ color: tk.textMutedOnMedia }}
-                    />
-                  ) : (
-                    <Home
-                      className="h-5 w-5"
-                      style={{ color: tk.textMutedOnMedia }}
-                    />
-                  )}
+                  <Home
+                    className="h-5 w-5"
+                    style={{ color: tk.textMutedOnMedia }}
+                  />
                 </div>
               )}
             </div>
@@ -243,7 +206,7 @@ const HeroInventoryPreview = ({
                     color: tk.badgeText,
                   }}
                 >
-                  {stay.type === "hotel" ? "Hotel" : "Apartment"}
+                  Apartment
                 </span>
                 {typeof stay.rating === "number" && stay.rating > 0 && (
                   <span
@@ -549,25 +512,16 @@ const HeroInventoryPreview = ({
               {stays.map((stay) =>
                 tile({
                   key: `${stay.type}-${stay.id}`,
-                  href:
-                    stay.type === "hotel"
-                      ? `/hotelReservation/${stay.id}`
-                      : `/apartmentReservation/${stay.id}`,
+                  href: `/apartmentReservation/${stay.id}`,
                   image: stay.image,
                   alt: stay.name,
-                  fallbackIcon:
-                    stay.type === "hotel" ? (
-                      <Building2
-                        className="h-5 w-5"
-                        style={{ color: tk.textMutedOnMedia }}
-                      />
-                    ) : (
-                      <Home
-                        className="h-5 w-5"
-                        style={{ color: tk.textMutedOnMedia }}
-                      />
-                    ),
-                  badge: stay.type === "hotel" ? "Hotel" : "Apartment",
+                  fallbackIcon: (
+                    <Home
+                      className="h-5 w-5"
+                      style={{ color: tk.textMutedOnMedia }}
+                    />
+                  ),
+                  badge: "Apartment",
                   rating: stay.rating,
                   name: stay.name,
                   subtitle:
@@ -669,9 +623,7 @@ const HeroInventoryPreview = ({
             {mixedPreview.map((item) => {
               const isStay = item.kind === "stay";
               const href = isStay
-                ? item.type === "hotel"
-                  ? `/hotelReservation/${item.id}`
-                  : `/apartmentReservation/${item.id}`
+                ? `/apartmentReservation/${item.id}`
                 : `/carReservation/${item.id}`;
 
               return (
@@ -699,17 +651,10 @@ const HeroInventoryPreview = ({
                     ) : (
                       <div className="flex h-full w-full items-center justify-center">
                         {isStay ? (
-                          item.type === "hotel" ? (
-                            <Building2
-                              className="h-4 w-4"
-                              style={{ color: tk.textMutedOnMedia }}
-                            />
-                          ) : (
-                            <Home
-                              className="h-4 w-4"
-                              style={{ color: tk.textMutedOnMedia }}
-                            />
-                          )
+                          <Home
+                            className="h-4 w-4"
+                            style={{ color: tk.textMutedOnMedia }}
+                          />
                         ) : (
                           <CarFront
                             className="h-4 w-4"
@@ -730,11 +675,7 @@ const HeroInventoryPreview = ({
                           color: tk.badgeText,
                         }}
                       >
-                        {isStay
-                          ? item.type === "hotel"
-                            ? "Hotel"
-                            : "Apartment"
-                          : item.type}
+                        {isStay ? "Apartment" : item.type}
                       </span>
                       {isStay &&
                         typeof item.rating === "number" &&

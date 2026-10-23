@@ -15,7 +15,7 @@
     "accommodations": {
       "badge": "Zgjedhur Për Ju",
       "title": "Gjeni Marrëveshjen Tuaj të Përkryer",
-      "description": "Nga hotelet luksusë deri te apartamentet të rehatshme, zbuloni në qëndrime që përshkruhen me stilin dhe buxhetin tuaj"
+      "description": "Nga studiot në qytet deri te apartamentet buzë detit, zbuloni qëndrime që përshtaten me stilin dhe buxhetin tuaj"
     },
     "trustBar": {
       "verifiedTitle": "Destinacione të Verifikuara",
@@ -60,12 +60,6 @@
       "description": "Mikpritje autentike shqiptare në rezidenca private",
       "viewAll": "Shiko të Gjitha Apartamentet",
       "noApartments": "Nuk ka apartamente të disponueshme"
-    },
-    "hotelsPreview": {
-      "title": "Hotele",
-      "description": "Hotele premium në destinacionet më ikonike të Shqipërisë",
-      "viewAll": "Shiko të Gjitha Hotelet",
-      "noHotels": "Nuk ka hotele të disponueshme"
     },
     "carsPreview": {
       "chip": "Eksploro në Termat Tuaj",
@@ -262,7 +256,6 @@
   "footer": {
     "description": "Platforma juaj e besuar për zbulimin dhe rezervimin e akomodimeve dhe makinave me qira në Shqipëri.",
     "explore": "Eksploro",
-    "hotelsApartments": "Hotele & Apartamente",
     "carRentals": "Makina me Qira",
     "mapView": "Pamje në Hartë",
     "cultureCuisine": "Kulturë & Kuzhinë",
@@ -276,7 +269,8 @@
     "addressCity": "Tiranë, Shqipëri",
     "addressStreet": "Rruga e Kavajës",
     "rightsReserved": "Të gjitha të drejtat e rezervuara.",
-    "securePayments": "Pagesa të Sigurta"
+    "securePayments": "Pagesa të Sigurta",
+    "apartments": "Apartamente"
   },
   "billing": {
     "vehicleSpecifications": "Specifikimet e Automjetit",
@@ -336,12 +330,9 @@
     "propertyUnavailableMessage": "Kjo pronë aktualisht nuk është e disponueshme për rezervim.",
     "goBack": "Kthehu",
     "apartmentBookingSuccess": "Rezervimi juaj i apartamentit u krijua me sukses.",
-    "hotelBookingSuccess": "Rezervimi juaj i hotelit u krijua me sukses.",
     "selectCheckInCheckOutDates": "Ju lutemi zgjidhni datat e hyrjes dhe daljes.",
     "loadingApartmentDetails": "Duke ngarkuar detajet e apartamentit…",
     "apartmentNotFound": "Apartamenti nuk u gjet",
-    "loadingHotelDetails": "Duke ngarkuar detajet e hotelit…",
-    "hotelNotFound": "Hoteli nuk u gjet",
     "checkInCheckOutDates": "Datat e hyrjes dhe daljes",
     "selectStayDates": "Zgjidhni datat e qëndrimit",
     "checkInTime": "Ora e hyrjes",
@@ -395,7 +386,6 @@
       "showingPropertiesForDates": "Po shfaqen prona të disponueshme për datat e zgjedhura",
       "propertyType": "Lloji i pronës",
       "all": "Të gjitha",
-      "hotel": "Hotel",
       "apartment": "Apartament",
       "destination": "Destinacion",
       "guests": "Mysafirë",
@@ -482,7 +472,6 @@
   "navigation": {
     "backToCars": "Kthehu te makinat",
     "backToApartments": "Kthehu te apartamentet",
-    "backToHotels": "Kthehu te hotelet",
     "backToDestinations": "Kthehu te destinacionet",
     "backToCulture": "Kthehu te kultura",
     "backToHome": "Kthehu te faqja kryesore"
@@ -497,7 +486,7 @@
     "myBookings": "Rezervimet e Mia",
     "noBookings": "Nuk keni rezervime ende. Filloni të eksploroni prona dhe makina për të krijuar rezervimin tuaj të parë!",
     "startExploring": "Filloni të eksploroni prona dhe makina për të krijuar rezervimin tuaj të parë.",
-    "bookingSummaryDescription": "Rishikoni të gjitha rezervimet tuaja në makina, hotele dhe apartamente në një vend.",
+    "bookingSummaryDescription": "Rishikoni të gjitha rezervimet tuaja për makina dhe apartamente në një vend.",
     "cancelBooking": "Anulo Rezervimin",
     "awaitingConfirmation": "Rezervimi duke pritur konfirmimin",
     "bookingStatus": "Statusi i Rezervimit",
@@ -591,7 +580,6 @@
     "termsOfService": "Kushtet e Shërbimit",
     "and": "dhe",
     "privacyPolicy": "Politikën e Privatësisë",
-    "hotels": "Hotele",
     "apartments": "Apartamente",
     "carRentals": "Makinat me Qira",
     "fillAllFields": "Ju lutemi plotësoni të gjitha fushat",
@@ -643,7 +631,6 @@
     "loading": "Duke ngarkuar...",
     "car": "Makina",
     "apartment": "Apartament",
-    "hotel": "Hotel",
     "stay": "Qëndrim",
     "culture": "Kulturë",
     "map": "Hartë",
@@ -747,12 +734,9 @@
     "rejected": "Refuzuar"
   },
   "propertiesMap": {
-    "title": "Hotele dhe Apartamente të Disponueshme",
-    "description": "Eksploroni përzgjedhjen tonë të hoteleve dhe apartamenteve në të gjithë Shqipërinë",
+    "description": "Eksploroni përzgjedhjen tonë të apartamenteve në të gjithë Shqipërinë",
     "interactiveMap": "📍 Harta Interaktive",
-    "interactiveMapDescription": "Klikoni në çdo marker për të parë më shumë detaje rreth hotelit ose apartamentit",
     "wideSelection": "🏨 Përzgjedhje e Gjërë",
-    "wideSelectionDescription": "Nga hotelet luksoze deri te hostelet buxhetore në të gjithë Shqipërinë",
     "bestPrices": "💰 Çmimet Më të Mira",
     "bestPricesDescription": "Çmime konkurruese me tarifa transparente për natë"
   },
@@ -782,42 +766,6 @@
     "accountInformation": "Informacioni i Llogarisë",
     "memberSince": "Anëtar që nga:",
     "lastUpdated": "Përditësuar së fundmi:"
-  },
-  "hotel": {
-    "loadingHotelDetails": "Duke ngarkuar detajet e hotelit...",
-    "hotelNotFound": "Hoteli Nuk U Gjet",
-    "hotelNotFoundDescription": "Hoteli që po kërkoni nuk ekziston ose është hequr.",
-    "backToHotels": "Kthehu te Hotelet",
-    "viewAllPhotos": "Shiko të Gjitha {{count}} Fotot",
-    "pricePerNight": "Çmimi për natë",
-    "taxesAndFees": "+ taksa & tarifa",
-    "roomsAvailable": "Dhoma të Disponueshme",
-    "checkIn": "Regjistrimi",
-    "checkOut": "Çregjistrimi",
-    "bookNow": "Rezervo Tani",
-    "freeCancellation": "Anulim falas deri në 24 orë para regjistrimit",
-    "aboutThisHotel": "Rreth Këtij Hoteli",
-    "amenitiesAndServices": "Pajisjet dhe Shërbimet",
-    "contactInformation": "Informacioni i Kontaktit",
-    "emailAddress": "Adresa Email",
-    "phoneNumber": "Numri i Telefonit",
-    "address": "Adresa",
-    "location": "Vendndodhja",
-    "noImagesAvailable": "Nuk ka imazhe të disponueshme",
-    "reservation": "Rezervimi",
-    "reservationComingSoon": "Funksioni i rezervimit vjen së shpejti!",
-    "percentOccupied": "{{percent}}% e zënë",
-    "defaultDescription": "Përjetoni luks dhe rehati në këtë hotel të jashtëzakonshëm. Stafi ynë i përkushtuar siguron që qëndrimi juaj të jetë i paharrueshëm me shërbim cilësor dhe pajisje moderne.",
-    "completeAddressFallback": "{{location}}, Adresa e plotë",
-    "amenities": {
-      "freeWifi": "WiFi Falas",
-      "parking": "Parking",
-      "fitnessCenter": "Qendra e Fitnesit",
-      "restaurant": "Restorant",
-      "bar": "Bar",
-      "spa": "Spa",
-      "swimmingPool": "Pishinë Notimi"
-    }
   },
   "apartment": {
     "addApartment": "Shto Apartament",
@@ -929,8 +877,7 @@
       "allStatuses": "Të Gjitha Statuset",
       "allTypes": "Të Gjitha Llojet",
       "cars": "Makina",
-      "apartments": "Apartamente",
-      "hotels": "Hotele"
+      "apartments": "Apartamente"
     },
     "table": {
       "headers": {
@@ -1281,164 +1228,6 @@
       "next": "Tjetra"
     }
   },
-  "hotels": {
-    "addHotelDialog": {
-      "title": "Shto Hotel të Ri",
-      "subtitle": "Plotëso detajet më poshtë për të shtuar një hotel të ri në listën e pronave tuaja.",
-      "submitButton": "Shto Hotel",
-      "adding": "Duke shtuar...",
-      "successTitle": "Hoteli u Shtua",
-      "successMessage": "Hoteli është shtuar me sukses në listën e pronave tuaja.",
-      "validation": {
-        "requiredFields": "Ju lutem plotësoni të gjitha fushat e detyrueshme",
-        "imageRequired": "Ju lutem ngarkoni të paktën një imazh"
-      },
-      "form": {
-        "hotelName": "Emri i Hotelit",
-        "hotelNamePlaceholder": "Grand Plaza Hotel",
-        "location": "Vendndodhja",
-        "locationPlaceholder": "Tiranë, Shqipëri",
-        "rating": "Vlerësimi (0-5)",
-        "ratingPlaceholder": "4.5",
-        "price": "Çmimi për Natë (€)",
-        "pricePlaceholder": "299",
-        "rooms": "Numri Total i Dhoma",
-        "roomsPlaceholder": "150",
-        "occupancy": "Zënia (%)",
-        "occupancyPlaceholder": "85",
-        "status": "Statusi",
-        "statusActive": "Aktiv",
-        "statusMaintenance": "Në Mirëmbajtje",
-        "contactEmail": "Email Kontakti",
-        "contactEmailPlaceholder": "info@hotel.com",
-        "contactPhone": "Telefoni i Kontaktit",
-        "contactPhonePlaceholder": "+355 69 123 4567",
-        "address": "Adresa e Plotë",
-        "addressPlaceholder": "Rruga Kryesore 123, Qyteti, Shteti, Kodi Postar",
-        "mapLabel": "Zgjidh Vendndodhjen e Hotelit në Hartë",
-        "description": "Përshkrimi",
-        "descriptionPlaceholder": "Përshkruaj facilitetet dhe veçoritë e hotelit..."
-      },
-      "buttons": {
-        "cancel": "Anulo",
-        "addHotel": "Shto Hotel"
-      },
-      "error": {
-        "addFailed": "Dështoi shtimi i hotelit"
-      }
-    },
-    "allHotels": {
-      "title": "Të Gjithë Hotelet",
-      "subtitle": "Menaxho dhe monitoro të gjitha pronat e tua hotelierike",
-      "loading": "Duke ngarkuar hotelet...",
-      "error": {
-        "title": "Gabim në Ngarkimin e Hoteleve"
-      },
-      "stats": {
-        "totalHotels": "Totali i Hoteleve",
-        "totalRooms": "Totali i Dhoma",
-        "avgOccupancy": "Mesatarja e Zënies",
-        "avgRating": "Mesatarja e Vlerësimit"
-      },
-      "search": {
-        "placeholder": "Kërko hotele sipas emrit ose vendndodhjes..."
-      },
-      "filters": {
-        "status": {
-          "all": "Të Gjithë Statuset",
-          "active": "Aktiv",
-          "maintenance": "Në Mirëmbajtje"
-        },
-        "rating": {
-          "all": "Të Gjitha Vlerësimet",
-          "fourFivePlus": "4.5+ Yje",
-          "fourPlus": "4+ Yje"
-        }
-      },
-      "results": "{{count}} rezultate",
-      "empty": {
-        "title": "Nuk u gjetën hotele",
-        "message": "Provoni të rregulloni kërkimin ose filtrat tuaja"
-      },
-      "pagination": {
-        "previous": "E Mëparshme",
-        "next": "Tjetra"
-      },
-      "card": {
-        "rooms": "{{count}} Dhoma",
-        "occupancy": "{{percentage}}% Plotë",
-        "perNight": "/natë",
-        "view": "Shiko"
-      },
-      "confirmDelete": {
-        "title": "Jeni i sigurt?",
-        "message": "Nuk do të jeni në gjendje ta ktheni këtë!",
-        "confirmButton": "Po, fshije!",
-        "successTitle": "U Fshi!",
-        "successMessage": "Hoteli juaj është fshirë."
-      }
-    },
-    "hotelDetails": {
-      "view": {
-        "title": "Detajet e Hotelit",
-        "subtitle": "Shiko dhe menaxho informacionin e hotelit"
-      },
-      "edit": {
-        "title": "Ndrysho Hotelin",
-        "subtitle": "Përditëso informacionin dhe cilësimet e hotelit"
-      },
-      "backToHotels": "Kthehu te Hotelet",
-      "buttons": {
-        "editHotel": "Ndrysho Hotelin",
-        "cancel": "Anulo",
-        "saving": "Duke ruajtur...",
-        "saveChanges": "Ruaj Ndryshimet"
-      },
-      "success": {
-        "title": "Sukses",
-        "message": "Hoteli u përditësua me sukses"
-      },
-      "error": {
-        "title": "Gabim",
-        "message": "Dështoi përditësimi i hotelit"
-      },
-      "notFound": {
-        "title": "Hoteli Nuk u Gjet",
-        "description": "Hoteli që po kërkoni nuk ekziston ose është hequr."
-      },
-      "sections": {
-        "status": "Statusi",
-        "basicInformation": "Informacioni Bazë",
-        "contactInformation": "Informacioni i Kontaktit",
-        "location": "Vendndodhja",
-        "description": "Përshkrimi"
-      },
-      "fields": {
-        "hotelName": "Emri i Hotelit",
-        "location": "Vendndodhja",
-        "rating": "Vlerësimi",
-        "pricePerNight": "Çmimi për Natë",
-        "totalRooms": "Numri Total i Dhoma",
-        "occupancyRate": "Shkalla e Zënies",
-        "email": "Email",
-        "phone": "Telefoni",
-        "fullAddress": "Adresa e Plotë",
-        "hotelLocationOnMap": "Vendndodhja e Hotelit në Hartë"
-      },
-      "statusOptions": {
-        "active": "Aktiv",
-        "maintenance": "Në Mirëmbajtje"
-      },
-      "images": {
-        "noImagesAvailable": "Nuk ka imazhe të disponueshme",
-        "photos": "{{count}} foto"
-      },
-      "display": {
-        "rooms": "Dhoma",
-        "noDescription": "Nuk ka përshkrim të disponueshëm."
-      }
-    }
-  },
   "userManagement": {
     "title": "Menaxhimi i Përdoruesve",
     "error": "Dështoi ngarkimi i përdoruesve",
@@ -1527,7 +1316,7 @@
   },
   "propertyRequestsManagement": {
     "title": "Menaxhimi i Kërkesave për Prona",
-    "subtitle": "Rishikoni dhe menaxhoni parashtrimet e pronave të ofruesve për makina, apartamente dhe hotele",
+    "subtitle": "Rishikoni dhe menaxhoni parashtrimet e pronave të ofruesve për makina dhe apartamente",
     "loading": "Duke ngarkuar kërkesat për prona...",
     "error": "Dështoi ngarkimi i kërkesave për prona",
     "success": {
@@ -1556,8 +1345,7 @@
         "label": "Lloji:",
         "all": "Të Gjitha Llojet",
         "car": "Makina",
-        "apartment": "Apartamente",
-        "hotel": "Hotele"
+        "apartment": "Apartamente"
       }
     },
     "status": {
@@ -1567,8 +1355,7 @@
     },
     "propertyTypes": {
       "car": "Makina",
-      "apartment": "Apartament",
-      "hotel": "Hotel"
+      "apartment": "Apartament"
     },
     "empty": {
       "title": "Nuk u gjetën kërkesa për prona",
@@ -1688,13 +1475,6 @@
       "bookings": "Rezervimet",
       "availability": "Disponueshmëria"
     },
-    "hotels": {
-      "title": "Hotele",
-      "allHotels": "Të Gjitha Hotelet",
-      "roomsManagement": "Menaxhimi i Dhoma",
-      "bookings": "Rezervimet",
-      "availability": "Disponueshmëria"
-    },
     "cars": {
       "title": "Makinat me Qira",
       "fleetManagement": "Menaxhimi i Flotës",
@@ -1775,8 +1555,7 @@
     },
     "propertyTypes": {
       "car": "Makina",
-      "apartment": "Apartamenti",
-      "hotel": "Hoteli"
+      "apartment": "Apartamenti"
     },
     "noBookings": "Ky ofrues nuk ka akoma rezervime",
     "noBookingsSearch": "Asnjë rezervim nuk përputhet me filtrat tuaj",

@@ -2,13 +2,14 @@ import { apiClient } from "./apiClient";
 
 /**
  * Supabase Storage Service
- * Handles file uploads and management for various entity types (hotels, apartments, cars, etc.)
+ * Handles file uploads and management for various entity types (apartments, cars, destinations)
  */
 
 // Supported entity types for storage organization
-export type StorageEntityType = "hotel" | "apartment" | "car" | "destination";
+export type StorageEntityType = "apartment" | "car" | "destination";
 
-const BUCKET_NAME = "hotel-images"; // Main bucket for all property images
+// Main bucket for all property images (historical name, kept so existing image URLs keep working)
+const BUCKET_NAME = "hotel-images";
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
 
@@ -21,7 +22,7 @@ export interface UploadResult {
 /**
  * Upload a single image file to Supabase Storage (Generic)
  * @param file - File object to upload
- * @param entityType - Type of entity (hotel, apartment, car)
+ * @param entityType - Type of entity (apartment, car, destination)
  * @param entityId - Entity ID (optional for folder organization)
  * @returns Upload result with public URL
  */
@@ -112,7 +113,7 @@ export const uploadImage = async (
 /**
  * Upload multiple image files to Supabase Storage (Generic)
  * @param files - Array of File objects to upload
- * @param entityType - Type of entity (hotel, apartment, car)
+ * @param entityType - Type of entity (apartment, car, destination)
  * @param entityId - Entity ID (optional for folder organization)
  * @returns Array of upload results
  */
@@ -223,49 +224,6 @@ export const getPublicUrl = (filePath: string): string => {
 };
 
 // ============================================================================
-// BACKWARDS COMPATIBLE HOTEL-SPECIFIC FUNCTIONS
-// These delegate to the generic functions for backwards compatibility
-// ============================================================================
-
-/**
- * Upload a single hotel image (backwards compatible)
- * @deprecated Use uploadImage(file, 'hotel', hotelId) instead
- */
-export const uploadHotelImage = async (
-  file: File,
-  hotelId?: string | number,
-): Promise<UploadResult> => {
-  return uploadImage(file, "hotel", hotelId);
-};
-
-/**
- * Upload multiple hotel images (backwards compatible)
- * @deprecated Use uploadImages(files, 'hotel', hotelId) instead
- */
-export const uploadHotelImages = async (
-  files: File[],
-  hotelId?: string | number,
-): Promise<UploadResult[]> => {
-  return uploadImages(files, "hotel", hotelId);
-};
-
-/**
- * Delete a hotel image (backwards compatible)
- * @deprecated Use deleteImage(filePath) instead
- */
-export const deleteHotelImage = async (filePath: string): Promise<void> => {
-  return deleteImage(filePath);
-};
-
-/**
- * Delete multiple hotel images (backwards compatible)
- * @deprecated Use deleteImages(filePaths) instead
- */
-export const deleteHotelImages = async (filePaths: string[]): Promise<void> => {
-  return deleteImages(filePaths);
-};
-
-// ============================================================================
 // CAR-SPECIFIC FUNCTIONS
 // ============================================================================
 
@@ -299,11 +257,6 @@ const storageService = {
   deleteImagesByUrls,
   extractStoragePath,
   getPublicUrl,
-  // Backwards compatible hotel functions
-  uploadHotelImage,
-  uploadHotelImages,
-  deleteHotelImage,
-  deleteHotelImages,
   // Car functions
   uploadCarImage,
   uploadCarImages,

@@ -6,14 +6,13 @@
 
 import { Car } from "./car.types";
 import { Apartment } from "./apartment.type";
-import { Hotel } from "./hotel.types";
 
 export interface Booking {
   id: string;
   userId: string;
   propertyId: string;
   providerId: string;
-  propertyType: "hotel" | "apartment" | "car";
+  propertyType: "apartment" | "car";
   startDate: string;
   endDate: string;
   pickUpLocation?: string;
@@ -33,7 +32,7 @@ export interface Booking {
   cancellation_reason?: string;
   createdAt: string;
   updatedAt: string;
-  propertyData?: Car | Apartment | Hotel | null;
+  propertyData?: Car | Apartment | null;
   additionalDriverPrice?: number;
   childSeatPrice?: number; // Child seat amount charged (price per day x rental days)
   fee?: number;
@@ -48,7 +47,7 @@ export interface Booking {
 export interface CreateBookingDto {
   propertyId: string;
   providerId: string;
-  propertyType: "hotel" | "apartment" | "car";
+  propertyType: "apartment" | "car";
   startDate: string;
   endDate: string;
   pickUpLocation?: string;

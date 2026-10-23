@@ -2,7 +2,7 @@
 
 ## Quick Reference
 
-- **Project**: BOOKinAL – Tourism booking platform (apartments, hotels, cars) in Albania
+- **Project**: BOOKinAL – Tourism booking platform (apartments, cars) in Albania
 - **Root**: `FE-albania` (npm monorepo)
 - **Main App**: `@albania/web` (React 18 + TypeScript + Vite)
 - **Backend**: Supabase (PostgreSQL + Auth + Storage + Edge Functions)
@@ -96,7 +96,7 @@ FE-albania/
 2. **Shared Types** (`@albania/shared-types`)
    - Single source of truth for TypeScript definitions
    - Prevents type drift across packages
-   - **Key types**: `apartment.type.ts`, `booking.type.ts`, `user.types.ts`, `car.types.ts`, `hotel.types.ts`, `destination.types.ts`, `price.type.ts`, `review.type.ts`, `request.type.ts`
+   - **Key types**: `apartment.type.ts`, `booking.type.ts`, `user.types.ts`, `car.types.ts`, `destination.types.ts`, `price.type.ts`, `review.type.ts`, `request.type.ts`
 
 3. **React Query (TanStack Query)**
    - Handles data caching: 5-minute stale time, 10-minute garbage collection
@@ -129,7 +129,7 @@ apps/web/src/
 │   └── ProtectedRoute        # Auth guard component
 ├── pages/
 │   ├── home/                 # Public pages (Index, Auth, SearchResults, booking/, MyAccount)
-│   └── dashboard/            # Protected pages (Apartments, Hotels, Cars, bookings, etc.)
+│   └── dashboard/            # Protected pages (Apartments, Cars, bookings, etc.)
 ├── hooks/                    # Component-specific hooks
 ├── services/                 # Local service layer (some calls to @albania/api-client)
 └── utils/                    # Local utilities

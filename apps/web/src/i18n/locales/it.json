@@ -15,7 +15,7 @@
     "accommodations": {
       "badge": "Selezionati per Te",
       "title": "Trova la Tua Offerta Perfetta",
-      "description": "Dagli hotel di lusso agli accoglienti appartamenti, scopri strutture che corrispondono al tuo stile e budget"
+      "description": "Dai monolocali in città agli appartamenti sul mare, scopri strutture che corrispondono al tuo stile e budget"
     },
     "trustBar": {
       "verifiedTitle": "Destinazioni Verificate",
@@ -60,12 +60,6 @@
       "description": "Autentica ospitalità albanese in residenze private",
       "viewAll": "Vedi Tutti gli Appartamenti",
       "noApartments": "Nessun appartamento disponibile"
-    },
-    "hotelsPreview": {
-      "title": "Hotel",
-      "description": "Hotel premium nelle destinazioni più iconiche dell'Albania",
-      "viewAll": "Vedi Tutti gli Hotel",
-      "noHotels": "Nessun hotel disponibile"
     },
     "carsPreview": {
       "chip": "Esplora alle Tue Condizioni",
@@ -261,7 +255,6 @@
   "footer": {
     "description": "La tua piattaforma affidabile per scoprire e prenotare i migliori alloggi e noleggi auto in Albania.",
     "explore": "Esplora",
-    "hotelsApartments": "Hotel & Appartamenti",
     "carRentals": "Noleggio Auto",
     "mapView": "Vista Mappa",
     "cultureCuisine": "Cultura & Cucina",
@@ -275,7 +268,8 @@
     "addressCity": "Tirana, Albania",
     "addressStreet": "Rruga e Kavajës",
     "rightsReserved": "Tutti i diritti riservati.",
-    "securePayments": "Pagamenti Sicuri"
+    "securePayments": "Pagamenti Sicuri",
+    "apartments": "Appartamenti"
   },
   "billing": {
     "vehicleSpecifications": "Specifiche del Veicolo",
@@ -335,12 +329,9 @@
     "propertyUnavailableMessage": "Questa struttura non è attualmente disponibile per la prenotazione.",
     "goBack": "Torna indietro",
     "apartmentBookingSuccess": "La tua prenotazione dell'appartamento è stata creata con successo.",
-    "hotelBookingSuccess": "La tua prenotazione dell'hotel è stata creata con successo.",
     "selectCheckInCheckOutDates": "Seleziona le date di check-in e check-out.",
     "loadingApartmentDetails": "Caricamento dei dettagli dell'appartamento…",
     "apartmentNotFound": "Appartamento non trovato",
-    "loadingHotelDetails": "Caricamento dei dettagli dell'hotel…",
-    "hotelNotFound": "Hotel non trovato",
     "checkInCheckOutDates": "Date di check-in e check-out",
     "selectStayDates": "Seleziona le date del soggiorno",
     "checkInTime": "Orario di check-in",
@@ -394,7 +385,6 @@
       "showingPropertiesForDates": "Mostra strutture disponibili per le date selezionate",
       "propertyType": "Tipo di Struttura",
       "all": "Tutti",
-      "hotel": "Hotel",
       "apartment": "Appartamento",
       "destination": "Destinazione",
       "guests": "Ospiti",
@@ -481,7 +471,6 @@
   "navigation": {
     "backToCars": "Torna alle Auto",
     "backToApartments": "Torna agli Appartamenti",
-    "backToHotels": "Torna agli Hotel",
     "backToDestinations": "Torna alle Destinazioni",
     "backToCulture": "Torna alla Cultura",
     "backToHome": "Torna alla Home"
@@ -496,7 +485,7 @@
     "myBookings": "Le Mie Prenotazioni",
     "noBookings": "Non hai ancora prenotazioni. Inizia a esplorare strutture e auto per creare la tua prima prenotazione!",
     "startExploring": "Inizia a esplorare strutture e auto per creare la tua prima prenotazione.",
-    "bookingSummaryDescription": "Rivedi tutte le tue prenotazioni di auto, hotel e appartamenti in un unico posto.",
+    "bookingSummaryDescription": "Rivedi tutte le tue prenotazioni di auto e appartamenti in un unico posto.",
     "cancelBooking": "Cancella Prenotazione",
     "awaitingConfirmation": "Prenotazione in Attesa di Conferma",
     "bookingStatus": "Stato Prenotazione",
@@ -583,7 +572,6 @@
     "termsOfService": "Termini di Servizio",
     "and": "e",
     "privacyPolicy": "Privacy Policy",
-    "hotels": "Hotel",
     "apartments": "Appartamenti",
     "carRentals": "Noleggio Auto",
     "fillAllFields": "Compila tutti i campi",
@@ -635,7 +623,6 @@
     "loading": "Caricamento...",
     "car": "Auto",
     "apartment": "Appartamento",
-    "hotel": "Hotel",
     "stay": "Soggiorno",
     "culture": "Culture",
     "map": "Mappa",
@@ -739,12 +726,9 @@
     "rejected": "Respinta"
   },
   "propertiesMap": {
-    "title": "Hotel e Appartamenti Disponibili",
-    "description": "Esplora la nostra selezione di hotel e appartamenti in tutta l'Albania",
+    "description": "Esplora la nostra selezione di appartamenti in tutta l'Albania",
     "interactiveMap": "📍 Mappa Interattiva",
-    "interactiveMapDescription": "Clicca su un segnaposto per vedere maggiori dettagli su hotel o appartamento",
     "wideSelection": "🏨 Ampia Selezione",
-    "wideSelectionDescription": "Dagli hotel di lusso agli ostelli economici in tutta l'Albania",
     "bestPrices": "💰 Migliori Prezzi",
     "bestPricesDescription": "Prezzi competitivi con tariffe notturne trasparenti"
   },
@@ -774,42 +758,6 @@
     "accountInformation": "Informazioni Account",
     "memberSince": "Membro dal:",
     "lastUpdated": "Ultimo aggiornamento:"
-  },
-  "hotel": {
-    "loadingHotelDetails": "Caricamento dettagli hotel...",
-    "hotelNotFound": "Hotel Non Trovato",
-    "hotelNotFoundDescription": "L'hotel che stai cercando non esiste o è stato rimosso.",
-    "backToHotels": "Torna agli Hotel",
-    "viewAllPhotos": "Vedi Tutte le {{count}} Foto",
-    "pricePerNight": "Prezzo a notte",
-    "taxesAndFees": "+ tasse & commissioni",
-    "roomsAvailable": "Camere Disponibili",
-    "checkIn": "Check-in",
-    "checkOut": "Check-out",
-    "bookNow": "Prenota Ora",
-    "freeCancellation": "Cancellazione gratuita fino a 24 ore prima del check-in",
-    "aboutThisHotel": "Informazioni su Questo Hotel",
-    "amenitiesAndServices": "Servizi e Dotazioni",
-    "contactInformation": "Informazioni di Contatto",
-    "emailAddress": "Indirizzo Email",
-    "phoneNumber": "Numero di Telefono",
-    "address": "Indirizzo",
-    "location": "Località",
-    "noImagesAvailable": "Nessuna immagine disponibile",
-    "reservation": "Prenotazione",
-    "reservationComingSoon": "Funzionalità di prenotazione in arrivo!",
-    "percentOccupied": "{{percent}}% occupato",
-    "defaultDescription": "Vivi il lusso e il comfort in questo hotel eccezionale. Il nostro staff dedicato garantisce un soggiorno memorabile con un servizio di alto livello e servizi moderni.",
-    "completeAddressFallback": "{{location}}, indirizzo completo",
-    "amenities": {
-      "freeWifi": "WiFi Gratuito",
-      "parking": "Parcheggio",
-      "fitnessCenter": "Centro Fitness",
-      "restaurant": "Ristorante",
-      "bar": "Bar",
-      "spa": "Spa",
-      "swimmingPool": "Piscina"
-    }
   },
   "apartment": {
     "addApartment": "Aggiungi Appartamento",
@@ -921,8 +869,7 @@
       "allStatuses": "Tutti gli Stati",
       "allTypes": "Tutti i Tipi",
       "cars": "Auto",
-      "apartments": "Appartamenti",
-      "hotels": "Hotel"
+      "apartments": "Appartamenti"
     },
     "table": {
       "headers": {
@@ -1273,164 +1220,6 @@
       "next": "Successivo"
     }
   },
-  "hotels": {
-    "addHotelDialog": {
-      "title": "Aggiungi Nuovo Hotel",
-      "subtitle": "Compila i dettagli qui sotto per aggiungere un nuovo hotel al tuo elenco di proprietà.",
-      "submitButton": "Aggiungi Hotel",
-      "adding": "Aggiunta in corso...",
-      "successTitle": "Hotel Aggiunto",
-      "successMessage": "L'hotel è stato aggiunto con successo al tuo elenco di proprietà.",
-      "validation": {
-        "requiredFields": "Compila tutti i campi obbligatori",
-        "imageRequired": "Carica almeno un'immagine"
-      },
-      "form": {
-        "hotelName": "Nome Hotel",
-        "hotelNamePlaceholder": "Grand Plaza Hotel",
-        "location": "Località",
-        "locationPlaceholder": "Tirana, Albania",
-        "rating": "Valutazione (0-5)",
-        "ratingPlaceholder": "4.5",
-        "price": "Prezzo per Notte (€)",
-        "pricePlaceholder": "299",
-        "rooms": "Camere Totali",
-        "roomsPlaceholder": "150",
-        "occupancy": "Occupazione (%)",
-        "occupancyPlaceholder": "85",
-        "status": "Stato",
-        "statusActive": "Attivo",
-        "statusMaintenance": "Manutenzione",
-        "contactEmail": "Email di Contatto",
-        "contactEmailPlaceholder": "info@hotel.com",
-        "contactPhone": "Telefono di Contatto",
-        "contactPhonePlaceholder": "+355 69 123 4567",
-        "address": "Indirizzo Completo",
-        "addressPlaceholder": "Via principale 123, Città, Provincia, CAP",
-        "mapLabel": "Seleziona Posizione Hotel sulla Mappa",
-        "description": "Descrizione",
-        "descriptionPlaceholder": "Descrivi i servizi e le caratteristiche dell'hotel..."
-      },
-      "buttons": {
-        "cancel": "Annulla",
-        "addHotel": "Aggiungi Hotel"
-      },
-      "error": {
-        "addFailed": "Aggiunta hotel fallita"
-      }
-    },
-    "allHotels": {
-      "title": "Tutti gli Hotel",
-      "subtitle": "Gestisci e monitora tutte le tue proprietà alberghiere",
-      "loading": "Caricamento hotel...",
-      "error": {
-        "title": "Errore Caricamento Hotel"
-      },
-      "stats": {
-        "totalHotels": "Hotel Totali",
-        "totalRooms": "Camere Totali",
-        "avgOccupancy": "Occupazione Media",
-        "avgRating": "Valutazione Media"
-      },
-      "search": {
-        "placeholder": "Cerca hotel per nome o località..."
-      },
-      "filters": {
-        "status": {
-          "all": "Tutti gli Stati",
-          "active": "Attivo",
-          "maintenance": "Manutenzione"
-        },
-        "rating": {
-          "all": "Tutte le Valutazioni",
-          "fourFivePlus": "4,5+ Stelle",
-          "fourPlus": "4+ Stelle"
-        }
-      },
-      "results": "{{count}} risultati",
-      "empty": {
-        "title": "Nessun hotel trovato",
-        "message": "Prova a modificare la ricerca o i filtri"
-      },
-      "pagination": {
-        "previous": "Precedente",
-        "next": "Successivo"
-      },
-      "card": {
-        "rooms": "{{count}} Camere",
-        "occupancy": "{{percentage}}% Occupato",
-        "perNight": "/notte",
-        "view": "Visualizza"
-      },
-      "confirmDelete": {
-        "title": "Sei sicuro?",
-        "message": "Non potrai annullare questa operazione!",
-        "confirmButton": "Sì, eliminalo!",
-        "successTitle": "Eliminato!",
-        "successMessage": "Il tuo hotel è stato eliminato."
-      }
-    },
-    "hotelDetails": {
-      "view": {
-        "title": "Dettagli Hotel",
-        "subtitle": "Visualizza e gestisci le informazioni dell'hotel"
-      },
-      "edit": {
-        "title": "Modifica Hotel",
-        "subtitle": "Aggiorna le informazioni e le impostazioni dell'hotel"
-      },
-      "backToHotels": "Torna agli Hotel",
-      "buttons": {
-        "editHotel": "Modifica Hotel",
-        "cancel": "Annulla",
-        "saving": "Salvataggio...",
-        "saveChanges": "Salva Modifiche"
-      },
-      "success": {
-        "title": "Operazione Riuscita",
-        "message": "Hotel aggiornato con successo"
-      },
-      "error": {
-        "title": "Errore",
-        "message": "Aggiornamento hotel fallito"
-      },
-      "notFound": {
-        "title": "Hotel Non Trovato",
-        "description": "L'hotel che stai cercando non esiste o è stato rimosso."
-      },
-      "sections": {
-        "status": "Stato",
-        "basicInformation": "Informazioni di Base",
-        "contactInformation": "Informazioni di Contatto",
-        "location": "Posizione",
-        "description": "Descrizione"
-      },
-      "fields": {
-        "hotelName": "Nome Hotel",
-        "location": "Località",
-        "rating": "Valutazione",
-        "pricePerNight": "Prezzo per Notte",
-        "totalRooms": "Camere Totali",
-        "occupancyRate": "Tasso di Occupazione",
-        "email": "Email",
-        "phone": "Telefono",
-        "fullAddress": "Indirizzo Completo",
-        "hotelLocationOnMap": "Posizione Hotel sulla Mappa"
-      },
-      "statusOptions": {
-        "active": "Attivo",
-        "maintenance": "Manutenzione"
-      },
-      "images": {
-        "noImagesAvailable": "Nessuna immagine disponibile",
-        "photos": "{{count}} foto"
-      },
-      "display": {
-        "rooms": "Camere",
-        "noDescription": "Nessuna descrizione disponibile."
-      }
-    }
-  },
   "userManagement": {
     "title": "Gestione Utenti",
     "error": "Caricamento utenti fallito",
@@ -1519,7 +1308,7 @@
   },
   "propertyRequestsManagement": {
     "title": "Gestione Richieste Strutture",
-    "subtitle": "Rivedi e gestisci le proposte di strutture (auto, appartamenti, hotel) inviate dai fornitori",
+    "subtitle": "Rivedi e gestisci le proposte di strutture (auto, appartamenti) inviate dai fornitori",
     "loading": "Caricamento richieste strutture...",
     "error": "Caricamento richieste strutture fallito",
     "success": {
@@ -1548,8 +1337,7 @@
         "label": "Tipo:",
         "all": "Tutti i Tipi",
         "car": "Auto",
-        "apartment": "Appartamenti",
-        "hotel": "Hotel"
+        "apartment": "Appartamenti"
       }
     },
     "status": {
@@ -1559,8 +1347,7 @@
     },
     "propertyTypes": {
       "car": "Auto",
-      "apartment": "Appartamento",
-      "hotel": "Hotel"
+      "apartment": "Appartamento"
     },
     "empty": {
       "title": "Nessuna richiesta struttura trovata",
@@ -1671,13 +1458,6 @@
       "bookings": "Prenotazioni",
       "availability": "Disponibilità"
     },
-    "hotels": {
-      "title": "Hotel",
-      "allHotels": "Tutti gli Hotel",
-      "roomsManagement": "Gestione Camere",
-      "bookings": "Prenotazioni",
-      "availability": "Disponibilità"
-    },
     "cars": {
       "title": "Noleggio Auto",
       "fleetManagement": "Gestione Flotta",
@@ -1758,8 +1538,7 @@
     },
     "propertyTypes": {
       "car": "Auto",
-      "apartment": "Appartamento",
-      "hotel": "Hotel"
+      "apartment": "Appartamento"
     },
     "noBookings": "Questo fornitore non ha ancora prenotazioni",
     "noBookingsSearch": "Nessuna prenotazione corrisponde ai filtri",

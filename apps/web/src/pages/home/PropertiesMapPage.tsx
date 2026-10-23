@@ -6,7 +6,6 @@ import PrimarySearchAppBar from "@/components/home/AppBar";
 import { useTranslation } from "react-i18next";
 import { FilterBar } from "./SearchPropertyResults/FilterBar";
 import { useSearchFilters } from "@/hooks/useSearchFilters";
-import { Hotel } from "@/types/hotel.types";
 import { Apartment } from "@/types/apartment.type";
 import { Destination } from "@/types/destination.types";
 import { Filter, X } from "lucide-react";
@@ -14,7 +13,6 @@ import { useTheme } from "@/context/ThemeContext";
 import { SUBCATEGORIES } from "@/lib/destinationManagement";
 
 type Selected =
-  | { type: "hotel"; data: Hotel }
   | { type: "apartment"; data: Apartment }
   | { type: "destination"; data: Destination }
   | null;
@@ -30,7 +28,6 @@ const PropertiesMapPage = () => {
     filters,
     setFilters,
     setPropertyType,
-    setHotelFilters,
     setApartmentFilters,
     setDestinationFilters,
     resetFilters,
@@ -114,7 +111,6 @@ const PropertiesMapPage = () => {
             <FilterBar
               filters={filters}
               onPropertyTypeChange={setPropertyType}
-              onHotelFiltersChange={setHotelFilters}
               onApartmentFiltersChange={setApartmentFilters}
               onDestinationFiltersChange={setDestinationFilters}
               onDateChange={handleDateChange}
@@ -122,7 +118,7 @@ const PropertiesMapPage = () => {
               onResetFilters={resetFilters}
               onApplyFilters={() => setIsMobileFilterOpen(false)}
               loading={false}
-              availableTypes={["hotel", "apartment", "destination"]}
+              availableTypes={["apartment", "destination"]}
               alwaysOpen
             />
           </div>

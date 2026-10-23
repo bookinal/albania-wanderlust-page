@@ -1,7 +1,6 @@
 import { useState, useCallback } from "react";
 import {
   SearchFiltersState,
-  HotelFiltersInput,
   ApartmentFiltersInput,
   DestinationFiltersInput,
   defaultSearchFilters,
@@ -10,8 +9,7 @@ import {
 interface UseSearchFiltersReturn {
   filters: SearchFiltersState;
   setFilters: (filters: Partial<SearchFiltersState>) => void;
-  setPropertyType: (type: "hotel" | "apartment" | "destination") => void;
-  setHotelFilters: (filters: Partial<HotelFiltersInput>) => void;
+  setPropertyType: (type: "apartment" | "destination") => void;
   setApartmentFilters: (filters: Partial<ApartmentFiltersInput>) => void;
   setDestinationFilters: (filters: Partial<DestinationFiltersInput>) => void;
   resetFilters: () => void;
@@ -39,23 +37,10 @@ export const useSearchFilters = (
    * Update property type
    */
   const setPropertyType = useCallback(
-    (type: "hotel" | "apartment" | "destination") => {
+    (type: "apartment" | "destination") => {
       setFiltersState((prev) => ({
         ...prev,
         propertyType: type,
-      }));
-    },
-    [],
-  );
-
-  /**
-   * Update hotel filters
-   */
-  const setHotelFilters = useCallback(
-    (newFilters: Partial<HotelFiltersInput>) => {
-      setFiltersState((prev) => ({
-        ...prev,
-        hotelFilters: { ...prev.hotelFilters, ...newFilters },
       }));
     },
     [],
@@ -98,7 +83,6 @@ export const useSearchFilters = (
     filters,
     setFilters,
     setPropertyType,
-    setHotelFilters,
     setApartmentFilters,
     setDestinationFilters,
     resetFilters,

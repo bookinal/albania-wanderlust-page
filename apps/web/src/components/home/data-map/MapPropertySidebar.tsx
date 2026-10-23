@@ -1,4 +1,3 @@
-import { Hotel } from "@/types/hotel.types";
 import { Apartment } from "@/types/apartment.type";
 import { Destination } from "@/types/destination.types";
 import { getDestinationCategoryColor } from "@/utils/destinationColors";
@@ -19,7 +18,6 @@ import { useTheme } from "@/context/ThemeContext";
 import { getHomeThemeTokens } from "../homeTheme";
 
 type Selected =
-  | { type: "hotel"; data: Hotel }
   | { type: "apartment"; data: Apartment }
   | { type: "destination"; data: Destination }
   | null;
@@ -27,121 +25,6 @@ type Selected =
 interface MapPropertySidebarProps {
   selected: Selected;
   onClose: () => void;
-}
-
-/* ─── Hotel Panel ─────────────────────────────────────────── */
-function HotelPanel({ hotel, isDark, isBlue }: { hotel: Hotel; isDark: boolean; isBlue: boolean }) {
-  const homeTk = getHomeThemeTokens({ isDark, isBlue });
-  const cardBg = isDark ? '#1a1a1e' : '#ffffff';
-  const textMain = isDark ? '#f5f5f5' : '#111115';
-  const textMuted = isDark ? 'rgba(255,255,255,0.5)' : '#6b6663';
-  const statBg = isDark ? 'rgba(255,255,255,0.06)' : '#f5f2ee';
-  const divider = isDark ? 'rgba(255,255,255,0.07)' : '#e5e2de';
-  const amenityBg = isDark ? homeTk.brandSoft : isBlue ? 'rgba(2,132,199,0.08)' : '#fef2f2';
-  const amenityText = isDark ? '#f87171' : isBlue ? '#0369a1' : '#b91c1c';
-  const fallbackBg = isDark ? homeTk.brandSoft : isBlue ? 'rgba(2,132,199,0.08)' : '#fef2f2';
-
-  return (
-    <>
-      <div style={{ position: 'relative', height: '13rem', flexShrink: 0, overflow: 'hidden' }}>
-        {hotel.imageUrls?.[0] ? (
-          <img src={hotel.imageUrls[0]} alt={hotel.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-        ) : (
-          <div style={{ width: '100%', height: '100%', background: fallbackBg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <BedDouble className="w-12 h-12" style={{ color: homeTk.brand, opacity: 0.3 }} />
-          </div>
-        )}
-        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.55), transparent)' }} />
-        <div style={{ position: 'absolute', bottom: '0.75rem', left: '1rem' }}>
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', padding: '0.25rem 0.625rem', borderRadius: '9999px', background: homeTk.brand, color: '#fff', fontSize: '0.75rem', fontWeight: 600 }}>
-            Hotel
-          </span>
-        </div>
-      </div>
-
-      <div style={{ flex: 1, overflowY: 'auto', padding: '1.25rem', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-        <div>
-          <h2 style={{ fontSize: '1.15rem', fontWeight: 700, color: textMain, lineHeight: 1.3, margin: 0 }}>{hotel.name}</h2>
-          {hotel.location && (
-            <p style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.875rem', color: textMuted, marginTop: '0.25rem' }}>
-              <MapPin className="w-3.5 h-3.5 flex-shrink-0" />
-              {hotel.location}
-            </p>
-          )}
-        </div>
-
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
-          {hotel.price && (
-            <div style={{ background: statBg, borderRadius: '0.75rem', padding: '0.75rem' }}>
-              <p style={{ fontSize: '0.75rem', color: homeTk.brand, fontWeight: 500, margin: '0 0 0.25rem' }}>Price / night</p>
-              <p style={{ fontSize: '1.15rem', fontWeight: 700, color: homeTk.brand, margin: 0 }}>€{hotel.price}</p>
-            </div>
-          )}
-          {hotel.rating && (
-            <div style={{ background: statBg, borderRadius: '0.75rem', padding: '0.75rem' }}>
-              <p style={{ fontSize: '0.75rem', color: '#f59e0b', fontWeight: 500, margin: '0 0 0.25rem' }}>Rating</p>
-              <p style={{ fontSize: '1.15rem', fontWeight: 700, color: '#f59e0b', display: 'flex', alignItems: 'center', gap: '0.25rem', margin: 0 }}>
-                <Star className="w-4 h-4" style={{ fill: '#f59e0b' }} />
-                {hotel.rating}
-              </p>
-            </div>
-          )}
-          {hotel.rooms && (
-            <div style={{ background: statBg, borderRadius: '0.75rem', padding: '0.75rem' }}>
-              <p style={{ fontSize: '0.75rem', color: textMuted, fontWeight: 500, margin: '0 0 0.25rem' }}>Rooms</p>
-              <p style={{ fontSize: '1.15rem', fontWeight: 700, color: textMain, display: 'flex', alignItems: 'center', gap: '0.25rem', margin: 0 }}>
-                <BedDouble className="w-4 h-4" style={{ color: textMuted }} />
-                {hotel.rooms}
-              </p>
-            </div>
-          )}
-          {hotel.occupancy && (
-            <div style={{ background: statBg, borderRadius: '0.75rem', padding: '0.75rem' }}>
-              <p style={{ fontSize: '0.75rem', color: textMuted, fontWeight: 500, margin: '0 0 0.25rem' }}>Capacity</p>
-              <p style={{ fontSize: '1.15rem', fontWeight: 700, color: textMain, display: 'flex', alignItems: 'center', gap: '0.25rem', margin: 0 }}>
-                <Users className="w-4 h-4" style={{ color: textMuted }} />
-                {hotel.occupancy} guests
-              </p>
-            </div>
-          )}
-        </div>
-
-        {hotel.status && (
-          <div>
-            <span style={{ display: 'inline-flex', alignItems: 'center', padding: '0.25rem 0.75rem', borderRadius: '9999px', fontSize: '0.75rem', fontWeight: 600, border: '1px solid', background: hotel.status === 'active' ? 'rgba(16,185,129,0.12)' : statBg, color: hotel.status === 'active' ? '#10b981' : textMuted, borderColor: hotel.status === 'active' ? 'rgba(16,185,129,0.3)' : divider }}>
-              {hotel.status === 'active' ? '● Available' : hotel.status}
-            </span>
-          </div>
-        )}
-
-        {hotel.amenities && hotel.amenities.length > 0 && (
-          <div>
-            <p style={{ fontSize: '0.875rem', fontWeight: 600, color: textMain, marginBottom: '0.5rem' }}>Amenities</p>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.375rem' }}>
-              {hotel.amenities.slice(0, 6).map((a, i) => (
-                <span key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', padding: '0.25rem 0.625rem', borderRadius: '0.5rem', background: amenityBg, color: amenityText, fontSize: '0.75rem', fontWeight: 500 }}>
-                  <Wifi className="w-3 h-3" />
-                  {a}
-                </span>
-              ))}
-              {hotel.amenities.length > 6 && (
-                <span style={{ fontSize: '0.75rem', color: textMuted, alignSelf: 'center' }}>+{hotel.amenities.length - 6} more</span>
-              )}
-            </div>
-          </div>
-        )}
-      </div>
-
-      <div style={{ padding: '1rem', borderTop: `1px solid ${divider}`, flexShrink: 0 }}>
-        <Link to={`/hotelReservation/${hotel.id}`} style={{ display: 'block' }}>
-          <button style={{ width: '100%', background: homeTk.brand, color: '#fff', fontWeight: 600, padding: '0.875rem 1rem', borderRadius: '0.75rem', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.25rem', fontSize: '0.95rem', boxShadow: `0 4px 16px ${homeTk.brandSoftStrong}` }}>
-            Book Now
-            <ChevronRight className="w-4 h-4" />
-          </button>
-        </Link>
-      </div>
-    </>
-  );
 }
 
 /* ─── Apartment Panel ─────────────────────────────────────── */
@@ -370,9 +253,6 @@ export default function MapPropertySidebar({
           <X className="w-4 h-4" />
         </button>
 
-        {selected?.type === "hotel" && (
-          <HotelPanel hotel={selected.data as Hotel} isDark={isDark} isBlue={isBlue} />
-        )}
         {selected?.type === "apartment" && (
           <ApartmentPanel apartment={selected.data as Apartment} isDark={isDark} isBlue={isBlue} />
         )}

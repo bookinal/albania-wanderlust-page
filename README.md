@@ -153,7 +153,7 @@ Shared API client services for interacting with Supabase backend.
 
 **Features:**
 
-- Apartment, Hotel, and Car services
+- Apartment and Car services
 - Booking and payment services
 - User authentication and management
 - Storage service for file uploads

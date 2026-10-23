@@ -17,13 +17,6 @@ export * from "./chat.types";
 export * from "./destination.types";
 export * from "./article.types";
 export * from "./email.types";
-// Exclude duplicate PaginationParams from hotel.types
-export {
-  type Hotel,
-  type HotelFilters,
-  type CreateHotelDto,
-  type UpdateHotelDto,
-} from "./hotel.types";
 export * from "./price.type";
 export * from "./request.type";
 export * from "./review.type";

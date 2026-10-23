@@ -19,7 +19,7 @@ import {
   Add,
   Remove,
   DirectionsCar,
-  Hotel,
+  Apartment,
   LocationOn,
 } from "@mui/icons-material";
 import { useNavigate } from "react-router";
@@ -148,7 +148,7 @@ export default function ReservationPickerValue() {
           label={t("common.car")}
         />
         <Tab
-          icon={<Hotel fontSize="small" />}
+          icon={<Apartment fontSize="small" />}
           iconPosition="start"
           label={t("common.stay")}
         />

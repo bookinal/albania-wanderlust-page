@@ -4,7 +4,7 @@ interface BookingRecord {
   id: string;
   providerId: string;
   propertyId: string;
-  propertyType: "hotel" | "apartment" | "car";
+  propertyType: "apartment" | "car";
   requesterName: string;
   contactMail: string;
   contactPhone: string;
@@ -32,13 +32,11 @@ const formatPrice = (value: number): string => `€${value.toFixed(2)}`;
 
 const getPropertyTypeLabel = (propertyType: BookingRecord["propertyType"]): string => {
   switch (propertyType) {
-    case "apartment":
-      return "Apartment";
     case "car":
       return "Car";
-    case "hotel":
+    case "apartment":
     default:
-      return "Hotel";
+      return "Apartment";
   }
 };
 
@@ -68,7 +66,7 @@ const getPropertyDetails = async (
     };
   }
 
-  const table = booking.propertyType === "apartment" ? "apartment" : "hotel";
+  const table = "apartment";
   const { data } = await supabaseAdmin
     .from(table)
     .select("name")

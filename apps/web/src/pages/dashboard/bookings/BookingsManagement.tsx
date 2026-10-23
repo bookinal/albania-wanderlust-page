@@ -11,7 +11,6 @@ import {
 } from "@/services/api/bookingService";
 import { getCarById } from "@/services/api/carService";
 import { getApartmentById } from "@/services/api/apartmentService";
-import { getHotelById } from "@/services/api/hotelService";
 import {
   Search,
   Calendar,
@@ -69,7 +68,6 @@ const getPropertyIcon = (type: Booking["propertyType"]) => {
       return Car;
     case "apartment":
       return Building2;
-    case "hotel":
     default:
       return Home;
   }
@@ -156,8 +154,6 @@ const getPropertyRoute = (booking: Booking) => {
   switch (booking.propertyType) {
     case "apartment":
       return `/dashboard/apartments/${id}`;
-    case "hotel":
-      return `/dashboard/hotels/${id}`;
     case "car":
       return `/dashboard/carInfo/${id}`;
     default:
@@ -520,13 +516,6 @@ export default function BookingsManagement() {
           return {
             ...booking,
             propertyData: apartment || null,
-          };
-        }
-        if (booking.propertyType === "hotel") {
-          const hotel = await getHotelById(parseInt(booking.propertyId));
-          return {
-            ...booking,
-            propertyData: hotel || null,
           };
         }
         return { ...booking, propertyData: null };
@@ -1101,9 +1090,6 @@ export default function BookingsManagement() {
             </option>
             <option value="apartment" style={{ background: tk.optionBg }}>
               {t("bookingManagement.filters.apartments")}
-            </option>
-            <option value="hotel" style={{ background: tk.optionBg }}>
-              {t("bookingManagement.filters.hotels")}
             </option>
           </select>
         </div>

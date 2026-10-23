@@ -4,7 +4,6 @@ import { Booking } from "@albania/shared-types";
 import { CreateBookingDto } from "@albania/shared-types";
 import { getCarById } from "./carService";
 import { getApartmentById } from "./apartmentService";
-import { getHotelById } from "./hotelService";
 import { sendEmailDirect } from "./emailService";
 import { getProviderBookingNotificationTemplate } from "./emailTemplates";
 /**
@@ -38,10 +37,8 @@ const getPropertyTypeLabel = (
     case "apartment":
       return "Apartment";
     case "car":
-      return "Car";
-    case "hotel":
     default:
-      return "Hotel";
+      return "Car";
   }
 };
 
@@ -61,14 +58,10 @@ const getPropertyDisplayName = async (
         const car = await getCarById(numericId);
         return car ? `${car.brand} ${car.name}`.trim() : propertyId;
       }
-      case "apartment": {
+      case "apartment":
+      default: {
         const apartment = await getApartmentById(numericId);
         return apartment?.name || propertyId;
-      }
-      case "hotel":
-      default: {
-        const hotel = await getHotelById(numericId);
-        return hotel?.name || propertyId;
       }
     }
   } catch (error) {
@@ -338,8 +331,6 @@ export const getCurrentUserBookingsPaginated = async (
         booking.propertyData = await getCarById(Number(booking.propertyId));
       } else if (booking.propertyType === "apartment") {
         booking.propertyData = await getApartmentById(Number(booking.propertyId));
-      } else if (booking.propertyType === "hotel") {
-        booking.propertyData = await getHotelById(Number(booking.propertyId));
       }
     } catch {
       booking.propertyData = null;
@@ -384,8 +375,6 @@ export const getCurrentUserBookings = async (): Promise<Booking[]> => {
       booking.propertyData = await getCarById(Number(booking.propertyId));
     } else if (booking.propertyType === "apartment") {
       booking.propertyData = await getApartmentById(Number(booking.propertyId));
-    } else if (booking.propertyType === "hotel") {
-      booking.propertyData = await getHotelById(Number(booking.propertyId));
     }
   }
   return data || [];
@@ -416,8 +405,6 @@ export const getBookingsByProviderIdForAdmin = async (
         booking.propertyData = await getCarById(Number(booking.propertyId));
       } else if (booking.propertyType === "apartment") {
         booking.propertyData = await getApartmentById(Number(booking.propertyId));
-      } else if (booking.propertyType === "hotel") {
-        booking.propertyData = await getHotelById(Number(booking.propertyId));
       }
     } catch {
       booking.propertyData = null;

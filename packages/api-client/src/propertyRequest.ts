@@ -9,7 +9,7 @@ class PropertyRequestService {
   async createRequest(
     providerId: string,
     propertyId: string,
-    propertyType: "car" | "apartment" | "hotel",
+    propertyType: "car" | "apartment",
     reason?: string,
   ): Promise<PropertyRequest> {
     const { data, error } = await apiClient
@@ -100,7 +100,7 @@ class PropertyRequestService {
    */
   async getPendingRequestByPropertyId(
     propertyId: string,
-    propertyType: "car" | "apartment" | "hotel",
+    propertyType: "car" | "apartment",
   ): Promise<PropertyRequest | null> {
     const { data, error } = await apiClient
       .from("property_requests")
@@ -194,7 +194,7 @@ class PropertyRequestService {
    */
   private async updatePropertyStatus(
     propertyId: string,
-    propertyType: "car" | "apartment" | "hotel",
+    propertyType: "car" | "apartment",
     status: string,
     adminRating?: number,
   ): Promise<void> {
@@ -206,9 +206,6 @@ class PropertyRequestService {
         break;
       case "apartment":
         tableName = "apartment";
-        break;
-      case "hotel":
-        tableName = "hotels";
         break;
       default:
         throw new Error(`Unknown property type: ${propertyType}`);

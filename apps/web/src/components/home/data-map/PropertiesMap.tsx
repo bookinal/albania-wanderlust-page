@@ -1,9 +1,7 @@
 import { MapContainer, TileLayer, Marker, Tooltip, useMapEvents } from "react-leaflet";
-import { getAllHotels } from "@/services/api/hotelService";
 import { getAllApartments } from "@/services/api/apartmentService";
 import { getAllDestinations } from "@/services/api/destinationService";
 import { Apartment } from "@/types/apartment.type";
-import { Hotel } from "@/types/hotel.types";
 import { Destination } from "@/types/destination.types";
 import { SearchFiltersState } from "@/types/search.types";
 import "leaflet/dist/leaflet.css";
@@ -15,7 +13,6 @@ import { getHomeThemeTokens } from "../homeTheme";
 import { getDestinationCategoryColor, getSubcategoryIconSvg } from "@/utils/destinationColors";
 
 type Selected =
-  | { type: "hotel"; data: Hotel }
   | { type: "apartment"; data: Apartment }
   | { type: "destination"; data: Destination }
   | null;
@@ -32,11 +29,11 @@ interface PropertiesMapProps {
  * map coordinate regardless of text width, so iconAnchor can stay [0, 0].
  */
 function createPriceMarker(
-  type: "hotel" | "apartment",
+  type: "apartment",
   label: string,
   accent: { brand: string; hover: string; text: string; bg: string },
 ): L.DivIcon {
-  const emoji = type === "hotel" ? "🏨" : "🏠";
+  const emoji = "🏠";
   const borderColor = accent.brand;
   const bgHover = accent.hover;
 
@@ -170,8 +167,6 @@ function ZoomTracker({ onZoomChange }: { onZoomChange: (zoom: number) => void })
 export default function PropertiesMap({ onSelect, filters }: PropertiesMapProps) {
   const { localize } = useLocalized();
   const { isDark, isBlue } = useTheme();
-  const [hotelsData, setHotelsData] = useState<Hotel[]>([]);
-  const [loading, setLoading] = useState(true);
   const [apartmentsData, setApartmentsData] = useState<Apartment[]>([]);
   const [destinationsData, setDestinationsData] = useState<Destination[]>([]);
   const [zoom, setZoom] = useState(DEFAULT_ZOOM);
@@ -199,20 +194,6 @@ export default function PropertiesMap({ onSelect, filters }: PropertiesMapProps)
   // Filter data based on selected types and price range
   
   useEffect(() => {
-    const fetchHotels = async () => {
-      try {
-        const data = await getAllHotels();
-        setHotelsData(data || []);
-      } catch (error) {
-        console.error("Failed to fetch hotels:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchHotels();
-  }, []);
-
-  useEffect(() => {
     const fetchApartments = async () => {
       try {
         const data = await getAllApartments();
@@ -236,24 +217,9 @@ export default function PropertiesMap({ onSelect, filters }: PropertiesMapProps)
     fetchDestinations();
   }, []);
 
-  const propertyType = filters?.propertyType || "hotel";
-  const hotelFilters = filters?.hotelFilters;
+  const propertyType = filters?.propertyType || "apartment";
   const apartmentFilters = filters?.apartmentFilters;
   const destinationFilters = filters?.destinationFilters;
-
-  const filteredHotels = hotelsData.filter((hotel) => {
-    if (propertyType !== "hotel") return false;
-    
-    // Default filter logic for hotels
-    if (hotelFilters) {
-      if (hotelFilters.searchTerm && !hotel.name.toLowerCase().includes(hotelFilters.searchTerm.toLowerCase())) return false;
-      if (hotelFilters.priceRange) {
-        if (hotel.price < hotelFilters.priceRange.min || hotel.price > hotelFilters.priceRange.max) return false;
-      }
-      // Add more local filters if needed (status, rating, etc.)
-    }
-    return true;
-  });
 
   const filteredApartments = apartmentsData.filter((apartment) => {
     if (propertyType !== "apartment") return false;
@@ -307,25 +273,6 @@ export default function PropertiesMap({ onSelect, filters }: PropertiesMapProps)
           />
 
           {/* Markers */}
-          {filteredHotels?.map((hotel: Hotel) => (
-            <Marker
-              key={`hotel-${hotel.id}`}
-              position={[hotel.lat || 0, hotel.lng || 0]}
-              icon={createPriceMarker(
-                "hotel",
-                hotel.price ? `€${hotel.price}` : "Hotel",
-                tk.markerAccent,
-              )}
-              eventHandlers={{
-                click: () => onSelect?.({ type: "hotel", data: hotel }),
-              }}
-            >
-              <Tooltip direction="top" offset={[0, -8]} opacity={0.92}>
-                {hotel.name}
-              </Tooltip>
-            </Marker>
-          ))}
-
           {filteredApartments?.map((apartment: Apartment) => (
             <Marker
               key={`apartment-${apartment.id}`}

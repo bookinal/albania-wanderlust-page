@@ -38,13 +38,11 @@ const getEmailSubject = (status: BookingStatusType, bookingId: string): string =
 
 const getPropertyTypeLabel = (propertyType: string): string => {
   switch (propertyType) {
-    case "apartment":
-      return "Apartment";
     case "car":
       return "Car";
-    case "hotel":
+    case "apartment":
     default:
-      return "Hotel";
+      return "Apartment";
   }
 };
 
@@ -53,12 +51,7 @@ const getPropertyName = async (
   propertyId: string,
   propertyType: string,
 ): Promise<string> => {
-  const table =
-    propertyType === "car"
-      ? "car"
-      : propertyType === "apartment"
-        ? "apartment"
-        : "hotel";
+  const table = propertyType === "car" ? "car" : "apartment";
 
   const { data, error } = await supabaseAdmin
     .from(table)
