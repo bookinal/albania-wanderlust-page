@@ -532,7 +532,16 @@
       "confirmedFailed": "Confirmé par le prestataire · Paiement échoué, veuillez réessayer"
     },
     "currentlyRented": "Actuellement loué — vous pouvez toujours réserver pour une autre période",
-    "underMaintenance": "En Maintenance"
+    "underMaintenance": "En Maintenance",
+    "providerPanel": {
+      "title": "Contactez votre loueur",
+      "subtitle": "Votre réservation est payée. Prenez contact pour organiser la prise en charge ou l'arrivée.",
+      "whatsapp": "WhatsApp",
+      "call": "Appeler",
+      "email": "E-mail",
+      "loading": "Chargement des coordonnées…",
+      "unavailable": "Les coordonnées ne sont pas disponibles pour le moment."
+    }
   },
   "user": {
     "fullName": "Nom complet",
@@ -963,6 +972,32 @@
       "noBookings": "Aucune réservation trouvée",
       "adjustFilters": "Essayez d'ajuster vos filtres",
       "noBookingsYet": "Vous n'avez pas encore de réservations"
+    },
+    "details": {
+      "pickUpDropOff": "Prise en charge et restitution",
+      "pickUp": "Prise en charge",
+      "dropOff": "Restitution",
+      "securityDeposit": "Caution (bloquée à la prise en charge, remboursable)",
+      "priceBreakdown": "Détail du prix",
+      "rental": "Location",
+      "insurance": "Assurance",
+      "noInsurance": "Aucune",
+      "free": "Gratuit",
+      "childSeat": "Siège enfant",
+      "additionalDriver": "Conducteur supplémentaire",
+      "crossBorder": "Caution à l'étranger",
+      "delivery": "Frais de livraison",
+      "serviceFee": "Frais de service (payés en ligne à BookinAL)",
+      "total": "Total",
+      "toCollect": "À encaisser auprès du client"
+    },
+    "contactPanel": {
+      "title": "Contacter le client",
+      "subtitle": "Paiement reçu. Prenez contact pour organiser la prise en charge ou l'arrivée.",
+      "whatsapp": "WhatsApp",
+      "call": "Appeler",
+      "email": "E-mail",
+      "locked": "Les coordonnées se débloquent une fois les frais de service payés par le client."
     }
   },
   "cars": {
@@ -1890,5 +1925,14 @@
     "ctaTitle": "Prêt à préparer votre voyage ?",
     "ctaCars": "Voir les voitures",
     "ctaStays": "Voir les logements"
+  },
+  "whatsapp": {
+    "button": "Écrire sur WhatsApp",
+    "opensWhatsApp": "Ouvre WhatsApp avec un message prêt à envoyer",
+    "yourBooking": "votre réservation",
+    "clientToProvider": "Bonjour, j'ai réservé {{property}} sur BookinAL (réservation {{ref}}, {{dates}}). Au plaisir !\n\nDétails de la réservation : {{link}}",
+    "clientToProviderNamed": "Bonjour {{name}}, j'ai réservé {{property}} sur BookinAL (réservation {{ref}}, {{dates}}). Au plaisir !\n\nDétails de la réservation : {{link}}",
+    "providerToClient": "Bonjour, je vous contacte depuis BookinAL au sujet de votre réservation {{ref}} pour {{property}} ({{dates}}). Où souhaitez-vous qu'on se retrouve pour la prise en charge ou l'arrivée ?\n\nDétails de la réservation : {{link}}",
+    "providerToClientNamed": "Bonjour {{name}}, je vous contacte depuis BookinAL au sujet de votre réservation {{ref}} pour {{property}} ({{dates}}). Où souhaitez-vous qu'on se retrouve pour la prise en charge ou l'arrivée ?\n\nDétails de la réservation : {{link}}"
   }
 }

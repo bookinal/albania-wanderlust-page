@@ -9,27 +9,48 @@ const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY")!;
 
+// The booking fee is charged in EUR (see create-paypal-order)
+const PAYMENT_CURRENCY = "EUR";
+
+const CORS_HEADERS = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  "Access-Control-Allow-Headers":
+    "authorization, content-type, x-client-info, apikey",
+};
+
+/** JSON response; every response carries the CORS headers so the browser can read errors. */
+const json = (body: unknown, status = 200) =>
+  new Response(JSON.stringify(body), {
+    status,
+    headers: { ...CORS_HEADERS, "Content-Type": "application/json" },
+  });
+
 interface CaptureOrderRequest {
   orderId: string;
   bookingId: string;
 }
 
+interface PayPalAmount {
+  currency_code: string;
+  value: string;
+}
+
+interface PayPalOrder {
+  id: string;
+  status: string;
+  purchase_units?: Array<{ amount?: PayPalAmount }>;
+}
+
 interface PayPalCaptureResponse {
   id: string;
   status: string;
-  amount?: {
-    currency_code: string;
-    value: string;
-  };
   purchase_units?: Array<{
     payments: {
       captures: Array<{
         id: string;
         status: string;
-        amount: {
-          currency_code: string;
-          value: string;
-        };
+        amount: PayPalAmount;
       }>;
     };
   }>;
@@ -60,6 +81,40 @@ async function getPayPalAccessToken(): Promise<string> {
   return data.access_token;
 }
 
+async function parsePayPalError(response: Response) {
+  const errorText = await response.text();
+  try {
+    return JSON.parse(errorText);
+  } catch {
+    return { message: errorText };
+  }
+}
+
+/**
+ * Read a PayPal order (used to check the amount before capturing it)
+ */
+async function getPayPalOrder(
+  accessToken: string,
+  orderId: string,
+): Promise<PayPalOrder> {
+  const response = await fetch(
+    `${PAYPAL_BASE_URL}/v2/checkout/orders/${orderId}`,
+    { headers: { Authorization: `Bearer ${accessToken}` } },
+  );
+
+  if (!response.ok) {
+    const errorData = await parsePayPalError(response);
+    console.error("[PayPal] Failed to read order. Status:", response.status);
+    console.error("[PayPal] Error response:", JSON.stringify(errorData, null, 2));
+    throw new Error(
+      errorData?.message ||
+        `PayPal API Error (${response.status}): Failed to read order`,
+    );
+  }
+
+  return await response.json();
+}
+
 /**
  * Capture PayPal order
  */
@@ -79,14 +134,7 @@ async function capturePayPalOrder(
   );
 
   if (!response.ok) {
-    const errorText = await response.text();
-    const errorData = (() => {
-      try {
-        return JSON.parse(errorText);
-      } catch {
-        return { message: errorText };
-      }
-    })();
+    const errorData = await parsePayPalError(response);
 
     console.error("[PayPal] Failed to capture order. Status:", response.status);
     console.error(
@@ -105,28 +153,23 @@ async function capturePayPalOrder(
   return await response.json();
 }
 
+/** True when a PayPal amount equals the expected fee (to the cent) in EUR. */
+const amountMatches = (amount: PayPalAmount | undefined, expected: number) =>
+  !!amount &&
+  amount.currency_code === PAYMENT_CURRENCY &&
+  Math.abs(parseFloat(amount.value) - expected) <= 0.01;
+
 Deno.serve(async (req: Request) => {
   // Handle CORS
   if (req.method === "OPTIONS") {
-    return new Response(null, {
-      status: 204,
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "POST, OPTIONS",
-        "Access-Control-Allow-Headers":
-          "authorization, content-type, x-client-info, apikey",
-      },
-    });
+    return new Response(null, { status: 204, headers: CORS_HEADERS });
   }
 
   try {
     // Verify authentication
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) {
-      return new Response(
-        JSON.stringify({ error: "Missing authorization header" }),
-        { status: 401, headers: { "Content-Type": "application/json" } },
-      );
+      return json({ error: "Missing authorization header" }, 401);
     }
 
     // Initialize Supabase admin client for database operations
@@ -157,10 +200,7 @@ Deno.serve(async (req: Request) => {
     } = await supabaseUser.auth.getUser(token);
 
     if (authError || !user) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
-        status: 401,
-        headers: { "Content-Type": "application/json" },
-      });
+      return json({ error: "Unauthorized" }, 401);
     }
 
     // Parse request body
@@ -168,10 +208,7 @@ Deno.serve(async (req: Request) => {
     const { orderId, bookingId } = body;
 
     if (!orderId || !bookingId) {
-      return new Response(
-        JSON.stringify({ error: "Missing orderId or bookingId" }),
-        { status: 400, headers: { "Content-Type": "application/json" } },
-      );
+      return json({ error: "Missing orderId or bookingId" }, 400);
     }
 
     // Fetch booking from database
@@ -183,10 +220,7 @@ Deno.serve(async (req: Request) => {
 
     if (bookingError || !booking) {
       console.error("[Capture PayPal Order] Booking not found:", bookingError);
-      return new Response(JSON.stringify({ error: "Booking not found" }), {
-        status: 404,
-        headers: { "Content-Type": "application/json" },
-      });
+      return json({ error: "Booking not found" }, 404);
     }
 
     // Validate booking ownership
@@ -195,18 +229,12 @@ Deno.serve(async (req: Request) => {
         bookingUserId: booking.userId,
         requestUserId: user.id,
       });
-      return new Response(
-        JSON.stringify({ error: "Unauthorized: You don't own this booking" }),
-        { status: 403, headers: { "Content-Type": "application/json" } },
-      );
+      return json({ error: "Unauthorized: You don't own this booking" }, 403);
     }
 
     // Validate PayPal order ID matches
     if (booking.paypal_order_id !== orderId) {
-      return new Response(
-        JSON.stringify({ error: "PayPal order ID mismatch" }),
-        { status: 400, headers: { "Content-Type": "application/json" } },
-      );
+      return json({ error: "PayPal order ID mismatch" }, 400);
     }
 
     // Check if already paid (idempotency check)
@@ -220,15 +248,20 @@ Deno.serve(async (req: Request) => {
         .single();
 
       if (existingTransaction) {
-        return new Response(
-          JSON.stringify({
-            success: true,
-            message: "Payment already processed",
-            captureId: existingTransaction.paypal_capture_id,
-          }),
-          { status: 200, headers: { "Content-Type": "application/json" } },
-        );
+        return json({
+          success: true,
+          message: "Payment already processed",
+          captureId: existingTransaction.paypal_capture_id,
+        });
       }
+    }
+
+    // The amount charged is the booking fee stored on the booking
+    // (same source as create-paypal-order and the Stripe flow)
+    const expectedAmount = Math.round(Number(booking.fee ?? 0) * 100) / 100;
+    if (!(expectedAmount > 0)) {
+      console.error("[Capture PayPal Order] No fee on booking:", bookingId);
+      return json({ error: "No fee amount found for this booking" }, 400);
     }
 
     // Get PayPal access token
@@ -240,18 +273,40 @@ Deno.serve(async (req: Request) => {
         "[Capture PayPal Order] Failed to get PayPal access token:",
         error,
       );
-      return new Response(
-        JSON.stringify({
+      return json(
+        {
           error: "Failed to authenticate with PayPal",
           details: error instanceof Error ? error.message : "Unknown error",
-        }),
-        {
-          status: 500,
-          headers: {
-            "Content-Type": "application/json",
-            "Access-Control-Allow-Origin": "*",
-          },
         },
+        500,
+      );
+    }
+
+    // Check the order amount BEFORE capturing, so a wrong amount is never charged
+    try {
+      const order = await getPayPalOrder(accessToken, orderId);
+      const orderAmount = order.purchase_units?.[0]?.amount;
+      if (!amountMatches(orderAmount, expectedAmount)) {
+        console.error("[Capture PayPal Order] Order amount mismatch:", {
+          order: orderAmount,
+          expected: expectedAmount,
+        });
+        return json(
+          {
+            error:
+              "Amount mismatch. The PayPal order does not match the booking fee.",
+          },
+          400,
+        );
+      }
+    } catch (error) {
+      console.error("[Capture PayPal Order] Failed to read PayPal order:", error);
+      return json(
+        {
+          error: "Failed to read PayPal order",
+          details: error instanceof Error ? error.message : "Unknown error",
+        },
+        502,
       );
     }
 
@@ -264,18 +319,12 @@ Deno.serve(async (req: Request) => {
         "[Capture PayPal Order] Failed to capture PayPal order:",
         error,
       );
-      return new Response(
-        JSON.stringify({
+      return json(
+        {
           error: "Failed to capture PayPal order",
           details: error instanceof Error ? error.message : "Unknown error",
-        }),
-        {
-          status: 500,
-          headers: {
-            "Content-Type": "application/json",
-            "Access-Control-Allow-Origin": "*",
-          },
         },
+        500,
       );
     }
 
@@ -292,12 +341,12 @@ Deno.serve(async (req: Request) => {
         .update({ status: "denied" })
         .eq("paypal_order_id", orderId);
 
-      return new Response(
-        JSON.stringify({
+      return json(
+        {
           error: "Payment capture failed",
           status: captureResponse.status,
-        }),
-        { status: 400, headers: { "Content-Type": "application/json" } },
+        },
+        400,
       );
     }
 
@@ -309,27 +358,23 @@ Deno.serve(async (req: Request) => {
     }
 
     const captureId = capture.id;
-    const capturedAmount = parseFloat(capture.amount.value);
-    const expectedAmount = Math.round(Number(booking.totalPrice) * 0.07 * 100) / 100;
 
-    // Verify amount matches (7% booking fee integrity check)
-    if (Math.abs(capturedAmount - expectedAmount) > 0.01) {
-      console.error("[Capture PayPal Order] Amount mismatch:", {
-        captured: capturedAmount,
-        expected: expectedAmount,
-      });
-      return new Response(
-        JSON.stringify({
+    // Integrity check on what was actually captured. The order was checked
+    // before capturing, so this should never trigger; if it does, the money
+    // was taken: log loudly so it can be refunded, and don't mark as paid.
+    if (!amountMatches(capture.amount, expectedAmount)) {
+      console.error(
+        "[Capture PayPal Order] CRITICAL captured amount mismatch, needs manual refund:",
+        { captureId, captured: capture.amount, expected: expectedAmount, bookingId },
+      );
+      return json(
+        {
           error:
             "Amount mismatch. Payment amount does not match the booking fee.",
-        }),
-        { status: 400, headers: { "Content-Type": "application/json" } },
+        },
+        400,
       );
     }
-
-    // Atomic update: Update booking and transaction in a transaction-like manner
-    // Since Supabase doesn't support multi-table transactions via client,
-    // we'll use a database function or update sequentially with checks
 
     // First, check for idempotency using unique constraint on paypal_capture_id
     const { data: existingCapture } = await supabaseAdmin
@@ -340,14 +385,11 @@ Deno.serve(async (req: Request) => {
 
     if (existingCapture) {
       // Already processed, return success
-      return new Response(
-        JSON.stringify({
-          success: true,
-          message: "Payment already processed",
-          captureId: captureId,
-        }),
-        { status: 200, headers: { "Content-Type": "application/json" } },
-      );
+      return json({
+        success: true,
+        message: "Payment already processed",
+        captureId: captureId,
+      });
     }
 
     // Update payment transaction
@@ -363,14 +405,11 @@ Deno.serve(async (req: Request) => {
     if (transactionError) {
       // If unique constraint violation, it means another request processed it
       if (transactionError.code === "23505") {
-        return new Response(
-          JSON.stringify({
-            success: true,
-            message: "Payment already processed",
-            captureId: captureId,
-          }),
-          { status: 200, headers: { "Content-Type": "application/json" } },
-        );
+        return json({
+          success: true,
+          message: "Payment already processed",
+          captureId: captureId,
+        });
       }
       console.error(
         "[Capture PayPal Order] Failed to update transaction:",
@@ -402,34 +441,19 @@ Deno.serve(async (req: Request) => {
       throw new Error("Failed to update booking after payment capture");
     }
 
-    return new Response(
-      JSON.stringify({
-        success: true,
-        captureId: captureId,
-        message: "Payment captured successfully",
-      }),
-      {
-        status: 200,
-        headers: {
-          "Content-Type": "application/json",
-          "Access-Control-Allow-Origin": "*",
-        },
-      },
-    );
+    return json({
+      success: true,
+      captureId: captureId,
+      message: "Payment captured successfully",
+    });
   } catch (error) {
     console.error("[Capture PayPal Order] Error:", error);
-    return new Response(
-      JSON.stringify({
+    return json(
+      {
         error: "Internal server error",
         message: error instanceof Error ? error.message : "Unknown error",
-      }),
-      {
-        status: 500,
-        headers: {
-          "Content-Type": "application/json",
-          "Access-Control-Allow-Origin": "*",
-        },
       },
+      500,
     );
   }
 });

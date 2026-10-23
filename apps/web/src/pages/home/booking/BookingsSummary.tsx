@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PrimarySearchAppBar from "@/components/home/AppBar";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import bookingService from "@/services/api/bookingService";
@@ -22,12 +22,8 @@ import {
   ContactRound,
   ChevronLeft,
   ChevronRight,
+  MessageCircle,
 } from "lucide-react";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import { userService } from "@/services/api/userService";
 import { User } from "@/types/user.types";
 import { useToast } from "@/hooks/use-toast";
@@ -40,6 +36,9 @@ import { jsPDF } from "jspdf";
 import logoImage from "@/assets/logo/logoBOOKinAL.png";
 import { useTranslation } from "react-i18next";
 import { getInsurancePlanNameLabel } from "@/lib/insurancePlans";
+import { buildWhatsAppLink, clientToProviderMessage } from "@/lib/whatsapp";
+
+const WHATSAPP_GREEN = "#25D366";
 import ReviewModal from "@/components/reviews/ReviewModal";
 import { useTheme } from "@/context/ThemeContext";
 import { getBookingThemeTokens } from "./bookingTheme";
@@ -211,8 +210,8 @@ const generateInvoicePDF = async (booking: Booking) => {
   addTableRow("Check-out Date", formatDate(new Date(booking.endDate)));
   if (booking.pickUpLocation) addTableRow("Pick-up Location", booking.pickUpLocation, true);
   if (booking.dropOffLocation) addTableRow("Drop-off Location", booking.dropOffLocation);
-  if (booking.pickUpTime) addTableRow("Pick-up Time", booking.pickUpTime, true);
-  if (booking.dropOffTime) addTableRow("Drop-off Time", booking.dropOffTime);
+  if (booking.pickUpTime) addTableRow("Pick-up Time", booking.pickUpTime.slice(0, 5), true);
+  if (booking.dropOffTime) addTableRow("Drop-off Time", booking.dropOffTime.slice(0, 5));
 
   // ── Invoice Breakdown ──
   yPos += 8;
@@ -239,7 +238,8 @@ const generateInvoicePDF = async (booking: Booking) => {
   const additionalDriver = booking.additionalDriverPrice ?? 0;
   const insurance = booking.insuranceTotal ?? 0;
   const crossBorder = booking.crossBorderDeposit ?? 0;
-  const rentalSubtotal = booking.totalPrice - fee - childSeat - additionalDriver - insurance - crossBorder;
+  const delivery = Number(booking.deliveryFee ?? 0);
+  const rentalSubtotal = booking.totalPrice - fee - childSeat - additionalDriver - insurance - crossBorder - delivery;
 
   let priceRowIdx = 0;
   const addPriceLine = (label: string, amount: number) => {
@@ -263,6 +263,7 @@ const generateInvoicePDF = async (booking: Booking) => {
   if (additionalDriver > 0) addPriceLine("Additional Driver", additionalDriver);
   if (insurance > 0) addPriceLine(booking.insurancePlanName ? `Insurance (${booking.insurancePlanName})` : "Insurance", insurance);
   if (crossBorder > 0) addPriceLine("Cross Border Deposit", crossBorder);
+  if (delivery > 0) addPriceLine("Delivery Fee", delivery);
   if (fee > 0) addPriceLine("Service Fee (5%)", fee);
 
   // Divider line
@@ -314,191 +315,138 @@ const generateInvoicePDF = async (booking: Booking) => {
   doc.save(fileName);
 };
 
-// Provider Contact Button
-function ProviderContactButton({ providerId }: { providerId: string }) {
-  const { t } = useTranslation();
-  const { isDark, isBlue } = useTheme();
+// Contact panel shown on paid bookings: WhatsApp, call and email as separate buttons
+function ProviderContactPanel({ booking }: { booking: Booking }) {
+  const { t, i18n } = useTranslation();
+  const { isDark } = useTheme();
   const [provider, setProvider] = useState<User | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  const handleOpen = async (isOpen: boolean) => {
-    setOpen(isOpen);
-    if (isOpen && !provider) {
-      try {
-        setLoading(true);
-        const data = await userService.getUserById(providerId);
-        setProvider(data);
-      } catch {
-        // silently fail — provider info unavailable
-      } finally {
-        setLoading(false);
-      }
-    }
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    userService
+      .getUserById(booking.providerId)
+      .then((data) => {
+        if (!cancelled) setProvider(data);
+      })
+      .catch(() => {
+        // provider info unavailable
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [booking.providerId]);
+
+  const whatsAppLink = provider?.phone
+    ? buildWhatsAppLink(
+        provider.phone,
+        clientToProviderMessage(booking, provider.full_name, t, i18n.language),
+      )
+    : null;
+
+  const c = {
+    panelBg: isDark ? "rgba(16,185,129,0.07)" : "#ecfdf5",
+    panelBorder: isDark ? "rgba(16,185,129,0.25)" : "#a7f3d0",
+    title: isDark ? "#ffffff" : "#064e3b",
+    text: isDark ? "rgba(255,255,255,0.75)" : "#065f46",
+    muted: isDark ? "rgba(255,255,255,0.45)" : "#047857",
+    iconBg: isDark ? "rgba(16,185,129,0.18)" : "#d1fae5",
+    outlineBg: isDark ? "rgba(255,255,255,0.04)" : "#ffffff",
   };
 
-  const bookingTk = getBookingThemeTokens({ isDark, isBlue });
-  const popBg = isDark ? '#1a1a1e' : '#ffffff';
-  const popBorder = isDark ? 'rgba(255,255,255,0.08)' : '#ede9e5';
-  const rowBg = isDark ? 'rgba(255,255,255,0.04)' : '#f5f2ee';
-  const rowBorderC = isDark ? 'rgba(255,255,255,0.07)' : '#ede9e5';
-  const rowText = isDark ? '#ffffff' : '#1a1a1a';
-  const mutedText = isDark ? 'rgba(255,255,255,0.40)' : '#6b6663';
-  const triggerBorder = isDark ? 'rgba(255,255,255,0.12)' : '#ddd9d5';
-  const triggerText = isDark ? 'rgba(255,255,255,0.60)' : '#44403c';
+  const buttonBase =
+    "inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition-all hover:-translate-y-0.5 hover:shadow-md";
 
   return (
-    <Popover open={open} onOpenChange={handleOpen}>
-      <PopoverTrigger asChild>
-        <button
-          style={{
-            marginTop: '8px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '6px',
-            fontSize: '12px',
-            padding: '6px 12px',
-            borderRadius: '999px',
-            border: `1px solid ${triggerBorder}`,
-            color: triggerText,
-            background: 'transparent',
-            fontWeight: 600,
-            cursor: 'pointer',
-            transition: 'border-color 0.2s, color 0.2s',
-          }}
-          onMouseEnter={e => {
-            (e.currentTarget as HTMLButtonElement).style.borderColor = bookingTk.brand;
-            (e.currentTarget as HTMLButtonElement).style.color = bookingTk.brand;
-          }}
-          onMouseLeave={e => {
-            (e.currentTarget as HTMLButtonElement).style.borderColor = triggerBorder;
-            (e.currentTarget as HTMLButtonElement).style.color = triggerText;
-          }}
+    <div
+      className="mx-4 mb-4 flex flex-col gap-4 rounded-2xl p-4 sm:mx-5 sm:mb-5 lg:flex-row lg:items-center lg:justify-between"
+      style={{ background: c.panelBg, border: `1px solid ${c.panelBorder}` }}
+    >
+      {/* Who */}
+      <div className="flex min-w-0 items-start gap-3">
+        <div
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full"
+          style={{ background: c.iconBg }}
         >
-          <ContactRound style={{ width: 14, height: 14 }} />
-          {t("booking.contactProvider", "Contact Provider")}
-        </button>
-      </PopoverTrigger>
-      <PopoverContent
-        align="end"
-        style={{
-          width: 288,
-          padding: 0,
-          boxShadow: '0 24px 48px rgba(0,0,0,0.4)',
-          borderRadius: 16,
-          overflow: 'hidden',
-          border: `1px solid ${popBorder}`,
-          background: popBg,
-        }}
-      >
-        {/* Header */}
-        <div style={{
-          background: 'linear-gradient(to right, #b91c1c, #7f1d1d, #000000)',
-          padding: '14px 16px',
-        }}>
-          <p style={{ color: '#ffffff', fontWeight: 700, fontSize: 14, letterSpacing: '-0.02em' }}>
-            {t("booking.providerContact", "Provider Contact")}
+          <ContactRound className="h-5 w-5 text-emerald-500" />
+        </div>
+        <div className="min-w-0">
+          <p className="text-sm font-bold" style={{ color: c.title }}>
+            {t("booking.providerPanel.title")}
+            {provider?.full_name ? ` · ${provider.full_name}` : ""}
           </p>
-          {!loading && provider?.full_name && (
-            <p style={{ color: 'rgba(252,165,165,0.8)', fontSize: 12, marginTop: 2 }}>{provider.full_name}</p>
+          <p className="text-xs" style={{ color: c.muted }}>
+            {loading
+              ? t("booking.providerPanel.loading")
+              : provider
+                ? t("booking.providerPanel.subtitle")
+                : t("booking.providerPanel.unavailable")}
+          </p>
+          {provider && (
+            <div className="mt-1.5 flex flex-wrap gap-x-4 gap-y-1 text-sm" style={{ color: c.text }}>
+              {provider.phone && (
+                <span className="inline-flex items-center gap-1.5">
+                  <Phone className="h-3.5 w-3.5" /> {provider.phone}
+                </span>
+              )}
+              {provider.email && (
+                <span className="inline-flex min-w-0 items-center gap-1.5">
+                  <Mail className="h-3.5 w-3.5 shrink-0" />
+                  <span className="truncate">{provider.email}</span>
+                </span>
+              )}
+            </div>
           )}
         </div>
+      </div>
 
-        {/* Content */}
-        <div style={{ padding: 16, display: 'flex', flexDirection: 'column', gap: 10 }}>
-          {loading ? (
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px 0' }}>
-              <div style={{
-                width: 20, height: 20, borderRadius: '50%',
-                border: `2px solid ${bookingTk.brand}`, borderTopColor: 'transparent',
-                animation: 'spin 0.8s linear infinite',
-              }} />
-            </div>
-          ) : provider ? (
-            <>
-              {provider.phone ? (
-                <a
-                  href={`tel:${provider.phone}`}
-                  style={{
-                    display: 'flex', alignItems: 'center', gap: 12,
-                    padding: 12, borderRadius: 12,
-                    background: rowBg, border: `1px solid ${rowBorderC}`,
-                    textDecoration: 'none', transition: 'opacity 0.2s',
-                  }}
-                  onMouseEnter={e => (e.currentTarget as HTMLAnchorElement).style.opacity = '0.8'}
-                  onMouseLeave={e => (e.currentTarget as HTMLAnchorElement).style.opacity = '1'}
-                >
-                  <div style={{
-                    width: 32, height: 32, borderRadius: '50%',
-                    background: 'linear-gradient(135deg, #dc2626, #7f1d1d)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-                  }}>
-                    <Phone style={{ width: 16, height: 16, color: '#ffffff' }} />
-                  </div>
-                  <div style={{ minWidth: 0 }}>
-                    <p style={{ fontSize: 11, color: bookingTk.brand, fontWeight: 500 }}>
-                      {t("booking.callPhone", "Call Phone")}
-                    </p>
-                    <p style={{ fontSize: 14, fontWeight: 600, color: rowText, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      {provider.phone}
-                    </p>
-                  </div>
-                </a>
-              ) : (
-                <div style={{
-                  display: 'flex', alignItems: 'center', gap: 12,
-                  padding: 12, borderRadius: 12,
-                  background: rowBg, border: `1px solid ${rowBorderC}`,
-                }}>
-                  <div style={{
-                    width: 32, height: 32, borderRadius: '50%',
-                    background: isDark ? 'rgba(255,255,255,0.08)' : '#e5e2de',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-                  }}>
-                    <Phone style={{ width: 16, height: 16, color: mutedText }} />
-                  </div>
-                  <p style={{ fontSize: 14, color: mutedText }}>
-                    {t("booking.noPhone", "No phone number available")}
-                  </p>
-                </div>
-              )}
-
-              <a
-                href={`mailto:${provider.email}`}
-                style={{
-                  display: 'flex', alignItems: 'center', gap: 12,
-                  padding: 12, borderRadius: 12,
-                  background: rowBg, border: `1px solid ${rowBorderC}`,
-                  textDecoration: 'none', transition: 'opacity 0.2s',
-                }}
-                onMouseEnter={e => (e.currentTarget as HTMLAnchorElement).style.opacity = '0.8'}
-                onMouseLeave={e => (e.currentTarget as HTMLAnchorElement).style.opacity = '1'}
-              >
-                <div style={{
-                  width: 32, height: 32, borderRadius: '50%',
-                  background: isDark ? '#222' : '#111115',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-                }}>
-                  <Mail style={{ width: 16, height: 16, color: '#ffffff' }} />
-                </div>
-                <div style={{ minWidth: 0 }}>
-                  <p style={{ fontSize: 11, color: mutedText, fontWeight: 500 }}>
-                    {t("booking.sendEmail", "Send Email")}
-                  </p>
-                  <p style={{ fontSize: 14, fontWeight: 600, color: rowText, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                    {provider.email}
-                  </p>
-                </div>
-              </a>
-            </>
-          ) : (
-            <p style={{ fontSize: 14, color: mutedText, textAlign: 'center', padding: '12px 0' }}>
-              {t("booking.providerInfoUnavailable", "Provider info unavailable")}
+      {/* Actions */}
+      {provider && (
+        <div className="grid shrink-0 grid-cols-1 gap-2 sm:grid-cols-3 lg:flex">
+          {whatsAppLink && (
+            <a
+              href={whatsAppLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`${buttonBase} text-white`}
+              style={{ background: WHATSAPP_GREEN }}
+            >
+              <MessageCircle className="h-4 w-4" />
+              {t("booking.providerPanel.whatsapp")}
+            </a>
+          )}
+          {provider.phone && (
+            <a
+              href={`tel:${provider.phone}`}
+              className={`${buttonBase} border border-emerald-500/40`}
+              style={{ background: c.outlineBg, color: isDark ? "#34d399" : "#047857" }}
+            >
+              <Phone className="h-4 w-4" />
+              {t("booking.providerPanel.call")}
+            </a>
+          )}
+          {provider.email && (
+            <a
+              href={`mailto:${provider.email}`}
+              className={`${buttonBase} border border-sky-500/40`}
+              style={{ background: c.outlineBg, color: isDark ? "#38bdf8" : "#0369a1" }}
+            >
+              <Mail className="h-4 w-4" />
+              {t("booking.providerPanel.email")}
+            </a>
+          )}
+          {!provider.phone && !provider.email && (
+            <p className="text-sm" style={{ color: c.muted }}>
+              {t("booking.noPhone", "No phone number available")}
             </p>
           )}
         </div>
-      </PopoverContent>
-    </Popover>
+      )}
+    </div>
   );
 }
 
@@ -1128,7 +1076,7 @@ export default function BookingsSummary() {
                                 }}
                               />
                               <span>
-                                {booking.pickUpTime} → {booking.dropOffTime}
+                                {booking.pickUpTime?.slice(0, 5)} → {booking.dropOffTime?.slice(0, 5)}
                               </span>
                             </div>
                           )}
@@ -1283,7 +1231,8 @@ export default function BookingsSummary() {
                             const additionalDriver = booking.additionalDriverPrice ?? 0;
                             const insurance = booking.insuranceTotal ?? 0;
                             const crossBorder = booking.crossBorderDeposit ?? 0;
-                            const rentalSubtotal = booking.totalPrice - fee - childSeat - additionalDriver - insurance - crossBorder;
+                            const delivery = Number(booking.deliveryFee ?? 0);
+                            const rentalSubtotal = booking.totalPrice - fee - childSeat - additionalDriver - insurance - crossBorder - delivery;
                             return (
                               <div style={{ display: "flex", flexDirection: "column", gap: 4, alignItems: "flex-end" }}>
                                 {/* Rental Price */}
@@ -1324,6 +1273,14 @@ export default function BookingsSummary() {
                                   <div style={{ display: "flex", justifyContent: "space-between", gap: 16, width: "100%", fontSize: 13 }}>
                                     <span style={{ color: tk.dimText }}>{t("billing.crossBorderDeposit", "Cross border deposit")}</span>
                                     <span style={{ fontWeight: 600, color: tk.pageText }}>€{crossBorder.toFixed(2)}</span>
+                                  </div>
+                                )}
+
+                                {/* Delivery Fee */}
+                                {delivery > 0 && (
+                                  <div style={{ display: "flex", justifyContent: "space-between", gap: 16, width: "100%", fontSize: 13 }}>
+                                    <span style={{ color: tk.dimText }}>{t("billing.deliveryFee", "Delivery fee")}</span>
+                                    <span style={{ fontWeight: 600, color: tk.pageText }}>€{delivery.toFixed(2)}</span>
                                   </div>
                                 )}
 
@@ -1642,9 +1599,6 @@ export default function BookingsSummary() {
                                     {t("review.addReview", "Add Review")}
                                   </button>
                                 )}
-                                <ProviderContactButton
-                                  providerId={booking.providerId}
-                                />
                               </div>
                             )}
 
@@ -1727,6 +1681,12 @@ export default function BookingsSummary() {
                       </div>
                     </div>
                   </div>
+
+                  {/* Provider contact (unlocked once the fee is paid) */}
+                  {booking.payment_status === "paid" &&
+                    booking.status !== "canceled" && (
+                      <ProviderContactPanel booking={booking} />
+                    )}
                 </div>
               );
             })}

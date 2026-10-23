@@ -532,7 +532,16 @@
       "confirmedFailed": "Confirmed by provider · Payment failed, please retry"
     },
     "currentlyRented": "Currently rented — you can still book for another period",
-    "underMaintenance": "Under Maintenance"
+    "underMaintenance": "Under Maintenance",
+    "providerPanel": {
+      "title": "Contact your provider",
+      "subtitle": "Your booking is paid. Get in touch to arrange the pick-up or check-in.",
+      "whatsapp": "WhatsApp",
+      "call": "Call",
+      "email": "Email",
+      "loading": "Loading contact details…",
+      "unavailable": "Contact details are not available right now."
+    }
   },
   "user": {
     "fullName": "Full Name",
@@ -963,6 +972,32 @@
       "noBookings": "No bookings found",
       "adjustFilters": "Try adjusting your filters",
       "noBookingsYet": "You don't have any bookings yet"
+    },
+    "details": {
+      "pickUpDropOff": "Pick-up & drop-off",
+      "pickUp": "Pick-up",
+      "dropOff": "Drop-off",
+      "securityDeposit": "Security deposit (held at pick-up, refundable)",
+      "priceBreakdown": "Price breakdown",
+      "rental": "Rental",
+      "insurance": "Insurance",
+      "noInsurance": "None",
+      "free": "Free",
+      "childSeat": "Child seat",
+      "additionalDriver": "Additional driver",
+      "crossBorder": "Cross border deposit",
+      "delivery": "Delivery fee",
+      "serviceFee": "Service fee (paid online to BookinAL)",
+      "total": "Total",
+      "toCollect": "To collect from the client"
+    },
+    "contactPanel": {
+      "title": "Contact the client",
+      "subtitle": "Payment received. Get in touch to arrange the pick-up or check-in.",
+      "whatsapp": "WhatsApp",
+      "call": "Call",
+      "email": "Email",
+      "locked": "Contact details unlock once the client pays the service fee."
     }
   },
   "cars": {
@@ -1890,5 +1925,14 @@
     "ctaTitle": "Ready to plan your trip?",
     "ctaCars": "Browse cars",
     "ctaStays": "Browse stays"
+  },
+  "whatsapp": {
+    "button": "Message on WhatsApp",
+    "opensWhatsApp": "Opens WhatsApp with a ready-made message",
+    "yourBooking": "your booking",
+    "clientToProvider": "Hi, I booked {{property}} on BookinAL (booking {{ref}}, {{dates}}). Looking forward to it!\n\nBooking details: {{link}}",
+    "clientToProviderNamed": "Hi {{name}}, I booked {{property}} on BookinAL (booking {{ref}}, {{dates}}). Looking forward to it!\n\nBooking details: {{link}}",
+    "providerToClient": "Hi, I'm contacting you from BookinAL about your booking {{ref}} for {{property}} ({{dates}}). Where would you like to meet for the pick-up or check-in?\n\nBooking details: {{link}}",
+    "providerToClientNamed": "Hi {{name}}, I'm contacting you from BookinAL about your booking {{ref}} for {{property}} ({{dates}}). Where would you like to meet for the pick-up or check-in?\n\nBooking details: {{link}}"
   }
 }

@@ -2,6 +2,8 @@ import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Booking } from "@/types/booking.type";
+import { buildWhatsAppLink, providerToClientMessage } from "@/lib/whatsapp";
+import { getInsurancePlanNameLabel } from "@/lib/insurancePlans";
 import { useTheme } from "@/context/ThemeContext";
 import {
   getBookingsByProviderId,
@@ -27,12 +29,15 @@ import {
   Eye,
   Filter,
   ContactRound,
+  MessageCircle,
+  MapPin,
+  ShieldCheck,
+  Baby,
+  UserPlus,
+  Globe,
+  Truck,
+  Wallet,
 } from "lucide-react";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import {
   Dialog,
   DialogContent,
@@ -160,93 +165,253 @@ const getPropertyRoute = (booking: Booking) => {
   }
 };
 
-// Contact Client Popover Button
-function ContactClientButton({ booking }: { booking: Booking }) {
-  const { t } = useTranslation();
-  const contactUnlocked = booking.payment_status === "paid";
+// Contact panel shown on paid bookings: call, WhatsApp and email as separate buttons
+function ClientContactPanel({
+  booking,
+  isDark,
+}: {
+  booking: Booking;
+  isDark: boolean;
+}) {
+  const { t, i18n } = useTranslation();
+  const whatsAppLink = buildWhatsAppLink(
+    booking.contactPhone,
+    providerToClientMessage(booking, t, i18n.language),
+  );
+
+  const c = {
+    panelBg: isDark ? "rgba(16,185,129,0.07)" : "#ecfdf5",
+    panelBorder: isDark ? "rgba(16,185,129,0.25)" : "#a7f3d0",
+    title: isDark ? "#ffffff" : "#064e3b",
+    text: isDark ? "rgba(255,255,255,0.75)" : "#065f46",
+    muted: isDark ? "rgba(255,255,255,0.45)" : "#047857",
+    iconBg: isDark ? "rgba(16,185,129,0.18)" : "#d1fae5",
+    outlineBg: isDark ? "rgba(255,255,255,0.04)" : "#ffffff",
+  };
+
+  const buttonBase =
+    "inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition-all hover:-translate-y-0.5 hover:shadow-md";
 
   return (
-    <Popover>
-      <PopoverTrigger asChild>
-        <button className="mt-1 inline-flex items-center gap-1.5 text-xs font-medium text-[#e41e20]/80 border border-[#e41e20]/20 rounded-lg px-2.5 py-1.5 hover:bg-[#e41e20]/10 transition-colors">
-          <ContactRound className="w-3.5 h-3.5" />
-          {t("bookingManagement.contactClient", "Contact Client")}
-        </button>
-      </PopoverTrigger>
-      <PopoverContent
-        align="start"
-        className="w-72 p-0 shadow-2xl rounded-2xl overflow-hidden border border-white/10 bg-[#1a1a1a]"
-      >
-        {/* Header */}
-        <div className="bg-[#111] border-b border-white/5 px-4 py-3">
-          <p className="text-white font-semibold text-sm">
-            {t("bookingManagement.clientContact", "Client Contact")}
-          </p>
-          <p className="text-white/40 text-xs mt-0.5">
-            {booking.requesterName}
-          </p>
+    <div
+      className="mt-4 flex flex-col gap-4 rounded-2xl p-4 lg:flex-row lg:items-center lg:justify-between"
+      style={{ background: c.panelBg, border: `1px solid ${c.panelBorder}` }}
+    >
+      {/* Who */}
+      <div className="flex min-w-0 items-start gap-3">
+        <div
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full"
+          style={{ background: c.iconBg }}
+        >
+          <ContactRound className="h-5 w-5 text-emerald-500" />
         </div>
-
-        {/* Contact Actions */}
-        <div className="p-4 space-y-2.5">
-          {contactUnlocked && booking.contactPhone ? (
-            <a
-              href={`tel:${booking.contactPhone}`}
-              className="flex items-center gap-3 p-3 rounded-xl border border-emerald-500/20 bg-emerald-500/10 hover:bg-emerald-500/20 transition-colors"
-            >
-              <div className="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center flex-shrink-0">
-                <Phone className="w-4 h-4 text-emerald-400" />
-              </div>
-              <div className="min-w-0">
-                <p className="text-xs text-emerald-400 font-medium">
-                  {t("booking.callPhone", "Call Phone")}
-                </p>
-                <p className="text-sm font-semibold text-white truncate">
-                  {booking.contactPhone}
-                </p>
-              </div>
-            </a>
-          ) : (
-            <div className="flex items-center gap-3 p-3 rounded-xl border border-white/5 bg-white/[0.03]">
-              <div className="w-8 h-8 rounded-full bg-white/[0.06] flex items-center justify-center flex-shrink-0">
-                <Phone className="w-4 h-4 text-white/25" />
-              </div>
-              <p className="text-sm text-white/30">
-                {t("booking.noPhone", "No phone number available")}
-              </p>
-            </div>
-          )}
-
-          {contactUnlocked && booking.contactMail ? (
-            <a
-              href={`mailto:${booking.contactMail}`}
-              className="flex items-center gap-3 p-3 rounded-xl border border-sky-500/20 bg-sky-500/10 hover:bg-sky-500/20 transition-colors"
-            >
-              <div className="w-8 h-8 rounded-full bg-sky-500/20 flex items-center justify-center flex-shrink-0">
-                <Mail className="w-4 h-4 text-sky-400" />
-              </div>
-              <div className="min-w-0">
-                <p className="text-xs text-sky-400 font-medium">
-                  {t("booking.sendEmail", "Send Email")}
-                </p>
-                <p className="text-sm font-semibold text-white truncate">
-                  {booking.contactMail}
-                </p>
-              </div>
-            </a>
-          ) : null}
-
-          {!contactUnlocked && (
-            <div className="rounded-xl border border-amber-500/20 bg-amber-500/10 p-3 text-sm text-amber-200">
-              {t(
-                "bookingManagement.contactLocked",
-                "Client contact details unlock only after payment is completed.",
-              )}
-            </div>
-          )}
+        <div className="min-w-0">
+          <p className="text-sm font-bold" style={{ color: c.title }}>
+            {t("bookingManagement.contactPanel.title")} · {booking.requesterName}
+          </p>
+          <p className="text-xs" style={{ color: c.muted }}>
+            {t("bookingManagement.contactPanel.subtitle")}
+          </p>
+          <div className="mt-1.5 flex flex-wrap gap-x-4 gap-y-1 text-sm" style={{ color: c.text }}>
+            {booking.contactPhone && (
+              <span className="inline-flex items-center gap-1.5">
+                <Phone className="h-3.5 w-3.5" /> {booking.contactPhone}
+              </span>
+            )}
+            {booking.contactMail && (
+              <span className="inline-flex min-w-0 items-center gap-1.5">
+                <Mail className="h-3.5 w-3.5 shrink-0" />
+                <span className="truncate">{booking.contactMail}</span>
+              </span>
+            )}
+          </div>
         </div>
-      </PopoverContent>
-    </Popover>
+      </div>
+
+      {/* Actions */}
+      <div className="grid shrink-0 grid-cols-1 gap-2 sm:grid-cols-3 lg:flex">
+        {whatsAppLink && (
+          <a
+            href={whatsAppLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`${buttonBase} text-white`}
+            style={{ background: "#25D366" }}
+          >
+            <MessageCircle className="h-4 w-4" />
+            {t("bookingManagement.contactPanel.whatsapp")}
+          </a>
+        )}
+        {booking.contactPhone && (
+          <a
+            href={`tel:${booking.contactPhone}`}
+            className={`${buttonBase} border border-emerald-500/40`}
+            style={{ background: c.outlineBg, color: isDark ? "#34d399" : "#047857" }}
+          >
+            <Phone className="h-4 w-4" />
+            {t("bookingManagement.contactPanel.call")}
+          </a>
+        )}
+        {booking.contactMail && (
+          <a
+            href={`mailto:${booking.contactMail}`}
+            className={`${buttonBase} border border-sky-500/40`}
+            style={{ background: c.outlineBg, color: isDark ? "#38bdf8" : "#0369a1" }}
+          >
+            <Mail className="h-4 w-4" />
+            {t("bookingManagement.contactPanel.email")}
+          </a>
+        )}
+        {!booking.contactPhone && !booking.contactMail && (
+          <p className="text-sm" style={{ color: c.muted }}>
+            {t("booking.noPhone", "No phone number available")}
+          </p>
+        )}
+      </div>
+    </div>
+  );
+}
+
+type DetailsTokens = {
+  pageText: string;
+  dimText: string;
+  labelText: string;
+  mutedText: string;
+  statBg: string;
+  divider: string;
+  iconMuted: string;
+};
+
+const money = (value: number) => `€${value.toFixed(2)}`;
+
+// Pick-up / drop-off and the full price breakdown of a booking
+function BookingDetails({ booking, tk }: { booking: Booking; tk: DetailsTokens }) {
+  const { t } = useTranslation();
+  const isCar = booking.propertyType === "car";
+
+  const fee = Number(booking.fee ?? 0);
+  const childSeat = Number(booking.childSeatPrice ?? 0);
+  const additionalDriver = Number(booking.additionalDriverPrice ?? 0);
+  const delivery = Number(booking.deliveryFee ?? 0);
+  const crossBorder = Number(booking.crossBorderDeposit ?? 0);
+  const insurance = Number(booking.insuranceTotal ?? 0);
+  const total = Number(booking.totalPrice ?? 0);
+  const rental = Math.max(0, total - fee - childSeat - additionalDriver - delivery - crossBorder - insurance);
+  const toCollect = Math.max(0, total - fee);
+  const securityDeposit = isCar
+    ? Number((booking.propertyData as { depositAmount?: number } | null)?.depositAmount ?? 0)
+    : 0;
+
+  const insuranceLabel = booking.insurancePlanName
+    ? `${t("bookingManagement.details.insurance")} – ${getInsurancePlanNameLabel(booking.insurancePlanName, t)}`
+    : t("bookingManagement.details.insurance");
+  const insuranceHint =
+    booking.insurancePricePerDay != null && Number(booking.insurancePricePerDay) > 0
+      ? t("common.pricePerDay", { price: Number(booking.insurancePricePerDay).toFixed(2) })
+      : undefined;
+
+  const lines: { icon: React.ElementType; label: string; hint?: string; value: string }[] = [
+    { icon: Calendar, label: t("bookingManagement.details.rental"), value: money(rental) },
+  ];
+  if (isCar) {
+    lines.push({
+      icon: ShieldCheck,
+      label: booking.insurancePlanName || booking.insuranceTotal != null ? insuranceLabel : t("bookingManagement.details.insurance"),
+      hint: insuranceHint,
+      value: booking.insurancePlanName
+        ? insurance > 0 ? money(insurance) : t("bookingManagement.details.free")
+        : t("bookingManagement.details.noInsurance"),
+    });
+  }
+  if (childSeat > 0) lines.push({ icon: Baby, label: t("bookingManagement.details.childSeat"), value: money(childSeat) });
+  if (additionalDriver > 0) lines.push({ icon: UserPlus, label: t("bookingManagement.details.additionalDriver"), value: money(additionalDriver) });
+  if (crossBorder > 0) lines.push({ icon: Globe, label: t("bookingManagement.details.crossBorder"), value: money(crossBorder) });
+  if (isCar && (delivery > 0 || booking.pickUpLocation)) {
+    lines.push({
+      icon: Truck,
+      label: t("bookingManagement.details.delivery"),
+      value: delivery > 0 ? money(delivery) : t("bookingManagement.details.free"),
+    });
+  }
+
+  const sectionTitle = "text-[10px] uppercase tracking-widest mb-2";
+
+  return (
+    <div
+      className="mt-4 grid gap-4 rounded-xl p-4 md:grid-cols-2"
+      style={{ background: tk.statBg }}
+    >
+      {/* Pick-up / drop-off */}
+      {isCar && (
+        <div>
+          <p className={sectionTitle} style={{ color: tk.labelText }}>
+            {t("bookingManagement.details.pickUpDropOff")}
+          </p>
+          <div className="space-y-2.5">
+            {[
+              { label: t("bookingManagement.details.pickUp"), place: booking.pickUpLocation, time: booking.pickUpTime },
+              { label: t("bookingManagement.details.dropOff"), place: booking.dropOffLocation, time: booking.dropOffTime },
+            ].map(({ label, place, time }) => (
+              <div key={label} className="flex items-start gap-2.5">
+                <MapPin className="mt-0.5 h-4 w-4 shrink-0" style={{ color: tk.iconMuted }} />
+                <div className="min-w-0">
+                  <p className="text-xs" style={{ color: tk.labelText }}>{label}</p>
+                  <p className="text-sm font-medium" style={{ color: tk.pageText }}>
+                    {place || "—"}
+                    {time && <span className="ml-1.5 font-normal" style={{ color: tk.dimText }}>· {time.slice(0, 5)}</span>}
+                  </p>
+                </div>
+              </div>
+            ))}
+            {securityDeposit > 0 && (
+              <div className="flex items-start gap-2.5">
+                <Wallet className="mt-0.5 h-4 w-4 shrink-0" style={{ color: tk.iconMuted }} />
+                <div className="min-w-0">
+                  <p className="text-xs" style={{ color: tk.labelText }}>{t("bookingManagement.details.securityDeposit")}</p>
+                  <p className="text-sm font-medium" style={{ color: tk.pageText }}>{money(securityDeposit)}</p>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Price breakdown */}
+      <div className={isCar ? "" : "md:col-span-2"}>
+        <p className={sectionTitle} style={{ color: tk.labelText }}>
+          {t("bookingManagement.details.priceBreakdown")}
+        </p>
+        <ul className="space-y-1.5">
+          {lines.map(({ icon: Icon, label, hint, value }) => (
+            <li key={label} className="flex items-start justify-between gap-3 text-sm">
+              <span className="flex min-w-0 items-start gap-2" style={{ color: tk.dimText }}>
+                <Icon className="mt-0.5 h-3.5 w-3.5 shrink-0" style={{ color: tk.iconMuted }} />
+                <span>
+                  {label}
+                  {hint && <span className="ml-1 text-xs" style={{ color: tk.labelText }}>({hint})</span>}
+                </span>
+              </span>
+              <span className="shrink-0 font-medium" style={{ color: tk.pageText }}>{value}</span>
+            </li>
+          ))}
+          <li
+            className="flex items-start justify-between gap-3 pt-1.5 text-sm"
+            style={{ borderTop: `1px solid ${tk.divider}` }}
+          >
+            <span style={{ color: tk.dimText }}>{t("bookingManagement.details.serviceFee")}</span>
+            <span className="shrink-0 font-medium" style={{ color: tk.pageText }}>{money(fee)}</span>
+          </li>
+          <li className="flex items-start justify-between gap-3 text-sm font-semibold">
+            <span style={{ color: tk.pageText }}>{t("bookingManagement.details.total")}</span>
+            <span className="shrink-0" style={{ color: tk.pageText }}>{money(total)}</span>
+          </li>
+          <li className="flex items-start justify-between gap-3 rounded-lg bg-emerald-500/10 px-2.5 py-1.5 text-sm font-semibold text-emerald-500">
+            <span>{t("bookingManagement.details.toCollect")}</span>
+            <span className="shrink-0">{money(toCollect)}</span>
+          </li>
+        </ul>
+      </div>
+    </div>
   );
 }
 
@@ -1104,9 +1269,11 @@ export default function BookingsManagement() {
                           ? booking.requesterName
                           : "—"}
                       </p>
-                      {booking.status === "confirmed" &&
-                        booking.payment_status === "paid" && (
-                          <ContactClientButton booking={booking} />
+                      {booking.payment_status !== "paid" &&
+                        booking.status !== "canceled" && (
+                          <p className="mt-1 text-xs" style={{ color: tk.labelText }}>
+                            {t("bookingManagement.contactPanel.locked")}
+                          </p>
                         )}
                     </div>
 
@@ -1149,7 +1316,7 @@ export default function BookingsManagement() {
                             className="ml-5 text-xs"
                             style={{ color: tk.labelText }}
                           >
-                            {booking.pickUpTime} – {booking.dropOffTime}
+                            {booking.pickUpTime.slice(0, 5)} – {booking.dropOffTime.slice(0, 5)}
                           </p>
                         )}
                       </div>
@@ -1245,6 +1412,15 @@ export default function BookingsManagement() {
                       </div>
                     </div>
                   </div>
+
+                  {/* Client contact (unlocked once the fee is paid) */}
+                  {booking.status === "confirmed" &&
+                    booking.payment_status === "paid" && (
+                      <ClientContactPanel booking={booking} isDark={isDark} />
+                    )}
+
+                  {/* Booking details: pick-up / drop-off, extras, price breakdown */}
+                  <BookingDetails booking={booking} tk={tk} />
 
                   {/* Cancellation reason */}
                   {booking.status === "canceled" &&

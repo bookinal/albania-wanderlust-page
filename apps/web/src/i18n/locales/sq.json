@@ -533,7 +533,16 @@
       "confirmedFailed": "Konfirmuar nga ofruesi · Pagesa dështoi, provoni përsëri"
     },
     "currentlyRented": "Aktualisht me qira — mund të rezervoni për një periudhë tjetër",
-    "underMaintenance": "Në Mirëmbajtje"
+    "underMaintenance": "Në Mirëmbajtje",
+    "providerPanel": {
+      "title": "Kontaktoni ofruesin",
+      "subtitle": "Rezervimi juaj është paguar. Kontaktoni për të organizuar marrjen ose mbërritjen.",
+      "whatsapp": "WhatsApp",
+      "call": "Telefono",
+      "email": "Email",
+      "loading": "Po ngarkohen kontaktet…",
+      "unavailable": "Kontaktet nuk janë të disponueshme tani."
+    }
   },
   "user": {
     "fullName": "Emri i plotë",
@@ -971,6 +980,32 @@
       "noBookings": "Nuk u gjetën rezervime",
       "adjustFilters": "Provo të rregullosh filtrat",
       "noBookingsYet": "Ende nuk ke ndonjë rezervim"
+    },
+    "details": {
+      "pickUpDropOff": "Marrja dhe dorëzimi",
+      "pickUp": "Marrja",
+      "dropOff": "Dorëzimi",
+      "securityDeposit": "Depozita (mbahet në marrje, e rimbursueshme)",
+      "priceBreakdown": "Detajet e çmimit",
+      "rental": "Qiraja",
+      "insurance": "Sigurimi",
+      "noInsurance": "Asnjë",
+      "free": "Falas",
+      "childSeat": "Karrige për fëmijë",
+      "additionalDriver": "Shofer shtesë",
+      "crossBorder": "Depozitë jashtë shtetit",
+      "delivery": "Tarifa e dorëzimit",
+      "serviceFee": "Tarifa e shërbimit (paguar online te BookinAL)",
+      "total": "Totali",
+      "toCollect": "Për t'u arkëtuar nga klienti"
+    },
+    "contactPanel": {
+      "title": "Kontaktoni klientin",
+      "subtitle": "Pagesa u mor. Kontaktoni për të organizuar marrjen ose mbërritjen.",
+      "whatsapp": "WhatsApp",
+      "call": "Telefono",
+      "email": "Email",
+      "locked": "Kontaktet zhbllokohen pasi klienti paguan tarifën e shërbimit."
     }
   },
   "cars": {
@@ -1907,5 +1942,14 @@
     "ctaTitle": "Gati për të planifikuar udhëtimin?",
     "ctaCars": "Shiko makinat",
     "ctaStays": "Shiko akomodimet"
+  },
+  "whatsapp": {
+    "button": "Shkruaj në WhatsApp",
+    "opensWhatsApp": "Hap WhatsApp me një mesazh të gatshëm",
+    "yourBooking": "rezervimin tuaj",
+    "clientToProvider": "Përshëndetje, rezervova {{property}} në BookinAL (rezervimi {{ref}}, {{dates}}). Shihemi së shpejti!\n\nDetajet e rezervimit: {{link}}",
+    "clientToProviderNamed": "Përshëndetje {{name}}, rezervova {{property}} në BookinAL (rezervimi {{ref}}, {{dates}}). Shihemi së shpejti!\n\nDetajet e rezervimit: {{link}}",
+    "providerToClient": "Përshëndetje, ju kontaktoj nga BookinAL për rezervimin tuaj {{ref}} për {{property}} ({{dates}}). Ku dëshironi të takohemi për marrjen ose mbërritjen?\n\nDetajet e rezervimit: {{link}}",
+    "providerToClientNamed": "Përshëndetje {{name}}, ju kontaktoj nga BookinAL për rezervimin tuaj {{ref}} për {{property}} ({{dates}}). Ku dëshironi të takohemi për marrjen ose mbërritjen?\n\nDetajet e rezervimit: {{link}}"
   }
 }

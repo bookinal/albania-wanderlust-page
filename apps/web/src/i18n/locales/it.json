@@ -532,7 +532,16 @@
       "confirmedFailed": "Confermato dal fornitore · Pagamento fallito, riprova"
     },
     "currentlyRented": "Attualmente noleggiato — puoi ancora prenotare per un altro periodo",
-    "underMaintenance": "In Manutenzione"
+    "underMaintenance": "In Manutenzione",
+    "providerPanel": {
+      "title": "Contatta il tuo fornitore",
+      "subtitle": "La prenotazione è pagata. Mettiti in contatto per organizzare il ritiro o il check-in.",
+      "whatsapp": "WhatsApp",
+      "call": "Chiama",
+      "email": "Email",
+      "loading": "Caricamento dei contatti…",
+      "unavailable": "I contatti non sono disponibili al momento."
+    }
   },
   "user": {
     "fullName": "Nome Completo",
@@ -963,6 +972,32 @@
       "noBookings": "Nessuna prenotazione trovata",
       "adjustFilters": "Prova a modificare i filtri",
       "noBookingsYet": "Non hai ancora prenotazioni"
+    },
+    "details": {
+      "pickUpDropOff": "Ritiro e riconsegna",
+      "pickUp": "Ritiro",
+      "dropOff": "Riconsegna",
+      "securityDeposit": "Deposito cauzionale (trattenuto al ritiro, rimborsabile)",
+      "priceBreakdown": "Dettaglio prezzo",
+      "rental": "Noleggio",
+      "insurance": "Assicurazione",
+      "noInsurance": "Nessuna",
+      "free": "Gratis",
+      "childSeat": "Seggiolino",
+      "additionalDriver": "Guidatore aggiuntivo",
+      "crossBorder": "Deposito per l'estero",
+      "delivery": "Costo di consegna",
+      "serviceFee": "Commissione di servizio (pagata online a BookinAL)",
+      "total": "Totale",
+      "toCollect": "Da incassare dal cliente"
+    },
+    "contactPanel": {
+      "title": "Contatta il cliente",
+      "subtitle": "Pagamento ricevuto. Mettiti in contatto per organizzare il ritiro o il check-in.",
+      "whatsapp": "WhatsApp",
+      "call": "Chiama",
+      "email": "Email",
+      "locked": "I contatti si sbloccano quando il cliente paga la commissione di servizio."
     }
   },
   "cars": {
@@ -1890,5 +1925,14 @@
     "ctaTitle": "Pronto a organizzare il viaggio?",
     "ctaCars": "Vedi le auto",
     "ctaStays": "Vedi gli alloggi"
+  },
+  "whatsapp": {
+    "button": "Scrivi su WhatsApp",
+    "opensWhatsApp": "Apre WhatsApp con un messaggio già pronto",
+    "yourBooking": "la tua prenotazione",
+    "clientToProvider": "Ciao, ho prenotato {{property}} su BookinAL (prenotazione {{ref}}, {{dates}}). A presto!\n\nDettagli della prenotazione: {{link}}",
+    "clientToProviderNamed": "Ciao {{name}}, ho prenotato {{property}} su BookinAL (prenotazione {{ref}}, {{dates}}). A presto!\n\nDettagli della prenotazione: {{link}}",
+    "providerToClient": "Ciao, ti contatto da BookinAL per la tua prenotazione {{ref}} di {{property}} ({{dates}}). Dove preferisci incontrarci per il ritiro o il check-in?\n\nDettagli della prenotazione: {{link}}",
+    "providerToClientNamed": "Ciao {{name}}, ti contatto da BookinAL per la tua prenotazione {{ref}} di {{property}} ({{dates}}). Dove preferisci incontrarci per il ritiro o il check-in?\n\nDettagli della prenotazione: {{link}}"
   }
 }
