@@ -1668,7 +1668,7 @@
     "retry": "Réessayer",
     "noPlansOnCar": "Aucune formule d'assurance n'est encore associée à cette voiture.",
     "chooseTitle": "Choisissez votre assurance",
-    "chooseHelp": "Cliquez sur une colonne pour choisir une formule. Le prix est facturé par jour de location.",
+    "chooseHelp": "Sélectionnez une formule pour voir ce qu'elle couvre. Le prix est facturé par jour de location.",
     "summaryPerDay_one": "{{price}} × {{count}} jour",
     "summaryPerDay_other": "{{price}} × {{count}} jours",
     "selectDates": "choisissez les dates pour voir le total",
@@ -1682,7 +1682,9 @@
       "name": "Le nom de la formule est trop long (80 caractères max).",
       "saveFailed": "La formule n'a pas pu être enregistrée. Veuillez réessayer."
     },
-    "noPlansForClient": "Le loueur n'a pas encore défini de formules d'assurance pour cette voiture."
+    "noPlansForClient": "Le loueur n'a pas encore défini de formules d'assurance pour cette voiture.",
+    "coveredCount": "{{count}} risques couverts sur {{total}}",
+    "whatItCovers": "Ce que couvre {{plan}}"
   },
   "rentalTermsPage": {
     "badge": "Politique de réservation",

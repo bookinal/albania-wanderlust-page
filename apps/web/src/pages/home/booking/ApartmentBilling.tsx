@@ -455,7 +455,7 @@ export default function ApartmentBilling() {
 
           <div className="grid lg:grid-cols-3 gap-6">
             {/* Main Form */}
-            <div className="lg:col-span-2 space-y-6">
+            <div className="min-w-0 lg:col-span-2 space-y-6">
               {/* Personal Information */}
               <div
                 style={{
@@ -642,7 +642,7 @@ export default function ApartmentBilling() {
             </div>
 
             {/* Summary Sidebar */}
-            <div className="lg:col-span-1">
+            <div className="min-w-0 lg:col-span-1">
               <div className="sticky top-8 space-y-6">
                 {/* Apartment Summary */}
                 <div

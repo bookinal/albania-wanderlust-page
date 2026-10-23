@@ -1668,7 +1668,7 @@
     "retry": "Riprova",
     "noPlansOnCar": "Nessun piano assicurativo associato a questa auto.",
     "chooseTitle": "Scegli la tua assicurazione",
-    "chooseHelp": "Clicca su una colonna per scegliere un piano. Il prezzo è per giorno di noleggio.",
+    "chooseHelp": "Seleziona un piano per vedere cosa copre. Il prezzo è addebitato per giorno di noleggio.",
     "summaryPerDay_one": "{{price}} × {{count}} giorno",
     "summaryPerDay_other": "{{price}} × {{count}} giorni",
     "selectDates": "scegli le date per vedere il totale",
@@ -1682,7 +1682,9 @@
       "name": "Il nome del piano è troppo lungo (max 80 caratteri).",
       "saveFailed": "Impossibile salvare il piano. Riprova."
     },
-    "noPlansForClient": "Il noleggiatore non ha ancora impostato piani assicurativi per questa auto."
+    "noPlansForClient": "Il noleggiatore non ha ancora impostato piani assicurativi per questa auto.",
+    "coveredCount": "{{count}} rischi coperti su {{total}}",
+    "whatItCovers": "Cosa copre {{plan}}"
   },
   "rentalTermsPage": {
     "badge": "Politica di prenotazione",

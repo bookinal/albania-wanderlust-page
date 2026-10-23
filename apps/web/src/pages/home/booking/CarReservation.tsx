@@ -508,7 +508,7 @@ const CarReservation = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
           {/* Gallery + car info */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="min-w-0 lg:col-span-2 space-y-6">
             <div style={{ background: tk.cardBg, border: `1px solid ${tk.cardBorder}`, boxShadow: tk.cardShadow }} className="rounded-3xl overflow-hidden">
               <div className="relative h-72 sm:h-[420px]">
                 {images.length > 0 ? (
@@ -569,7 +569,7 @@ const CarReservation = () => {
           </div>
 
           {/* Price Card (right of the gallery, sticky on desktop) */}
-          <div className="lg:col-start-3 lg:row-start-1 lg:row-span-2">
+          <div className="min-w-0 lg:col-start-3 lg:row-start-1 lg:row-span-2">
             <div style={{ background: tk.cardBg, border: `1px solid ${tk.cardBorder}`, boxShadow: tk.cardShadow }} className="rounded-2xl p-6 lg:sticky lg:top-24">
               {(() => {
                 const currentMonth = getCurrentMonth();
@@ -647,7 +647,7 @@ const CarReservation = () => {
           </div>
 
           {/* Details */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="min-w-0 lg:col-span-2 space-y-6">
             {/* Vehicle Specifications */}
             <div style={{ background: tk.cardBg, border: `1px solid ${tk.cardBorder}`, boxShadow: tk.cardShadow }} className="rounded-2xl p-8">
               <h2 style={{ color: tk.pageText }} className="text-2xl font-bold mb-6 flex items-center gap-2">

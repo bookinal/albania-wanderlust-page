@@ -44,7 +44,7 @@ interface BookingRequestTicketProps {
 // Paper-ticket colours: the ticket stays yellow in every theme
 const INK = "#3b2a05";
 const INK_MUTED = "#7a5b12";
-const PAPER = "#fff6d6";
+const PAPER = "#f2f1e6";
 const PAPER_STRONG = "#ffe9a3";
 const EDGE = "#f2c94c";
 

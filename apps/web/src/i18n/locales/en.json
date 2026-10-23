@@ -1668,7 +1668,7 @@
     "retry": "Retry",
     "noPlansOnCar": "No insurance plans attached to this car yet.",
     "chooseTitle": "Choose your insurance",
-    "chooseHelp": "Click a column to select a plan. The price is charged per rental day.",
+    "chooseHelp": "Select a plan to see what it covers. The price is charged per rental day.",
     "summaryPerDay_one": "{{price}} × {{count}} day",
     "summaryPerDay_other": "{{price}} × {{count}} days",
     "selectDates": "select dates to see the total",
@@ -1682,7 +1682,9 @@
       "name": "The plan name is too long (80 characters max).",
       "saveFailed": "The insurance plan could not be saved. Please try again."
     },
-    "noPlansForClient": "The provider hasn't set insurance plans for this car yet."
+    "noPlansForClient": "The provider hasn't set insurance plans for this car yet.",
+    "coveredCount": "{{count}} of {{total}} risks covered",
+    "whatItCovers": "What {{plan}} covers"
   },
   "rentalTermsPage": {
     "badge": "Booking policy",

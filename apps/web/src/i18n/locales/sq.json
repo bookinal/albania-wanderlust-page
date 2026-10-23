@@ -1685,7 +1685,7 @@
     "retry": "Provo përsëri",
     "noPlansOnCar": "Kjo makinë nuk ka ende plane sigurimi.",
     "chooseTitle": "Zgjidhni sigurimin",
-    "chooseHelp": "Klikoni një kolonë për të zgjedhur planin. Çmimi llogaritet për ditë qiraje.",
+    "chooseHelp": "Zgjidhni një plan për të parë çfarë mbulon. Çmimi llogaritet për çdo ditë qiraje.",
     "summaryPerDay_one": "{{price}} × {{count}} ditë",
     "summaryPerDay_other": "{{price}} × {{count}} ditë",
     "selectDates": "zgjidhni datat për të parë totalin",
@@ -1699,7 +1699,9 @@
       "name": "Emri i planit është shumë i gjatë (maks. 80 karaktere).",
       "saveFailed": "Plani nuk u ruajt. Provoni përsëri."
     },
-    "noPlansForClient": "Ofruesi nuk ka vendosur ende plane sigurimi për këtë makinë."
+    "noPlansForClient": "Ofruesi nuk ka vendosur ende plane sigurimi për këtë makinë.",
+    "coveredCount": "{{count}} nga {{total}} rreziqe të mbuluara",
+    "whatItCovers": "Çfarë mbulon {{plan}}"
   },
   "rentalTermsPage": {
     "badge": "Politika e rezervimit",
