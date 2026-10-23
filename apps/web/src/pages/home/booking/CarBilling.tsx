@@ -11,6 +11,8 @@ import {
   Baby,
   UserPlus,
   Globe,
+  AlertCircle,
+  ShieldCheck,
 } from "lucide-react";
 import { DateRange } from "react-day-picker";
 import { Car } from "@/types/car.types";
@@ -36,6 +38,8 @@ import { CarRentalConditions } from "./CarRentalConditions";
 import { getCarRentalTerms } from "@/lib/carRentalTerms";
 import { InsurancePlansTable } from "./InsurancePlansTable";
 import { formatInsurancePrice, getInsurancePlanLabel } from "@/lib/insurancePlans";
+import { formatBookingRef } from "@/lib/whatsapp";
+import BookingRequestTicket, { TicketRow, TicketStep } from "./BookingRequestTicket";
 
 interface DeliveryLocation {
   name: string;
@@ -77,7 +81,7 @@ const SEARCH_TO_DELIVERY_LOCATION: Record<string, string> = {
 };
 
 export default function CarBilling() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { isDark, isBlue } = useTheme();
@@ -221,23 +225,24 @@ export default function CarBilling() {
     { month: Month; days: number; pricePerDay: number; subtotal: number }[]
   >([]);
 
+  // Yellow ticket: the client reviews and confirms the request there, then it
+  // shows the sent request (reference + next steps)
+  const [ticket, setTicket] = useState<{
+    mode: "review" | "sent";
+    reference?: string;
+    details: TicketRow[];
+    priceRows: TicketRow[];
+    total: string;
+    totalNote?: string;
+    steps: TicketStep[];
+    email: string;
+  } | null>(null);
+  const [ticketError, setTicketError] = useState<string | null>(null);
+
   const bookingMutation = useMutation({
     mutationFn: createBooking,
-    onSuccess: () => {
-      Swal.fire({
-        icon: "success",
-        title: t("billing.bookingConfirmed"),
-        text: t("billing.carBookingSuccess"),
-      });
-      navigate("/myBookings");
-    },
     onError: (error: any) => {
       console.error("Error creating booking:", error);
-      Swal.fire({
-        icon: "error",
-        title: t("billing.bookingFailed"),
-        text: error?.message || t("billing.bookingFailedMessage"),
-      });
     },
   });
 
@@ -342,6 +347,14 @@ export default function CarBilling() {
       });
       return;
     }
+    setTicketError(null);
+    setTicket({ mode: "review", ...buildTicket() });
+  };
+
+  // Sends the request once the client confirms it on the ticket
+  const handleConfirmRequest = () => {
+    if (!car || !dateRange?.from || !dateRange?.to) return;
+    setTicketError(null);
     bookingMutation.mutate({
       propertyId: String(car.id),
       providerId: car.providerId,
@@ -365,7 +378,115 @@ export default function CarBilling() {
       insurancePricePerDay: selectedInsurancePlan ? selectedInsurancePlan.pricePerDay : null,
       insuranceTotal: insuranceFee,
       fee: Math.round(serviceFee * 100) / 100,
+    }, {
+      onSuccess: (booking) =>
+        setTicket((prev) =>
+          prev ? { ...prev, mode: "sent", reference: formatBookingRef(booking.id) } : prev,
+        ),
+      // friendly message on the ticket; the raw error is logged by the mutation
+      onError: (error: any) =>
+        setTicketError(
+          /auth|session|not authenticated/i.test(error?.message ?? "")
+            ? t("auth.loginToBook")
+            : t("billing.bookingFailedMessage"),
+        ),
     });
+  };
+
+  const money = (value: number) => `€${value.toFixed(2)}`;
+  const formatTicketDate = (date: Date) =>
+    date.toLocaleDateString(i18n.language, {
+      weekday: "short",
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    });
+
+  // Summary of the request for the yellow ticket shown after "Confirm Booking"
+  const buildTicket = () => {
+    const from = dateRange?.from as Date;
+    const to = dateRange?.to as Date;
+    const extras = [
+      childSeatFee > 0 && t("bookingTicket.childSeat"),
+      additionalDriverFee > 0 && t("bookingTicket.additionalDriver"),
+      crossBorderFee > 0 && t("bookingTicket.crossBorder"),
+    ].filter(Boolean) as string[];
+
+    const details: TicketRow[] = [
+      { label: t("bookingTicket.guest"), value: formData.fullName },
+      { label: t("bookingTicket.phone"), value: formData.phone },
+      {
+        label: t("bookingTicket.pickUp"),
+        value: (
+          <>
+            {formatTicketDate(from)} · {formData.pickUpTime}
+            <br />
+            <span className="font-normal">{formData.pickUpLocation}</span>
+          </>
+        ),
+      },
+      {
+        label: t("bookingTicket.dropOff"),
+        value: (
+          <>
+            {formatTicketDate(to)} · {formData.dropOffTime}
+            <br />
+            <span className="font-normal">{formData.dropOffLocation}</span>
+          </>
+        ),
+      },
+      { label: t("bookingTicket.duration"), value: t("bookingTicket.days", { count: totalDays }) },
+      {
+        label: t("billing.insurance"),
+        value: selectedInsurancePlan
+          ? getInsurancePlanLabel(selectedInsurancePlan, t)
+          : t("insurance.includedFree"),
+      },
+      ...(extras.length > 0
+        ? [{ label: t("bookingTicket.extras"), value: extras.join(", ") }]
+        : []),
+    ];
+
+    const priceRows: TicketRow[] = [
+      { label: t("bookingTicket.rental", { count: totalDays }), value: money(totalPrice) },
+      ...(insuranceFee > 0 ? [{ label: t("billing.insurance"), value: money(insuranceFee) }] : []),
+      ...(childSeatFee > 0 ? [{ label: t("bookingTicket.childSeat"), value: money(childSeatFee) }] : []),
+      ...(additionalDriverFee > 0
+        ? [{ label: t("bookingTicket.additionalDriver"), value: money(additionalDriverFee) }]
+        : []),
+      ...(deliveryFee > 0 ? [{ label: t("billing.deliveryFee", "Delivery fee"), value: money(deliveryFee) }] : []),
+      ...(crossBorderFee > 0
+        ? [{ label: t("billing.crossBorderDeposit"), value: money(crossBorderFee) }]
+        : []),
+      { label: t("bookingTicket.serviceFee"), value: money(serviceFee) },
+    ];
+
+    return {
+      details,
+      priceRows,
+      total: money(finalTotal),
+      totalNote:
+        securityDeposit > 0
+          ? t("bookingTicket.depositNote", { amount: money(securityDeposit) })
+          : undefined,
+      steps: [
+        {
+          title: t("bookingTicket.steps.review.title"),
+          description: t("bookingTicket.steps.review.description"),
+        },
+        {
+          title: t("bookingTicket.steps.pay.title"),
+          description: t("bookingTicket.steps.pay.description", { fee: money(serviceFee) }),
+        },
+        {
+          title: t("bookingTicket.steps.contact.title"),
+          description: t("bookingTicket.steps.contact.description", {
+            rest: money(Math.max(0, finalTotal - serviceFee)),
+          }),
+        },
+      ],
+      email: formData.email,
+    };
   };
 
   // Child seat is priced per rental day
@@ -386,6 +507,35 @@ export default function CarBilling() {
     : 0;
   const finalTotal = totalPrice + serviceFee + insuranceFee + childSeatFee + additionalDriverFee + deliveryFee + crossBorderFee;
 
+  // Error shown next to each field ("" when the field is fine)
+  const fieldErrors = {
+    fullName: !formData.fullName.trim() ? t("billing.errors.fullNameRequired") : "",
+    email: !formData.email.trim()
+      ? t("billing.errors.emailRequired")
+      : !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())
+        ? t("billing.errors.emailInvalid")
+        : "",
+    phone: !formData.phone
+      ? t("billing.phoneRequired")
+      : !isValidPhoneNumber(formData.phone)
+        ? t("billing.invalidPhone")
+        : "",
+    dates: !dateRange?.from || !dateRange?.to ? t("billing.selectPickUpDropOffDates") : "",
+    pickUpLocation: !formData.pickUpLocation ? t("billing.errors.pickUpLocationRequired") : "",
+    dropOffLocation: !formData.dropOffLocation ? t("billing.errors.dropOffLocationRequired") : "",
+  };
+
+  // Fields still needed before the booking can be sent (listed under the button)
+  const missingFields = [
+    fieldErrors.fullName && t("user.fullName"),
+    fieldErrors.email && t("user.email"),
+    fieldErrors.phone && t("user.phone"),
+    fieldErrors.dates && t("billing.pickUpDropOffDates"),
+    fieldErrors.pickUpLocation && t("billing.pickUpLocation"),
+    fieldErrors.dropOffLocation && t("billing.dropOffLocation"),
+    insurancePlans.length > 0 && !selectedInsurancePlan && t("insurance.chooseTitle"),
+  ].filter(Boolean) as string[];
+
   const isSubmitDisabled =
     bookingMutation.isPending ||
     !formData.fullName ||
@@ -394,7 +544,21 @@ export default function CarBilling() {
     !formData.pickUpLocation ||
     !formData.dropOffLocation ||
     !dateRange?.from ||
-    !dateRange?.to;
+    !dateRange?.to ||
+    !!fieldErrors.email;
+
+  // full shorthand: the inputs already use `border`, mixing it with borderColor warns
+  const errorBorder: React.CSSProperties = { border: "1px solid #ef4444" };
+
+  const renderFieldError = (message: string) =>
+    message ? (
+      <p
+        className={`mt-1.5 flex items-center gap-1 text-xs font-medium ${isDark ? "text-red-400" : "text-red-600"}`}
+      >
+        <AlertCircle className="h-3.5 w-3.5 shrink-0" />
+        {message}
+      </p>
+    ) : null;
 
   function handlePhoneChange(value?: string): void {
     setFormData((prev) => ({ ...prev, phone: value || "" }));
@@ -449,6 +613,31 @@ export default function CarBilling() {
   return (
     <div style={{ background: tk.pageBg, minHeight: "100vh" }}>
       <PrimarySearchAppBar />
+      {ticket && car && (
+        <BookingRequestTicket
+          {...ticket}
+          image={car.imageUrls?.[0]}
+          propertyName={`${car.brand} ${car.name}`}
+          propertySubtitle={`${car.year} • ${car.type}`}
+          error={ticketError}
+          {...(ticket.mode === "review"
+            ? {
+                primaryLabel: bookingMutation.isPending
+                  ? t("bookingTicket.review.sending")
+                  : t("bookingTicket.review.confirm"),
+                primaryLoading: bookingMutation.isPending,
+                onPrimary: handleConfirmRequest,
+                secondaryLabel: t("bookingTicket.review.edit"),
+                onSecondary: () => setTicket(null),
+              }
+            : {
+                primaryLabel: t("bookingTicket.viewBookings"),
+                onPrimary: () => navigate("/myBookings"),
+                secondaryLabel: t("bookingTicket.backHome"),
+                onSecondary: () => navigate("/"),
+              })}
+        />
+      )}
       <div
         style={{
           minHeight: "100vh",
@@ -505,9 +694,10 @@ export default function CarBilling() {
                       value={formData.fullName}
                       onChange={handleInputChange}
                       placeholder={t("billing.fullNamePlaceholder")}
-                      style={inputStyle}
+                      style={{ ...inputStyle, ...(fieldErrors.fullName ? errorBorder : {}) }}
                       required
                     />
+                    {renderFieldError(fieldErrors.fullName)}
                   </div>
 
                   <div className="grid md:grid-cols-2 gap-4">
@@ -529,10 +719,11 @@ export default function CarBilling() {
                           value={formData.email}
                           onChange={handleInputChange}
                           placeholder={t("billing.emailPlaceholder")}
-                          style={inputWithIconStyle}
+                          style={{ ...inputWithIconStyle, ...(fieldErrors.email ? errorBorder : {}) }}
                           required
                         />
                       </div>
+                      {renderFieldError(fieldErrors.email)}
                     </div>
 
                     <div>
@@ -548,14 +739,8 @@ export default function CarBilling() {
                         placeholder={t("billing.phonePlaceholder")}
                         value={formData.phone}
                         onChange={handlePhoneChange}
-                        error={
-                          formData.phone
-                            ? isValidPhoneNumber(formData.phone)
-                              ? undefined
-                              : t("billing.invalidPhone")
-                            : t("billing.phoneRequired")
-                        }
                       />
+                      {renderFieldError(fieldErrors.phone)}
                     </div>
                   </div>
                 </div>
@@ -593,6 +778,7 @@ export default function CarBilling() {
                         (date) => new Date(date),
                       )}
                     />
+                    {renderFieldError(fieldErrors.dates)}
                   </div>
 
                   <div className="grid md:grid-cols-2 gap-6">
@@ -634,7 +820,7 @@ export default function CarBilling() {
                             name="pickUpLocation"
                             value={formData.pickUpLocation}
                             onChange={handleInputChange}
-                            style={inputWithIconStyle}
+                            style={{ ...inputWithIconStyle, ...(fieldErrors.pickUpLocation ? errorBorder : {}) }}
                           >
                             <option value="" disabled>
                               {t("billing.selectLocation", "Select a location")}
@@ -646,6 +832,7 @@ export default function CarBilling() {
                             ))}
                           </select>
                         </div>
+                        {renderFieldError(fieldErrors.pickUpLocation)}
                       </div>
                     </div>
 
@@ -687,7 +874,7 @@ export default function CarBilling() {
                             name="dropOffLocation"
                             value={formData.dropOffLocation}
                             onChange={handleInputChange}
-                            style={inputWithIconStyle}
+                            style={{ ...inputWithIconStyle, ...(fieldErrors.dropOffLocation ? errorBorder : {}) }}
                           >
                             <option value="" disabled>
                               {t("billing.selectLocation", "Select a location")}
@@ -699,6 +886,7 @@ export default function CarBilling() {
                             ))}
                           </select>
                         </div>
+                        {renderFieldError(fieldErrors.dropOffLocation)}
                         <p style={{ color: tk.mutedText }} className="text-xs mt-1">
                           {t("billing.dropOffAlwaysFree", "Drop-off is always free.")}
                         </p>
@@ -1170,17 +1358,32 @@ export default function CarBilling() {
                     }}
                   >
                     <Check className="w-5 h-5" />
-                    {bookingMutation.isPending
-                      ? t("billing.processing")
-                      : t("billing.confirmBooking")}
+                    {t("bookingTicket.review.openButton")}
                   </button>
 
-                  <p
-                    style={{ color: tk.mutedText }}
-                    className="text-xs text-center mt-4"
-                  >
-                    {t("billing.paymentNote")}
-                  </p>
+                  {missingFields.length > 0 && !bookingMutation.isPending && (
+                    <div
+                      role="alert"
+                      className={`mt-4 rounded-xl border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm ${isDark ? "text-red-400" : "text-red-600"}`}
+                    >
+                      <p className="flex items-center gap-2 font-semibold">
+                        <AlertCircle className="h-4 w-4 shrink-0" />
+                        {t("billing.missingFieldsTitle", "Please complete the following:")}
+                      </p>
+                      <ul className="mt-1.5 list-disc space-y-0.5 pl-9">
+                        {missingFields.map((field) => (
+                          <li key={field}>{field}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  <div className="mt-4 flex items-start gap-2.5 rounded-xl border border-emerald-500/40 bg-emerald-500/10 px-4 py-3">
+                    <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-emerald-500" />
+                    <p className={`text-sm font-semibold leading-snug ${isDark ? "text-emerald-400" : "text-emerald-600"}`}>
+                      {t("billing.paymentNote")}
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>

@@ -9,6 +9,8 @@ import {
   Check,
   Home,
   UserIcon,
+  AlertCircle,
+  ShieldCheck,
 } from "lucide-react";
 import { DateRange } from "react-day-picker";
 import { Apartment } from "@/types/apartment.type";
@@ -27,9 +29,11 @@ import { User } from "@/types/user.types";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@/context/ThemeContext";
 import { getBookingThemeTokens } from "./bookingTheme";
+import { formatBookingRef } from "@/lib/whatsapp";
+import BookingRequestTicket, { TicketRow, TicketStep } from "./BookingRequestTicket";
 
 export default function ApartmentBilling() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { isDark, isBlue } = useTheme();
@@ -113,26 +117,24 @@ export default function ApartmentBilling() {
   const [totalDays, setTotalDays] = useState(0);
   const [totalPrice, setTotalPrice] = useState(0);
 
+  // Yellow ticket: the client reviews and confirms the request there, then it
+  // shows the sent request (reference + next steps)
+  const [ticket, setTicket] = useState<{
+    mode: "review" | "sent";
+    reference?: string;
+    details: TicketRow[];
+    priceRows: TicketRow[];
+    total: string;
+    totalNote?: string;
+    steps: TicketStep[];
+    email: string;
+  } | null>(null);
+  const [ticketError, setTicketError] = useState<string | null>(null);
+
   const bookingMutation = useMutation({
     mutationFn: createBooking,
-    onSuccess: () => {
-      Swal.fire({
-        icon: "success",
-        title: t("billing.requestSentTitle", "Request sent"),
-        text: t(
-          "billing.apartmentRequestSent",
-          "Your request has been sent. You will get the host's contact details as soon as they confirm it.",
-        ),
-      });
-      navigate("/myBookings");
-    },
     onError: (error: any) => {
       console.error("Error creating booking:", error);
-      Swal.fire({
-        icon: "error",
-        title: t("billing.bookingFailed"),
-        text: error?.message || t("billing.bookingFailedMessage"),
-      });
     },
   });
 
@@ -193,6 +195,14 @@ export default function ApartmentBilling() {
       });
       return;
     }
+    setTicketError(null);
+    setTicket({ mode: "review", ...buildTicket() });
+  };
+
+  // Sends the request once the client confirms it on the ticket
+  const handleConfirmRequest = () => {
+    if (!apartment || !dateRange?.from || !dateRange?.to) return;
+    setTicketError(null);
     bookingMutation.mutate({
       propertyId: String(apartment.id),
       providerId: apartment.providerId,
@@ -208,7 +218,88 @@ export default function ApartmentBilling() {
       contactPhone: formData.phone,
       requesterName: formData.fullName,
       fee: 0, // apartment bookings are free: no service fee, no online payment
+    }, {
+      onSuccess: (booking) =>
+        setTicket((prev) =>
+          prev ? { ...prev, mode: "sent", reference: formatBookingRef(booking.id) } : prev,
+        ),
+      // friendly message on the ticket; the raw error is logged by the mutation
+      onError: (error: any) =>
+        setTicketError(
+          /auth|session|not authenticated/i.test(error?.message ?? "")
+            ? t("auth.loginToBook")
+            : t("billing.bookingFailedMessage"),
+        ),
     });
+  };
+
+  const money = (value: number) => `€${value.toFixed(2)}`;
+  const formatTicketDate = (date: Date) =>
+    date.toLocaleDateString(i18n.language, {
+      weekday: "short",
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    });
+
+  // Summary of the request for the yellow ticket (free booking: no service fee)
+  const buildTicket = () => {
+    const from = dateRange?.from as Date;
+    const to = dateRange?.to as Date;
+    const address = apartment?.address || apartment?.location || "";
+
+    const details: TicketRow[] = [
+      { label: t("bookingTicket.guest"), value: formData.fullName },
+      { label: t("bookingTicket.phone"), value: formData.phone },
+      {
+        label: t("bookingTicket.apartment.checkIn"),
+        value: `${formatTicketDate(from)} · ${formData.checkInTime}`,
+      },
+      {
+        label: t("bookingTicket.apartment.checkOut"),
+        value: `${formatTicketDate(to)} · ${formData.checkOutTime}`,
+      },
+      {
+        label: t("bookingTicket.duration"),
+        value: t("bookingTicket.apartment.nights", { count: totalDays }),
+      },
+      ...(address ? [{ label: t("bookingTicket.apartment.address"), value: address }] : []),
+    ];
+
+    const priceRows: TicketRow[] = [
+      {
+        label: t("bookingTicket.apartment.stay", { count: totalDays }),
+        value: money(totalPrice),
+      },
+      {
+        label: t("billing.bookinalFee", "Bookinal fee"),
+        value: <span className="text-emerald-700">{t("billing.free", "Free")}</span>,
+      },
+    ];
+
+    return {
+      details,
+      priceRows,
+      total: money(totalPrice),
+      totalNote: t("billing.paidToHost", "Paid directly to the host"),
+      steps: [
+        {
+          title: t("bookingTicket.apartment.steps.review.title"),
+          description: t("bookingTicket.apartment.steps.review.description"),
+        },
+        {
+          title: t("bookingTicket.apartment.steps.contact.title"),
+          description: t("bookingTicket.apartment.steps.contact.description"),
+        },
+        {
+          title: t("bookingTicket.apartment.steps.pay.title"),
+          description: t("bookingTicket.apartment.steps.pay.description", {
+            total: money(totalPrice),
+          }),
+        },
+      ],
+      email: formData.email,
+    };
   };
 
   function handlePhoneChange(value?: string): void {
@@ -263,17 +354,83 @@ export default function ApartmentBilling() {
     );
   }
 
+  // Error shown next to each field ("" when the field is fine)
+  const fieldErrors = {
+    fullName: !formData.fullName.trim() ? t("billing.errors.fullNameRequired") : "",
+    email: !formData.email.trim()
+      ? t("billing.errors.emailRequired")
+      : !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())
+        ? t("billing.errors.emailInvalid")
+        : "",
+    phone: !formData.phone
+      ? t("billing.phoneRequired")
+      : !isValidPhoneNumber(formData.phone)
+        ? t("billing.invalidPhone")
+        : "",
+    dates:
+      !dateRange?.from || !dateRange?.to
+        ? t("billing.selectCheckInCheckOutDates", "Please select check-in and check-out dates.")
+        : "",
+  };
+
+  // Fields still needed before the request can be sent (listed under the button)
+  const missingFields = [
+    fieldErrors.fullName && t("user.fullName"),
+    fieldErrors.email && t("user.email"),
+    fieldErrors.phone && t("user.phone"),
+    fieldErrors.dates && t("billing.checkInCheckOutDates", "Check-in & Check-out Dates"),
+  ].filter(Boolean) as string[];
+
   const isDisabled =
     bookingMutation.isPending ||
     !formData.fullName ||
     !formData.email ||
     !formData.phone ||
     !dateRange?.from ||
-    !dateRange?.to;
+    !dateRange?.to ||
+    !!fieldErrors.email;
+
+  // full shorthand: the inputs already use `border`, mixing it with borderColor warns
+  const errorBorder: React.CSSProperties = { border: "1px solid #ef4444" };
+
+  const renderFieldError = (message: string) =>
+    message ? (
+      <p
+        className={`mt-1.5 flex items-center gap-1 text-xs font-medium ${isDark ? "text-red-400" : "text-red-600"}`}
+      >
+        <AlertCircle className="h-3.5 w-3.5 shrink-0" />
+        {message}
+      </p>
+    ) : null;
 
   return (
     <div style={{ background: tk.pageBg, minHeight: "100vh" }}>
       <PrimarySearchAppBar />
+      {ticket && (
+        <BookingRequestTicket
+          {...ticket}
+          image={apartment.imageUrls?.[0]}
+          propertyName={apartment.name}
+          propertySubtitle={apartment.location || apartment.address || undefined}
+          error={ticketError}
+          {...(ticket.mode === "review"
+            ? {
+                primaryLabel: bookingMutation.isPending
+                  ? t("bookingTicket.review.sending")
+                  : t("bookingTicket.review.confirm"),
+                primaryLoading: bookingMutation.isPending,
+                onPrimary: handleConfirmRequest,
+                secondaryLabel: t("bookingTicket.review.edit"),
+                onSecondary: () => setTicket(null),
+              }
+            : {
+                primaryLabel: t("bookingTicket.viewBookings"),
+                onPrimary: () => navigate("/myBookings"),
+                secondaryLabel: t("bookingTicket.backHome"),
+                onSecondary: () => navigate("/"),
+              })}
+        />
+      )}
       <div
         style={{
           paddingTop: "32px",
@@ -329,9 +486,10 @@ export default function ApartmentBilling() {
                       value={formData.fullName}
                       onChange={handleInputChange}
                       placeholder={t("billing.fullNamePlaceholder")}
-                      style={inputStyle}
+                      style={{ ...inputStyle, ...(fieldErrors.fullName ? errorBorder : {}) }}
                       required
                     />
+                    {renderFieldError(fieldErrors.fullName)}
                   </div>
 
                   <div className="grid md:grid-cols-2 gap-4">
@@ -353,10 +511,11 @@ export default function ApartmentBilling() {
                           value={formData.email}
                           onChange={handleInputChange}
                           placeholder={t("billing.emailPlaceholder")}
-                          style={inputWithIconStyle}
+                          style={{ ...inputWithIconStyle, ...(fieldErrors.email ? errorBorder : {}) }}
                           required
                         />
                       </div>
+                      {renderFieldError(fieldErrors.email)}
                     </div>
 
                     <div>
@@ -372,14 +531,8 @@ export default function ApartmentBilling() {
                         placeholder={t("billing.phonePlaceholder")}
                         value={formData.phone}
                         onChange={handlePhoneChange}
-                        error={
-                          formData.phone
-                            ? isValidPhoneNumber(formData.phone)
-                              ? undefined
-                              : t("billing.invalidPhone")
-                            : t("billing.phoneRequired")
-                        }
                       />
+                      {renderFieldError(fieldErrors.phone)}
                     </div>
                   </div>
                 </div>
@@ -417,6 +570,7 @@ export default function ApartmentBilling() {
                         (date) => new Date(date),
                       )}
                     />
+                    {renderFieldError(fieldErrors.dates)}
                   </div>
 
                   <div className="grid md:grid-cols-2 gap-6">
@@ -653,20 +807,35 @@ export default function ApartmentBilling() {
                     }}
                   >
                     <Check className="w-5 h-5" />
-                    {bookingMutation.isPending
-                      ? t("billing.processing")
-                      : t("billing.sendRequest", "Send booking request")}
+                    {t("bookingTicket.review.openButton")}
                   </button>
 
-                  <p
-                    style={{ color: tk.mutedText }}
-                    className="text-xs text-center mt-4"
-                  >
-                    {t(
-                      "billing.freeBookingNote",
-                      "Free booking: nothing to pay on Bookinal. Once the host confirms your request, you get their contact details and settle the stay directly with them.",
-                    )}
-                  </p>
+                  {missingFields.length > 0 && !bookingMutation.isPending && (
+                    <div
+                      role="alert"
+                      className={`mt-4 rounded-xl border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm ${isDark ? "text-red-400" : "text-red-600"}`}
+                    >
+                      <p className="flex items-center gap-2 font-semibold">
+                        <AlertCircle className="h-4 w-4 shrink-0" />
+                        {t("billing.missingFieldsTitle", "Please complete the following:")}
+                      </p>
+                      <ul className="mt-1.5 list-disc space-y-0.5 pl-9">
+                        {missingFields.map((field) => (
+                          <li key={field}>{field}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  <div className="mt-4 flex items-start gap-2.5 rounded-xl border border-emerald-500/40 bg-emerald-500/10 px-4 py-3">
+                    <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-emerald-500" />
+                    <p className={`text-sm font-semibold leading-snug ${isDark ? "text-emerald-400" : "text-emerald-600"}`}>
+                      {t(
+                        "billing.freeBookingNote",
+                        "Free booking: nothing to pay on Bookinal. Once the host confirms your request, you get their contact details and settle the stay directly with them.",
+                      )}
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>

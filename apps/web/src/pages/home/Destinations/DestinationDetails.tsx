@@ -105,6 +105,133 @@ function useMediaQuery(query: string): boolean {
   return matches;
 }
 
+// One quick fact chip. Long values are clamped to 2 lines with a
+// "Read more" toggle; compact mode (mobile) stacks the icon above the text.
+function QuickFactCard({
+  icon: Icon,
+  label,
+  value,
+  compact,
+  colors,
+}: {
+  icon: LucideIcon;
+  label: string;
+  value: string;
+  compact: boolean;
+  colors: {
+    cardBg: string;
+    cardBorder: string;
+    iconBg: string;
+    brand: string;
+    label: string;
+    text: string;
+  };
+}) {
+  const { t } = useTranslation();
+  const valueRef = useRef<HTMLParagraphElement>(null);
+  const [expanded, setExpanded] = useState(false);
+  const [isClamped, setIsClamped] = useState(false);
+
+  // Show the toggle only when the text really overflows the 2 lines
+  useEffect(() => {
+    const el = valueRef.current;
+    if (!el || expanded) return;
+    const check = () => setIsClamped(el.scrollHeight > el.clientHeight + 1);
+    check();
+    const observer = new ResizeObserver(check);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [value, expanded, compact]);
+
+  return (
+    <div
+      style={{
+        display: "flex",
+        flexDirection: compact ? "column" : "row",
+        alignItems: "flex-start",
+        gap: compact ? "0.5rem" : "0.9rem",
+        padding: compact ? "0.75rem" : "1rem",
+        borderRadius: compact ? "1rem" : "1.25rem",
+        background: colors.cardBg,
+        border: `1px solid ${colors.cardBorder}`,
+        minWidth: 0,
+        // an expanded chip takes the whole row on mobile so the text stays readable
+        gridColumn: compact && expanded ? "1 / -1" : undefined,
+      }}
+    >
+      <div
+        style={{
+          display: "inline-flex",
+          alignItems: "center",
+          justifyContent: "center",
+          width: compact ? "2rem" : "2.5rem",
+          height: compact ? "2rem" : "2.5rem",
+          borderRadius: compact ? "0.7rem" : "0.9rem",
+          background: colors.iconBg,
+          color: colors.brand,
+          flexShrink: 0,
+        }}
+      >
+        <Icon className={compact ? "w-4 h-4" : "w-5 h-5"} />
+      </div>
+      <div style={{ minWidth: 0, width: "100%" }}>
+        <p
+          style={{
+            margin: 0,
+            fontSize: compact ? "0.66rem" : "0.78rem",
+            fontWeight: 700,
+            letterSpacing: compact ? "0.06em" : "0.08em",
+            textTransform: "uppercase",
+            color: colors.label,
+          }}
+        >
+          {label}
+        </p>
+        <p
+          ref={valueRef}
+          style={{
+            margin: "0.3rem 0 0",
+            fontSize: compact ? "0.88rem" : "1rem",
+            lineHeight: 1.4,
+            fontWeight: 600,
+            color: colors.text,
+            overflowWrap: "anywhere",
+            ...(expanded
+              ? {}
+              : {
+                  display: "-webkit-box",
+                  WebkitLineClamp: 2,
+                  WebkitBoxOrient: "vertical" as const,
+                  overflow: "hidden",
+                }),
+          }}
+        >
+          {value}
+        </p>
+        {(isClamped || expanded) && (
+          <button
+            onClick={() => setExpanded((prev) => !prev)}
+            style={{
+              marginTop: "0.35rem",
+              padding: 0,
+              border: "none",
+              background: "transparent",
+              color: colors.brand,
+              fontSize: compact ? "0.78rem" : "0.82rem",
+              fontWeight: 700,
+              cursor: "pointer",
+            }}
+          >
+            {expanded
+              ? t("home.destinations.showLess", "Show less")
+              : t("home.destinations.readMore", "Read more")}
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function Carousel({ children }: { children: React.ReactNode[] }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [scrollIndex, setScrollIndex] = useState(0);
@@ -542,7 +669,6 @@ const DestinationDetails = () => {
   const { isDark, isBlue } = useTheme();
   const homeTk = getHomeThemeTokens({ isDark, isBlue });
   const [isAddingToWishlist, setIsAddingToWishlist] = useState(false);
-  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [descriptionExpanded, setDescriptionExpanded] = useState(false);
   const [mapZoom, setMapZoom] = useState(13);
   const [quickFactsExpanded, setQuickFactsExpanded] = useState(false);
@@ -668,11 +794,6 @@ const DestinationDetails = () => {
       : isBlue
         ? "rgba(2,132,199,0.18)"
         : "#d0ccc8",
-    thumbBorder: isDark
-      ? "rgba(255,255,255,0.10)"
-      : isBlue
-        ? "rgba(2,132,199,0.16)"
-        : "#e5e2de",
     heroGradient: isBlue
       ? "linear-gradient(135deg, rgba(8,47,73,0.94), rgba(3,105,161,0.76), rgba(56,189,248,0.34))"
       : isDark
@@ -1289,7 +1410,7 @@ const DestinationDetails = () => {
               borderRadius: "1.75rem",
               boxShadow: tk.cardShadow,
               border: `1px solid ${tk.cardBorder}`,
-              padding: "1.25rem",
+              padding: isMobile ? "0.85rem" : "1.25rem",
             }}
           >
             <div
@@ -1297,72 +1418,32 @@ const DestinationDetails = () => {
                 display: "grid",
                 gridTemplateColumns: isDesktop
                   ? "repeat(3, 1fr)"
-                  : "repeat(auto-fit, minmax(220px, 1fr))",
-                gap: "0.9rem",
+                  : isMobile
+                    ? "repeat(2, minmax(0, 1fr))"
+                    : "repeat(auto-fit, minmax(220px, 1fr))",
+                gap: isMobile ? "0.6rem" : "0.9rem",
               }}
             >
               {(quickFactsExpanded
                 ? quickFacts
                 : quickFacts.slice(0, 6)
-              ).map((fact) => {
-                const Icon = fact.icon;
-
-                return (
-                  <div
-                    key={fact.label}
-                    style={{
-                      display: "flex",
-                      alignItems: "flex-start",
-                      gap: "0.9rem",
-                      padding: "1rem",
-                      borderRadius: "1.25rem",
-                      background: tk.factCardBg,
-                      border: `1px solid ${tk.factCardBorder}`,
-                    }}
-                  >
-                    <div
-                      style={{
-                        display: "inline-flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        width: "2.5rem",
-                        height: "2.5rem",
-                        borderRadius: "0.9rem",
-                        background: tk.brandSoft,
-                        color: tk.brand,
-                        flexShrink: 0,
-                      }}
-                    >
-                      <Icon className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <p
-                        style={{
-                          margin: 0,
-                          fontSize: "0.78rem",
-                          fontWeight: 700,
-                          letterSpacing: "0.08em",
-                          textTransform: "uppercase",
-                          color: tk.mutedText,
-                        }}
-                      >
-                        {fact.label}
-                      </p>
-                      <p
-                        style={{
-                          margin: "0.35rem 0 0",
-                          fontSize: "1rem",
-                          lineHeight: 1.45,
-                          fontWeight: 600,
-                          color: tk.pageText,
-                        }}
-                      >
-                        {fact.value}
-                      </p>
-                    </div>
-                  </div>
-                );
-              })}
+              ).map((fact) => (
+                <QuickFactCard
+                  key={fact.label}
+                  icon={fact.icon}
+                  label={fact.label}
+                  value={fact.value}
+                  compact={isMobile}
+                  colors={{
+                    cardBg: tk.factCardBg,
+                    cardBorder: tk.factCardBorder,
+                    iconBg: tk.brandSoft,
+                    brand: tk.brand,
+                    label: tk.mutedText,
+                    text: tk.pageText,
+                  }}
+                />
+              ))}
             </div>
             {quickFacts.length > 6 && (
               <div
@@ -1534,99 +1615,191 @@ const DestinationDetails = () => {
               {t("home.destinations.seeAllDestinations")}
             </button>
           </div>
-          {/* Main Image */}
+          {/* Map + Open in Google Maps */}
           <div
             style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
           >
             <div
-              onClick={() => setLightboxIndex(selectedImageIndex)}
               style={{
-                position: "relative",
-                height: "28rem",
-                borderRadius: "1rem",
-                overflow: "hidden",
+                background: tk.cardBg,
+                borderRadius: "1.5rem",
+                border: `1px solid ${tk.cardBorder}`,
                 boxShadow: tk.cardShadow,
-                cursor: "pointer",
+                padding: "1rem",
+                display: "flex",
+                flexDirection: "column",
+                gap: "0.9rem",
               }}
             >
-              <img
-                src={
-                  destination.imageUrls[selectedImageIndex] ||
-                  "/placeholder.svg"
-                }
-                alt={localize(destination.name)}
-                style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                onError={(e) => {
-                  e.currentTarget.src = "/placeholder.svg";
-                }}
-              />
               <div
                 style={{
-                  position: "absolute",
-                  top: "1rem",
-                  right: "1rem",
-                  background: "#E8192C",
-                  color: "#fff",
-                  padding: "0.375rem 1rem",
-                  borderRadius: "9999px",
-                  fontWeight: 600,
-                  fontSize: "0.875rem",
-                  boxShadow: "0 2px 12px rgba(0,0,0,0.3)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  gap: "1rem",
                 }}
               >
-                {destination.category}
-              </div>
-            </div>
-
-            {/* Thumbnail Gallery */}
-            {destination.imageUrls.length > 1 && (
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(4, 1fr)",
-                  gap: "0.5rem",
-                }}
-              >
-                {destination.imageUrls.slice(0, 4).map((url, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setSelectedImageIndex(index)}
+                <div>
+                  <h3
                     style={{
-                      position: "relative",
-                      height: "5rem",
-                      borderRadius: "0.5rem",
-                      overflow: "hidden",
-                      border:
-                        selectedImageIndex === index
-                          ? `3px solid ${tk.brand}`
-                          : `2px solid ${tk.thumbBorder}`,
-                      cursor: "pointer",
-                      transform:
-                        selectedImageIndex === index
-                          ? "scale(1.05)"
-                          : "scale(1)",
-                      transition: "all 0.2s",
-                      padding: 0,
-                      boxShadow:
-                        selectedImageIndex === index ? tk.cardShadow : "none",
+                      margin: 0,
+                      fontSize: "1rem",
+                      fontWeight: 700,
+                      color: tk.pageText,
                     }}
                   >
-                    <img
-                      src={url}
-                      alt={`${localize(destination.name)} ${index + 1}`}
-                      style={{
-                        width: "100%",
-                        height: "100%",
-                        objectFit: "cover",
-                      }}
-                      onError={(e) => {
-                        e.currentTarget.src = "/placeholder.svg";
-                      }}
-                    />
+                    {t("home.destinations.howToReach.mapPreview", "Map preview")}
+                  </h3>
+                  <p
+                    style={{
+                      margin: "0.35rem 0 0",
+                      fontSize: "0.9rem",
+                      color: tk.mutedText,
+                    }}
+                  >
+                    {t(
+                      "home.destinations.howToReach.mapPreviewDescription",
+                      "A quick look at the destination area before you head out.",
+                    )}
+                  </p>
+                </div>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.5rem",
+                  }}
+                >
+                  <button
+                    onClick={() =>
+                      setMapZoom((current) => Math.min(current + 1, 17))
+                    }
+                    style={{
+                      width: "2.25rem",
+                      height: "2.25rem",
+                      display: "inline-flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      borderRadius: "0.8rem",
+                      border: `1px solid ${tk.cardBorder}`,
+                      background: tk.cardBg,
+                      color: tk.pageText,
+                      cursor: "pointer",
+                    }}
+                  >
+                    <Plus className="w-4 h-4" />
                   </button>
-                ))}
+                  <button
+                    onClick={() =>
+                      setMapZoom((current) => Math.max(current - 1, 8))
+                    }
+                    style={{
+                      width: "2.25rem",
+                      height: "2.25rem",
+                      display: "inline-flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      borderRadius: "0.8rem",
+                      border: `1px solid ${tk.cardBorder}`,
+                      background: tk.cardBg,
+                      color: tk.pageText,
+                      cursor: "pointer",
+                    }}
+                  >
+                    <Minus className="w-4 h-4" />
+                  </button>
+                </div>
               </div>
-            )}
+
+              <div
+                style={{
+                  position: "relative",
+                  borderRadius: "1.25rem",
+                  overflow: "hidden",
+                  height: "26rem",
+                  border: `1px solid ${tk.cardBorder}`,
+                  background: tk.cardBg,
+                }}
+              >
+                {destination.lat && destination.lng ? (
+                  <MapContainer
+                    center={mapCenter}
+                    zoom={mapZoom}
+                    style={{ height: "100%", width: "100%" }}
+                    scrollWheelZoom={false}
+                    zoomControl={false}
+                  >
+                    <TileLayer
+                      attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                      url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    />
+                    <Marker position={mapCenter}>
+                      <Popup>
+                        <div style={{ textAlign: "center" }}>
+                          <h3 style={{ fontWeight: 700, margin: 0 }}>
+                            {localize(destination.name)}
+                          </h3>
+                          <p
+                            style={{
+                              fontSize: "0.875rem",
+                              color: tk.mutedText,
+                              margin: "0.25rem 0 0",
+                            }}
+                          >
+                            {destination.category}
+                          </p>
+                        </div>
+                      </Popup>
+                    </Marker>
+                  </MapContainer>
+                ) : (
+                  <div
+                    style={{
+                      height: "100%",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      background: tk.mapFallbackBg,
+                    }}
+                  >
+                    <p style={{ color: tk.mutedText }}>
+                      {t("home.destinations.locationNotAvailable")}
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+            <button
+              onClick={() =>
+                window.open(
+                  `https://www.google.com/maps/search/?api=1&query=${destination.lat},${destination.lng}`,
+                  "_blank",
+                )
+              }
+              disabled={!destination.lat || !destination.lng}
+              style={{
+                width: "100%",
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "0.5rem",
+                padding: "0.75rem 1.25rem",
+                background: tk.btnOutlineBg,
+                color: tk.pageText,
+                border: `1px solid ${tk.btnOutlineBorder}`,
+                borderRadius: "0.625rem",
+                fontWeight: 600,
+                cursor:
+                  !destination.lat || !destination.lng
+                    ? "not-allowed"
+                    : "pointer",
+                opacity: !destination.lat || !destination.lng ? 0.5 : 1,
+                fontSize: "0.9rem",
+              }}
+            >
+              <MapPin className="w-4 h-4" />
+              {t("map.openInGoogleMaps")}
+            </button>
           </div>
         </div>
       </div>
@@ -1878,223 +2051,9 @@ const DestinationDetails = () => {
                   </p>
                 </div>
               )}
-              <button
-                onClick={() =>
-                  window.open(
-                    `https://www.google.com/maps/search/?api=1&query=${destination.lat},${destination.lng}`,
-                    "_blank",
-                  )
-                }
-                disabled={!destination.lat || !destination.lng}
-                style={{
-                  flex: 1,
-                  display: "inline-flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: "0.5rem",
-                  padding: "0.75rem 1.25rem",
-                  background: tk.btnOutlineBg,
-                  color: tk.pageText,
-                  border: `1px solid ${tk.btnOutlineBorder}`,
-                  borderRadius: "0.625rem",
-                  fontWeight: 600,
-                  cursor:
-                    !destination.lat || !destination.lng
-                      ? "not-allowed"
-                      : "pointer",
-                  opacity: !destination.lat || !destination.lng ? 0.5 : 1,
-                  fontSize: "0.9rem",
-                }}
-              >
-                <MapPin className="w-4 h-4" />
-                {t("map.openInGoogleMaps")}
-              </button>
             </div>
           </div>
 
-          <div
-            style={{
-              background: tk.cardBg,
-              borderRadius: "1.5rem",
-              border: `1px solid ${tk.cardBorder}`,
-              boxShadow: tk.cardShadow,
-              padding: "1rem",
-              display: "flex",
-              flexDirection: "column",
-              gap: "0.9rem",
-            }}
-          >
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                gap: "1rem",
-              }}
-            >
-              <div>
-                <h3
-                  style={{
-                    margin: 0,
-                    fontSize: "1rem",
-                    fontWeight: 700,
-                    color: tk.pageText,
-                  }}
-                >
-                  {t("home.destinations.howToReach.mapPreview", "Map preview")}
-                </h3>
-                <p
-                  style={{
-                    margin: "0.35rem 0 0",
-                    fontSize: "0.9rem",
-                    color: tk.mutedText,
-                  }}
-                >
-                  {t(
-                    "home.destinations.howToReach.mapPreviewDescription",
-                    "A quick look at the destination area before you head out.",
-                  )}
-                </p>
-              </div>
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "0.5rem",
-                }}
-              >
-                <button
-                  onClick={() =>
-                    setMapZoom((current) => Math.min(current + 1, 17))
-                  }
-                  style={{
-                    width: "2.25rem",
-                    height: "2.25rem",
-                    display: "inline-flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderRadius: "0.8rem",
-                    border: `1px solid ${tk.cardBorder}`,
-                    background: tk.cardBg,
-                    color: tk.pageText,
-                    cursor: "pointer",
-                  }}
-                >
-                  <Plus className="w-4 h-4" />
-                </button>
-                <button
-                  onClick={() =>
-                    setMapZoom((current) => Math.max(current - 1, 8))
-                  }
-                  style={{
-                    width: "2.25rem",
-                    height: "2.25rem",
-                    display: "inline-flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderRadius: "0.8rem",
-                    border: `1px solid ${tk.cardBorder}`,
-                    background: tk.cardBg,
-                    color: tk.pageText,
-                    cursor: "pointer",
-                  }}
-                >
-                  <Minus className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-
-            <div
-              style={{
-                position: "relative",
-                borderRadius: "1.25rem",
-                overflow: "hidden",
-                minHeight: "22rem",
-                border: `1px solid ${tk.cardBorder}`,
-                background: tk.cardBg,
-              }}
-            >
-              {destination.lat && destination.lng ? (
-                <MapContainer
-                  center={mapCenter}
-                  zoom={mapZoom}
-                  style={{ height: "100%", width: "100%" }}
-                  scrollWheelZoom={false}
-                  zoomControl={false}
-                >
-                  <TileLayer
-                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                  />
-                  <Marker position={mapCenter}>
-                    <Popup>
-                      <div style={{ textAlign: "center" }}>
-                        <h3 style={{ fontWeight: 700, margin: 0 }}>
-                          {localize(destination.name)}
-                        </h3>
-                        <p
-                          style={{
-                            fontSize: "0.875rem",
-                            color: tk.mutedText,
-                            margin: "0.25rem 0 0",
-                          }}
-                        >
-                          {destination.category}
-                        </p>
-                      </div>
-                    </Popup>
-                  </Marker>
-                </MapContainer>
-              ) : (
-                <div
-                  style={{
-                    height: "100%",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    background: tk.mapFallbackBg,
-                  }}
-                >
-                  <p style={{ color: tk.mutedText }}>
-                    {t("home.destinations.locationNotAvailable")}
-                  </p>
-                </div>
-              )}
-
-              <button
-                onClick={() =>
-                  window.open(
-                    `https://www.google.com/maps/search/?api=1&query=${destination.lat},${destination.lng}`,
-                    "_blank",
-                  )
-                }
-                disabled={!destination.lat || !destination.lng}
-                style={{
-                  position: "absolute",
-                  right: "1rem",
-                  bottom: "1rem",
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "0.5rem",
-                  padding: "0.8rem 1rem",
-                  background: tk.cardBg,
-                  color: tk.pageText,
-                  border: `1px solid ${tk.cardBorder}`,
-                  borderRadius: "9999px",
-                  fontWeight: 700,
-                  cursor:
-                    !destination.lat || !destination.lng
-                      ? "not-allowed"
-                      : "pointer",
-                  opacity: !destination.lat || !destination.lng ? 0.55 : 1,
-                  boxShadow: "0 12px 28px rgba(15,23,42,0.16)",
-                }}
-              >
-                <Navigation className="w-4 h-4" />
-                {t("home.destinations.howToReach.directions", "Directions")}
-              </button>
-            </div>
-          </div>
         </div>
       </div>
 

@@ -154,7 +154,7 @@
       },
       "howToReach": {
         "title": "Si të arrini",
-        "description": "Opsione të shpejta transporti dhe një pamje paraprake e hartës për ta bërë mbërritjen më të lehtë.",
+        "description": "Opsione të shpejta transporti për ta bërë mbërritjen më të lehtë.",
         "noTransportDetails": "Detajet e transportit do të shfaqen këtu sapo të shtohen itineraret për këtë destinacion.",
         "mapPreview": "Pamje paraprake e hartës",
         "mapPreviewDescription": "Një vështrim i shpejtë i zonës së destinacionit përpara se të niseni.",
@@ -364,7 +364,15 @@
     "bookinalFee": "Tarifa e Bookinal",
     "paidToHost": "Paguhet direkt te pritësi",
     "sendRequest": "Dërgo kërkesën për rezervim",
-    "freeBookingNote": "Rezervim falas: asgjë për të paguar në Bookinal. Sapo pritësi konfirmon kërkesën, merrni kontaktet e tij dhe e shlyeni qëndrimin direkt me të."
+    "freeBookingNote": "Rezervim falas: asgjë për të paguar në Bookinal. Sapo pritësi konfirmon kërkesën, merrni kontaktet e tij dhe e shlyeni qëndrimin direkt me të.",
+    "missingFieldsTitle": "Ju lutemi plotësoni fushat e mëposhtme:",
+    "errors": {
+      "fullNameRequired": "Ju lutemi shkruani emrin tuaj të plotë.",
+      "emailRequired": "Ju lutemi shkruani adresën tuaj të email-it.",
+      "emailInvalid": "Ju lutemi shkruani një adresë email-i të vlefshme.",
+      "pickUpLocationRequired": "Ju lutemi zgjidhni vendin e marrjes.",
+      "dropOffLocationRequired": "Ju lutemi zgjidhni vendin e dorëzimit."
+    }
   },
   "terms": {
     "minimumRentalPeriod": "Periudha minimale e qirasë",
@@ -1746,5 +1754,79 @@
     "clientToProviderNamed": "Përshëndetje {{name}}, rezervova {{property}} në BookinAL (rezervimi {{ref}}, {{dates}}). Shihemi së shpejti!\n\nDetajet e rezervimit: {{link}}",
     "providerToClient": "Përshëndetje, ju kontaktoj nga BookinAL për rezervimin tuaj {{ref}} për {{property}} ({{dates}}). Ku dëshironi të takohemi për marrjen ose mbërritjen?\n\nDetajet e rezervimit: {{link}}",
     "providerToClientNamed": "Përshëndetje {{name}}, ju kontaktoj nga BookinAL për rezervimin tuaj {{ref}} për {{property}} ({{dates}}). Ku dëshironi të takohemi për marrjen ose mbërritjen?\n\nDetajet e rezervimit: {{link}}"
+  },
+  "bookingTicket": {
+    "status": "Në pritje të konfirmimit",
+    "title": "Kërkesa për rezervim u dërgua",
+    "subtitle": "Ja përmbledhja e kërkesës suaj. Ende nuk është tarifuar asgjë.",
+    "guest": "Klienti",
+    "phone": "Telefoni",
+    "pickUp": "Marrja",
+    "dropOff": "Dorëzimi",
+    "duration": "Kohëzgjatja",
+    "days_one": "{{count}} ditë",
+    "days_other": "{{count}} ditë",
+    "extras": "Shtesa",
+    "childSeat": "Karrige për fëmijë",
+    "additionalDriver": "Shofer shtesë",
+    "crossBorder": "Kalim kufiri",
+    "priceTitle": "Përmbledhja e çmimit",
+    "rental_one": "Qiraja ({{count}} ditë)",
+    "rental_other": "Qiraja ({{count}} ditë)",
+    "serviceFee": "Tarifa e shërbimit (5%)",
+    "total": "Totali",
+    "depositNote": "+ {{amount}} depozitë sigurie në marrje",
+    "nextStepsTitle": "Çfarë ndodh më pas?",
+    "steps": {
+      "review": {
+        "title": "Ofruesi shqyrton kërkesën tuaj",
+        "description": "Ai do ta pranojë ose refuzojë. Do të merrni një email sapo të përgjigjet; deri atëherë kërkesa shfaqet \"Në pritje\" te Rezervimet e mia."
+      },
+      "pay": {
+        "title": "Paguani tarifën e shërbimit për të siguruar makinën",
+        "description": "Sapo ofruesi të konfirmojë, paguani tarifën e shërbimit prej {{fee}} online nga Rezervimet e mia. Asgjë nuk tarifohet para kësaj."
+      },
+      "contact": {
+        "title": "Kontaktoni ofruesin dhe merrni makinën",
+        "description": "Pas pagesës merrni telefonin dhe WhatsApp-in e ofruesit për të organizuar marrjen. Pjesa e mbetur ({{rest}}) paguhet direkt te ofruesi."
+      }
+    },
+    "emailNotice": "Do t'ju shkruajmë te {{email}} sapo ofruesi të përgjigjet.",
+    "viewBookings": "Shiko rezervimet e mia",
+    "backHome": "Kthehu në faqen kryesore",
+    "review": {
+      "status": "Ende e padërguar",
+      "title": "Kontrolloni kërkesën tuaj për rezervim",
+      "subtitle": "Sigurohuni që gjithçka është e saktë, pastaj konfirmoni për ta dërguar te ofruesi. Tani nuk tarifohet asgjë.",
+      "confirm": "Konfirmo dhe dërgo kërkesën",
+      "sending": "Duke dërguar…",
+      "edit": "Ndrysho të dhënat",
+      "openButton": "Shiko rezervimin"
+    },
+    "apartment": {
+      "checkIn": "Hyrja",
+      "checkOut": "Largimi",
+      "address": "Adresa",
+      "nights_one": "{{count}} natë",
+      "nights_other": "{{count}} netë",
+      "stay_one": "Qëndrimi ({{count}} natë)",
+      "stay_other": "Qëndrimi ({{count}} netë)",
+      "steps": {
+        "review": {
+          "title": "Pritësi shqyrton kërkesën tuaj",
+          "description": "Ai do ta pranojë ose refuzojë. Do të merrni një email sapo të përgjigjet; deri atëherë kërkesa shfaqet \"Në pritje\" te Rezervimet e mia."
+        },
+        "contact": {
+          "title": "Merrni falas kontaktin e pritësit",
+          "description": "Sapo pritësi të konfirmojë, telefoni dhe WhatsApp-i i tij shfaqen te Rezervimet e mia. Nuk ka asgjë për të paguar në Bookinal."
+        },
+        "pay": {
+          "title": "Shlyeni qëndrimin me pritësin",
+          "description": "Organizoni mbërritjen me pritësin dhe paguani {{total}} direkt atij."
+        }
+      }
+    },
+    "flying": "Kërkesa juaj është në rrugë…",
+    "stamp": "Dërguar"
   }
 }

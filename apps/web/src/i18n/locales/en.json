@@ -153,7 +153,7 @@
       },
       "howToReach": {
         "title": "How to Reach",
-        "description": "Quick transport options and a map preview to make arrival easier.",
+        "description": "Quick transport options to make arrival easier.",
         "noTransportDetails": "Transport details will appear here once routes are added for this destination.",
         "mapPreview": "Map preview",
         "mapPreviewDescription": "A quick look at the destination area before you head out.",
@@ -363,7 +363,15 @@
     "bookinalFee": "Bookinal fee",
     "paidToHost": "Paid directly to the host",
     "sendRequest": "Send booking request",
-    "freeBookingNote": "Free booking: nothing to pay on Bookinal. Once the host confirms your request, you get their contact details and settle the stay directly with them."
+    "freeBookingNote": "Free booking: nothing to pay on Bookinal. Once the host confirms your request, you get their contact details and settle the stay directly with them.",
+    "missingFieldsTitle": "Please complete the following:",
+    "errors": {
+      "fullNameRequired": "Please enter your full name.",
+      "emailRequired": "Please enter your email address.",
+      "emailInvalid": "Please enter a valid email address.",
+      "pickUpLocationRequired": "Please select a pick-up location.",
+      "dropOffLocationRequired": "Please select a drop-off location."
+    }
   },
   "terms": {
     "minimumRentalPeriod": "Minimum Rental Period",
@@ -1729,5 +1737,79 @@
     "clientToProviderNamed": "Hi {{name}}, I booked {{property}} on BookinAL (booking {{ref}}, {{dates}}). Looking forward to it!\n\nBooking details: {{link}}",
     "providerToClient": "Hi, I'm contacting you from BookinAL about your booking {{ref}} for {{property}} ({{dates}}). Where would you like to meet for the pick-up or check-in?\n\nBooking details: {{link}}",
     "providerToClientNamed": "Hi {{name}}, I'm contacting you from BookinAL about your booking {{ref}} for {{property}} ({{dates}}). Where would you like to meet for the pick-up or check-in?\n\nBooking details: {{link}}"
+  },
+  "bookingTicket": {
+    "status": "Pending confirmation",
+    "title": "Booking request sent",
+    "subtitle": "Here is the summary of your request. Nothing has been charged yet.",
+    "guest": "Guest",
+    "phone": "Phone",
+    "pickUp": "Pick-up",
+    "dropOff": "Drop-off",
+    "duration": "Duration",
+    "days_one": "{{count}} day",
+    "days_other": "{{count}} days",
+    "extras": "Extras",
+    "childSeat": "Child seat",
+    "additionalDriver": "Additional driver",
+    "crossBorder": "Cross border",
+    "priceTitle": "Price summary",
+    "rental_one": "Rental ({{count}} day)",
+    "rental_other": "Rental ({{count}} days)",
+    "serviceFee": "Service fee (5%)",
+    "total": "Total",
+    "depositNote": "+ {{amount}} security deposit held at pick-up",
+    "nextStepsTitle": "What happens next?",
+    "steps": {
+      "review": {
+        "title": "The provider reviews your request",
+        "description": "They will accept or decline it. You will get an email as soon as they answer, and the request shows as \"Pending\" in My Bookings until then."
+      },
+      "pay": {
+        "title": "Pay the service fee to secure the car",
+        "description": "Once the provider confirms, pay the {{fee}} service fee online from My Bookings. Nothing is charged before that."
+      },
+      "contact": {
+        "title": "Contact the provider and pick up the car",
+        "description": "After payment you get the provider's phone and WhatsApp to arrange the pick-up. The remaining {{rest}} is paid directly to the provider."
+      }
+    },
+    "emailNotice": "We will email you at {{email}} as soon as the provider answers.",
+    "viewBookings": "View my bookings",
+    "backHome": "Back to home",
+    "review": {
+      "status": "Not sent yet",
+      "title": "Check your booking request",
+      "subtitle": "Make sure everything is correct, then confirm to send it to the provider. Nothing is charged now.",
+      "confirm": "Confirm and send request",
+      "sending": "Sending…",
+      "edit": "Edit my details",
+      "openButton": "Review my booking"
+    },
+    "apartment": {
+      "checkIn": "Check-in",
+      "checkOut": "Check-out",
+      "address": "Address",
+      "nights_one": "{{count}} night",
+      "nights_other": "{{count}} nights",
+      "stay_one": "Stay ({{count}} night)",
+      "stay_other": "Stay ({{count}} nights)",
+      "steps": {
+        "review": {
+          "title": "The host reviews your request",
+          "description": "They will accept or decline it. You will get an email as soon as they answer, and the request shows as \"Pending\" in My Bookings until then."
+        },
+        "contact": {
+          "title": "Get the host's contact for free",
+          "description": "As soon as the host confirms, their phone and WhatsApp appear in My Bookings. There is nothing to pay on Bookinal."
+        },
+        "pay": {
+          "title": "Settle your stay with the host",
+          "description": "Arrange your arrival with the host and pay the {{total}} directly to them."
+        }
+      }
+    },
+    "flying": "Your request is on its way…",
+    "stamp": "Sent"
   }
 }

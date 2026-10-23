@@ -153,7 +153,7 @@
       },
       "howToReach": {
         "title": "Come arrivare",
-        "description": "Opzioni di trasporto rapide e un'anteprima della mappa per facilitare l'arrivo.",
+        "description": "Opzioni di trasporto rapide per facilitare l'arrivo.",
         "noTransportDetails": "I dettagli sui trasporti appariranno qui una volta aggiunti i percorsi per questa destinazione.",
         "mapPreview": "Anteprima mappa",
         "mapPreviewDescription": "Un rapido sguardo alla zona della destinazione prima di partire.",
@@ -363,7 +363,15 @@
     "bookinalFee": "Commissione Bookinal",
     "paidToHost": "Pagato direttamente all'host",
     "sendRequest": "Invia richiesta di prenotazione",
-    "freeBookingNote": "Prenotazione gratuita: niente da pagare su Bookinal. Quando l'host conferma la tua richiesta, ricevi i suoi contatti e saldi il soggiorno direttamente con lui."
+    "freeBookingNote": "Prenotazione gratuita: niente da pagare su Bookinal. Quando l'host conferma la tua richiesta, ricevi i suoi contatti e saldi il soggiorno direttamente con lui.",
+    "missingFieldsTitle": "Completa i seguenti campi:",
+    "errors": {
+      "fullNameRequired": "Inserisci il tuo nome completo.",
+      "emailRequired": "Inserisci il tuo indirizzo email.",
+      "emailInvalid": "Inserisci un indirizzo email valido.",
+      "pickUpLocationRequired": "Seleziona un luogo di ritiro.",
+      "dropOffLocationRequired": "Seleziona un luogo di riconsegna."
+    }
   },
   "terms": {
     "minimumRentalPeriod": "Periodo Minimo di Noleggio",
@@ -1729,5 +1737,79 @@
     "clientToProviderNamed": "Ciao {{name}}, ho prenotato {{property}} su BookinAL (prenotazione {{ref}}, {{dates}}). A presto!\n\nDettagli della prenotazione: {{link}}",
     "providerToClient": "Ciao, ti contatto da BookinAL per la tua prenotazione {{ref}} di {{property}} ({{dates}}). Dove preferisci incontrarci per il ritiro o il check-in?\n\nDettagli della prenotazione: {{link}}",
     "providerToClientNamed": "Ciao {{name}}, ti contatto da BookinAL per la tua prenotazione {{ref}} di {{property}} ({{dates}}). Dove preferisci incontrarci per il ritiro o il check-in?\n\nDettagli della prenotazione: {{link}}"
+  },
+  "bookingTicket": {
+    "status": "In attesa di conferma",
+    "title": "Richiesta di prenotazione inviata",
+    "subtitle": "Ecco il riepilogo della tua richiesta. Non è stato ancora addebitato nulla.",
+    "guest": "Cliente",
+    "phone": "Telefono",
+    "pickUp": "Ritiro",
+    "dropOff": "Riconsegna",
+    "duration": "Durata",
+    "days_one": "{{count}} giorno",
+    "days_other": "{{count}} giorni",
+    "extras": "Extra",
+    "childSeat": "Seggiolino per bambini",
+    "additionalDriver": "Conducente aggiuntivo",
+    "crossBorder": "Passaggio di frontiera",
+    "priceTitle": "Riepilogo prezzo",
+    "rental_one": "Noleggio ({{count}} giorno)",
+    "rental_other": "Noleggio ({{count}} giorni)",
+    "serviceFee": "Commissione di servizio (5%)",
+    "total": "Totale",
+    "depositNote": "+ {{amount}} di deposito cauzionale al ritiro",
+    "nextStepsTitle": "Cosa succede ora?",
+    "steps": {
+      "review": {
+        "title": "Il fornitore esamina la tua richiesta",
+        "description": "La accetterà o la rifiuterà. Riceverai un'email appena risponde; fino ad allora la richiesta appare \"In attesa\" in Le mie prenotazioni."
+      },
+      "pay": {
+        "title": "Paga la commissione per bloccare l'auto",
+        "description": "Quando il fornitore conferma, paga online la commissione di {{fee}} da Le mie prenotazioni. Prima di allora non viene addebitato nulla."
+      },
+      "contact": {
+        "title": "Contatta il fornitore e ritira l'auto",
+        "description": "Dopo il pagamento ricevi il telefono e il WhatsApp del fornitore per organizzare il ritiro. Il resto ({{rest}}) si paga direttamente al fornitore."
+      }
+    },
+    "emailNotice": "Ti scriveremo a {{email}} non appena il fornitore risponde.",
+    "viewBookings": "Vedi le mie prenotazioni",
+    "backHome": "Torna alla home",
+    "review": {
+      "status": "Non ancora inviata",
+      "title": "Controlla la tua richiesta di prenotazione",
+      "subtitle": "Verifica che sia tutto corretto, poi conferma per inviarla al fornitore. Ora non viene addebitato nulla.",
+      "confirm": "Conferma e invia la richiesta",
+      "sending": "Invio in corso…",
+      "edit": "Modifica i miei dati",
+      "openButton": "Controlla la prenotazione"
+    },
+    "apartment": {
+      "checkIn": "Check-in",
+      "checkOut": "Check-out",
+      "address": "Indirizzo",
+      "nights_one": "{{count}} notte",
+      "nights_other": "{{count}} notti",
+      "stay_one": "Soggiorno ({{count}} notte)",
+      "stay_other": "Soggiorno ({{count}} notti)",
+      "steps": {
+        "review": {
+          "title": "L'host esamina la tua richiesta",
+          "description": "La accetterà o la rifiuterà. Riceverai un'email appena risponde; fino ad allora la richiesta appare \"In attesa\" in Le mie prenotazioni."
+        },
+        "contact": {
+          "title": "Ricevi gratis i contatti dell'host",
+          "description": "Appena l'host conferma, il suo telefono e WhatsApp compaiono in Le mie prenotazioni. Non c'è nulla da pagare su Bookinal."
+        },
+        "pay": {
+          "title": "Salda il soggiorno con l'host",
+          "description": "Organizza l'arrivo con l'host e paga i {{total}} direttamente a lui."
+        }
+      }
+    },
+    "flying": "La tua richiesta è in viaggio…",
+    "stamp": "Inviata"
   }
 }
