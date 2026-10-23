@@ -73,10 +73,15 @@ export const useSearchFilters = (
   );
 
   /**
-   * Reset all filters to default
+   * Reset all filters to default, keeping the property type being browsed
+   * (the default type is "destination", which would switch the apartment
+   * search results to the destination filters)
    */
   const resetFilters = useCallback(() => {
-    setFiltersState(defaultSearchFilters);
+    setFiltersState((prev) => ({
+      ...defaultSearchFilters,
+      propertyType: prev.propertyType,
+    }));
   }, []);
 
   return {
