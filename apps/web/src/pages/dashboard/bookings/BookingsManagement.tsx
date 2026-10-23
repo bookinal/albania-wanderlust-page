@@ -6,7 +6,9 @@ import { buildWhatsAppLink, providerToClientMessage } from "@/lib/whatsapp";
 import { getInsurancePlanNameLabel } from "@/lib/insurancePlans";
 import { useTheme } from "@/context/ThemeContext";
 import {
+  canShareContactDetails,
   getBookingsByProviderId,
+  isFreeBooking,
   updateBookingStatus,
 } from "@/services/api/bookingService";
 import { getCarById } from "@/services/api/carService";
@@ -115,6 +117,10 @@ const PAYMENT_STATUS_CFG: Record<
     cls: "bg-sky-500/10 text-sky-400 border-sky-500/20",
     icon: <AlertCircle className="w-3 h-3" />,
   },
+  not_required: {
+    cls: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
+    icon: <CheckCircle2 className="w-3 h-3" />,
+  },
 };
 
 // keep for legacy icon lookups
@@ -161,7 +167,8 @@ const getPropertyRoute = (booking: Booking) => {
   }
 };
 
-// Contact panel shown on paid bookings: call, WhatsApp and email as separate buttons
+// Contact panel shown once contact is unlocked (fee paid, or free booking confirmed):
+// call, WhatsApp and email as separate buttons
 function ClientContactPanel({
   booking,
   isDark,
@@ -395,7 +402,11 @@ function BookingDetails({ booking, tk }: { booking: Booking; tk: DetailsTokens }
             style={{ borderTop: `1px solid ${tk.divider}` }}
           >
             <span style={{ color: tk.dimText }}>{t("bookingManagement.details.serviceFee")}</span>
-            <span className="shrink-0 font-medium" style={{ color: tk.pageText }}>{money(fee)}</span>
+            {isFreeBooking(booking) ? (
+              <span className="shrink-0 font-semibold text-emerald-500">{t("billing.free", "Free")}</span>
+            ) : (
+              <span className="shrink-0 font-medium" style={{ color: tk.pageText }}>{money(fee)}</span>
+            )}
           </li>
           <li className="flex items-start justify-between gap-3 text-sm font-semibold">
             <span style={{ color: tk.pageText }}>{t("bookingManagement.details.total")}</span>
@@ -899,7 +910,9 @@ export default function BookingsManagement() {
             await notifyClientBookingStatus({
               bookingId: bookingData.id,
               status: "confirmed",
-              statusMessage: t("bookingManagement.email.confirmationMessage"),
+              statusMessage: isFreeBooking(bookingData)
+                ? t("bookingManagement.email.confirmationMessageFree")
+                : t("bookingManagement.email.confirmationMessage"),
             });
           } catch (emailError) {
             console.error("Error sending confirmation email:", emailError);
@@ -1227,7 +1240,9 @@ export default function BookingsManagement() {
                           className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium ${paymentCfg.cls}`}
                         >
                           {paymentCfg.icon}
-                          {booking.payment_status}
+                          {booking.payment_status === "not_required"
+                            ? t("booking.freeBadge", "Free")
+                            : booking.payment_status}
                         </span>
                       </div>
                     </div>
@@ -1250,15 +1265,16 @@ export default function BookingsManagement() {
                         className="mt-1 text-sm font-medium"
                         style={{ color: tk.pageText }}
                       >
-                        {booking.status === "confirmed" &&
-                        booking.payment_status === "paid"
+                        {canShareContactDetails(booking)
                           ? booking.requesterName
                           : "—"}
                       </p>
-                      {booking.payment_status !== "paid" &&
+                      {!canShareContactDetails(booking) &&
                         booking.status !== "canceled" && (
                           <p className="mt-1 text-xs" style={{ color: tk.labelText }}>
-                            {t("bookingManagement.contactPanel.locked")}
+                            {isFreeBooking(booking)
+                              ? t("bookingManagement.contactPanel.lockedFree")
+                              : t("bookingManagement.contactPanel.locked")}
                           </p>
                         )}
                     </div>
@@ -1357,7 +1373,8 @@ export default function BookingsManagement() {
                           </>
                         )}
                         {booking.status === "confirmed" &&
-                          booking.payment_status === "pending" && (
+                          (booking.payment_status === "pending" ||
+                            booking.payment_status === "not_required") && (
                             <button
                               onClick={() =>
                                 handleStatusUpdate(booking.id, "canceled")
@@ -1392,6 +1409,15 @@ export default function BookingsManagement() {
                               )}
                             </span>
                           )}
+                        {booking.status === "confirmed" &&
+                          isFreeBooking(booking) && (
+                            <span className="text-xs text-emerald-400 font-medium">
+                              {t(
+                                "bookingManagement.actions.confirmedFree",
+                                "Confirmed · Free booking",
+                              )}
+                            </span>
+                          )}
                         {updatingStatus === booking.id && (
                           <Loader2 className="w-4 h-4 animate-spin text-[#e41e20]" />
                         )}
@@ -1399,11 +1425,10 @@ export default function BookingsManagement() {
                     </div>
                   </div>
 
-                  {/* Client contact (unlocked once the fee is paid) */}
-                  {booking.status === "confirmed" &&
-                    booking.payment_status === "paid" && (
-                      <ClientContactPanel booking={booking} isDark={isDark} />
-                    )}
+                  {/* Client contact (unlocked once the fee is paid, or once a free booking is confirmed) */}
+                  {canShareContactDetails(booking) && (
+                    <ClientContactPanel booking={booking} isDark={isDark} />
+                  )}
 
                   {/* Booking details: pick-up / drop-off, extras, price breakdown */}
                   <BookingDetails booking={booking} tk={tk} />

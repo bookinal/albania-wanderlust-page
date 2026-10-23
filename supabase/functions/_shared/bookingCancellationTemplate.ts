@@ -14,8 +14,13 @@ export const getBookingCancellationTemplate = (data: {
   checkIn: string;
   checkOut: string;
   totalPrice: number;
+  kind?: "unpaid" | "unconfirmed"; // defaults to "unpaid"
 }): string => {
   const requesterName = escapeHtml(data.requesterName);
+  const reasonText =
+    data.kind === "unconfirmed"
+      ? "We were unable to keep this request active because the provider did not confirm it before the stay date."
+      : "We were unable to keep this reservation active because payment was not completed before the stay date.";
   const propertyType = escapeHtml(data.propertyType);
   const checkIn = escapeHtml(data.checkIn);
   const checkOut = escapeHtml(data.checkOut);
@@ -56,7 +61,7 @@ export const getBookingCancellationTemplate = (data: {
           </div>
           <div class="content">
             <p class="intro">Hello ${requesterName},</p>
-            <p class="intro">We were unable to keep this reservation active because payment was not completed before the stay date.</p>
+            <p class="intro">${reasonText}</p>
             <div class="notice"><strong>What happened:</strong> the booking was automatically cancelled to reopen availability and keep calendars accurate.</div>
             <div class="card">
               <h2 class="card-title">Booking summary</h2>

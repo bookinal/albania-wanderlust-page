@@ -76,7 +76,7 @@ const getPropertyName = (booking: Booking): string => {
 // ── status helpers ─────────────────────────────────────────────────────────
 
 type BookingStatus = "pending" | "confirmed" | "canceled";
-type PaymentStatus = "pending" | "paid" | "failed" | "refunded";
+type PaymentStatus = "pending" | "paid" | "failed" | "refunded" | "not_required";
 
 const STATUS_CONFIG: Record<
   BookingStatus,
@@ -104,6 +104,7 @@ const PAYMENT_CONFIG: Record<PaymentStatus, { label: string; cls: string }> = {
   paid: { label: "Paid", cls: "text-emerald-400" },
   failed: { label: "Failed", cls: "text-red-400" },
   refunded: { label: "Refunded", cls: "text-sky-400" },
+  not_required: { label: "Free", cls: "text-emerald-400" },
 };
 
 // ── main component ─────────────────────────────────────────────────────────
@@ -184,7 +185,11 @@ const AdminProviderBookings: React.FC = () => {
     const confirmed = bookings.filter((b) => b.status === "confirmed").length;
     const canceled = bookings.filter((b) => b.status === "canceled").length;
     const revenue = bookings
-      .filter((b) => b.status === "confirmed" && b.payment_status === "paid")
+      .filter(
+        (b) =>
+          b.status === "confirmed" &&
+          (b.payment_status === "paid" || b.payment_status === "not_required"),
+      )
       .reduce((sum, b) => sum + (b.totalPrice || 0), 0);
     return { total, pending, confirmed, canceled, revenue };
   }, [bookings]);

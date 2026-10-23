@@ -24,7 +24,8 @@ export interface Booking {
   contactPhone: string;
   requesterName: string;
   status: "pending" | "confirmed" | "canceled" | "completed";
-  payment_status: "pending" | "paid" | "failed" | "refunded";
+  // "not_required": free booking (apartments), nothing is paid on the platform
+  payment_status: "pending" | "paid" | "failed" | "refunded" | "not_required";
   payment_intent_id?: string;
   paypal_order_id?: string;
   stripe_payment_intent_id?: string;

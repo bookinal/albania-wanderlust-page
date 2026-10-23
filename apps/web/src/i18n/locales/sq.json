@@ -358,7 +358,13 @@
     "perDayTimesDays_one": "{{price}} × {{count}} ditë = {{total}}",
     "perDayTimesDays_other": "{{price}} × {{count}} ditë = {{total}}",
     "plusDeposit": "(+{{amount}} depozitë)",
-    "depositNote": "Depozita nuk përfshihet në total. Mbahet në marrje dhe kthehet kur dorëzohet makina."
+    "depositNote": "Depozita nuk përfshihet në total. Mbahet në marrje dhe kthehet kur dorëzohet makina.",
+    "requestSentTitle": "Kërkesa u dërgua",
+    "apartmentRequestSent": "Kërkesa juaj u dërgua. Do të merrni kontaktet e pritësit sapo ta konfirmojë.",
+    "bookinalFee": "Tarifa e Bookinal",
+    "paidToHost": "Paguhet direkt te pritësi",
+    "sendRequest": "Dërgo kërkesën për rezervim",
+    "freeBookingNote": "Rezervim falas: asgjë për të paguar në Bookinal. Sapo pritësi konfirmon kërkesën, merrni kontaktet e tij dhe e shlyeni qëndrimin direkt me të."
   },
   "terms": {
     "minimumRentalPeriod": "Periudha minimale e qirasë",
@@ -511,7 +517,8 @@
     "paymentHint": {
       "pending": "Pagesa nuk është kryer ende",
       "paid": "Pagesa u krye me sukses",
-      "failed": "Pagesa dështoi — ju lutemi provoni përsëri"
+      "failed": "Pagesa dështoi — ju lutemi provoni përsëri",
+      "not_required": "Asgjë për të paguar në Bookinal: ky rezervim është falas"
     },
     "combinedStatus": {
       "pendingPending": "Duke pritur konfirmimin nga ofruesi",
@@ -519,19 +526,22 @@
       "confirmedPaid": "Konfirmuar nga ofruesi · Pagesa u krye",
       "canceledPaid": "Rezervimi u anulua · Rimbursimi do të përpunohet",
       "canceledPending": "Rezervimi u anulua",
-      "confirmedFailed": "Konfirmuar nga ofruesi · Pagesa dështoi, provoni përsëri"
+      "confirmedFailed": "Konfirmuar nga ofruesi · Pagesa dështoi, provoni përsëri",
+      "pendingFree": "Rezervim falas · Në pritje të konfirmimit nga pritësi",
+      "confirmedFree": "Konfirmuar nga pritësi · Kontaktet u zhbllokuan"
     },
     "currentlyRented": "Aktualisht me qira — mund të rezervoni për një periudhë tjetër",
     "underMaintenance": "Në Mirëmbajtje",
     "providerPanel": {
       "title": "Kontaktoni ofruesin",
-      "subtitle": "Rezervimi juaj është paguar. Kontaktoni për të organizuar marrjen ose mbërritjen.",
+      "subtitle": "Rezervimi juaj është konfirmuar. Kontaktoni për të organizuar marrjen ose mbërritjen.",
       "whatsapp": "WhatsApp",
       "call": "Telefono",
       "email": "Email",
       "loading": "Po ngarkohen kontaktet…",
       "unavailable": "Kontaktet nuk janë të disponueshme tani."
-    }
+    },
+    "freeBadge": "Falas"
   },
   "user": {
     "fullName": "Emri i plotë",
@@ -917,7 +927,8 @@
       "status": "Statusi:",
       "confirmed": "Konfirmuar",
       "questions": "Nëse keni ndonjë pyetje, ju lutemi na kontaktoni.",
-      "regards": "Me respekt,<br>Ekipi i Shqipërisë"
+      "regards": "Me respekt,<br>Ekipi i Shqipërisë",
+      "confirmationMessageFree": "Rezervimi juaj u konfirmua. Tani mund të kontaktoni direkt pritësin për të organizuar qëndrimin."
     },
     "errors": {
       "loadFailed": "Dështoi ngarkimi i rezervimeve. Ju lutemi provoni përsëri më vonë.",
@@ -948,11 +959,15 @@
     },
     "contactPanel": {
       "title": "Kontaktoni klientin",
-      "subtitle": "Pagesa u mor. Kontaktoni për të organizuar marrjen ose mbërritjen.",
+      "subtitle": "Kontaktet u zhbllokuan. Kontaktoni për të organizuar marrjen ose mbërritjen.",
       "whatsapp": "WhatsApp",
       "call": "Telefono",
       "email": "Email",
-      "locked": "Kontaktet zhbllokohen pasi klienti paguan tarifën e shërbimit."
+      "locked": "Kontaktet zhbllokohen pasi klienti paguan tarifën e shërbimit.",
+      "lockedFree": "Rezervim falas: kontaktet zhbllokohen sapo të konfirmoni kërkesën."
+    },
+    "actions": {
+      "confirmedFree": "Konfirmuar · Rezervim falas"
     }
   },
   "cars": {
@@ -1551,7 +1566,8 @@
       "pending": "Në Pritje",
       "paid": "Paguar",
       "failed": "Dështuar",
-      "refunded": "Rimbursuar"
+      "refunded": "Rimbursuar",
+      "not_required": "Falas"
     },
     "propertyTypes": {
       "car": "Makina",

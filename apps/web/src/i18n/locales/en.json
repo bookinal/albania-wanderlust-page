@@ -357,7 +357,13 @@
     "perDayTimesDays_one": "{{price}} × {{count}} day = {{total}}",
     "perDayTimesDays_other": "{{price}} × {{count}} days = {{total}}",
     "plusDeposit": "(+{{amount}} deposit)",
-    "depositNote": "The deposit is not included in the total. It is held at pick-up and returned with the car."
+    "depositNote": "The deposit is not included in the total. It is held at pick-up and returned with the car.",
+    "requestSentTitle": "Request sent",
+    "apartmentRequestSent": "Your request has been sent. You will get the host's contact details as soon as they confirm it.",
+    "bookinalFee": "Bookinal fee",
+    "paidToHost": "Paid directly to the host",
+    "sendRequest": "Send booking request",
+    "freeBookingNote": "Free booking: nothing to pay on Bookinal. Once the host confirms your request, you get their contact details and settle the stay directly with them."
   },
   "terms": {
     "minimumRentalPeriod": "Minimum Rental Period",
@@ -510,7 +516,8 @@
     "paymentHint": {
       "pending": "Payment has not been completed yet",
       "paid": "Payment successfully received",
-      "failed": "Payment attempt failed — please retry"
+      "failed": "Payment attempt failed — please retry",
+      "not_required": "Nothing to pay on Bookinal: this booking is free"
     },
     "combinedStatus": {
       "pendingPending": "Waiting for provider to confirm your booking",
@@ -518,19 +525,22 @@
       "confirmedPaid": "Confirmed by provider · Payment received",
       "canceledPaid": "Booking cancelled · Refund will be processed",
       "canceledPending": "Booking was cancelled",
-      "confirmedFailed": "Confirmed by provider · Payment failed, please retry"
+      "confirmedFailed": "Confirmed by provider · Payment failed, please retry",
+      "pendingFree": "Free booking · Waiting for the host to confirm your request",
+      "confirmedFree": "Confirmed by the host · Contact details unlocked"
     },
     "currentlyRented": "Currently rented — you can still book for another period",
     "underMaintenance": "Under Maintenance",
     "providerPanel": {
       "title": "Contact your provider",
-      "subtitle": "Your booking is paid. Get in touch to arrange the pick-up or check-in.",
+      "subtitle": "Your booking is confirmed. Get in touch to arrange the pick-up or check-in.",
       "whatsapp": "WhatsApp",
       "call": "Call",
       "email": "Email",
       "loading": "Loading contact details…",
       "unavailable": "Contact details are not available right now."
-    }
+    },
+    "freeBadge": "Free"
   },
   "user": {
     "fullName": "Full Name",
@@ -909,7 +919,8 @@
       "status": "Status:",
       "confirmed": "Confirmed",
       "questions": "If you have any questions, please contact us.",
-      "regards": "Best regards,<br>The Albania Team"
+      "regards": "Best regards,<br>The Albania Team",
+      "confirmationMessageFree": "Your booking has been confirmed. You can now contact the host directly to arrange your stay."
     },
     "errors": {
       "loadFailed": "Failed to load bookings. Please try again later.",
@@ -940,11 +951,15 @@
     },
     "contactPanel": {
       "title": "Contact the client",
-      "subtitle": "Payment received. Get in touch to arrange the pick-up or check-in.",
+      "subtitle": "Contact details unlocked. Get in touch to arrange the pick-up or check-in.",
       "whatsapp": "WhatsApp",
       "call": "Call",
       "email": "Email",
-      "locked": "Contact details unlock once the client pays the service fee."
+      "locked": "Contact details unlock once the client pays the service fee.",
+      "lockedFree": "Free booking: contact details unlock as soon as you confirm the request."
+    },
+    "actions": {
+      "confirmedFree": "Confirmed · Free booking"
     }
   },
   "cars": {
@@ -1534,7 +1549,8 @@
       "pending": "Pending",
       "paid": "Paid",
       "failed": "Failed",
-      "refunded": "Refunded"
+      "refunded": "Refunded",
+      "not_required": "Free"
     },
     "propertyTypes": {
       "car": "Car",

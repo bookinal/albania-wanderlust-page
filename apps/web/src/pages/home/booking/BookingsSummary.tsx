@@ -28,7 +28,11 @@ import { userService } from "@/services/api/userService";
 import { User } from "@/types/user.types";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router";
-import { updateBookingStatus } from "@/services/api/bookingService";
+import {
+  canShareContactDetails,
+  isFreeBooking,
+  updateBookingStatus,
+} from "@/services/api/bookingService";
 import Swal from "sweetalert2";
 import { PayPalButtons, usePayPalScriptReducer } from "@paypal/react-paypal-js";
 import StripePaymentButton from "@/components/payments/StripePaymentButton";
@@ -314,7 +318,8 @@ const generateInvoicePDF = async (booking: Booking) => {
   doc.save(fileName);
 };
 
-// Contact panel shown on paid bookings: WhatsApp, call and email as separate buttons
+// Contact panel shown once contact is unlocked (fee paid, or free booking confirmed):
+// WhatsApp, call and email as separate buttons
 function ProviderContactPanel({ booking }: { booking: Booking }) {
   const { t, i18n } = useTranslation();
   const { isDark } = useTheme();
@@ -1091,8 +1096,17 @@ export default function BookingsSummary() {
 
                         {/* Combined status description */}
                         {(() => {
-                          const key =
-                            booking.status === "pending" &&
+                          const free = isFreeBooking(booking);
+                          const key = free
+                            ? booking.status === "pending"
+                              ? "pendingFree"
+                              : booking.status === "confirmed" ||
+                                  booking.status === "completed"
+                                ? "confirmedFree"
+                                : booking.status === "canceled"
+                                  ? "canceledPending"
+                                  : null
+                            : booking.status === "pending" &&
                             booking.payment_status === "pending"
                               ? "pendingPending"
                               : booking.status === "confirmed" &&
@@ -1115,8 +1129,10 @@ export default function BookingsSummary() {
                           const isWarning =
                             key === "confirmedPending" ||
                             key === "pendingPending" ||
+                            key === "pendingFree" ||
                             key === "confirmedFailed";
-                          const isSuccess = key === "confirmedPaid";
+                          const isSuccess =
+                            key === "confirmedPaid" || key === "confirmedFree";
                           const isDanger =
                             key === "canceledPaid" || key === "canceledPending";
                           return (
@@ -1386,7 +1402,8 @@ export default function BookingsSummary() {
                                   fontWeight: 700,
                                   textTransform: "capitalize",
                                   ...getStatusBadgeStyle(
-                                    booking.payment_status === "paid"
+                                    booking.payment_status === "paid" ||
+                                      booking.payment_status === "not_required"
                                       ? "confirmed"
                                       : booking.payment_status === "pending"
                                         ? "pending"
@@ -1396,7 +1413,9 @@ export default function BookingsSummary() {
                               >
                                 {booking.payment_status === "paid"
                                   ? "✓ Paid"
-                                  : booking.payment_status}
+                                  : booking.payment_status === "not_required"
+                                    ? t("booking.freeBadge", "Free")
+                                    : booking.payment_status}
                               </span>
                             </div>
                           )}
@@ -1464,7 +1483,8 @@ export default function BookingsSummary() {
 
                           {/* CASE 2: Pending (awaiting confirmation) */}
                           {booking.status === "pending" &&
-                            booking.payment_status === "pending" && (
+                            (booking.payment_status === "pending" ||
+                              booking.payment_status === "not_required") && (
                               <>
                                 <p
                                   style={{
@@ -1599,6 +1619,41 @@ export default function BookingsSummary() {
                               </div>
                             )}
 
+                          {/* CASE 3b: Free booking confirmed (nothing to pay) */}
+                          {isFreeBooking(booking) &&
+                            (booking.status === "confirmed" ||
+                              booking.status === "completed") && (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setReviewBooking(booking);
+                                }}
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: 6,
+                                  fontSize: 12,
+                                  padding: "6px 12px",
+                                  borderRadius: 999,
+                                  border: `1px solid ${tk.warningBorder}`,
+                                  color: tk.warningText,
+                                  background: "transparent",
+                                  cursor: "pointer",
+                                  fontWeight: 700,
+                                }}
+                              >
+                                <Star
+                                  style={{
+                                    width: 12,
+                                    height: 12,
+                                    fill: "#f59e0b",
+                                    color: "#f59e0b",
+                                  }}
+                                />
+                                {t("review.addReview", "Add Review")}
+                              </button>
+                            )}
+
                           {/* CASE 4: Canceled */}
                           {booking.status === "canceled" && (
                             <div style={{ textAlign: "right" }}>
@@ -1679,11 +1734,10 @@ export default function BookingsSummary() {
                     </div>
                   </div>
 
-                  {/* Provider contact (unlocked once the fee is paid) */}
-                  {booking.payment_status === "paid" &&
-                    booking.status !== "canceled" && (
-                      <ProviderContactPanel booking={booking} />
-                    )}
+                  {/* Provider contact (unlocked once the fee is paid, or once a free booking is confirmed) */}
+                  {canShareContactDetails(booking) && (
+                    <ProviderContactPanel booking={booking} />
+                  )}
                 </div>
               );
             })}

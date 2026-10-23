@@ -97,6 +97,46 @@ const getProviderContact = async (
   return data as UserContact;
 };
 
+// Why the contact details were unlocked: the booking fee was paid (cars), or
+// the provider confirmed a free booking (apartments).
+type UnlockReason = "payment" | "confirmation";
+
+const UNLOCK_COPY: Record<
+  UnlockReason,
+  {
+    eyebrow: string;
+    clientTitle: string;
+    clientNotice: string;
+    clientSubject: string;
+    providerTitle: string;
+    providerNotice: string;
+    providerSubject: string;
+  }
+> = {
+  payment: {
+    eyebrow: "Bookinal Payment Update",
+    clientTitle: "Payment received, contact details unlocked",
+    clientNotice:
+      "Bookinal has secured the platform booking fee for your reservation. The remaining rental amount and arrival arrangements should now be coordinated directly with the provider using the contact details below.",
+    clientSubject: "Payment Received - Provider Contact Unlocked",
+    providerTitle: "Booking fee received, guest contact unlocked",
+    providerNotice:
+      "Bookinal has secured the platform booking fee for this reservation. You can now contact the guest directly to arrange check-in details and settle any remaining rental amount outside the application.",
+    providerSubject: "Booking Fee Received - Guest Contact Unlocked",
+  },
+  confirmation: {
+    eyebrow: "Bookinal Booking Update",
+    clientTitle: "Booking confirmed, contact details unlocked",
+    clientNotice:
+      "The host has confirmed your request. This booking is free on Bookinal: the full amount and your arrival arrangements are settled directly with the host using the contact details below.",
+    clientSubject: "Booking Confirmed - Host Contact Unlocked",
+    providerTitle: "Booking confirmed, guest contact unlocked",
+    providerNotice:
+      "You have confirmed this request. This booking is free on Bookinal: contact the guest directly to arrange check-in and settle the full amount outside the application.",
+    providerSubject: "Booking Confirmed - Guest Contact Unlocked",
+  },
+};
+
 const getClientContactUnlockTemplate = (data: {
   clientName: string;
   propertyName: string;
@@ -108,7 +148,9 @@ const getClientContactUnlockTemplate = (data: {
   checkOutDate: string;
   totalPrice: number;
   dashboardUrl: string;
+  reason: UnlockReason;
 }): string => {
+  const copy = UNLOCK_COPY[data.reason];
   const providerPhoneRow = data.providerPhone
     ? `<tr><td class="label">Provider phone</td><td class="value">${escapeHtml(data.providerPhone)}</td></tr>`
     : "";
@@ -147,14 +189,14 @@ const getClientContactUnlockTemplate = (data: {
       <div class="wrapper">
         <div class="container">
           <div class="header">
-            <div class="eyebrow">Bookinal Payment Update</div>
-            <h1 class="title">Payment received, contact details unlocked</h1>
+            <div class="eyebrow">${copy.eyebrow}</div>
+            <h1 class="title">${copy.clientTitle}</h1>
           </div>
           <div class="content">
             <p class="intro">Hello ${escapeHtml(data.clientName)},</p>
             <div class="notice">
               <h2 class="notice-title">You can now coordinate directly</h2>
-              <p class="notice-copy">Bookinal has secured the platform booking fee for your reservation. The remaining rental amount and arrival arrangements should now be coordinated directly with the provider using the contact details below.</p>
+              <p class="notice-copy">${copy.clientNotice}</p>
             </div>
             <div class="card">
               <h2 class="card-title">Provider contact</h2>
@@ -197,7 +239,9 @@ const getProviderContactUnlockTemplate = (data: {
   checkOutDate: string;
   totalPrice: number;
   dashboardUrl: string;
+  reason: UnlockReason;
 }): string => {
+  const copy = UNLOCK_COPY[data.reason];
   const clientPhoneRow = data.clientPhone
     ? `<tr><td class="label">Client phone</td><td class="value">${escapeHtml(data.clientPhone)}</td></tr>`
     : "";
@@ -236,14 +280,14 @@ const getProviderContactUnlockTemplate = (data: {
       <div class="wrapper">
         <div class="container">
           <div class="header">
-            <div class="eyebrow">Bookinal Payment Update</div>
-            <h1 class="title">Booking fee received, guest contact unlocked</h1>
+            <div class="eyebrow">${copy.eyebrow}</div>
+            <h1 class="title">${copy.providerTitle}</h1>
           </div>
           <div class="content">
             <p class="intro">Hello ${escapeHtml(data.providerName)},</p>
             <div class="notice">
               <h2 class="notice-title">You can now coordinate directly</h2>
-              <p class="notice-copy">Bookinal has secured the platform booking fee for this reservation. You can now contact the guest directly to arrange check-in details and settle any remaining rental amount outside the application.</p>
+              <p class="notice-copy">${copy.providerNotice}</p>
             </div>
             <div class="card">
               <h2 class="card-title">Guest contact</h2>
@@ -282,8 +326,11 @@ export const sendContactUnlockNotifications = async (
     supabaseUrl: string;
     serviceRoleKey: string;
     origin?: string;
+    reason?: UnlockReason; // defaults to "payment"
   },
 ): Promise<void> => {
+  const reason = options.reason ?? "payment";
+  const copy = UNLOCK_COPY[reason];
   const provider = await getProviderContact(supabaseAdmin, booking.providerId);
 
   if (!provider?.email) {
@@ -307,6 +354,7 @@ export const sendContactUnlockNotifications = async (
     checkOutDate,
     totalPrice: booking.totalPrice,
     dashboardUrl: `${publicOrigin}/myBookings`,
+    reason,
   });
 
   const providerHtml = getProviderContactUnlockTemplate({
@@ -320,12 +368,13 @@ export const sendContactUnlockNotifications = async (
     checkOutDate,
     totalPrice: booking.totalPrice,
     dashboardUrl: `${publicOrigin}/dashboard/bookings`,
+    reason,
   });
 
   const requests = [
     {
       to: booking.contactMail,
-      subject: `Payment Received - Provider Contact Unlocked`,
+      subject: copy.clientSubject,
       html: clientHtml,
       tags: {
         type: "contact-unlock-client",
@@ -334,7 +383,7 @@ export const sendContactUnlockNotifications = async (
     },
     {
       to: provider.email,
-      subject: `Booking Fee Received - Guest Contact Unlocked`,
+      subject: copy.providerSubject,
       html: providerHtml,
       tags: {
         type: "contact-unlock-provider",

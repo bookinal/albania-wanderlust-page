@@ -118,10 +118,10 @@ export default function ApartmentBilling() {
     onSuccess: () => {
       Swal.fire({
         icon: "success",
-        title: t("billing.bookingConfirmed"),
+        title: t("billing.requestSentTitle", "Request sent"),
         text: t(
-          "billing.apartmentBookingSuccess",
-          "Your apartment booking has been created successfully.",
+          "billing.apartmentRequestSent",
+          "Your request has been sent. You will get the host's contact details as soon as they confirm it.",
         ),
       });
       navigate("/myBookings");
@@ -203,17 +203,13 @@ export default function ApartmentBilling() {
       dropOffLocation: apartment.address || apartment.location || "",
       pickUpTime: formData.checkInTime,
       dropOffTime: formData.checkOutTime,
-      totalPrice: Math.round(finalTotal),
+      totalPrice: Math.round(totalPrice),
       contactMail: formData.email,
       contactPhone: formData.phone,
       requesterName: formData.fullName,
-      fee: Math.round(serviceFee * 100) / 100,
+      fee: 0, // apartment bookings are free: no service fee, no online payment
     });
   };
-
-  const rawFee = totalPrice * 0.05;
-  const serviceFee = rawFee < 2 && totalPrice > 0 ? 2 : rawFee;
-  const finalTotal = totalPrice + serviceFee;
 
   function handlePhoneChange(value?: string): void {
     setFormData((prev) => ({ ...prev, phone: value || "" }));
@@ -603,15 +599,11 @@ export default function ApartmentBilling() {
                       className="flex justify-between"
                       style={{ color: tk.dimText }}
                     >
-                      <span>{t("billing.serviceFee")} (5%)</span>
-                      <span className="font-medium">
-                        €{serviceFee.toFixed(2)}
+                      <span>{t("billing.bookinalFee", "Bookinal fee")}</span>
+                      <span className="font-semibold text-emerald-500">
+                        {t("billing.free", "Free")}
                       </span>
                     </div>
-                    <div
-                      className="flex justify-between"
-                      style={{ color: tk.dimText }}
-                    ></div>
                   </div>
 
                   <div
@@ -631,9 +623,12 @@ export default function ApartmentBilling() {
                         style={{ color: tk.brand }}
                         className="text-2xl font-bold"
                       >
-                        €{finalTotal.toFixed(2)}
+                        €{totalPrice.toFixed(2)}
                       </span>
                     </div>
+                    <p style={{ color: tk.mutedText }} className="text-xs mt-1">
+                      {t("billing.paidToHost", "Paid directly to the host")}
+                    </p>
                   </div>
 
                   <button
@@ -660,14 +655,17 @@ export default function ApartmentBilling() {
                     <Check className="w-5 h-5" />
                     {bookingMutation.isPending
                       ? t("billing.processing")
-                      : t("billing.confirmBooking")}
+                      : t("billing.sendRequest", "Send booking request")}
                   </button>
 
                   <p
                     style={{ color: tk.mutedText }}
                     className="text-xs text-center mt-4"
                   >
-                    {t("billing.paymentNote")}
+                    {t(
+                      "billing.freeBookingNote",
+                      "Free booking: nothing to pay on Bookinal. Once the host confirms your request, you get their contact details and settle the stay directly with them.",
+                    )}
                   </p>
                 </div>
               </div>

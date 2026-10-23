@@ -1,6 +1,7 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
 import { getClientBookingStatusTemplate } from "../_shared/clientBookingStatusTemplate.ts";
+import { sendContactUnlockNotifications } from "../_shared/contactUnlockNotifications.ts";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
@@ -166,6 +167,26 @@ Deno.serve(async (req: Request) => {
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         },
       );
+    }
+
+    // Free booking (apartments) just confirmed: the contact details unlock now,
+    // so both sides get the contact-unlock emails instead of a status email.
+    if (
+      body.status === "confirmed" &&
+      booking.status === "confirmed" &&
+      booking.payment_status === "not_required"
+    ) {
+      await sendContactUnlockNotifications(supabaseAdmin, booking, {
+        supabaseUrl: SUPABASE_URL,
+        serviceRoleKey: SUPABASE_SERVICE_ROLE_KEY,
+        origin: req.headers.get("origin") || undefined,
+        reason: "confirmation",
+      });
+
+      return new Response(JSON.stringify({ success: true, contactUnlocked: true }), {
+        status: 200,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     const propertyName = await getPropertyName(

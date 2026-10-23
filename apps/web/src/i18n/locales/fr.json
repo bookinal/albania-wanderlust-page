@@ -357,7 +357,13 @@
     "perDayTimesDays_one": "{{price}} × {{count}} jour = {{total}}",
     "perDayTimesDays_other": "{{price}} × {{count}} jours = {{total}}",
     "plusDeposit": "(+{{amount}} de caution)",
-    "depositNote": "La caution n'est pas incluse dans le total. Elle est bloquée à la prise en charge et restituée au retour du véhicule."
+    "depositNote": "La caution n'est pas incluse dans le total. Elle est bloquée à la prise en charge et restituée au retour du véhicule.",
+    "requestSentTitle": "Demande envoyée",
+    "apartmentRequestSent": "Votre demande a été envoyée. Vous recevrez les coordonnées de l'hôte dès qu'il l'aura confirmée.",
+    "bookinalFee": "Frais Bookinal",
+    "paidToHost": "Payé directement à l'hôte",
+    "sendRequest": "Envoyer la demande de réservation",
+    "freeBookingNote": "Réservation gratuite : rien à payer sur Bookinal. Dès que l'hôte confirme votre demande, vous recevez ses coordonnées et réglez le séjour directement avec lui."
   },
   "terms": {
     "minimumRentalPeriod": "Période de location minimale",
@@ -510,7 +516,8 @@
     "paymentHint": {
       "pending": "Le paiement n'a pas encore été effectué",
       "paid": "Paiement reçu avec succès",
-      "failed": "Le paiement a échoué — veuillez réessayer"
+      "failed": "Le paiement a échoué — veuillez réessayer",
+      "not_required": "Rien à payer sur Bookinal : cette réservation est gratuite"
     },
     "combinedStatus": {
       "pendingPending": "En attente de confirmation du prestataire",
@@ -518,19 +525,22 @@
       "confirmedPaid": "Confirmé par le prestataire · Paiement reçu",
       "canceledPaid": "Réservation annulée · Le remboursement sera traité",
       "canceledPending": "La réservation a été annulée",
-      "confirmedFailed": "Confirmé par le prestataire · Paiement échoué, veuillez réessayer"
+      "confirmedFailed": "Confirmé par le prestataire · Paiement échoué, veuillez réessayer",
+      "pendingFree": "Réservation gratuite · En attente de la confirmation de l'hôte",
+      "confirmedFree": "Confirmée par l'hôte · Coordonnées débloquées"
     },
     "currentlyRented": "Actuellement loué — vous pouvez toujours réserver pour une autre période",
     "underMaintenance": "En Maintenance",
     "providerPanel": {
       "title": "Contactez votre loueur",
-      "subtitle": "Votre réservation est payée. Prenez contact pour organiser la prise en charge ou l'arrivée.",
+      "subtitle": "Votre réservation est confirmée. Prenez contact pour organiser la prise en charge ou l'arrivée.",
       "whatsapp": "WhatsApp",
       "call": "Appeler",
       "email": "E-mail",
       "loading": "Chargement des coordonnées…",
       "unavailable": "Les coordonnées ne sont pas disponibles pour le moment."
-    }
+    },
+    "freeBadge": "Gratuit"
   },
   "user": {
     "fullName": "Nom complet",
@@ -909,7 +919,8 @@
       "status": "Statut :",
       "confirmed": "Confirmée",
       "questions": "Si vous avez des questions, n'hésitez pas à nous contacter.",
-      "regards": "Cordialement,<br>L'équipe d'Albanie"
+      "regards": "Cordialement,<br>L'équipe d'Albanie",
+      "confirmationMessageFree": "Votre réservation est confirmée. Vous pouvez maintenant contacter l'hôte directement pour organiser votre séjour."
     },
     "errors": {
       "loadFailed": "Échec du chargement des réservations. Veuillez réessayer plus tard.",
@@ -940,11 +951,15 @@
     },
     "contactPanel": {
       "title": "Contacter le client",
-      "subtitle": "Paiement reçu. Prenez contact pour organiser la prise en charge ou l'arrivée.",
+      "subtitle": "Coordonnées débloquées. Prenez contact pour organiser la prise en charge ou l'arrivée.",
       "whatsapp": "WhatsApp",
       "call": "Appeler",
       "email": "E-mail",
-      "locked": "Les coordonnées se débloquent une fois les frais de service payés par le client."
+      "locked": "Les coordonnées se débloquent une fois les frais de service payés par le client.",
+      "lockedFree": "Réservation gratuite : les coordonnées se débloquent dès que vous confirmez la demande."
+    },
+    "actions": {
+      "confirmedFree": "Confirmée · Réservation gratuite"
     }
   },
   "cars": {
@@ -1534,7 +1549,8 @@
       "pending": "En attente",
       "paid": "Payé",
       "failed": "Échoué",
-      "refunded": "Remboursé"
+      "refunded": "Remboursé",
+      "not_required": "Gratuit"
     },
     "propertyTypes": {
       "car": "Voiture",

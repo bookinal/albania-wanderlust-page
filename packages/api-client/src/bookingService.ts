@@ -14,12 +14,30 @@ interface ProviderData {
   full_name: string;
 }
 
-const canShareContactDetails = (
-  paymentStatus: Booking["payment_status"] | undefined,
-): boolean => paymentStatus === "paid";
+/**
+ * Apartment bookings are free: no service fee and no online payment.
+ */
+export const isFreeBooking = (
+  booking: Pick<Booking, "payment_status">,
+): boolean => booking.payment_status === "not_required";
+
+/**
+ * Client and provider see each other's contact details once the service fee
+ * is paid (cars), or once the provider confirms the request (free bookings).
+ */
+export const canShareContactDetails = (
+  booking: Pick<Booking, "payment_status" | "status">,
+): boolean => {
+  if (booking.status === "canceled") return false;
+  if (booking.payment_status === "paid") return true;
+  return (
+    isFreeBooking(booking) &&
+    (booking.status === "confirmed" || booking.status === "completed")
+  );
+};
 
 const maskContactDetailsForProvider = (booking: Booking): Booking => {
-  if (canShareContactDetails(booking.payment_status)) {
+  if (canShareContactDetails(booking)) {
     return booking;
   }
 
@@ -112,7 +130,10 @@ export const createBooking = async (
       ...payload,
       userId,
       status: "pending",
-      payment_status: "pending",
+      // Apartments are free (the database enforces the same rule)
+      ...(payload.propertyType === "apartment"
+        ? { fee: 0, payment_status: "not_required" }
+        : { payment_status: "pending" }),
     })
     .select("*")
     .single();
@@ -133,7 +154,7 @@ export const createBooking = async (
       getPropertyDisplayName(payload.propertyId, payload.propertyType),
     ]);
     const propertyTypeLabel = getPropertyTypeLabel(payload.propertyType);
-    const shareGuestContact = canShareContactDetails(booking.payment_status);
+    const shareGuestContact = canShareContactDetails(booking);
 
     console.log("[Booking Service] Provider data retrieved:", {
       email: providerData?.email,
@@ -174,6 +195,7 @@ export const createBooking = async (
         totalPrice: payload.totalPrice,
         bookingId: booking.id,
         showGuestContact: shareGuestContact,
+        isFreeBooking: isFreeBooking(booking),
         dashboardUrl: `${window.location.origin}/dashboard/bookings`,
       });
 

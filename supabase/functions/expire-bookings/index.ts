@@ -5,8 +5,19 @@ import { getBookingCancellationTemplate } from "../_shared/bookingCancellationTe
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
-const CANCELLATION_REASON =
-  "Booking automatically cancelled — payment not received before check-in date.";
+// Unpaid: confirmed car booking whose service fee was never paid.
+// Unconfirmed: request (car or free apartment) the provider never confirmed.
+const CANCELLATION_REASONS = {
+  unpaid:
+    "Booking automatically cancelled — payment not received before check-in date.",
+  unconfirmed:
+    "Booking automatically cancelled — the provider did not confirm it before the check-in date.",
+} as const;
+
+type ExpiryKind = keyof typeof CANCELLATION_REASONS;
+
+const getExpiryKind = (booking: { status: string }): ExpiryKind =>
+  booking.status === "pending" ? "unconfirmed" : "unpaid";
 
 Deno.serve(async (req) => {
   // Allow manual invocation via GET or POST (pg_net uses POST)
@@ -19,11 +30,12 @@ Deno.serve(async (req) => {
   // ── 1. Find expired bookings ─────────────────────────────────────────────
   // Eligible: still pending, OR confirmed but payment not yet received,
   // where the check-in date is today or in the past (i.e. 1 day before = yesterday).
+  // Confirmed free bookings (payment_status = 'not_required') are never expired.
   // We use startDate <= CURRENT_DATE (covers "should have been paid by now").
   const { data: expiredBookings, error: fetchError } = await supabase
     .from("booking")
     .select(
-      "id, requesterName, contactMail, startDate, endDate, propertyType, totalPrice",
+      "id, status, requesterName, contactMail, startDate, endDate, propertyType, totalPrice",
     )
     .lte("startDate", new Date().toISOString().split("T")[0]) // startDate <= today
     .or("status.eq.pending,and(status.eq.confirmed,payment_status.eq.pending)");
@@ -45,16 +57,28 @@ Deno.serve(async (req) => {
 
   // ── 2. Cancel each booking ───────────────────────────────────────────────
   const now = new Date().toISOString();
-  const ids = expiredBookings.map((b: any) => b.id);
+  let updateError: { message: string } | null = null;
 
-  const { error: updateError } = await supabase
-    .from("booking")
-    .update({
-      status: "canceled",
-      cancellation_reason: CANCELLATION_REASON,
-      updatedAt: now,
-    })
-    .in("id", ids);
+  for (const kind of Object.keys(CANCELLATION_REASONS) as ExpiryKind[]) {
+    const ids = expiredBookings
+      .filter((b: any) => getExpiryKind(b) === kind)
+      .map((b: any) => b.id);
+    if (ids.length === 0) continue;
+
+    const { error } = await supabase
+      .from("booking")
+      .update({
+        status: "canceled",
+        cancellation_reason: CANCELLATION_REASONS[kind],
+        updatedAt: now,
+      })
+      .in("id", ids);
+
+    if (error) {
+      updateError = error;
+      break;
+    }
+  }
 
   if (updateError) {
     console.error("Error cancelling expired bookings:", updateError);
@@ -93,6 +117,7 @@ Deno.serve(async (req) => {
 
 async function sendCancellationEmail(booking: {
   id: string;
+  status: string;
   requesterName: string;
   contactMail: string;
   startDate: string;
@@ -117,6 +142,7 @@ async function sendCancellationEmail(booking: {
     checkIn,
     checkOut,
     totalPrice: booking.totalPrice,
+    kind: getExpiryKind(booking),
   });
 
   const response = await fetch(`${SUPABASE_URL}/functions/v1/send-email`, {

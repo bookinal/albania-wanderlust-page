@@ -23,6 +23,7 @@ export const getProviderBookingNotificationTemplate = (data: {
   totalPrice: number;
   bookingId: string;
   showGuestContact?: boolean;
+  isFreeBooking?: boolean; // free booking: contact unlocks on confirmation
   dashboardUrl: string;
 }): string => {
   console.log(
@@ -142,7 +143,7 @@ export const getProviderBookingNotificationTemplate = (data: {
                 </tr>`
                     : `<tr>
                   <td class="detail-label">Contact details</td>
-                  <td class="detail-value">Locked until payment is completed</td>
+                  <td class="detail-value">${data.isFreeBooking ? "Unlocked as soon as you confirm the request" : "Locked until payment is completed"}</td>
                 </tr>`
                 }
               </table>

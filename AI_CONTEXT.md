@@ -126,7 +126,7 @@ All accessed via `packages/api-client/src/apiClient.ts` (Supabase JS client).
 | `users` _(public)_  | Public user profiles                  | `id`, `email`, `full_name`, `role` (`user`/`admin`), `status` (`active`/`suspended`)                                                                                                              |
 | `apartments`        | Apartment listings                    | `id` (int), `name`, `providerId`, `imageUrls`, `location`, `lat`, `lng`, `pricePerNight`, `status`                                                                                                |
 | `cars`              | Car rental listings                   | `id` (int), `name`, `brand`, `type`, `transmission`, `fuelType`, `seats`, `pricePerDay`, `providerId`, `status` (`available`/`rented`/`maintenance`/`review`)                                     |
-| `booking`           | All bookings (unified)                | `id` (uuid), `userId`, `propertyId`, `propertyType` (`apartment`/`car`), `status` (`pending`/`confirmed`/`canceled`/`completed`), `payment_status` (`pending`/`paid`/`failed`/`refunded`) |
+| `booking`           | All bookings (unified)                | `id` (uuid), `userId`, `propertyId`, `propertyType` (`apartment`/`car`), `status` (`pending`/`confirmed`/`canceled`/`completed`), `payment_status` (`pending`/`paid`/`failed`/`refunded`/`not_required` = free apartment booking) |
 | `destinations`      | Tourist destinations                  | `id`, `name`, `imageUrls`, `description`                                                                                                                                                          |
 | `monthly_prices`    | Dynamic pricing by month              | `propertyId`, `propertyType`, `month`, `price`                                                                                                                                                    |
 | `role_requests`     | Provider role upgrade requests        | `userId`, `status`                                                                                                                                                                                |
@@ -333,18 +333,24 @@ Browse property  →  Detail page (CarReservation / ApartmentReservation)
 Select dates  (AvailabilityCalendar blocks already-booked dates)
        ↓
 Billing page (CarBilling / ApartmentBilling)
-  - createBooking() → status: "pending", payment_status: "pending"
+  - createBooking() → status: "pending"
+      car:       payment_status "pending", fee = 5% (min €2)
+      apartment: payment_status "not_required", fee = 0 (free, enforced by a DB trigger)
   - Email sent to provider
        ↓
 Admin/Provider confirms booking → status: "confirmed"
        ↓
-User pays (BookingsSummary page)
+Car: user pays the fee (BookingsSummary page)
   - StripePaymentButton or PayPalPaymentButton
   - payment_status → "paid"
+Apartment: nothing to pay; notify-booking-status sends the contact-unlock emails
+       ↓
+Contact details unlocked on both sides: canShareContactDetails() in bookingService
+  (fee paid, or free booking confirmed/completed)
        ↓
 User can:
   - Download Invoice PDF (jsPDF)     [condition: payment_status === "paid"]
-  - Add Review                        [condition: payment_status === "paid" && propertyType === "car"|"apartment"]
+  - Add Review                        [condition: paid, or free booking confirmed]
 ```
 
 ---
@@ -371,7 +377,7 @@ RLS: public read, owner write/update/delete.
 
 ### Who can review?
 
-Only users where `booking.payment_status === "paid"` AND `booking.propertyType === "car" | "apartment"`.
+Users whose booking is paid (`payment_status === "paid"`), or whose free apartment booking (`payment_status === "not_required"`) is confirmed.
 
 ### Files
 

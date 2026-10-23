@@ -357,7 +357,13 @@
     "perDayTimesDays_one": "{{price}} × {{count}} giorno = {{total}}",
     "perDayTimesDays_other": "{{price}} × {{count}} giorni = {{total}}",
     "plusDeposit": "(+{{amount}} di deposito)",
-    "depositNote": "Il deposito non è incluso nel totale. Viene trattenuto al ritiro e restituito alla riconsegna dell'auto."
+    "depositNote": "Il deposito non è incluso nel totale. Viene trattenuto al ritiro e restituito alla riconsegna dell'auto.",
+    "requestSentTitle": "Richiesta inviata",
+    "apartmentRequestSent": "La tua richiesta è stata inviata. Riceverai i contatti dell'host non appena la confermerà.",
+    "bookinalFee": "Commissione Bookinal",
+    "paidToHost": "Pagato direttamente all'host",
+    "sendRequest": "Invia richiesta di prenotazione",
+    "freeBookingNote": "Prenotazione gratuita: niente da pagare su Bookinal. Quando l'host conferma la tua richiesta, ricevi i suoi contatti e saldi il soggiorno direttamente con lui."
   },
   "terms": {
     "minimumRentalPeriod": "Periodo Minimo di Noleggio",
@@ -510,7 +516,8 @@
     "paymentHint": {
       "pending": "Il pagamento non è ancora stato completato",
       "paid": "Pagamento ricevuto con successo",
-      "failed": "Il pagamento è fallito — riprova"
+      "failed": "Il pagamento è fallito — riprova",
+      "not_required": "Niente da pagare su Bookinal: questa prenotazione è gratuita"
     },
     "combinedStatus": {
       "pendingPending": "In attesa di conferma dal fornitore",
@@ -518,19 +525,22 @@
       "confirmedPaid": "Confermato dal fornitore · Pagamento ricevuto",
       "canceledPaid": "Prenotazione annullata · Il rimborso verrà elaborato",
       "canceledPending": "La prenotazione è stata annullata",
-      "confirmedFailed": "Confermato dal fornitore · Pagamento fallito, riprova"
+      "confirmedFailed": "Confermato dal fornitore · Pagamento fallito, riprova",
+      "pendingFree": "Prenotazione gratuita · In attesa della conferma dell'host",
+      "confirmedFree": "Confermata dall'host · Contatti sbloccati"
     },
     "currentlyRented": "Attualmente noleggiato — puoi ancora prenotare per un altro periodo",
     "underMaintenance": "In Manutenzione",
     "providerPanel": {
       "title": "Contatta il tuo fornitore",
-      "subtitle": "La prenotazione è pagata. Mettiti in contatto per organizzare il ritiro o il check-in.",
+      "subtitle": "La prenotazione è confermata. Mettiti in contatto per organizzare il ritiro o il check-in.",
       "whatsapp": "WhatsApp",
       "call": "Chiama",
       "email": "Email",
       "loading": "Caricamento dei contatti…",
       "unavailable": "I contatti non sono disponibili al momento."
-    }
+    },
+    "freeBadge": "Gratuito"
   },
   "user": {
     "fullName": "Nome Completo",
@@ -909,7 +919,8 @@
       "status": "Stato:",
       "confirmed": "Confermata",
       "questions": "Per qualsiasi domanda, contattaci.",
-      "regards": "Cordiali saluti,<br>Il Team di Albania"
+      "regards": "Cordiali saluti,<br>Il Team di Albania",
+      "confirmationMessageFree": "La tua prenotazione è confermata. Ora puoi contattare direttamente l'host per organizzare il soggiorno."
     },
     "errors": {
       "loadFailed": "Caricamento prenotazioni fallito. Riprova più tardi.",
@@ -940,11 +951,15 @@
     },
     "contactPanel": {
       "title": "Contatta il cliente",
-      "subtitle": "Pagamento ricevuto. Mettiti in contatto per organizzare il ritiro o il check-in.",
+      "subtitle": "Contatti sbloccati. Mettiti in contatto per organizzare il ritiro o il check-in.",
       "whatsapp": "WhatsApp",
       "call": "Chiama",
       "email": "Email",
-      "locked": "I contatti si sbloccano quando il cliente paga la commissione di servizio."
+      "locked": "I contatti si sbloccano quando il cliente paga la commissione di servizio.",
+      "lockedFree": "Prenotazione gratuita: i contatti si sbloccano appena confermi la richiesta."
+    },
+    "actions": {
+      "confirmedFree": "Confermata · Prenotazione gratuita"
     }
   },
   "cars": {
@@ -1534,7 +1549,8 @@
       "pending": "In attesa",
       "paid": "Pagato",
       "failed": "Fallito",
-      "refunded": "Rimborsato"
+      "refunded": "Rimborsato",
+      "not_required": "Gratuito"
     },
     "propertyTypes": {
       "car": "Auto",
