@@ -86,6 +86,45 @@ export const getTopDestinationsByCategory = async (): Promise<{
 };
 
 /**
+ * Get the destinations picked by the admin for the home page, in slot order
+ */
+export const getFeaturedDestinations = async (): Promise<Destination[]> => {
+  const { data, error } = await apiClient
+    .from("featured_destination")
+    .select("position, destination(*)")
+    .order("position");
+  if (error) {
+    console.error(
+      "[Destination Service] Error fetching featured destinations:",
+      error,
+    );
+    throw error;
+  }
+  return (data ?? [])
+    .map((row: any) => row.destination as Destination | null)
+    .filter((destination): destination is Destination => Boolean(destination));
+};
+
+/**
+ * Replace the featured destinations (admin only, at most 4)
+ * @param destinationIds - Destination UUIDs, first one = first slot
+ */
+export const setFeaturedDestinations = async (
+  destinationIds: string[],
+): Promise<void> => {
+  const { error } = await apiClient.rpc("set_featured_destinations", {
+    p_destination_ids: destinationIds,
+  });
+  if (error) {
+    console.error(
+      "[Destination Service] Error saving featured destinations:",
+      error,
+    );
+    throw error;
+  }
+};
+
+/**
  * Get a destination by ID
  */
 export const getDestinationById = async (id: string): Promise<Destination> => {

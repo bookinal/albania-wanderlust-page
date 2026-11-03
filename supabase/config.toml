@@ -3,3 +3,6 @@ verify_jwt = false
 
 [functions.notify-booking-status]
 verify_jwt = false
+
+[functions.notify-provider-whatsapp]
+verify_jwt = false

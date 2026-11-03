@@ -1,11 +1,15 @@
 import { useState } from "react";
 import { Filter, RotateCcw, Calendar, ChevronDown } from "lucide-react";
-import { Slider } from "@/components/ui/slider";
+import { PriceRangeSlider } from "@/components/ui/price-range-slider";
 import { CarFilters } from "@/types/car.types";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@/context/ThemeContext";
 import { getSearchResultsThemeTokens } from "./searchResultsTheme";
 import { CAR_PICKUP_LOCATIONS } from "@/lib/albanianCities";
+
+/** Top of the daily price slider. At this value the range has no upper limit ("€300+"). */
+export const CAR_DAILY_PRICE_MAX = 300;
+const CAR_DAILY_PRICE_STEP = 10;
 
 export interface CarFilterState extends CarFilters {
   pickupLocation?: string;
@@ -157,13 +161,16 @@ export const CarFilterBar = ({
     if (filters.type && filters.type !== "all") count++;
     if (filters.transmission && filters.transmission !== "all") count++;
     if (filters.fuelType && filters.fuelType !== "all") count++;
-    if (filters.priceRange && (filters.priceRange.min > 0 || filters.priceRange.max < 1000)) count++;
+    if (filters.priceRange && (filters.priceRange.min > 0 || filters.priceRange.max < CAR_DAILY_PRICE_MAX)) count++;
     if (filters.features && filters.features.length > 0) count++;
     if (filters.pickupDate || filters.returnDate) count++;
     return count;
   };
 
   const activeFiltersCount = countActiveFilters();
+
+  const priceMax = Math.min(filters.priceRange?.max ?? CAR_DAILY_PRICE_MAX, CAR_DAILY_PRICE_MAX);
+  const priceMin = Math.min(filters.priceRange?.min ?? 0, priceMax - CAR_DAILY_PRICE_STEP);
 
   const sidebarContent = (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
@@ -297,16 +304,18 @@ export const CarFilterBar = ({
             €{filters.priceRange?.min || 0}
           </span>
           <span style={{ fontFamily: 'Bebas Neue, Impact, sans-serif', fontSize: '1rem', color: themeTk.brand, letterSpacing: '0.05em' }}>
-            €{filters.priceRange?.max || 1000}
+            €{priceMax}{priceMax >= CAR_DAILY_PRICE_MAX ? "+" : ""}
           </span>
         </div>
-        <Slider
+        <PriceRangeSlider
           min={0}
-          max={1000}
-          step={10}
-          value={[filters.priceRange?.min || 0, filters.priceRange?.max || 1000]}
-          onValueChange={value => onFilterChange({ priceRange: { min: value[0], max: value[1] } })}
-          className="py-1"
+          max={CAR_DAILY_PRICE_MAX}
+          step={CAR_DAILY_PRICE_STEP}
+          value={[priceMin, priceMax]}
+          onValueChange={([min, max]) => onFilterChange({ priceRange: { min, max } })}
+          minLabel={t("searchResults.filters.minPrice")}
+          maxLabel={t("searchResults.filters.maxPrice")}
+          className="my-1"
         />
       </AccSection>
 

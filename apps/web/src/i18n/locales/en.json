@@ -40,7 +40,7 @@
       "Home": "Home",
       "Stays": "Stays",
       "CarRentals": "Car Rentals",
-      "Destinations-Guidedtours": "Destinations - Guided tours",
+      "Destinations-Guidedtours": "Destinations",
       "ExploreOnMap": "Explore On Map"
     },
     "reservationPicker": {
@@ -232,6 +232,11 @@
       "description": "Immerse yourself in Albania's rich traditions, flavors, and vibrant cultural heritage.",
       "traditionalCuisine": "Traditional Cuisine",
       "festivalsAndTraditions": "Festivals & Traditions"
+    },
+    "featured": {
+      "badge": "Picked for you",
+      "title": "Our top picks in Albania",
+      "description": "Four places our team loves right now, hand-picked to inspire your next trip."
     }
   },
   "appBar": {
@@ -371,7 +376,11 @@
       "emailInvalid": "Please enter a valid email address.",
       "pickUpLocationRequired": "Please select a pick-up location.",
       "dropOffLocationRequired": "Please select a drop-off location."
-    }
+    },
+    "seeMoreFeatures": "See more (+{{count}})",
+    "showLessFeatures": "Show less",
+    "extras": "Extras",
+    "extrasHelp": "Optional add-ons offered by the provider for this car."
   },
   "terms": {
     "minimumRentalPeriod": "Minimum Rental Period",
@@ -451,7 +460,9 @@
       "electric": "Electric",
       "features": "Features",
       "loadingFeatures": "Loading features...",
-      "noFeatures": "No features available"
+      "noFeatures": "No features available",
+      "minPrice": "Minimum price",
+      "maxPrice": "Maximum price"
     },
     "mapPreview": {
       "title": "Preview on the map",
@@ -472,7 +483,10 @@
       "year": "Year",
       "childSeat": "Child seat",
       "additionalDriver": "Additional driver",
-      "plate": "License Plate"
+      "plate": "License Plate",
+      "horsePower": "Horse power",
+      "horsePowerValue": "{{count}} hp",
+      "notSpecified": "Not specified"
     },
     "properties": {
       "title": "Search Results",
@@ -984,7 +998,8 @@
       "validation": {
         "requiredFields": "Please fill in all required fields",
         "locationRequired": "Please select a location on the map",
-        "imageRequired": "Please upload at least one image"
+        "imageRequired": "Please upload at least one image",
+        "horsePowerRange": "Horse power must be between 1 and 2000."
       },
       "form": {
         "carName": "Car Name",
@@ -1007,7 +1022,9 @@
         "customFeature": "Add a custom feature...",
         "add": "Add",
         "pickupLocation": "Pick-up Location",
-        "mapLabel": "Select Pick-up Location on Map (Required)"
+        "mapLabel": "Select Pick-up Location on Map (Required)",
+        "horsePower": "Horse power (hp)",
+        "horsePowerHelp": "Optional. Engine power of the car."
       },
       "buttons": {
         "cancel": "Cancel",
@@ -1113,7 +1130,8 @@
         "pickupLocation": "Pick Up Location",
         "addFeature": "Add a new feature",
         "noFeatures": "No features listed.",
-        "mapLabel": "Car Location on Map"
+        "mapLabel": "Car Location on Map",
+        "horsePower": "Horse power (hp)"
       },
       "pricing": {
         "noSeasonal": "No seasonal pricing configured. Using base price of €{{price}}/day for all months."
@@ -1241,6 +1259,24 @@
     "pagination": {
       "previous": "Previous",
       "next": "Next"
+    },
+    "featured": {
+      "title": "Picked for you (home page)",
+      "subtitle": "Choose up to {{count}} destinations shown just below the hero on the home page.",
+      "pickedCount": "{{count}}/{{max}} picked",
+      "slotLabel": "Featured destination #{{number}}",
+      "clearSlot": "Clear this slot",
+      "reset": "Reset",
+      "save": "Save",
+      "loadFailed": "Could not load the featured destinations.",
+      "savedTitle": "Saved",
+      "savedMessage": "The home page now shows your picks.",
+      "saveFailedTitle": "Save failed",
+      "saveFailedMessage": "The featured destinations could not be saved. Please try again.",
+      "chooseDestination": "Choose a destination",
+      "searchPlaceholder": "Search by name or city...",
+      "noResults": "No destination found",
+      "inSlot": "In slot #{{number}}"
     }
   },
   "userManagement": {

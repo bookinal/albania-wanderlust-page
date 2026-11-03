@@ -27,6 +27,10 @@ interface CarRentalConditionsProps {
   tk: ReturnType<typeof getBookingThemeTokens>;
   /** Smaller variant for the booking form */
   compact?: boolean;
+  /** Set to false when the page shows the payment methods in their own section */
+  showPaymentMethods?: boolean;
+  /** Set to false to hide the cross border extra deposit */
+  showCrossBorderDeposit?: boolean;
 }
 
 /** Read-only view of the provider's rental conditions for a car. */
@@ -34,6 +38,8 @@ export const CarRentalConditions: React.FC<CarRentalConditionsProps> = ({
   car,
   tk,
   compact = false,
+  showPaymentMethods = true,
+  showCrossBorderDeposit = true,
 }) => {
   const { t } = useTranslation();
   const terms = getCarRentalTerms(car);
@@ -70,14 +76,18 @@ export const CarRentalConditions: React.FC<CarRentalConditionsProps> = ({
       label: t("cars.rentalTerms.fuelPolicy"),
       value: t(`cars.rentalTerms.fuelPolicies.${terms.fuelPolicy}`),
     },
-    {
-      icon: Globe,
-      label: t("cars.rentalTerms.crossBorderDepositLabel"),
-      value:
-        terms.crossBorderDeposit > 0
-          ? `€${terms.crossBorderDeposit}`
-          : t("cars.rentalTerms.noDeposit"),
-    },
+    ...(showCrossBorderDeposit
+      ? [
+          {
+            icon: Globe,
+            label: t("cars.rentalTerms.crossBorderDepositLabel"),
+            value:
+              terms.crossBorderDeposit > 0
+                ? `€${terms.crossBorderDeposit}`
+                : t("cars.rentalTerms.noDeposit"),
+          },
+        ]
+      : []),
     {
       icon: LifeBuoy,
       label: t("cars.rentalTerms.crossBorderAssistance"),
@@ -116,33 +126,62 @@ export const CarRentalConditions: React.FC<CarRentalConditionsProps> = ({
         ))}
       </div>
 
-      <div className={compact ? "mt-4" : "mt-5"}>
-        <p style={{ color: tk.mutedText }} className="text-sm font-medium mb-2">
-          {t("cars.rentalTerms.acceptedPaymentMethods")}
-        </p>
-        <div className="flex flex-wrap gap-2">
-          {terms.acceptedPaymentMethods.map((method) => {
-            const Icon = PAYMENT_ICONS[method];
-            return (
-              <span
-                key={method}
-                style={{
-                  background: tk.brandSoft,
-                  border: `1px solid ${tk.brandBorder}`,
-                  color: tk.pageText,
-                }}
-                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium"
-              >
-                <Icon size={16} style={{ color: tk.brand }} />
-                {t(`cars.rentalTerms.paymentMethods.${method}`)}
-              </span>
-            );
-          })}
+      {showPaymentMethods && (
+        <div className={compact ? "mt-4" : "mt-5"}>
+          <p style={{ color: tk.mutedText }} className="text-sm font-medium mb-2">
+            {t("cars.rentalTerms.acceptedPaymentMethods")}
+          </p>
+          <CarPaymentMethods car={car} tk={tk} />
         </div>
-        <p style={{ color: tk.mutedText }} className="text-xs mt-2">
-          {t("cars.rentalTerms.paidAtPickUp")}
-        </p>
-      </div>
+      )}
     </div>
+  );
+};
+
+interface CarPaymentMethodsProps {
+  car: Car;
+  tk: ReturnType<typeof getBookingThemeTokens>;
+  /** Bigger chips, for a standalone section */
+  large?: boolean;
+}
+
+/** Payment methods the provider accepts at pick-up, as chips. */
+export const CarPaymentMethods: React.FC<CarPaymentMethodsProps> = ({
+  car,
+  tk,
+  large = false,
+}) => {
+  const { t } = useTranslation();
+  const { acceptedPaymentMethods } = getCarRentalTerms(car);
+
+  return (
+    <>
+      <div className={`flex flex-wrap ${large ? "gap-3" : "gap-2"}`}>
+        {acceptedPaymentMethods.map((method) => {
+          const Icon = PAYMENT_ICONS[method];
+          return (
+            <span
+              key={method}
+              style={{
+                background: tk.brandSoft,
+                border: `1px solid ${tk.brandBorder}`,
+                color: tk.pageText,
+              }}
+              className={`inline-flex items-center rounded-full ${
+                large
+                  ? "gap-3 px-5 py-3 text-base font-semibold"
+                  : "gap-2 px-3 py-1.5 text-sm font-medium"
+              }`}
+            >
+              <Icon size={large ? 22 : 16} style={{ color: tk.brand }} />
+              {t(`cars.rentalTerms.paymentMethods.${method}`)}
+            </span>
+          );
+        })}
+      </div>
+      <p style={{ color: tk.mutedText }} className={large ? "text-sm mt-3" : "text-xs mt-2"}>
+        {t("cars.rentalTerms.paidAtPickUp")}
+      </p>
+    </>
   );
 };

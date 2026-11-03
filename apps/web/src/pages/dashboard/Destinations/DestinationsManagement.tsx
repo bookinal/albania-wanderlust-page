@@ -79,7 +79,11 @@ import {
   type SupportedLocale,
 } from "@/hooks/useLocalized";
 import { useTheme } from "@/context/ThemeContext";
-import { DESTINATIONS_QUERY_KEY } from "@/hooks/useDestinations";
+import {
+  DESTINATIONS_QUERY_KEY,
+  FEATURED_DESTINATIONS_QUERY_KEY,
+} from "@/hooks/useDestinations";
+import { FeaturedDestinationsPanel } from "./FeaturedDestinationsPanel";
 import { ALBANIAN_CITIES } from "@/lib/albanianCities";
 import { CATEGORIES, SUBCATEGORIES } from "@/lib/destinationManagement";
 
@@ -732,6 +736,10 @@ export default function DestinationsManagement() {
         await queryClient.invalidateQueries({
           queryKey: DESTINATIONS_QUERY_KEY,
         });
+        // The featured slot of a deleted destination is removed by the FK cascade
+        await queryClient.invalidateQueries({
+          queryKey: FEATURED_DESTINATIONS_QUERY_KEY,
+        });
         Swal.fire(
           t("destinationsManagement.delete.successTitle"),
           t("destinationsManagement.delete.successMessage"),
@@ -923,6 +931,9 @@ export default function DestinationsManagement() {
         await queryClient.invalidateQueries({
           queryKey: DESTINATIONS_QUERY_KEY,
         });
+        await queryClient.invalidateQueries({
+          queryKey: FEATURED_DESTINATIONS_QUERY_KEY,
+        });
         Swal.fire(
           t("destinationsManagement.success.updated"),
           t("destinationsManagement.success.updatedMessage"),
@@ -1062,6 +1073,13 @@ export default function DestinationsManagement() {
           </div>
         ))}
       </div>
+
+      {/* Picked for you (home page) */}
+      <FeaturedDestinationsPanel
+        destinations={destinations}
+        tk={tk}
+        inputStyle={inputStyle}
+      />
 
       {/* Filters */}
       <div

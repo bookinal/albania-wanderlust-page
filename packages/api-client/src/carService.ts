@@ -14,7 +14,7 @@ export interface SearchCarFilters {
   type?: string;
   transmission?: string;
   fuelType?: string;
-  priceRange?: { min: number; max: number };
+  priceRange?: { min: number; max?: number }; // no max = no upper limit
   features?: string[];
   pickupDate?: Date | null;
   returnDate?: Date | null;
@@ -126,7 +126,10 @@ export const searchCars = async (
   // NOTE: Price filtering is difficult because actual price depends on monthly_prices.
   // The base price is stored in `car.pricePerDay`. We will filter by base price here as an approximation.
   if (filters.priceRange) {
-    query = query.gte("pricePerDay", filters.priceRange.min).lte("pricePerDay", filters.priceRange.max);
+    query = query.gte("pricePerDay", filters.priceRange.min);
+    if (filters.priceRange.max !== undefined) {
+      query = query.lte("pricePerDay", filters.priceRange.max);
+    }
   }
 
   // Pagination

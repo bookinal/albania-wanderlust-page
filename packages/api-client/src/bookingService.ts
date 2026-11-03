@@ -302,7 +302,27 @@ export const createBooking = async (
     });
   }
 
+  notifyProviderWhatsApp(booking.id);
+
   return booking;
+};
+
+/**
+ * WhatsApp alert to the provider about the new request (sent by the
+ * notify-provider-whatsapp edge function). Fire-and-forget: a WhatsApp problem
+ * never blocks or fails the booking, and the email is still sent.
+ */
+const notifyProviderWhatsApp = (bookingId: string): void => {
+  apiClient.functions
+    .invoke("notify-provider-whatsapp", { body: { bookingId } })
+    .then(({ data, error }) => {
+      if (error) {
+        console.warn("[Booking Service] WhatsApp provider alert failed:", error.message);
+      } else {
+        console.log("[Booking Service] WhatsApp provider alert:", data);
+      }
+    })
+    .catch((err) => console.warn("[Booking Service] WhatsApp provider alert failed:", err));
 };
 
 /**

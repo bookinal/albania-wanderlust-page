@@ -40,7 +40,7 @@
       "Home": "Accueil",
       "Stays": "Séjours",
       "CarRentals": "Location de voitures",
-      "Destinations-Guidedtours": "Destinations - Visites guidées",
+      "Destinations-Guidedtours": "Destinations",
       "ExploreOnMap": "Explorer sur la carte"
     },
     "reservationPicker": {
@@ -232,6 +232,11 @@
       "description": "Immergez-vous dans les riches traditions, saveurs et le patrimoine culturel vibrant de l'Albanie.",
       "traditionalCuisine": "Cuisine traditionnelle",
       "festivalsAndTraditions": "Festivals & Traditions"
+    },
+    "featured": {
+      "badge": "Sélectionné pour vous",
+      "title": "Nos coups de cœur en Albanie",
+      "description": "Quatre lieux que notre équipe adore en ce moment, choisis pour inspirer votre prochain voyage."
     }
   },
   "appBar": {
@@ -371,7 +376,11 @@
       "emailInvalid": "Veuillez saisir une adresse e-mail valide.",
       "pickUpLocationRequired": "Veuillez choisir un lieu de prise en charge.",
       "dropOffLocationRequired": "Veuillez choisir un lieu de retour."
-    }
+    },
+    "seeMoreFeatures": "Voir plus (+{{count}})",
+    "showLessFeatures": "Voir moins",
+    "extras": "Options",
+    "extrasHelp": "Options facultatives proposées par le loueur pour cette voiture."
   },
   "terms": {
     "minimumRentalPeriod": "Période de location minimale",
@@ -451,7 +460,9 @@
       "electric": "Électrique",
       "features": "Caractéristiques",
       "loadingFeatures": "Chargement des caractéristiques...",
-      "noFeatures": "Aucune caractéristique disponible"
+      "noFeatures": "Aucune caractéristique disponible",
+      "minPrice": "Prix minimum",
+      "maxPrice": "Prix maximum"
     },
     "mapPreview": {
       "title": "Aperçu sur la carte",
@@ -472,7 +483,10 @@
       "year": "Année",
       "childSeat": "Siège enfant",
       "additionalDriver": "Conducteur supplémentaire",
-      "plate": "Plaque d'immatriculation"
+      "plate": "Plaque d'immatriculation",
+      "horsePower": "Puissance",
+      "horsePowerValue": "{{count}} ch",
+      "notSpecified": "Non précisé"
     },
     "properties": {
       "title": "Résultats de recherche",
@@ -984,7 +998,8 @@
       "validation": {
         "requiredFields": "Veuillez remplir tous les champs obligatoires",
         "locationRequired": "Veuillez sélectionner un emplacement sur la carte",
-        "imageRequired": "Veuillez télécharger au moins une image"
+        "imageRequired": "Veuillez télécharger au moins une image",
+        "horsePowerRange": "La puissance doit être comprise entre 1 et 2000 ch."
       },
       "form": {
         "carName": "Nom de la voiture",
@@ -1007,7 +1022,9 @@
         "customFeature": "Ajouter une caractéristique personnalisée...",
         "add": "Ajouter",
         "pickupLocation": "Lieu de prise en charge",
-        "mapLabel": "Sélectionnez le lieu de prise en charge sur la carte (Requis)"
+        "mapLabel": "Sélectionnez le lieu de prise en charge sur la carte (Requis)",
+        "horsePower": "Puissance (ch)",
+        "horsePowerHelp": "Facultatif. Puissance du moteur de la voiture."
       },
       "buttons": {
         "cancel": "Annuler",
@@ -1113,7 +1130,8 @@
         "pickupLocation": "Lieu de prise en charge",
         "addFeature": "Ajouter une nouvelle caractéristique",
         "noFeatures": "Aucune caractéristique listée.",
-        "mapLabel": "Localisation de la voiture sur la carte"
+        "mapLabel": "Localisation de la voiture sur la carte",
+        "horsePower": "Puissance (ch)"
       },
       "pricing": {
         "noSeasonal": "Aucune tarification saisonnière configurée. Utilisation du prix de base de €{{price}}/jour pour tous les mois."
@@ -1241,6 +1259,24 @@
     "pagination": {
       "previous": "Précédent",
       "next": "Suivant"
+    },
+    "featured": {
+      "title": "Sélectionné pour vous (page d'accueil)",
+      "subtitle": "Choisissez jusqu'à {{count}} destinations affichées juste sous la bannière de la page d'accueil.",
+      "pickedCount": "{{count}}/{{max}} choisies",
+      "slotLabel": "Destination en vedette n°{{number}}",
+      "clearSlot": "Vider cet emplacement",
+      "reset": "Réinitialiser",
+      "save": "Enregistrer",
+      "loadFailed": "Impossible de charger les destinations en vedette.",
+      "savedTitle": "Enregistré",
+      "savedMessage": "La page d'accueil affiche maintenant votre sélection.",
+      "saveFailedTitle": "Échec de l'enregistrement",
+      "saveFailedMessage": "Les destinations en vedette n'ont pas pu être enregistrées. Veuillez réessayer.",
+      "chooseDestination": "Choisir une destination",
+      "searchPlaceholder": "Rechercher par nom ou ville...",
+      "noResults": "Aucune destination trouvée",
+      "inSlot": "Emplacement n°{{number}}"
     }
   },
   "userManagement": {

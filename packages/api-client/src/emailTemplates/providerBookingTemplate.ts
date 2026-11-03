@@ -127,10 +127,6 @@ export const getProviderBookingNotificationTemplate = (data: {
             <div class="section">
               <h2 class="section-title">Guest details</h2>
               <table class="detail-table" role="presentation">
-                <tr>
-                  <td class="detail-label">Guest name</td>
-                  <td class="detail-value">${guestName}</td>
-                </tr>
                 ${
                   showGuestContact
                     ? `<tr>

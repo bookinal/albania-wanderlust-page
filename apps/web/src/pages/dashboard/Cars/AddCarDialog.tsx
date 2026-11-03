@@ -53,6 +53,7 @@ export const AddCarDialog: React.FC<AddCarDialogProps> = ({ onCarAdded }) => {
     year: new Date().getFullYear(),
     transmission: "Manual" as "Manual" | "Automatic",
     fuelType: "Petrol" as "Petrol" | "Diesel" | "Hybrid" | "Electric",
+    horsePower: null as number | null,
     pricePerDay: 10,
     childSeatPrice: 0,
     additionalDriverPrice: 0,
@@ -121,6 +122,11 @@ export const AddCarDialog: React.FC<AddCarDialogProps> = ({ onCarAdded }) => {
       setFormData((prev) => ({ ...prev, pickUpLocation: value, ...getPickupLocationCoords(value) }));
       return;
     }
+    if (name === "horsePower") {
+      // Optional field: an empty input stores null
+      setFormData((prev) => ({ ...prev, horsePower: value === "" ? null : parseInt(value, 10) || null }));
+      return;
+    }
     setFormData((prev) => ({
       ...prev,
       [name]: name === "year" || name === "pricePerDay" || name === "childSeatPrice" || name === "additionalDriverPrice"
@@ -132,6 +138,10 @@ export const AddCarDialog: React.FC<AddCarDialogProps> = ({ onCarAdded }) => {
   const handleSubmit = async () => {
     if (!formData.name || !formData.brand || !formData.plateNumber || formData.pricePerDay <= 0) {
       alert(t("cars.addCarDialog.validation.requiredFields"));
+      return;
+    }
+    if (formData.horsePower !== null && (formData.horsePower < 1 || formData.horsePower > 2000)) {
+      alert(t("cars.addCarDialog.validation.horsePowerRange"));
       return;
     }
     if (insurancePlanIds.length === 0) {
@@ -159,6 +169,7 @@ export const AddCarDialog: React.FC<AddCarDialogProps> = ({ onCarAdded }) => {
         year: formData.year,
         transmission: formData.transmission,
         fuelType: formData.fuelType,
+        horsePower: formData.horsePower,
         pricePerDay: formData.pricePerDay,
         childSeatPrice: formData.childSeatPrice,
         additionalDriverPrice: formData.additionalDriverPrice,
@@ -181,7 +192,7 @@ export const AddCarDialog: React.FC<AddCarDialogProps> = ({ onCarAdded }) => {
       );
       onCarAdded(newCar);
       setSubmissionSuccess(true);
-      setFormData({ name: "", brand: "", type: "Sedan", year: new Date().getFullYear(), transmission: "Manual", fuelType: "Petrol", pricePerDay: 10, childSeatPrice: 0, additionalDriverPrice: 0, status: "review", plateNumber: "", features: [], imageUrls: [], pickUpLocation: DEFAULT_CAR_PICKUP_LOCATION, ...getPickupLocationCoords(DEFAULT_CAR_PICKUP_LOCATION) });
+      setFormData({ name: "", brand: "", type: "Sedan", year: new Date().getFullYear(), transmission: "Manual", fuelType: "Petrol", horsePower: null, pricePerDay: 10, childSeatPrice: 0, additionalDriverPrice: 0, status: "review", plateNumber: "", features: [], imageUrls: [], pickUpLocation: DEFAULT_CAR_PICKUP_LOCATION, ...getPickupLocationCoords(DEFAULT_CAR_PICKUP_LOCATION) });
       setSelectedImageFiles([]);
       setMonthlyPrices([]);
       setRentalTerms(DEFAULT_CAR_RENTAL_TERMS);
@@ -287,6 +298,12 @@ export const AddCarDialog: React.FC<AddCarDialogProps> = ({ onCarAdded }) => {
                   <select id="fuelType" name="fuelType" value={formData.fuelType} onChange={handleChange} style={selectStyle}>
                     {["Petrol","Diesel","Hybrid","Electric"].map(f => <option key={f} value={f} style={{ background: tk.optionBg }}>{f}</option>)}
                   </select>
+                </div>
+                {/* Horse Power (optional) */}
+                <div>
+                  <p style={{ fontSize: 13, fontWeight: 500, color: tk.labelText, marginBottom: 6 }}>{t("cars.addCarDialog.form.horsePower")}</p>
+                  <input id="horsePower" name="horsePower" type="number" min="1" max="2000" step="1" value={formData.horsePower ?? ""} onChange={handleChange} placeholder="110" style={inputStyle} />
+                  <p style={{ fontSize: 12, color: tk.mutedText, marginTop: 4 }}>{t("cars.addCarDialog.form.horsePowerHelp")}</p>
                 </div>
                 {/* Price Per Day */}
                 <div>

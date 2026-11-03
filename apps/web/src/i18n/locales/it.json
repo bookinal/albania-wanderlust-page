@@ -40,7 +40,7 @@
       "Home": "Home",
       "Stays": "Soggiorni",
       "CarRentals": "Noleggio Auto",
-      "Destinations-Guidedtours": "Destinazioni - Tour Guidati",
+      "Destinations-Guidedtours": "Destinazioni",
       "ExploreOnMap": "Esplora sulla Mappa"
     },
     "reservationPicker": {
@@ -232,6 +232,11 @@
       "description": "Immergiti nelle ricche tradizioni, sapori e patrimonio culturale dell'Albania.",
       "traditionalCuisine": "Cucina Tradizionale",
       "festivalsAndTraditions": "Festival & Tradizioni"
+    },
+    "featured": {
+      "badge": "Scelti per te",
+      "title": "I nostri preferiti in Albania",
+      "description": "Quattro luoghi che il nostro team ama in questo momento, scelti per ispirare il tuo prossimo viaggio."
     }
   },
   "appBar": {
@@ -371,7 +376,11 @@
       "emailInvalid": "Inserisci un indirizzo email valido.",
       "pickUpLocationRequired": "Seleziona un luogo di ritiro.",
       "dropOffLocationRequired": "Seleziona un luogo di riconsegna."
-    }
+    },
+    "seeMoreFeatures": "Mostra altro (+{{count}})",
+    "showLessFeatures": "Mostra meno",
+    "extras": "Extra",
+    "extrasHelp": "Servizi opzionali offerti dal noleggiatore per questa auto."
   },
   "terms": {
     "minimumRentalPeriod": "Periodo Minimo di Noleggio",
@@ -451,7 +460,9 @@
       "electric": "Elettrica",
       "features": "Caratteristiche",
       "loadingFeatures": "Caricamento caratteristiche...",
-      "noFeatures": "Nessuna caratteristica disponibile"
+      "noFeatures": "Nessuna caratteristica disponibile",
+      "minPrice": "Prezzo minimo",
+      "maxPrice": "Prezzo massimo"
     },
     "mapPreview": {
       "title": "Anteprima sulla mappa",
@@ -472,7 +483,10 @@
       "year": "Anno",
       "childSeat": "Seggiolino per bambini",
       "additionalDriver": "Guidatore aggiuntivo",
-      "plate": "Targa"
+      "plate": "Targa",
+      "horsePower": "Potenza",
+      "horsePowerValue": "{{count}} CV",
+      "notSpecified": "Non specificato"
     },
     "properties": {
       "title": "Risultati della Ricerca",
@@ -984,7 +998,8 @@
       "validation": {
         "requiredFields": "Compila tutti i campi obbligatori",
         "locationRequired": "Seleziona una posizione sulla mappa",
-        "imageRequired": "Carica almeno un'immagine"
+        "imageRequired": "Carica almeno un'immagine",
+        "horsePowerRange": "La potenza deve essere compresa tra 1 e 2000 CV."
       },
       "form": {
         "carName": "Nome Auto",
@@ -1007,7 +1022,9 @@
         "customFeature": "Aggiungi una caratteristica personalizzata...",
         "add": "Aggiungi",
         "pickupLocation": "Luogo di Ritiro",
-        "mapLabel": "Seleziona il Luogo di Ritiro sulla Mappa (Obbligatorio)"
+        "mapLabel": "Seleziona il Luogo di Ritiro sulla Mappa (Obbligatorio)",
+        "horsePower": "Potenza (CV)",
+        "horsePowerHelp": "Facoltativo. Potenza del motore dell'auto."
       },
       "buttons": {
         "cancel": "Annulla",
@@ -1113,7 +1130,8 @@
         "pickupLocation": "Luogo di Ritiro",
         "addFeature": "Aggiungi una nuova caratteristica",
         "noFeatures": "Nessuna caratteristica elencata.",
-        "mapLabel": "Posizione Auto sulla Mappa"
+        "mapLabel": "Posizione Auto sulla Mappa",
+        "horsePower": "Potenza (CV)"
       },
       "pricing": {
         "noSeasonal": "Nessuna tariffa stagionale configurata. Utilizzo del prezzo base di €{{price}}/giorno per tutti i mesi."
@@ -1241,6 +1259,24 @@
     "pagination": {
       "previous": "Precedente",
       "next": "Successivo"
+    },
+    "featured": {
+      "title": "Scelti per te (home page)",
+      "subtitle": "Scegli fino a {{count}} destinazioni mostrate subito sotto il banner della home page.",
+      "pickedCount": "{{count}}/{{max}} scelte",
+      "slotLabel": "Destinazione in evidenza n. {{number}}",
+      "clearSlot": "Svuota questo posto",
+      "reset": "Ripristina",
+      "save": "Salva",
+      "loadFailed": "Impossibile caricare le destinazioni in evidenza.",
+      "savedTitle": "Salvato",
+      "savedMessage": "La home page ora mostra la tua selezione.",
+      "saveFailedTitle": "Salvataggio non riuscito",
+      "saveFailedMessage": "Non è stato possibile salvare le destinazioni in evidenza. Riprova.",
+      "chooseDestination": "Scegli una destinazione",
+      "searchPlaceholder": "Cerca per nome o città...",
+      "noResults": "Nessuna destinazione trovata",
+      "inSlot": "Nel posto n. {{number}}"
     }
   },
   "userManagement": {

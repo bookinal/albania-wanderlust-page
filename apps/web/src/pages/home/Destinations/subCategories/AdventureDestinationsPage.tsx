@@ -21,6 +21,9 @@ import { useDestinations } from "@/hooks/useDestinations";
 import { DestinationCard } from "../DestinationCard";
 import { DestinationFilterBar } from "../../../../components/home/destinations/DestinationFilterBar";
 import { DestinationBreadcrumb } from "../../../../components/home/destinations/DestinationBreadcrumb";
+
+/** One full row on wide screens (4 columns), two rows of 2 on medium screens. */
+const CARDS_PER_SECTION = 4;
 // import DestinationMap from "../DestinationMap";
 
 const AdventureDestinationsPage = () => {
@@ -365,14 +368,10 @@ const AdventureDestinationsPage = () => {
                           {subcategory}
                         </h2>
                         <div
-                          style={{
-                            display: "grid",
-                            gridTemplateColumns:
-                              "repeat(auto-fill, minmax(min(100%, 210px), 1fr))",
-                            gap: "1.25rem",
-                          }}
+                          className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4"
+                          style={{ gap: "1.25rem" }}
                         >
-                          {dests.slice(0, 5).map((destination) => (
+                          {dests.slice(0, CARDS_PER_SECTION).map((destination) => (
                             <DestinationCard
                               key={destination.id}
                               destination={destination}
@@ -382,7 +381,7 @@ const AdventureDestinationsPage = () => {
                             />
                           ))}
                         </div>
-                        {dests.length > 5 && (
+                        {dests.length > CARDS_PER_SECTION && (
                           <div
                             style={{
                               display: "flex",

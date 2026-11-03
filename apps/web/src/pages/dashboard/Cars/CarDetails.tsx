@@ -12,6 +12,7 @@ import {
   Car as CarIcon,
   Loader2,
   Fuel,
+  Gauge,
   Settings,
   Calendar,
   Image as ImageIcon,
@@ -133,6 +134,11 @@ const CarDetails = () => {
       setFormData((prev) => ({ ...prev, pickUpLocation: value, ...getPickupLocationCoords(value) }));
       return;
     }
+    if (name === "horsePower") {
+      // Optional field: an empty input stores null
+      setFormData((prev) => ({ ...prev, horsePower: value === "" ? null : parseInt(value, 10) || null }));
+      return;
+    }
     setFormData((prev) => ({
       ...prev,
       [name]:
@@ -158,6 +164,10 @@ const CarDetails = () => {
     if (!id) return;
     if (insurancePlanIds.length === 0) {
       Swal.fire({ icon: "warning", title: t("insurance.title"), text: t("insurance.validation.selectOne") });
+      return;
+    }
+    if (formData.horsePower != null && (formData.horsePower < 1 || formData.horsePower > 2000)) {
+      Swal.fire({ icon: "warning", title: t("cars.carDetails.fields.horsePower"), text: t("cars.addCarDialog.validation.horsePowerRange") });
       return;
     }
     const rentalTermsError = validateCarRentalTerms(getCarRentalTerms(formData));
@@ -410,6 +420,18 @@ const CarDetails = () => {
                         {["Petrol","Diesel","Hybrid","Electric"].map(f => <option key={f} value={f} style={{ background: tk.optionBg }}>{f}</option>)}
                       </select>
                     ) : <p style={{ color: tk.dimText }}>{car.fuelType}</p>}
+                  </div>
+                  {/* Horse Power (optional) */}
+                  <div>
+                    <p style={{ fontSize: 13, color: tk.labelText, marginBottom: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <Gauge size={14} style={{ color: tk.mutedText }} /> {t("cars.carDetails.fields.horsePower")}
+                    </p>
+                    {isEditing ? (
+                      <>
+                        <input name="horsePower" type="number" min="1" max="2000" step="1" value={formData.horsePower ?? ""} onChange={handleChange} placeholder="110" style={inputStyle} />
+                        <p style={{ fontSize: 12, color: tk.mutedText, marginTop: 4 }}>{t("cars.addCarDialog.form.horsePowerHelp")}</p>
+                      </>
+                    ) : <p style={{ color: tk.dimText }}>{car.horsePower ? t("searchResults.cars.horsePowerValue", { count: car.horsePower }) : t("searchResults.cars.notSpecified")}</p>}
                   </div>
                   {/* Base Price */}
                   <div>

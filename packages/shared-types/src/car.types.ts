@@ -25,6 +25,7 @@ export interface Car extends CarRentalTerms {
   year: number;
   transmission: "Manual" | "Automatic";
   fuelType: "Petrol" | "Diesel" | "Hybrid" | "Electric";
+  horsePower?: number | null; // Engine power in hp; null when not provided
   pricePerDay: number; // Base/default price (can be used as fallback)
   childSeatPrice: number; // Child seat price per rental day; 0 means not offered
   additionalDriverPrice: number; // Price for adding an additional driver; 0 means not offered
@@ -47,6 +48,7 @@ export interface CreateCarDto extends CarRentalTerms {
   year: number;
   transmission: "Manual" | "Automatic";
   fuelType: "Petrol" | "Diesel" | "Hybrid" | "Electric";
+  horsePower?: number | null; // Engine power in hp; null when not provided
   pricePerDay: number; // Base/default price
   childSeatPrice: number; // Child seat price per rental day; 0 means not offered
   additionalDriverPrice: number; // Price for adding an additional driver; 0 means not offered
@@ -69,6 +71,7 @@ export interface UpdateCarDto extends Partial<CarRentalTerms> {
   year?: number;
   transmission?: "Manual" | "Automatic";
   fuelType?: "Petrol" | "Diesel" | "Hybrid" | "Electric";
+  horsePower?: number | null; // Engine power in hp; null when not provided
   pricePerDay?: number;
   childSeatPrice?: number; // Child seat price per rental day; 0 means not offered
   additionalDriverPrice?: number; // Price for adding an additional driver; 0 means not offered

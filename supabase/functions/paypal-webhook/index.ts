@@ -1,5 +1,6 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
+import { sendContactUnlockNotifications } from "../_shared/contactUnlockNotifications.ts";
 
 const PAYPAL_CLIENT_ID = Deno.env.get("PAYPAL_CLIENT_ID");
 const PAYPAL_CLIENT_SECRET = Deno.env.get("PAYPAL_CLIENT_SECRET");
@@ -122,6 +123,50 @@ async function verifyWebhookSignature(
 /**
  * Handle PAYMENT.CAPTURE.COMPLETED event
  */
+/**
+ * Marks the booking as paid and sends the contact unlock emails to the client
+ * and the provider. The update only applies while the booking is not paid yet,
+ * so when capture-paypal-order already did it, nothing is sent twice.
+ */
+async function markBookingPaid(
+  supabase: ReturnType<typeof createClient>,
+  bookingId: string,
+  captureId: string,
+): Promise<void> {
+  const { data: updatedBookings, error } = await supabase
+    .from("booking")
+    .update({
+      payment_status: "paid",
+      status: "confirmed",
+      payment_intent_id: captureId,
+      paid_at: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    })
+    .eq("id", bookingId)
+    .neq("payment_status", "paid")
+    .select("*");
+
+  if (error) {
+    console.error("[PayPal Webhook] Failed to update booking:", bookingId, error);
+    return;
+  }
+
+  const updatedBooking = updatedBookings?.[0];
+  if (!updatedBooking) return; // already paid: emails were sent by the capture
+
+  try {
+    await sendContactUnlockNotifications(supabase, updatedBooking, {
+      supabaseUrl: SUPABASE_URL,
+      serviceRoleKey: SUPABASE_SERVICE_ROLE_KEY!,
+    });
+  } catch (emailError) {
+    console.error(
+      "[PayPal Webhook] Error sending contact unlock notifications:",
+      emailError,
+    );
+  }
+}
+
 async function handlePaymentCaptureCompleted(
   supabase: ReturnType<typeof createClient>,
   event: PayPalWebhookEvent
@@ -161,18 +206,9 @@ async function handlePaymentCaptureCompleted(
           })
           .eq("id", orderTransaction.id);
 
-        // Update booking if not already paid
-        if (orderTransaction.booking && orderTransaction.booking.payment_status !== "paid") {
-          await supabase
-            .from("booking")
-            .update({
-              payment_status: "paid",
-              status: "confirmed",
-              payment_intent_id: captureId,
-              paid_at: new Date().toISOString(),
-              updatedAt: new Date().toISOString(),
-            })
-            .eq("id", orderTransaction.booking.id);
+        // Update booking if not already paid (+ contact unlock emails)
+        if (orderTransaction.booking) {
+          await markBookingPaid(supabase, orderTransaction.booking.id, captureId);
         }
       }
     }
@@ -195,18 +231,9 @@ async function handlePaymentCaptureCompleted(
     })
     .eq("id", transaction.id);
 
-  // Update booking if not already paid
-  if (transaction.booking && transaction.booking.payment_status !== "paid") {
-    await supabase
-      .from("booking")
-      .update({
-        payment_status: "paid",
-        status: "confirmed",
-        payment_intent_id: captureId,
-        paid_at: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      })
-      .eq("id", transaction.booking.id);
+  // Update booking if not already paid (+ contact unlock emails)
+  if (transaction.booking) {
+    await markBookingPaid(supabase, transaction.booking.id, captureId);
   }
 }
 

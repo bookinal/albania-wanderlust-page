@@ -316,6 +316,7 @@ t("review.addReview", "Add Review"); // key, fallback string
 | `capture-paypal-order/`         | HTTP POST      | Captures PayPal payment           |
 | `paypal-webhook/`               | PayPal webhook | Updates booking on PayPal events  |
 | `send-email/`                   | HTTP POST      | Sends transactional emails        |
+| `notify-provider-whatsapp/`     | HTTP POST      | WhatsApp alert to the provider for a new booking request (see WHATSAPP.md) |
 
 All Edge Functions are Deno runtime. Deploy with:
 

@@ -8,7 +8,8 @@ import {
   Landmark,
   Mountain,
 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Destination } from "@albania/shared-types";
 import { useLocalized } from "@/hooks/useLocalized";
 // @ts-ignore
@@ -38,7 +39,10 @@ export const DestinationCard = ({
   isLoadingWishlist = false,
 }: DestinationCardProps) => {
   const { localize } = useLocalized();
-  const navigate = useNavigate();
+  const { t } = useTranslation();
+  const name = localize(destination.name);
+  const description = localize(destination.description)?.trim();
+  const detailsPath = `/destination/${destination.id}`;
 
   // Helper for category defaults
   const getCategoryDefaults = (category: string) => {
@@ -78,65 +82,101 @@ export const DestinationCard = ({
         overflow: "hidden",
       }}
     >
-      <div
-        style={{
-          position: "relative",
-          height: "16rem",
-          background: bgFallback,
-        }}
-      >
-        {destination.imageUrls?.[0] ? (
-          <img
-            src={destination.imageUrls[0]}
-            alt={localize(destination.name)}
-            style={{
-              width: "100%",
-              height: "100%",
-              objectFit: "cover",
-            }}
-          />
-        ) : (
-          <div
-            style={{
-              width: "100%",
-              height: "100%",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              background: tk.heroGradient,
-              color: "#ffffff",
-            }}
-          >
-            {icon}
-          </div>
-        )}
-        <div
+      <div style={{ position: "relative" }}>
+        <Link
+          to={detailsPath}
+          aria-label={name}
+          className="group block"
           style={{
-            position: "absolute",
-            inset: 0,
-            background:
-              "linear-gradient(180deg, rgba(2,6,23,0) 40%, rgba(2,6,23,0.5) 100%)",
-          }}
-        />
-        <div
-          style={{
-            position: "absolute",
-            left: "1rem",
-            bottom: "1rem",
-            display: "inline-flex",
-            alignItems: "center",
-            gap: "0.45rem",
-            padding: "0.45rem 0.8rem",
-            borderRadius: "9999px",
-            background: "rgba(255,255,255,0.16)",
-            border: "1px solid rgba(255,255,255,0.18)",
-            color: "#ffffff",
-            fontWeight: 700,
-            fontSize: "0.82rem",
+            position: "relative",
+            height: "16rem",
+            background: bgFallback,
+            overflow: "hidden",
           }}
         >
-          {destination.subcategory || "Destination"}
-        </div>
+          {destination.imageUrls?.[0] ? (
+            <img
+              src={destination.imageUrls[0]}
+              alt={name}
+              className="transition-transform duration-500 ease-out group-hover:scale-105"
+              style={{
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+              }}
+            />
+          ) : (
+            <div
+              style={{
+                width: "100%",
+                height: "100%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                background: tk.heroGradient,
+                color: "#ffffff",
+              }}
+            >
+              {icon}
+            </div>
+          )}
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              background:
+                "linear-gradient(180deg, rgba(2,6,23,0) 40%, rgba(2,6,23,0.5) 100%)",
+            }}
+          />
+          <div
+            style={{
+              position: "absolute",
+              left: "1rem",
+              bottom: "1rem",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "0.45rem",
+              padding: "0.45rem 0.8rem",
+              borderRadius: "9999px",
+              background: "rgba(255,255,255,0.16)",
+              border: "1px solid rgba(255,255,255,0.18)",
+              color: "#ffffff",
+              fontWeight: 700,
+              fontSize: "0.82rem",
+            }}
+          >
+            {destination.subcategory || "Destination"}
+          </div>
+        </Link>
+        <button
+          type="button"
+          onClick={() => onAddToWishlist(destination.id)}
+          disabled={isLoadingWishlist}
+          aria-label={t("home.destinations.addToWishlist")}
+          title={t("home.destinations.addToWishlist")}
+          style={{
+            position: "absolute",
+            top: "0.85rem",
+            right: "0.85rem",
+            width: "2.5rem",
+            height: "2.5rem",
+            borderRadius: "9999px",
+            border: "1px solid rgba(255,255,255,0.35)",
+            background: "rgba(2,6,23,0.35)",
+            backdropFilter: "blur(6px)",
+            color: "#ffffff",
+            cursor: isLoadingWishlist ? "not-allowed" : "pointer",
+          }}
+        >
+          {isLoadingWishlist ? (
+            <Loader2
+              className="w-4 h-4 animate-spin"
+              style={{ margin: "0 auto" }}
+            />
+          ) : (
+            <Heart className="w-4 h-4" style={{ margin: "0 auto" }} />
+          )}
+        </button>
       </div>
 
       <div style={{ padding: "1.2rem" }}>
@@ -148,19 +188,24 @@ export const DestinationCard = ({
             color: tk.textMain,
           }}
         >
-          {localize(destination.name)}
+          {name}
         </h2>
-        {/* <p
-          style={{
-            margin: "0.75rem 0 0",
-            color: tk.textMuted,
-            lineHeight: 1.7,
-            fontSize: "0.95rem",
-          }}
-        >
-          {localize(destination.description).slice(0, 50)}
-          {localize(destination.description).length > 50 ? "..." : ""}
-        </p> */}
+        {description && (
+          <p
+            style={{
+              margin: "0.6rem 0 0",
+              color: tk.textMuted,
+              lineHeight: 1.6,
+              fontSize: "0.92rem",
+              display: "-webkit-box",
+              WebkitLineClamp: 3,
+              WebkitBoxOrient: "vertical",
+              overflow: "hidden",
+            }}
+          >
+            {description}
+          </p>
+        )}
 
         { destination.location && (
             <div
@@ -203,52 +248,6 @@ export const DestinationCard = ({
             </span>
           </div>
         )}
-
-        <div
-          style={{
-            display: "flex",
-            gap: "0.75rem",
-            marginTop: "1.15rem",
-          }}
-        >
-          <button
-            onClick={() => navigate(`/destination/${destination.id}`)}
-            style={{
-              flex: 1,
-              padding: "0.8rem 1rem",
-              borderRadius: "0.9rem",
-              border: "none",
-              background: tk.brand,
-              color: "#ffffff",
-              cursor: "pointer",
-              fontWeight: 700,
-            }}
-          >
-            Explore
-          </button>
-          <button
-            onClick={() => onAddToWishlist(destination.id)}
-            disabled={isLoadingWishlist}
-            style={{
-              width: "3rem",
-              height: "3rem",
-              borderRadius: "0.9rem",
-              border: `1px solid ${tk.buttonGhostBorder}`,
-              background: tk.buttonGhostBg,
-              color: tk.textMain,
-              cursor: isLoadingWishlist ? "not-allowed" : "pointer",
-            }}
-          >
-            {isLoadingWishlist ? (
-              <Loader2
-                className="w-4 h-4 animate-spin"
-                style={{ margin: "0 auto" }}
-              />
-            ) : (
-              <Heart className="w-4 h-4" style={{ margin: "0 auto" }} />
-            )}
-          </button>
-        </div>
       </div>
     </article>
   );

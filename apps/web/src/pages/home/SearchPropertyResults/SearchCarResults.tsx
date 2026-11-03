@@ -8,7 +8,7 @@ import {
   SearchCarFilters,
 } from "@/services/api/carService";
 import { Car } from "@/types/car.types";
-import { CarFilterBar, CarFilterState } from "./CarFilterBar";
+import { CAR_DAILY_PRICE_MAX, CarFilterBar, CarFilterState } from "./CarFilterBar";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@/context/ThemeContext";
 import { useInfiniteQuery } from "@tanstack/react-query";
@@ -46,7 +46,7 @@ const SearchCarResults = () => {
     type: "all",
     transmission: "all",
     fuelType: "all",
-    priceRange: { min: 0, max: 1000 },
+    priceRange: { min: 0, max: CAR_DAILY_PRICE_MAX },
     features: [],
     pickupDate: pickupDate,
     returnDate: returnDate,
@@ -71,7 +71,11 @@ const SearchCarResults = () => {
         type: filters.type,
         transmission: filters.transmission,
         fuelType: filters.fuelType,
-        priceRange: filters.priceRange,
+        // The top of the slider means "€300+": no upper limit
+        priceRange: filters.priceRange && {
+          min: filters.priceRange.min,
+          max: filters.priceRange.max >= CAR_DAILY_PRICE_MAX ? undefined : filters.priceRange.max,
+        },
         features: filters.features,
         pickupDate: filters.pickupDate,
         returnDate: filters.returnDate,
@@ -144,7 +148,7 @@ const SearchCarResults = () => {
       type: "all",
       transmission: "all",
       fuelType: "all",
-      priceRange: { min: 0, max: 1000 },
+      priceRange: { min: 0, max: CAR_DAILY_PRICE_MAX },
       features: [],
       pickupDate: null,
       returnDate: null,

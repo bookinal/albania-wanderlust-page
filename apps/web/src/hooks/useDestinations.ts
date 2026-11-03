@@ -3,9 +3,20 @@ import { Destination } from "@albania/shared-types";
 import {
   getAllDestinations,
   getDestinationById,
+  getFeaturedDestinations,
 } from "@/services/api/destinationService";
 
 const DESTINATIONS_QUERY_KEY = ["destinations"] as const;
+const FEATURED_DESTINATIONS_QUERY_KEY = ["featured-destinations"] as const;
+
+/** Destinations the admin picked for the home page ("Picked for you") */
+export const useFeaturedDestinations = () => {
+  return useQuery({
+    queryKey: FEATURED_DESTINATIONS_QUERY_KEY,
+    queryFn: getFeaturedDestinations,
+    staleTime: 10 * 60 * 1000,
+  });
+};
 
 export const useDestinations = () => {
   return useQuery({
@@ -32,4 +43,4 @@ export const useDestination = (id?: string) => {
   });
 };
 
-export { DESTINATIONS_QUERY_KEY };
+export { DESTINATIONS_QUERY_KEY, FEATURED_DESTINATIONS_QUERY_KEY };

@@ -4,6 +4,7 @@ import { getReviewsByProperty } from "@/services/api/reviewService";
 import { Star, MessageSquare, Loader2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@/context/ThemeContext";
+import { getBookingThemeTokens } from "@/pages/home/booking/bookingTheme";
 
 interface ReviewsSectionProps {
   propertyId: number;
@@ -32,30 +33,32 @@ export default function ReviewsSection({
   propertyType,
 }: ReviewsSectionProps) {
   const { t } = useTranslation();
-  const { isDark } = useTheme();
+  const { isDark, isBlue } = useTheme();
+  // Same tokens as the reservation pages, so this card matches the other sections
+  const theme = getBookingThemeTokens({ isDark, isBlue });
 
   const tk = {
-    cardBg: isDark ? "rgba(255,255,255,0.025)" : "#ffffff",
-    cardBorder: isDark ? "rgba(255,255,255,0.07)" : "#e5e2de",
-    cardShadow: isDark ? "0 8px 32px rgba(0,0,0,0.5)" : "0 8px 32px rgba(15,23,42,0.08)",
-    headingText: isDark ? "#ffffff" : "#111115",
-    mutedText: isDark ? "rgba(255,255,255,0.35)" : "#9e9994",
-    avgBg: isDark ? "rgba(255,255,255,0.04)" : "#f5f2ee",
-    avgBorder: isDark ? "rgba(255,255,255,0.06)" : "#e5e2de",
-    avgBig: isDark ? "#ffffff" : "#0f172a",
-    avgSub: isDark ? "rgba(255,255,255,0.35)" : "#94a3b8",
-    avgMeta: isDark ? "rgba(255,255,255,0.50)" : "#64748b",
-    loaderColor: "#E8192C",
-    emptyIcon: isDark ? "rgba(255,255,255,0.15)" : "#94a3b8",
-    emptyText: isDark ? "rgba(255,255,255,0.45)" : "#64748b",
-    reviewBg: isDark ? "rgba(255,255,255,0.03)" : "#f8f6f3",
-    reviewBorder: isDark ? "rgba(255,255,255,0.06)" : "#e5e2de",
-    reviewHoverBorder: isDark ? "rgba(232,25,44,0.25)" : "#fca5a5",
-    reviewerName: isDark ? "#ffffff" : "#1e293b",
-    reviewDate: isDark ? "rgba(255,255,255,0.35)" : "#94a3b8",
-    reviewRating: isDark ? "rgba(255,255,255,0.70)" : "#475569",
-    reviewText: isDark ? "rgba(255,255,255,0.65)" : "#475569",
-    iconAccent: "#E8192C",
+    cardBg: theme.cardBg,
+    cardBorder: theme.cardBorder,
+    cardShadow: theme.cardShadow,
+    headingText: theme.pageText,
+    mutedText: theme.mutedText,
+    avgBg: theme.statBg,
+    avgBorder: theme.statBorder,
+    avgBig: theme.pageText,
+    avgSub: theme.mutedText,
+    avgMeta: theme.dimText,
+    loaderColor: theme.brand,
+    emptyIcon: theme.mutedText,
+    emptyText: theme.mutedText,
+    reviewBg: theme.statBg,
+    reviewBorder: theme.statBorder,
+    reviewHoverBorder: theme.brandBorder,
+    reviewerName: theme.pageText,
+    reviewDate: theme.mutedText,
+    reviewRating: theme.dimText,
+    reviewText: theme.dimText,
+    iconAccent: theme.brand,
   };
 
   const { data: reviews, isLoading } = useQuery({
@@ -84,7 +87,7 @@ export default function ReviewsSection({
     >
       <h2
         style={{
-          fontSize: "22px",
+          fontSize: "24px",
           fontWeight: 700,
           color: tk.headingText,
           marginBottom: "24px",

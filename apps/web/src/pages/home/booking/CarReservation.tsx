@@ -15,11 +15,12 @@ import {
   ChevronRight,
   Settings,
   Package,
-  MapPinned,
   TrendingUp,
   ShieldCheck,
   Images,
   X,
+  CreditCard,
+  ChevronDown,
 } from "lucide-react";
 import { Car } from "@/types/car.types";
 import { Month, MONTHS, MONTH_NAMES } from "@/types/price.type";
@@ -40,8 +41,8 @@ const getCurrentMonth = (): Month => {
 import PrimarySearchAppBar from "@/components/home/AppBar";
 import ReviewsSection from "@/components/reviews/ReviewsSection";
 import { getBookingThemeTokens } from "./bookingTheme";
-import { CarRentalConditions } from "./CarRentalConditions";
-import { InsurancePlansTable } from "./InsurancePlansTable";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { CarPaymentMethods, CarRentalConditions } from "./CarRentalConditions";
 import { formatInsurancePrice } from "@/lib/insurancePlans";
 
 function MosaicGallery({
@@ -356,6 +357,10 @@ const CarReservation = () => {
   const [images, setImages] = useState<string[]>([]);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const [user, setUser] = useState<User | null>(null);
+  const [showAllFeatures, setShowAllFeatures] = useState(false);
+  const isMobile = useIsMobile();
+  // Features show at most 2 rows (2 per row on phones, 4 per row from tablets up) until "See more"
+  const maxVisibleFeatures = (isMobile ? 2 : 4) * 2;
 
   usePageChatSuggestion(
     car
@@ -654,18 +659,17 @@ const CarReservation = () => {
                 <CarIcon style={{ color: tk.brand }} size={24} />
                 {t("billing.vehicleSpecifications")}
               </h2>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
                 {[
                   { label: t("searchResults.cars.brand"), value: car.brand },
                   { label: t("searchResults.cars.year"), value: String(car.year) },
                   { label: t("searchResults.filters.carType"), value: car.type },
                   { label: t("searchResults.filters.transmission"), value: car.transmission },
                   { label: t("searchResults.filters.fuelType"), value: car.fuelType },
+                  { label: t("searchResults.cars.horsePower"), value: car.horsePower ? t("searchResults.cars.horsePowerValue", { count: car.horsePower }) : t("searchResults.cars.notSpecified") },
                   { label: t("searchResults.cars.plate"), value: car.plateNumber },
-                  { label: t("searchResults.cars.childSeat", "Child seat"), value: car.childSeatPrice > 0 ? `+${t("common.pricePerDay", { price: car.childSeatPrice })}` : t("cars.carDetails.fields.notOffered", "Not offered") },
-                  { label: t("searchResults.cars.additionalDriver", "Additional driver"), value: car.additionalDriverPrice > 0 ? `+€${car.additionalDriverPrice}` : t("cars.carDetails.fields.notOffered", "Not offered") },
                 ].map(({ label, value }, i) => (
-                  <div key={i} className="flex flex-col gap-2">
+                  <div key={i} className="flex min-w-0 flex-col gap-2 break-words">
                     <span style={{ color: tk.mutedText }} className="text-sm font-medium">{label}</span>
                     <span style={{ color: tk.pageText }} className="text-lg font-bold">{value}</span>
                   </div>
@@ -673,87 +677,65 @@ const CarReservation = () => {
               </div>
             </div>
 
-            {/* Insurance Plans */}
-            {car.insurancePlans && car.insurancePlans.length > 0 && (
-              <div style={{ background: tk.cardBg, border: `1px solid ${tk.cardBorder}`, boxShadow: tk.cardShadow }} className="rounded-2xl p-8">
-                <h2 style={{ color: tk.pageText }} className="text-2xl font-bold mb-2 flex items-center gap-2">
-                  <ShieldCheck style={{ color: tk.brand }} size={24} />
-                  {t("insurance.overviewTitle")}
-                </h2>
-                <p style={{ color: tk.mutedText }} className="text-sm mb-6">{t("insurance.overviewHelp")}</p>
-                <InsurancePlansTable plans={car.insurancePlans} tk={tk} />
-              </div>
-            )}
-
             {/* Rental Conditions */}
             <div style={{ background: tk.cardBg, border: `1px solid ${tk.cardBorder}`, boxShadow: tk.cardShadow }} className="rounded-2xl p-8">
               <h2 style={{ color: tk.pageText }} className="text-2xl font-bold mb-6 flex items-center gap-2">
                 <ShieldCheck style={{ color: tk.brand }} size={24} />
                 {t("cars.rentalTerms.title")}
               </h2>
-              <CarRentalConditions car={car} tk={tk} />
+              <CarRentalConditions
+                car={car}
+                tk={tk}
+                showPaymentMethods={false}
+                showCrossBorderDeposit={false}
+              />
+            </div>
+
+            {/* Accepted Payment Methods */}
+            <div style={{ background: tk.cardBg, border: `1px solid ${tk.cardBorder}`, boxShadow: tk.cardShadow }} className="rounded-2xl p-8">
+              <h2 style={{ color: tk.pageText }} className="text-2xl font-bold mb-6 flex items-center gap-2">
+                <CreditCard style={{ color: tk.brand }} size={24} />
+                {t("cars.rentalTerms.acceptedPaymentMethods")}
+              </h2>
+              <CarPaymentMethods car={car} tk={tk} large />
             </div>
 
             {/* Features */}
             {car.features && car.features.length > 0 && (
               <div style={{ background: tk.cardBg, border: `1px solid ${tk.cardBorder}`, boxShadow: tk.cardShadow }} className="rounded-2xl p-8">
                 <h2 style={{ color: tk.pageText }} className="text-2xl font-bold mb-6">{t("billing.featuresAndEquipment")}</h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {car.features.map((feature, index) => (
-                    <div key={index} style={{ background: tk.amenityBg }} className="flex items-center gap-3 p-4 rounded-xl hover:opacity-90 transition-opacity">
-                      <CheckCircle2 size={20} style={{ color: tk.brand }} className="flex-shrink-0" />
-                      <span style={{ color: tk.dimText }} className="font-medium capitalize">{feature}</span>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  {(showAllFeatures ? car.features : car.features.slice(0, maxVisibleFeatures)).map((feature, index) => (
+                    <div key={index} style={{ background: tk.amenityBg }} className="flex min-w-0 items-center gap-2 p-3 rounded-xl hover:opacity-90 transition-opacity">
+                      <CheckCircle2 size={18} style={{ color: tk.brand }} className="flex-shrink-0" />
+                      <span style={{ color: tk.dimText }} className="min-w-0 break-words text-sm font-medium capitalize">{feature}</span>
                     </div>
                   ))}
                 </div>
+                {car.features.length > maxVisibleFeatures && (
+                  <button
+                    type="button"
+                    onClick={() => setShowAllFeatures((v) => !v)}
+                    aria-expanded={showAllFeatures}
+                    style={{ color: tk.brand, border: `1px solid ${tk.brandBorder}`, background: tk.brandSoft }}
+                    className="mt-4 inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold transition-opacity hover:opacity-80"
+                  >
+                    {showAllFeatures
+                      ? t("billing.showLessFeatures")
+                      : t("billing.seeMoreFeatures", { count: car.features.length - maxVisibleFeatures })}
+                    <ChevronDown size={16} className={showAllFeatures ? "rotate-180 transition-transform" : "transition-transform"} />
+                  </button>
+                )}
               </div>
             )}
 
-            {/* Pick-up Location */}
+            {/* Availability */}
             <div style={{ background: tk.cardBg, border: `1px solid ${tk.cardBorder}`, boxShadow: tk.cardShadow }} className="rounded-2xl p-8">
-              <h2 style={{ color: tk.pageText }} className="text-2xl font-bold mb-6">{t("billing.pickUpAndContactInformation")}</h2>
-              <div className="grid grid-cols-1 gap-6">
-                <div style={{ background: tk.statBg }} className="flex items-start gap-4 p-4 rounded-xl">
-                  <div className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: tk.brandSoftStrong }}>
-                    <MapPinned size={20} style={{ color: tk.brand }} />
-                  </div>
-                  <div>
-                    <p style={{ color: tk.mutedText }} className="text-sm font-medium mb-1">{t("billing.pickUpLocation")}</p>
-                    <p style={{ color: tk.pageText }} className="font-medium">
-                      {car.pickUpLocation ||
-                        t("billing.locationNotSpecified", "Location not specified")}
-                    </p>
-                  </div>
-                </div>
-
-              </div>
-            </div>
-
-            <div style={{ background: tk.cardBg, border: `1px solid ${tk.cardBorder}` }} className="rounded-xl p-6">
-              <AvailabilityCalendar propertyId={parseInt(id!)} propertyType="car" />
+              <AvailabilityCalendar propertyId={parseInt(id!)} propertyType="car" theme={tk} />
             </div>
 
             {/* Guest Reviews */}
             <ReviewsSection propertyId={parseInt(id!)} propertyType="car" />
-
-            {/* Rental Terms */}
-            <div style={{ background: tk.termsBg, border: `1px solid ${tk.termsBorder}` }} className="rounded-2xl p-8">
-              <h2 style={{ color: tk.pageText }} className="text-2xl font-bold mb-4">{t("billing.rentalTermsAndConditions")}</h2>
-              <ul className="space-y-3" style={{ color: tk.dimText }}>
-                {[
-                  t("terms.minimumRentalPeriod"),
-                  t("terms.validDriversLicense"),
-                  t("terms.fullInsuranceCoverageIncluded"),
-                  t("terms.24/7RoadsideAssistance"),
-                  t("terms.freeCancellation"),
-                ].map((term, i) => (
-                  <li key={i} className="flex items-start gap-3">
-                    <CheckCircle2 size={20} style={{ color: tk.brand }} className="flex-shrink-0 mt-0.5" />
-                    <span>{term}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
           </div>
         </div>
 

@@ -707,8 +707,9 @@ const ApartmentReservation = () => {
               </div>
             )}
 
-            <div style={{ background: tk.cardBg, border: `1px solid ${tk.cardBorder}` }} className="rounded-xl p-6">
-              <AvailabilityCalendar propertyId={parseInt(id!)} propertyType="apartment" />
+            {/* Availability */}
+            <div style={{ background: tk.cardBg, border: `1px solid ${tk.cardBorder}`, boxShadow: tk.cardShadow }} className="rounded-2xl p-8">
+              <AvailabilityCalendar propertyId={parseInt(id!)} propertyType="apartment" theme={tk} />
             </div>
 
             {/* Guest Reviews */}

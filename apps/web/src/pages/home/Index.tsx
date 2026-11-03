@@ -1,6 +1,7 @@
 import Hero from "@/components/home/Hero";
 import TrustBar from "@/components/home/TrustBar";
 import Destinations from "@/components/home/DestinationsHomePreview";
+import FeaturedDestinations from "@/components/home/FeaturedDestinations";
 import Culture from "@/components/home/Culture";
 import PrimarySearchAppBar from "@/components/home/AppBar";
 import ApartmentsPreview from "@/components/home/ApartmentsPreview";
@@ -21,6 +22,10 @@ const Index = () => {
       <PrimarySearchAppBar />
       <Hero />
       <TrustBar />
+      {/* Picked for you (chosen by the admin) */}
+      <FeaturedDestinations />
+
+
 
       {/* Destinations Section */}
       <Destinations />

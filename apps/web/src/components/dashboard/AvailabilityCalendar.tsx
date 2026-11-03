@@ -5,6 +5,7 @@ import { getCarUnavailabilityDates } from "@/services/api/carService";
 import { getApartmentUnavailabilityDates } from "@/services/api/apartmentService";
 import { Loader2, CalendarDays } from "lucide-react";
 import { useTheme } from "@/context/ThemeContext";
+import type { getBookingThemeTokens } from "@/pages/home/booking/bookingTheme";
 
 type PropertyType = "car" | "apartment";
 
@@ -12,12 +13,15 @@ interface AvailabilityCalendarProps {
   propertyId: number;
   propertyType: PropertyType;
   className?: string;
+  /** Public pages pass their theme so the section matches the other cards */
+  theme?: ReturnType<typeof getBookingThemeTokens>;
 }
 
 export const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
   propertyId,
   propertyType,
   className,
+  theme,
 }) => {
   const { t } = useTranslation();
   const { isDark } = useTheme();
@@ -26,19 +30,21 @@ export const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
   const [error, setError] = useState<string | null>(null);
 
   const tk = {
-    headingText: isDark ? "#ffffff" : "#111115",
-    mutedText: isDark ? "rgba(255,255,255,0.45)" : "#6b6663",
-    legendText: isDark ? "rgba(255,255,255,0.60)" : "#44403c",
+    accent: theme?.brand ?? "#E8192C",
+    headingText: theme?.pageText ?? (isDark ? "#ffffff" : "#111115"),
+    headingSize: theme ? "24px" : "18px",
+    mutedText: theme?.mutedText ?? (isDark ? "rgba(255,255,255,0.45)" : "#6b6663"),
+    legendText: theme?.dimText ?? (isDark ? "rgba(255,255,255,0.60)" : "#44403c"),
     availDot: isDark ? "rgba(255,255,255,0.15)" : "#ffffff",
     availDotBorder: isDark ? "rgba(255,255,255,0.20)" : "#d1cdc9",
     allAvailText: "#10b981",
-    infoText: isDark ? "rgba(255,255,255,0.45)" : "#6b6663",
+    infoText: theme?.mutedText ?? (isDark ? "rgba(255,255,255,0.45)" : "#6b6663"),
     errorText: "#ef4444",
     // Calendar wrapper — give shadcn Calendar a fixed light skin so its
     // internal CSS vars always resolve correctly regardless of custom theme state.
-    calWrapperBg: isDark ? "#1e1e22" : "#ffffff",
-    calWrapperText: isDark ? "#f0ece8" : "#111115",
-    calBorder: isDark ? "rgba(255,255,255,0.10)" : "#e5e2de",
+    calWrapperBg: theme?.statBg ?? (isDark ? "#1e1e22" : "#ffffff"),
+    calWrapperText: theme?.pageText ?? (isDark ? "#f0ece8" : "#111115"),
+    calBorder: theme?.statBorder ?? (isDark ? "rgba(255,255,255,0.10)" : "#e5e2de"),
   };
 
   useEffect(() => {
@@ -70,7 +76,7 @@ export const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
     return (
       <div className={className}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "48px 0" }}>
-          <Loader2 style={{ width: "24px", height: "24px", color: "#E8192C", animation: "spin 1s linear infinite" }} />
+          <Loader2 style={{ width: "24px", height: "24px", color: tk.accent, animation: "spin 1s linear infinite" }} />
         </div>
       </div>
     );
@@ -88,8 +94,8 @@ export const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
 
   return (
     <div className={className}>
-      <h2 style={{ fontSize: "18px", fontWeight: 700, color: tk.headingText, marginBottom: "16px", display: "flex", alignItems: "center", gap: "8px" }}>
-        <CalendarDays size={20} style={{ color: "#E8192C" }} />
+      <h2 style={{ fontSize: tk.headingSize, fontWeight: 700, color: tk.headingText, marginBottom: theme ? "24px" : "16px", display: "flex", alignItems: "center", gap: "8px" }}>
+        <CalendarDays size={theme ? 24 : 20} style={{ color: tk.accent }} />
         {t("availabilityCalendar.title")}
       </h2>
 
@@ -122,12 +128,12 @@ export const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
           }
           .alb-cal-wrapper [class*="day_selected"],
           .alb-cal-wrapper .rdp-day_selected {
-            background-color: #E8192C !important;
+            background-color: ${tk.accent} !important;
             color: #ffffff !important;
           }
           .alb-cal-wrapper [class*="day_today"],
           .alb-cal-wrapper .rdp-day_today {
-            color: #E8192C !important;
+            color: ${tk.accent} !important;
             font-weight: 700 !important;
           }
           .alb-cal-wrapper button:hover:not([disabled]) {

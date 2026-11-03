@@ -40,7 +40,7 @@
       "Home": "Faqja Kryesore",
       "Stays": "Qëndrime",
       "CarRentals": "Makina me Qira",
-      "Destinations-Guidedtours": "Destinacionet - Udhëtime të udhëhequra",
+      "Destinations-Guidedtours": "Destinacionet",
       "ExploreOnMap": "Eksploro në Hartë"
     },
     "reservationPicker": {
@@ -233,6 +233,11 @@
       "description": "Zhytuni në traditat e pasura, shijet dhe trashëgiminë kulturore të gjallë të Shqipërisë.",
       "traditionalCuisine": "Kuzhina Tradicionale",
       "culturalExperiences": "Përvoja Kulturore"
+    },
+    "featured": {
+      "badge": "Zgjedhur për ju",
+      "title": "Zgjedhjet tona më të mira në Shqipëri",
+      "description": "Katër vende që ekipi ynë i do tani, të zgjedhura për të frymëzuar udhëtimin tuaj të radhës."
     }
   },
   "appBar": {
@@ -372,7 +377,11 @@
       "emailInvalid": "Ju lutemi shkruani një adresë email-i të vlefshme.",
       "pickUpLocationRequired": "Ju lutemi zgjidhni vendin e marrjes.",
       "dropOffLocationRequired": "Ju lutemi zgjidhni vendin e dorëzimit."
-    }
+    },
+    "seeMoreFeatures": "Shiko më shumë (+{{count}})",
+    "showLessFeatures": "Shiko më pak",
+    "extras": "Shtesa",
+    "extrasHelp": "Shtesa opsionale që ofron qiradhënësi për këtë makinë."
   },
   "terms": {
     "minimumRentalPeriod": "Periudha minimale e qirasë",
@@ -452,7 +461,9 @@
       "electric": "Elektrik",
       "features": "Karakteristika",
       "loadingFeatures": "Po ngarkohen karakteristikat...",
-      "noFeatures": "Nuk ka karakteristika të disponueshme"
+      "noFeatures": "Nuk ka karakteristika të disponueshme",
+      "minPrice": "Çmimi minimal",
+      "maxPrice": "Çmimi maksimal"
     },
     "mapPreview": {
       "title": "Parapamje në hartë",
@@ -473,7 +484,10 @@
       "year": "Viti",
       "childSeat": "Ndenjëse për fëmijë",
       "additionalDriver": "Shofer shtesë",
-      "plate": "Targa"
+      "plate": "Targa",
+      "horsePower": "Fuqia motorike",
+      "horsePowerValue": "{{count}} kf",
+      "notSpecified": "E pa specifikuar"
     },
     "properties": {
       "title": "Rezultatet e kërkimit",
@@ -992,7 +1006,8 @@
       "validation": {
         "requiredFields": "Ju lutemi plotësoni të gjitha fushat e kërkuara",
         "locationRequired": "Ju lutemi zgjidhni një vendndodhje në hartë",
-        "imageRequired": "Ju lutemi ngarkoni të paktën një imazh"
+        "imageRequired": "Ju lutemi ngarkoni të paktën një imazh",
+        "horsePowerRange": "Fuqia motorike duhet të jetë nga 1 deri në 2000 kf."
       },
       "form": {
         "carName": "Emri i Makina",
@@ -1015,7 +1030,9 @@
         "customFeature": "Shto një karakteristikë të personalizuar...",
         "add": "Shto",
         "pickupLocation": "Vendndodhja e Marrjes",
-        "mapLabel": "Zgjidh Vendndodhjen e Marrjes në Hartë (E Detyrueshme)"
+        "mapLabel": "Zgjidh Vendndodhjen e Marrjes në Hartë (E Detyrueshme)",
+        "horsePower": "Fuqia motorike (kf)",
+        "horsePowerHelp": "Opsionale. Fuqia e motorit të makinës."
       },
       "buttons": {
         "cancel": "Anulo",
@@ -1121,7 +1138,8 @@
         "pickupLocation": "Vendndodhja e Marrjes",
         "addFeature": "Shto një karakteristikë të re",
         "noFeatures": "Nuk ka karakteristika të listuara.",
-        "mapLabel": "Vendndodhja e Makina në Hartë"
+        "mapLabel": "Vendndodhja e Makina në Hartë",
+        "horsePower": "Fuqia motorike (kf)"
       },
       "pricing": {
         "noSeasonal": "Nuk ka çmime sezonale të konfiguruar. Duke përdorur çmimin bazë të €{{price}}/ditë për të gjithë muajt."
@@ -1249,6 +1267,24 @@
     "pagination": {
       "previous": "E mëparshme",
       "next": "Tjetra"
+    },
+    "featured": {
+      "title": "Zgjedhur për ju (faqja kryesore)",
+      "subtitle": "Zgjidhni deri në {{count}} destinacione që shfaqen menjëherë poshtë banerit të faqes kryesore.",
+      "pickedCount": "{{count}}/{{max}} të zgjedhura",
+      "slotLabel": "Destinacioni i veçuar nr. {{number}}",
+      "clearSlot": "Pastro këtë vend",
+      "reset": "Rivendos",
+      "save": "Ruaj",
+      "loadFailed": "Destinacionet e veçuara nuk u ngarkuan.",
+      "savedTitle": "U ruajt",
+      "savedMessage": "Faqja kryesore tani shfaq zgjedhjet tuaja.",
+      "saveFailedTitle": "Ruajtja dështoi",
+      "saveFailedMessage": "Destinacionet e veçuara nuk u ruajtën. Ju lutemi provoni përsëri.",
+      "chooseDestination": "Zgjidhni një destinacion",
+      "searchPlaceholder": "Kërko sipas emrit ose qytetit...",
+      "noResults": "Nuk u gjet asnjë destinacion",
+      "inSlot": "Në vendin nr. {{number}}"
     }
   },
   "userManagement": {

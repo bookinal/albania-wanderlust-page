@@ -1,5 +1,6 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
+import { sendContactUnlockNotifications } from "../_shared/contactUnlockNotifications.ts";
 
 const PAYPAL_CLIENT_ID = Deno.env.get("PAYPAL_CLIENT_ID");
 const PAYPAL_CLIENT_SECRET = Deno.env.get("PAYPAL_CLIENT_SECRET");
@@ -419,7 +420,7 @@ Deno.serve(async (req: Request) => {
     }
 
     // Update booking atomically
-    const { error: bookingUpdateError } = await supabaseAdmin
+    const { data: updatedBookings, error: bookingUpdateError } = await supabaseAdmin
       .from("booking")
       .update({
         payment_status: "paid",
@@ -429,7 +430,8 @@ Deno.serve(async (req: Request) => {
         updatedAt: new Date().toISOString(),
       })
       .eq("id", bookingId)
-      .eq("payment_status", "pending"); // Only update if still pending (optimistic locking)
+      .eq("payment_status", "pending") // Only update if still pending (optimistic locking)
+      .select("*");
 
     if (bookingUpdateError) {
       console.error(
@@ -439,6 +441,24 @@ Deno.serve(async (req: Request) => {
       // Transaction was recorded, but booking update failed
       // This is a critical error - we should log and alert
       throw new Error("Failed to update booking after payment capture");
+    }
+
+    // Payment received: both sides get each other's contact by email. Only the
+    // call that switched the booking to paid sends them (the webhook may race us).
+    const updatedBooking = updatedBookings?.[0];
+    if (updatedBooking) {
+      try {
+        await sendContactUnlockNotifications(supabaseAdmin, updatedBooking, {
+          supabaseUrl: SUPABASE_URL,
+          serviceRoleKey: SUPABASE_SERVICE_ROLE_KEY,
+          origin: req.headers.get("origin") || undefined,
+        });
+      } catch (emailError) {
+        console.error(
+          "[Capture PayPal Order] Error sending contact unlock notifications:",
+          emailError,
+        );
+      }
     }
 
     return json({

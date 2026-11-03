@@ -507,6 +507,41 @@ export default function CarBilling() {
     : 0;
   const finalTotal = totalPrice + serviceFee + insuranceFee + childSeatFee + additionalDriverFee + deliveryFee + crossBorderFee;
 
+  // Optional extras the provider offers for this car (shown below the rental period)
+  const extras = [
+    (car?.childSeatPrice ?? 0) > 0 && {
+      key: "childSeat",
+      icon: Baby,
+      label: t("billing.addChildSeat", "Add child seat"),
+      price: t("common.pricePerDay", { price: (car?.childSeatPrice ?? 0).toFixed(2) }),
+      description: "",
+      checked: addChildSeat,
+      onChange: setAddChildSeat,
+    },
+    (car?.additionalDriverPrice ?? 0) > 0 && {
+      key: "additionalDriver",
+      icon: UserPlus,
+      label: t("billing.addAdditionalDriver", "Add additional driver"),
+      price: `€${(car?.additionalDriverPrice ?? 0).toFixed(2)}`,
+      description: "",
+      checked: addAdditionalDriver,
+      onChange: setAddAdditionalDriver,
+    },
+    crossBorderDepositPrice > 0 && {
+      key: "crossBorder",
+      icon: Globe,
+      label: t("billing.addCrossBorder", "Cross border travel"),
+      price: `€${crossBorderDepositPrice.toFixed(2)}`,
+      description: `${t("billing.crossBorderDescription", "Extra deposit to drive outside Albania.")} ${
+        getCarRentalTerms(car).crossBorderAssistance
+          ? t("billing.crossBorderAssistanceIncluded", "Assistance abroad included.")
+          : t("billing.crossBorderAssistanceNotIncluded", "No assistance abroad.")
+      }`,
+      checked: addCrossBorder,
+      onChange: setAddCrossBorder,
+    },
+  ].filter((extra): extra is Exclude<typeof extra, false> => Boolean(extra));
+
   // Error shown next to each field ("" when the field is fine)
   const fieldErrors = {
     fullName: !formData.fullName.trim() ? t("billing.errors.fullNameRequired") : "",
@@ -916,6 +951,70 @@ export default function CarBilling() {
                 </div>
               </div>
 
+              {/* Extras */}
+              {extras.length > 0 && (
+                <div
+                  style={{
+                    background: tk.cardBg,
+                    border: `1px solid ${tk.cardBorder}`,
+                  }}
+                  className="rounded-2xl p-6"
+                >
+                  <h2
+                    style={{ color: tk.pageText }}
+                    className="text-xl font-semibold mb-1"
+                  >
+                    {t("billing.extras")}
+                  </h2>
+                  <p style={{ color: tk.mutedText }} className="text-sm mb-5">
+                    {t("billing.extrasHelp")}
+                  </p>
+                  <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+                    {extras.map(({ key, icon: Icon, label, price, description, checked, onChange }) => (
+                      <label
+                        key={key}
+                        className="flex items-start gap-3 rounded-xl p-4 cursor-pointer transition-colors"
+                        style={{
+                          background: checked ? tk.brandSoft : tk.statBg,
+                          border: `1px solid ${checked ? tk.brand : tk.statBorder}`,
+                        }}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={checked}
+                          onChange={(e) => onChange(e.target.checked)}
+                          className="mt-1 flex-shrink-0"
+                          style={{ accentColor: tk.brand }}
+                        />
+                        <span className="min-w-0 flex-1">
+                          <span
+                            className="flex items-center gap-1.5 font-semibold text-sm"
+                            style={{ color: tk.pageText }}
+                          >
+                            <Icon className="w-4 h-4 flex-shrink-0" style={{ color: tk.brand }} />
+                            {label}
+                          </span>
+                          <span
+                            className="block text-sm font-medium mt-1"
+                            style={{ color: tk.brand }}
+                          >
+                            +{price}
+                          </span>
+                          {description && (
+                            <span
+                              className="block text-xs mt-1"
+                              style={{ color: tk.mutedText }}
+                            >
+                              {description}
+                            </span>
+                          )}
+                        </span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {/* Insurance */}
               {insurancePlans.length > 0 && (
                 <div
@@ -1189,108 +1288,49 @@ export default function CarBilling() {
                       </div>
                     )}
 
-                    {((car.childSeatPrice ?? 0) > 0 || (car.additionalDriverPrice ?? 0) > 0 || crossBorderDepositPrice > 0) && (
+                    {/* Extras picked in the "Extras" section of the form */}
+                    {addChildSeat && (
+                      <div>
+                        <div
+                          className="flex justify-between gap-2"
+                          style={{ color: tk.dimText }}
+                        >
+                          <span>{t("bookingTicket.childSeat")}</span>
+                          <span className="font-medium whitespace-nowrap">
+                            €{childSeatFee.toFixed(2)}
+                          </span>
+                        </div>
+                        <p style={{ color: tk.mutedText }} className="text-xs mt-1">
+                          {totalDays > 0
+                            ? t("billing.perDayTimesDays", {
+                                price: t("common.pricePerDay", { price: (car.childSeatPrice ?? 0).toFixed(2) }),
+                                count: totalDays,
+                                total: `€${childSeatFee.toFixed(2)}`,
+                              })
+                            : t("common.pricePerDay", { price: (car.childSeatPrice ?? 0).toFixed(2) })}
+                        </p>
+                      </div>
+                    )}
+                    {addAdditionalDriver && (
                       <div
-                        style={{
-                          borderTop: `1px solid ${tk.divider}`,
-                          paddingTop: "12px",
-                        }}
-                        className="space-y-3"
+                        className="flex justify-between gap-2"
+                        style={{ color: tk.dimText }}
                       >
-                        {(car.childSeatPrice ?? 0) > 0 && (
-                          <div>
-                            <label
-                              className="flex items-start justify-between gap-2 cursor-pointer"
-                              style={{ color: tk.dimText }}
-                            >
-                              <span className="flex items-start gap-2">
-                                <input
-                                  type="checkbox"
-                                  checked={addChildSeat}
-                                  onChange={(e) => setAddChildSeat(e.target.checked)}
-                                  className="mt-0.5"
-                                />
-                                <span className="flex items-center gap-1.5">
-                                  <Baby className="w-4 h-4" style={{ color: tk.brand }} />
-                                  {t("billing.addChildSeat", "Add child seat")}
-                                </span>
-                              </span>
-                              <span className="font-medium whitespace-nowrap">
-                                +{t("common.pricePerDay", { price: (car.childSeatPrice ?? 0).toFixed(2) })}
-                              </span>
-                            </label>
-                            {addChildSeat && totalDays > 0 && (
-                              <p
-                                style={{ color: tk.mutedText }}
-                                className="text-xs mt-1 ml-6"
-                              >
-                                {t("billing.perDayTimesDays", {
-                                  price: t("common.pricePerDay", { price: (car.childSeatPrice ?? 0).toFixed(2) }),
-                                  count: totalDays,
-                                  total: `€${childSeatFee.toFixed(2)}`,
-                                })}
-                              </p>
-                            )}
-                          </div>
-                        )}
-                        {(car.additionalDriverPrice ?? 0) > 0 && (
-                          <label
-                            className="flex items-start justify-between gap-2 cursor-pointer"
-                            style={{ color: tk.dimText }}
-                          >
-                            <span className="flex items-start gap-2">
-                              <input
-                                type="checkbox"
-                                checked={addAdditionalDriver}
-                                onChange={(e) => setAddAdditionalDriver(e.target.checked)}
-                                className="mt-0.5"
-                              />
-                              <span className="flex items-center gap-1.5">
-                                <UserPlus className="w-4 h-4" style={{ color: tk.brand }} />
-                                {t("billing.addAdditionalDriver", "Add additional driver")}
-                              </span>
-                            </span>
-                            <span className="font-medium">
-                              +€{(car.additionalDriverPrice ?? 0).toFixed(2)}
-                            </span>
-                          </label>
-                        )}
-                        {crossBorderDepositPrice > 0 && (
-                          <div>
-                            <label
-                              className="flex items-start justify-between gap-2 cursor-pointer"
-                              style={{ color: tk.dimText }}
-                            >
-                              <span className="flex items-start gap-2">
-                                <input
-                                  type="checkbox"
-                                  checked={addCrossBorder}
-                                  onChange={(e) => setAddCrossBorder(e.target.checked)}
-                                  className="mt-0.5"
-                                />
-                                <span className="flex items-center gap-1.5">
-                                  <Globe className="w-4 h-4" style={{ color: tk.brand }} />
-                                  {t("billing.addCrossBorder", "Cross border travel")}
-                                </span>
-                              </span>
-                              <span className="font-medium">
-                                +€{crossBorderDepositPrice.toFixed(2)}
-                              </span>
-                            </label>
-                            <p
-                              style={{ color: tk.mutedText }}
-                              className="text-xs mt-1 ml-6"
-                            >
-                              {t(
-                                "billing.crossBorderDescription",
-                                "Extra deposit to drive outside Albania.",
-                              )}{" "}
-                              {getCarRentalTerms(car).crossBorderAssistance
-                                ? t("billing.crossBorderAssistanceIncluded", "Assistance abroad included.")
-                                : t("billing.crossBorderAssistanceNotIncluded", "No assistance abroad.")}
-                            </p>
-                          </div>
-                        )}
+                        <span>{t("bookingTicket.additionalDriver")}</span>
+                        <span className="font-medium whitespace-nowrap">
+                          €{additionalDriverFee.toFixed(2)}
+                        </span>
+                      </div>
+                    )}
+                    {addCrossBorder && (
+                      <div
+                        className="flex justify-between gap-2"
+                        style={{ color: tk.dimText }}
+                      >
+                        <span>{t("billing.crossBorderDeposit")}</span>
+                        <span className="font-medium whitespace-nowrap">
+                          €{crossBorderFee.toFixed(2)}
+                        </span>
                       </div>
                     )}
 

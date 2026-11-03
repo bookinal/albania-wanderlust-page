@@ -342,7 +342,7 @@ export default function PrimarySearchAppBar() {
                         "transparent";
                     }}
                   >
-                    {t("home.appBar.Destinations-Guidedtours", "Destinations - Guided tours")}
+                    {t("home.appBar.Destinations-Guidedtours", "Destinations")}
                     <ChevronDown className="w-3.5 h-3.5 opacity-70" />
                   </button>
                 </DropdownMenuTrigger>
@@ -774,7 +774,7 @@ export default function PrimarySearchAppBar() {
                   <span style={{ color: tk.mobileIconInactive }}>
                     <BookOpen className="w-4 h-4" />
                   </span>
-                  {t("home.appBar.Destinations-Guidedtours", "Destinations - Guided tours")}
+                  {t("home.appBar.Destinations-Guidedtours", "Destinations")}
                 </div>
                 <ChevronDown
                   className="w-4 h-4 transition-transform"
