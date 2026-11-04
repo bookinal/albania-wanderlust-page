@@ -236,8 +236,7 @@
     },
     "featured": {
       "badge": "Zgjedhur për ju",
-      "title": "Zgjedhjet tona më të mira në Shqipëri",
-      "description": "Katër vende që ekipi ynë i do tani, të zgjedhura për të frymëzuar udhëtimin tuaj të radhës."
+      "title": "Zgjedhjet tona më të mira në Shqipëri"
     }
   },
   "appBar": {

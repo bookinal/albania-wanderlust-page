@@ -25,6 +25,8 @@ interface CarCardProps {
   imageUrls?: string[];
   pickUpLocation: string;
   onClick: (id: number) => void;
+  /** Compact row: image on the left, text on the right (phone result lists) */
+  horizontal?: boolean;
 }
 
 /**
@@ -45,6 +47,7 @@ export const CarCard = ({
   imageUrls,
   pickUpLocation,
   onClick,
+  horizontal = false,
 }: CarCardProps) => {
   const { t } = useTranslation();
   const { isDark, isBlue } = useTheme();
@@ -101,7 +104,7 @@ export const CarCard = ({
         overflow: 'hidden',
         cursor: 'pointer',
         display: 'flex',
-        flexDirection: 'column',
+        flexDirection: horizontal ? 'row' : 'column',
         height: '100%',
         transition: 'border-color 0.25s, box-shadow 0.25s, transform 0.25s, background 0.3s',
         position: 'relative',
@@ -122,18 +125,43 @@ export const CarCard = ({
       }}
     >
       {/* Image */}
-      <div style={{ position: 'relative', overflow: 'hidden', height: 192, background: isDark ? '#0f0f12' : '#e8e4e0' }}>
+      <div
+        style={{
+          position: 'relative',
+          overflow: 'hidden',
+          background: isDark ? '#0f0f12' : '#e8e4e0',
+          ...(horizontal ? { width: '38%', flexShrink: 0, minHeight: 132 } : { height: 192 }),
+        }}
+      >
         {imageUrls && imageUrls[0] ? (
           <img
             src={imageUrls[0]}
             alt={`${brand} ${name}`}
-            style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.4s ease', display: 'block' }}
+            style={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
+              transition: 'transform 0.4s ease',
+              display: 'block',
+              // Fills the row height, whatever the height of the text next to it
+              ...(horizontal ? { position: 'absolute' as const, inset: 0 } : {}),
+            }}
             onMouseEnter={e => (e.currentTarget.style.transform = 'scale(1.06)')}
             onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')}
           />
         ) : (
-          <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: tk.imageFallbackBg }}>
-            <span style={{ fontFamily: 'Bebas Neue, Impact, sans-serif', fontSize: '3rem', color: tk.imageFallbackText, letterSpacing: '0.1em' }}>{brand}</span>
+          <div
+            style={{
+              width: '100%',
+              height: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              background: tk.imageFallbackBg,
+              ...(horizontal ? { position: 'absolute' as const, inset: 0 } : {}),
+            }}
+          >
+            <span style={{ fontFamily: 'Bebas Neue, Impact, sans-serif', fontSize: horizontal ? '1.5rem' : '3rem', color: tk.imageFallbackText, letterSpacing: '0.1em' }}>{brand}</span>
           </div>
         )}
 
@@ -147,15 +175,17 @@ export const CarCard = ({
 
         {/* Status badge */}
         <div style={{
-          position: 'absolute', top: 12, right: 12,
-          background: statusColor.bg,
+          position: 'absolute',
+          ...(horizontal ? { bottom: 6, left: 6 } : { top: 12, right: 12 }),
+          // Small badge over the photo: needs a solid background to stay readable
+          background: horizontal ? 'rgba(10,10,12,0.75)' : statusColor.bg,
           border: `1px solid ${statusColor.border}`,
           color: statusColor.text,
           fontFamily: 'Crimson Pro, Georgia, serif',
-          fontSize: '0.75rem',
+          fontSize: horizontal ? '0.62rem' : '0.75rem',
           letterSpacing: '0.1em',
           textTransform: 'uppercase',
-          padding: '3px 10px',
+          padding: horizontal ? '1px 6px' : '3px 10px',
           borderRadius: 2,
         }}>
           {statusLabel}
@@ -163,48 +193,62 @@ export const CarCard = ({
 
         {/* Type badge */}
         <div style={{
-          position: 'absolute', top: 12, left: 12,
+          position: 'absolute',
+          ...(horizontal ? { top: 6, left: 6 } : { top: 12, left: 12 }),
           background: isDark ? 'rgba(10,10,12,0.7)' : 'rgba(240,236,232,0.85)',
           border: isDark ? '1px solid rgba(240,236,232,0.15)' : '1px solid rgba(17,17,21,0.15)',
           color: isDark ? 'rgba(240,236,232,0.75)' : 'rgba(17,17,21,0.7)',
           fontFamily: 'Crimson Pro, Georgia, serif',
-          fontSize: '0.75rem',
+          fontSize: horizontal ? '0.62rem' : '0.75rem',
           letterSpacing: '0.08em',
-          padding: '3px 10px',
+          padding: horizontal ? '1px 6px' : '3px 10px',
           borderRadius: 2,
         }}>
           {type}
         </div>
 
-        {/* Year bottom left */}
-        <div style={{
-          position: 'absolute', bottom: 12, left: 12,
-          fontFamily: 'Bebas Neue, Impact, sans-serif',
-          fontSize: '1rem',
-          color: isDark ? 'rgba(240,236,232,0.6)' : 'rgba(17,17,21,0.5)',
-          letterSpacing: '0.05em',
-        }}>
-          {year}
-        </div>
+        {/* Year bottom left (next to the brand in the horizontal layout) */}
+        {!horizontal && (
+          <div style={{
+            position: 'absolute', bottom: 12, left: 12,
+            fontFamily: 'Bebas Neue, Impact, sans-serif',
+            fontSize: '1rem',
+            color: isDark ? 'rgba(240,236,232,0.6)' : 'rgba(17,17,21,0.5)',
+            letterSpacing: '0.05em',
+          }}>
+            {year}
+          </div>
+        )}
       </div>
 
       {/* Content */}
-      <div style={{ padding: '16px 18px', display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
+      <div
+        style={{
+          padding: horizontal ? '10px 12px' : '16px 18px',
+          display: 'flex',
+          flexDirection: 'column',
+          flexGrow: 1,
+          minWidth: 0,
+        }}
+      >
         {/* Brand + Name */}
-        <div style={{ marginBottom: 10 }}>
+        <div style={{ marginBottom: horizontal ? 4 : 10 }}>
           <p style={{
             fontFamily: 'Crimson Pro, Georgia, serif',
-            fontSize: '0.7rem',
-            letterSpacing: '0.2em',
+            fontSize: horizontal ? '0.65rem' : '0.7rem',
+            letterSpacing: horizontal ? '0.12em' : '0.2em',
             textTransform: 'uppercase',
              color: homeTk.brand,
-            marginBottom: 3,
+            marginBottom: horizontal ? 1 : 3,
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
           }}>
-            {brand}
+            {brand}{horizontal && ` · ${year}`}
           </p>
           <h3 style={{
             fontFamily: 'Crimson Pro, Georgia, serif',
-            fontSize: '1.15rem',
+            fontSize: horizontal ? '1.05rem' : '1.15rem',
             fontWeight: 600,
             letterSpacing: '0.01em',
             color: tk.nameText,
@@ -219,7 +263,7 @@ export const CarCard = ({
 
         {/* Location */}
         {pickUpLocation && (
-          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 5, marginBottom: 14 }}>
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 5, marginBottom: horizontal ? 5 : 14 }}>
             <MapPin style={{ width: 13, height: 13, color: homeTk.brand, opacity: 0.6, flexShrink: 0, marginTop: 2 }} />
             <span style={{
               fontFamily: 'Crimson Pro, Georgia, serif',
@@ -235,7 +279,7 @@ export const CarCard = ({
         )}
 
         {/* Specs grid */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px 12px', marginBottom: 14 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: horizontal ? '4px 8px' : '8px 12px', marginBottom: horizontal ? 8 : 14 }}>
           {[
             { icon: <Settings style={{ width: 13, height: 13 }} />, label: transmission },
             { icon: <Fuel style={{ width: 13, height: 13 }} />, label: fuelType },
@@ -291,7 +335,7 @@ export const CarCard = ({
         {/* Price */}
         <div style={{
           marginTop: 'auto',
-          paddingTop: 14,
+          paddingTop: horizontal ? 7 : 14,
           borderTop: `1px solid ${tk.priceDivider}`,
           display: 'flex',
           justifyContent: 'space-between',
@@ -300,8 +344,9 @@ export const CarCard = ({
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             <span style={{
               fontFamily: 'Crimson Pro, Georgia, serif',
-              fontSize: '0.8rem',
-              letterSpacing: '0.08em',
+              fontSize: horizontal ? '0.62rem' : '0.8rem',
+              letterSpacing: horizontal ? '0.04em' : '0.08em',
+              lineHeight: horizontal ? 1.2 : undefined,
               textTransform: 'uppercase',
               color: tk.priceLabel,
             }}>
@@ -310,10 +355,10 @@ export const CarCard = ({
             {isPriceHigher && <span title="Peak season"><TrendingUp style={{ width: 13, height: 13, color: '#f59e0b' }} /></span>}
             {isPriceLower && <span title="Off-season"><TrendingDown style={{ width: 13, height: 13, color: '#4ade80' }} /></span>}
           </div>
-          <div style={{ textAlign: 'right' }}>
+          <div style={{ textAlign: 'right', flexShrink: 0, marginLeft: 8 }}>
             <span style={{
               fontFamily: 'Bebas Neue, Impact, sans-serif',
-              fontSize: '1.55rem',
+              fontSize: horizontal ? '1.35rem' : '1.55rem',
               letterSpacing: '0.02em',
                color: isPriceLower ? '#4ade80' : homeTk.brand,
               lineHeight: 1,

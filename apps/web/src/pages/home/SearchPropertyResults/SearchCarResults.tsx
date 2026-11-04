@@ -15,6 +15,7 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { useInView } from "react-intersection-observer";
 import { getSearchResultsThemeTokens } from "./searchResultsTheme";
 import { buildCarSearchQuery } from "@/lib/carSearchParams";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface LocationState {
   type?: string;
@@ -162,6 +163,8 @@ const SearchCarResults = () => {
   // Theme tokens
   const tk = getSearchResultsThemeTokens({ isDark, isBlue });
 
+  const isMobile = useIsMobile();
+
   const renderSkeletons = (count: number = 6) => {
     return Array.from({ length: count }).map((_, idx) => (
       <div
@@ -172,13 +175,16 @@ const SearchCarResults = () => {
           borderRadius: 6,
           overflow: 'hidden',
           display: 'flex',
-          flexDirection: 'column',
+          flexDirection: isMobile ? 'row' : 'column',
           animationDelay: `${idx * 0.07}s`,
           animation: 'fadeUpGrid 0.5s ease both',
         }}
       >
-        <div className="alb-skeleton-pulse" style={{ height: 192, width: '100%' }} />
-        <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <div
+          className="alb-skeleton-pulse"
+          style={isMobile ? { width: '38%', minHeight: 132, flexShrink: 0 } : { height: 192, width: '100%' }}
+        />
+        <div style={{ padding: isMobile ? '10px 12px' : '16px', display: 'flex', flexDirection: 'column', gap: isMobile ? 7 : 12, flexGrow: 1, minWidth: 0 }}>
           <div className="alb-skeleton-pulse" style={{ height: 10, width: '30%', borderRadius: 2 }} />
           <div className="alb-skeleton-pulse" style={{ height: 20, width: '70%', borderRadius: 2 }} />
           <div className="alb-skeleton-pulse" style={{ height: 14, width: '50%', borderRadius: 2 }} />
@@ -410,11 +416,13 @@ const SearchCarResults = () => {
               )}
 
               {/* Results Grid */}
-              <div className="alb-card-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="alb-card-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
                 {filteredCars.map((car, idx) => (
                   <div key={`${car.id}-${idx}`} style={{ animationDelay: `${(idx % CARS_PER_PAGE) * 0.05}s`, animation: 'fadeUpGrid 0.5s ease both' }}>
                     <CarCard
                       {...car}
+                      features={[]} // No feature chips on the results cards
+                      horizontal={isMobile}
                       currentMonthPrice={carMonthlyPrices[car.id] ?? undefined}
                       onClick={() => handleCarClick(car.id)}
                     />

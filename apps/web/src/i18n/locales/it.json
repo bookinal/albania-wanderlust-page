@@ -235,8 +235,7 @@
     },
     "featured": {
       "badge": "Scelti per te",
-      "title": "I nostri preferiti in Albania",
-      "description": "Quattro luoghi che il nostro team ama in questo momento, scelti per ispirare il tuo prossimo viaggio."
+      "title": "I nostri preferiti in Albania"
     }
   },
   "appBar": {

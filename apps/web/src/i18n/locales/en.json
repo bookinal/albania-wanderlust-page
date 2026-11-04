@@ -235,8 +235,7 @@
     },
     "featured": {
       "badge": "Picked for you",
-      "title": "Our top picks in Albania",
-      "description": "Four places our team loves right now, hand-picked to inspire your next trip."
+      "title": "Our top picks in Albania"
     }
   },
   "appBar": {

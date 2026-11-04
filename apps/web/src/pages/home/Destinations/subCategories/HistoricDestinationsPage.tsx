@@ -19,6 +19,7 @@ import { useTheme } from "@/context/ThemeContext";
 import { getHomeThemeTokens } from "@/components/home/homeTheme";
 import { useTranslation } from "react-i18next";
 import { useDestinations } from "@/hooks/useDestinations";
+import { useDestinationFilters } from "@/hooks/useDestinationFilters";
 import { DestinationCard } from "../DestinationCard";
 import { DestinationFilterBar } from "../../../../components/home/destinations/DestinationFilterBar";
 import { DestinationBreadcrumb } from "../../../../components/home/destinations/DestinationBreadcrumb";
@@ -38,9 +39,14 @@ const HistoricDestinationsPage = () => {
     null,
   );
   const [showMapMobile, setShowMapMobile] = useState(false);
-  const [search, setSearch] = useState("");
-  const [selectedSubcategory, setSelectedSubcategory] = useState("");
-  const [selectedLocation, setSelectedLocation] = useState("");
+  const {
+    search,
+    setSearch,
+    selectedSubcategory,
+    setSelectedSubcategory,
+    selectedLocation,
+    setSelectedLocation,
+  } = useDestinationFilters("history-culture");
   const isMobile = useIsMobile();
   const { data: destinations = [], isLoading, error } = useDestinations();
 
@@ -161,7 +167,7 @@ const HistoricDestinationsPage = () => {
       <PrimarySearchAppBar />
 
       <section
-        style={{ position: "relative", minHeight: "26rem", overflow: "hidden" }}
+        style={{ position: "relative", minHeight: "10rem", overflow: "hidden" }}
       >
         {heroImage ? (
           <img
@@ -198,7 +204,7 @@ const HistoricDestinationsPage = () => {
             position: "relative",
             maxWidth: "1280px",
             margin: "0 auto",
-            padding: "4rem 1rem 3rem",
+            padding: "1rem 1rem 1.25rem",
           }}
         >
           <button
@@ -207,13 +213,14 @@ const HistoricDestinationsPage = () => {
               display: "inline-flex",
               alignItems: "center",
               gap: "0.5rem",
-              padding: "0.65rem 1rem",
+              padding: "0.4rem 0.85rem",
               borderRadius: "9999px",
               border: "1px solid rgba(255,255,255,0.22)",
               background: "rgba(255,255,255,0.08)",
               color: "#ffffff",
               cursor: "pointer",
-              marginBottom: "3rem",
+              marginBottom: "0.75rem",
+              fontSize: "0.875rem",
             }}
           >
             <ArrowLeft className="w-4 h-4" />
@@ -228,7 +235,7 @@ const HistoricDestinationsPage = () => {
                 letterSpacing: "0.18em",
                 fontSize: "0.78rem",
                 fontWeight: 700,
-                marginBottom: "0.9rem",
+                marginBottom: "0.4rem",
               }}
             >
               {t("home.destinations.subCategories.historic.kicker", "Heritage Collection")}
@@ -236,10 +243,10 @@ const HistoricDestinationsPage = () => {
             <h1
               style={{
                 color: "#ffffff",
-                fontSize: "clamp(2.5rem, 5vw, 5rem)",
+                fontSize: "clamp(1.75rem, 3.5vw, 2.75rem)",
                 lineHeight: 0.98,
                 fontWeight: 900,
-                marginBottom: "0.85rem",
+                marginBottom: "0.5rem",
               }}
             >
               {t("home.destinations.subCategories.historic.title", "Historic Albania")}
@@ -247,8 +254,8 @@ const HistoricDestinationsPage = () => {
             <p
               style={{
                 color: tk.heroSoft,
-                fontSize: "1rem",
-                lineHeight: 1.8,
+                fontSize: "0.95rem",
+                lineHeight: 1.5,
                 maxWidth: "42rem",
               }}
             >

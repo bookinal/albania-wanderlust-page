@@ -138,9 +138,6 @@ const FeaturedDestinations = () => {
           >
             {t("home.featured.title")}
           </h2>
-          <p className="text-lg leading-relaxed" style={{ color: tk.textMuted }}>
-            {t("home.featured.description")}
-          </p>
         </div>
 
         {/* Phones: one swipeable row that snaps card by card, the next card peeking in.

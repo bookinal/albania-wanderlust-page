@@ -235,8 +235,7 @@
     },
     "featured": {
       "badge": "Sélectionné pour vous",
-      "title": "Nos coups de cœur en Albanie",
-      "description": "Quatre lieux que notre équipe adore en ce moment, choisis pour inspirer votre prochain voyage."
+      "title": "Nos coups de cœur en Albanie"
     }
   },
   "appBar": {
