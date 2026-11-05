@@ -235,7 +235,9 @@
     },
     "featured": {
       "badge": "Scelti per te",
-      "title": "I nostri preferiti in Albania"
+      "title": "I nostri preferiti in Albania",
+      "previous": "Destinazione precedente",
+      "next": "Destinazione successiva"
     }
   },
   "appBar": {
@@ -1848,5 +1850,12 @@
     },
     "flying": "La tua richiesta è in viaggio…",
     "stamp": "Inviata"
+  },
+  "adminRating": {
+    "label": "Voto admin (privato)",
+    "hint": "Stabilisce l'ordine di visualizzazione nei risultati di ricerca. Fornitori e clienti non lo vedono mai.",
+    "invalid": "Inserisci un valore da {{min}} a {{max}} o lascia vuoto.",
+    "saveFailed": "Impossibile salvare il voto.",
+    "saved": "Salvato"
   }
 }

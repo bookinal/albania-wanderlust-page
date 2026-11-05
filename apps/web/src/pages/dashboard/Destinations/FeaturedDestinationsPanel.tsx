@@ -26,8 +26,8 @@ import {
   useFeaturedDestinations,
 } from "@/hooks/useDestinations";
 
-/** Same number of cards as one row of the home section */
-const FEATURED_SLOTS = 4;
+/** Same limit as set_featured_destinations in the database */
+const FEATURED_SLOTS = 10;
 
 interface FeaturedDestinationsPanelProps {
   destinations: Destination[];
@@ -382,7 +382,7 @@ export const FeaturedDestinationsPanel = ({
           <Loader2 size={24} className="animate-spin text-[#e41e20]" />
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
           {slots.map((id, index) => {
             const destination = id ? byId.get(id) : undefined;
             const image = destination?.imageUrls?.[0];

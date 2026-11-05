@@ -64,7 +64,8 @@ const saveCacheToStorage = (data: Car[], timestamp: number): void => {
 };
 
 /**
- * Search cars with pagination and filtering on the database level
+ * Search cars with pagination and filtering on the database level.
+ * Cars come best rated first (private admin rating, see ranked_cars in the migrations).
  */
 export const searchCars = async (
   filters: SearchCarFilters,
@@ -74,7 +75,7 @@ export const searchCars = async (
   const from = (page - 1) * limit;
   const to = from + limit - 1;
 
-  let query = apiClient.from("car").select("*", { count: "exact" });
+  let query = apiClient.rpc("ranked_cars", undefined, { count: "exact", get: true });
 
   // Exclude cars with status maintenance or review by default unless specified
   if (filters.status && filters.status !== "all") {

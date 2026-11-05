@@ -235,7 +235,9 @@
     },
     "featured": {
       "badge": "Sélectionné pour vous",
-      "title": "Nos coups de cœur en Albanie"
+      "title": "Nos coups de cœur en Albanie",
+      "previous": "Destination précédente",
+      "next": "Destination suivante"
     }
   },
   "appBar": {
@@ -1848,5 +1850,12 @@
     },
     "flying": "Votre demande est en route…",
     "stamp": "Envoyée"
+  },
+  "adminRating": {
+    "label": "Note admin (privée)",
+    "hint": "Définit l'ordre d'affichage dans les résultats de recherche. Les loueurs et les clients ne la voient jamais.",
+    "invalid": "Saisissez une valeur de {{min}} à {{max}}, ou laissez vide.",
+    "saveFailed": "Impossible d'enregistrer la note.",
+    "saved": "Enregistré"
   }
 }

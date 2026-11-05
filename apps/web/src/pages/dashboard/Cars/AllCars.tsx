@@ -1,6 +1,9 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@/context/ThemeContext";
+import { useQuery } from "@tanstack/react-query";
+import { AdminRatingControl } from "@/components/dashboard/AdminRatingControl";
+import { getAdminRatings } from "@/services/api/adminRatingService";
 import {
   deleteCar,
   getDashboardCars,
@@ -151,6 +154,15 @@ const AllCars = () => {
     if (!currentUser) return;
     fetchCars(currentUser);
   }, [currentUser, currentPage, debouncedSearch, statusFilter, typeFilter, transmissionFilter]);
+
+  // Private admin ratings of the cars on this page
+  const isAdmin = currentUser?.role === "admin";
+  const carIds = carsData.map((car) => car.id);
+  const { data: adminRatings } = useQuery({
+    queryKey: ["admin-ratings", "car", carIds],
+    queryFn: () => getAdminRatings("car", carIds),
+    enabled: isAdmin && carIds.length > 0,
+  });
 
   // Pagination is based on the server total
   const totalPages = Math.max(1, Math.ceil(totalCars / itemsPerPage));
@@ -657,6 +669,14 @@ const AllCars = () => {
                         </span>
                       )}
                     </div>
+                  )}
+
+                  {isAdmin && (
+                    <AdminRatingControl
+                      propertyType="car"
+                      propertyId={car.id}
+                      value={adminRatings?.[car.id]}
+                    />
                   )}
 
                   {/* Price and Actions */}

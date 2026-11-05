@@ -236,7 +236,9 @@
     },
     "featured": {
       "badge": "Zgjedhur për ju",
-      "title": "Zgjedhjet tona më të mira në Shqipëri"
+      "title": "Zgjedhjet tona më të mira në Shqipëri",
+      "previous": "Destinacioni i mëparshëm",
+      "next": "Destinacioni tjetër"
     }
   },
   "appBar": {
@@ -1865,5 +1867,12 @@
     },
     "flying": "Kërkesa juaj është në rrugë…",
     "stamp": "Dërguar"
+  },
+  "adminRating": {
+    "label": "Vlerësimi i adminit (privat)",
+    "hint": "Përcakton renditjen në rezultatet e kërkimit. Ofruesit dhe klientët nuk e shohin kurrë.",
+    "invalid": "Vendosni një vlerë nga {{min}} deri në {{max}} ose lëreni bosh.",
+    "saveFailed": "Vlerësimi nuk u ruajt.",
+    "saved": "U ruajt"
   }
 }

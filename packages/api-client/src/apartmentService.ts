@@ -58,7 +58,8 @@ const saveCacheToStorage = (data: Apartment[], timestamp: number): void => {
 };
 
 /**
- * Search apartments with DB-level filtering and pagination
+ * Search apartments with DB-level filtering and pagination.
+ * Apartments come best rated first (private admin rating, see ranked_apartments in the migrations).
  */
 export const searchApartments = async (
   filters: any,
@@ -68,7 +69,7 @@ export const searchApartments = async (
   const from = (page - 1) * limit;
   const to = from + limit - 1;
 
-  let query = apiClient.from("apartment").select("*", { count: "exact" });
+  let query = apiClient.rpc("ranked_apartments", undefined, { count: "exact", get: true });
 
   const f = filters.apartmentFilters || {};
 

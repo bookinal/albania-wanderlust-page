@@ -26,6 +26,9 @@ import {
 import { Apartment, ApartmentFilters } from "@/types/apartment.type";
 import Swal from "sweetalert2";
 import { User } from "@/types/user.types";
+import { useQuery } from "@tanstack/react-query";
+import { AdminRatingControl } from "@/components/dashboard/AdminRatingControl";
+import { getAdminRatings } from "@/services/api/adminRatingService";
 import { userService } from "@/services/api/userService";
 import { AddApartmentDialog } from "./AddApartmentDialog";
 import { useTranslation } from "react-i18next";
@@ -171,6 +174,15 @@ const AllApartments = () => {
     if (!currentUser) return;
     fetchApartments(currentUser);
   }, [currentUser, currentPage, debouncedSearch, statusFilter, ratingFilter]);
+
+  // Private admin ratings of the apartments on this page
+  const isAdmin = currentUser?.role === "admin";
+  const apartmentIds = apartments.map((a) => a.id);
+  const { data: adminRatings } = useQuery({
+    queryKey: ["admin-ratings", "apartment", apartmentIds],
+    queryFn: () => getAdminRatings("apartment", apartmentIds),
+    enabled: isAdmin && apartmentIds.length > 0,
+  });
 
   /* ------------------------------- Handlers -------------------------------- */
 
@@ -354,6 +366,8 @@ const AllApartments = () => {
                 <ApartmentCard
                   key={a.id}
                   apartment={a}
+                  isAdmin={isAdmin}
+                  adminRating={adminRatings?.[a.id]}
                   onView={handleView}
                   onEdit={handleEdit}
                   onDelete={handleDelete}
@@ -407,6 +421,8 @@ const AllApartments = () => {
 
 interface CardProps {
   apartment: Apartment;
+  isAdmin: boolean;
+  adminRating?: number;
   onView: (id: number) => void;
   onEdit: (id: number) => void;
   onDelete: (id: number) => void;
@@ -415,6 +431,8 @@ interface CardProps {
 
 const ApartmentCard: React.FC<CardProps> = ({
   apartment,
+  isAdmin,
+  adminRating,
   onView,
   onEdit,
   onDelete,
@@ -499,6 +517,16 @@ const ApartmentCard: React.FC<CardProps> = ({
           <p className="mt-3 text-xs" style={{ color: tk.priceSubText }}>
             {t("apartment.noAmenities")}
           </p>
+        )}
+
+        {isAdmin && (
+          <div className="mt-4 -mb-4">
+            <AdminRatingControl
+              propertyType="apartment"
+              propertyId={apartment.id}
+              value={adminRating}
+            />
+          </div>
         )}
 
         {/* Actions */}

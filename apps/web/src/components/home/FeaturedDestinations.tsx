@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from "react";
-import { Sparkles } from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { ChevronLeft, ChevronRight, Sparkles } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { addDestinationToCurrentUserWishlist } from "@albania/api-client";
 import { useTheme } from "@/context/ThemeContext";
@@ -8,7 +8,7 @@ import { useFeaturedDestinations } from "@/hooks/useDestinations";
 import { DestinationCard } from "@/pages/home/Destinations/DestinationCard";
 import { getHomeThemeTokens } from "./homeTheme";
 
-/** Time on each card before the phone carousel moves on */
+/** Time on each card before the row moves on */
 const AUTO_SLIDE_INTERVAL_MS = 4000;
 /** Quiet time after a touch or swipe before it starts moving again */
 const AUTO_SLIDE_RESUME_MS = 6000;
@@ -24,39 +24,90 @@ const FeaturedDestinations = () => {
   );
   const { data: destinations = [], isLoading } = useFeaturedDestinations();
   const rowRef = useRef<HTMLDivElement>(null);
+  const pausedUntilRef = useRef(0);
+  const [canSlide, setCanSlide] = useState({ back: false, forward: false });
 
-  // Phones: slowly move to the next card, back to the first after the last.
-  // Stops while the visitor touches the row and starts again a bit later.
+  const pauseAutoSlide = useCallback(() => {
+    pausedUntilRef.current = Date.now() + AUTO_SLIDE_RESUME_MS;
+  }, []);
+
+  /** Width of one card + the gap: the distance of one step */
+  const getStep = (row: HTMLDivElement) => {
+    const first = row.children[0] as HTMLElement | undefined;
+    if (!first) return 0;
+    return first.offsetWidth + (parseFloat(getComputedStyle(row).columnGap) || 0);
+  };
+
+  const slide = (direction: 1 | -1) => {
+    const row = rowRef.current;
+    if (!row) return;
+    pauseAutoSlide();
+    row.scrollBy({ left: direction * getStep(row), behavior: "smooth" });
+  };
+
+  // Previous / next arrows: only when there is somewhere to go
+  useEffect(() => {
+    const row = rowRef.current;
+    if (!row) return;
+    const update = () =>
+      setCanSlide({
+        back: row.scrollLeft > 4,
+        forward: row.scrollLeft + row.clientWidth < row.scrollWidth - 4,
+      });
+    update();
+    row.addEventListener("scroll", update, { passive: true });
+    const observer = new ResizeObserver(update);
+    observer.observe(row);
+    return () => {
+      row.removeEventListener("scroll", update);
+      observer.disconnect();
+    };
+  }, [destinations.length, isLoading]);
+
+  // Slowly move to the next card, back to the first after the last.
+  // Stops while the visitor touches or hovers the row and starts again a bit later.
   useEffect(() => {
     const row = rowRef.current;
     if (!row || destinations.length < 2) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-    let pausedUntil = 0;
-    const pause = () => {
-      pausedUntil = Date.now() + AUTO_SLIDE_RESUME_MS;
+    // The wrapper: hovering an arrow also counts as using the row
+    const area = row.parentElement;
+    let hovering = false;
+    const onMouseEnter = () => {
+      hovering = true;
+    };
+    const onMouseLeave = () => {
+      hovering = false;
     };
 
     const timer = window.setInterval(() => {
-      // Grid layout (tablet/desktop) or the visitor is using it: do nothing
-      if (row.scrollWidth <= row.clientWidth || Date.now() < pausedUntil) return;
-      const first = row.children[0] as HTMLElement | undefined;
-      if (!first) return;
-      const gap = parseFloat(getComputedStyle(row).columnGap) || 0;
+      // All the cards fit, or the visitor is using the row: do nothing
+      if (
+        row.scrollWidth <= row.clientWidth ||
+        hovering ||
+        Date.now() < pausedUntilRef.current
+      ) {
+        return;
+      }
       const atEnd = row.scrollLeft + row.clientWidth >= row.scrollWidth - 4;
       row.scrollTo({
-        left: atEnd ? 0 : row.scrollLeft + first.offsetWidth + gap,
+        left: atEnd ? 0 : row.scrollLeft + getStep(row),
         behavior: "smooth",
       });
     }, AUTO_SLIDE_INTERVAL_MS);
 
     const events = ["pointerdown", "touchstart", "wheel"] as const;
-    events.forEach((e) => row.addEventListener(e, pause, { passive: true }));
+    events.forEach((e) => row.addEventListener(e, pauseAutoSlide, { passive: true }));
+    area?.addEventListener("mouseenter", onMouseEnter);
+    area?.addEventListener("mouseleave", onMouseLeave);
     return () => {
       window.clearInterval(timer);
-      events.forEach((e) => row.removeEventListener(e, pause));
+      events.forEach((e) => row.removeEventListener(e, pauseAutoSlide));
+      area?.removeEventListener("mouseenter", onMouseEnter);
+      area?.removeEventListener("mouseleave", onMouseLeave);
     };
-  }, [destinations.length]);
+  }, [destinations.length, pauseAutoSlide]);
 
   const tk = {
     sectionBg: homeTk.sectionMain,
@@ -66,6 +117,7 @@ const FeaturedDestinations = () => {
     badgeBg: homeTk.badgeBg,
     badgeText: homeTk.badgeText,
     heroGradient: "linear-gradient(135deg, #1e3a5f 0%, #3b82f6 100%)",
+    arrowBg: isDark ? "#1c1c20" : "#ffffff",
     panelBg: isDark
       ? "rgba(20,20,23,0.92)"
       : isBlue
@@ -140,40 +192,72 @@ const FeaturedDestinations = () => {
           </h2>
         </div>
 
-        {/* Phones: one swipeable row that snaps card by card, the next card peeking in.
-            From sm up: a regular grid. */}
-        <div
-          ref={rowRef}
-          className="-mx-4 flex snap-x snap-mandatory scroll-px-4 overflow-x-auto px-4 pb-4 sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 sm:pb-0 xl:grid-cols-4"
-          style={{ gap: "1.25rem", scrollbarWidth: "none" }}
-        >
-          {isLoading
-            ? Array.from({ length: 4 }, (_, i) => (
-                <div
-                  key={i}
-                  className="w-[82%] flex-shrink-0 snap-start animate-pulse sm:w-auto"
-                  style={{
-                    height: "26rem",
-                    borderRadius: "1.5rem",
-                    background: tk.panelBg,
-                    border: `1px solid ${tk.panelBorder}`,
-                  }}
-                />
-              ))
-            : destinations.map((destination) => (
-                <div
-                  key={destination.id}
-                  // grid: the card fills the slot, so all cards share the row height
-                  className="grid w-[82%] flex-shrink-0 snap-start sm:w-auto"
-                >
-                  <DestinationCard
-                    destination={destination}
-                    tk={tk}
-                    onAddToWishlist={handleAddToWishlist}
-                    isLoadingWishlist={wishlistLoadingId === destination.id}
+        {/* One sliding row that snaps card by card. Card widths: most of the screen on
+            phones (the next card peeks in), 2 per screen on tablets, 4 on desktop.
+            The padding at the bottom keeps the card shadows from being cut off. */}
+        <div className="relative">
+          <div
+            ref={rowRef}
+            className="-mx-4 -mb-10 flex snap-x snap-mandatory scroll-px-4 overflow-x-auto px-4 pb-10"
+            style={{ gap: "1.25rem", scrollbarWidth: "none" }}
+          >
+            {isLoading
+              ? Array.from({ length: 4 }, (_, i) => (
+                  <div
+                    key={i}
+                    className="w-[82%] flex-shrink-0 snap-start sm:w-[calc((100%-1.25rem)/2)] xl:w-[calc((100%-3.75rem)/4)] animate-pulse"
+                    style={{
+                      height: "26rem",
+                      borderRadius: "1.5rem",
+                      background: tk.panelBg,
+                      border: `1px solid ${tk.panelBorder}`,
+                    }}
                   />
-                </div>
-              ))}
+                ))
+              : destinations.map((destination) => (
+                  <div
+                    key={destination.id}
+                    // grid: the card fills the slot, so all cards share the row height
+                    className="grid w-[82%] flex-shrink-0 snap-start sm:w-[calc((100%-1.25rem)/2)] xl:w-[calc((100%-3.75rem)/4)]"
+                  >
+                    <DestinationCard
+                      destination={destination}
+                      tk={tk}
+                      onAddToWishlist={handleAddToWishlist}
+                      isLoadingWishlist={wishlistLoadingId === destination.id}
+                    />
+                  </div>
+                ))}
+          </div>
+
+          {/* A mouse can't swipe: arrows on both sides from tablet up. Centered on the
+              cards, so 1.25rem up to leave out half of the row's bottom padding. */}
+          {(
+            [
+              { direction: -1, enabled: canSlide.back, Icon: ChevronLeft, label: t("home.featured.previous"), side: "-left-3" },
+              { direction: 1, enabled: canSlide.forward, Icon: ChevronRight, label: t("home.featured.next"), side: "-right-3" },
+            ] as const
+          ).map(
+            ({ direction, enabled, Icon, label, side }) =>
+              enabled && (
+                <button
+                  key={direction}
+                  type="button"
+                  onClick={() => slide(direction)}
+                  aria-label={label}
+                  title={label}
+                  className={`absolute ${side} top-[calc(50%-1.25rem)] z-10 hidden h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full transition-transform hover:scale-110 sm:flex`}
+                  style={{
+                    background: tk.arrowBg,
+                    border: `1px solid ${tk.panelBorder}`,
+                    boxShadow: tk.panelShadow,
+                    color: tk.textMain,
+                  }}
+                >
+                  <Icon className="w-5 h-5" />
+                </button>
+              ),
+          )}
         </div>
       </div>
     </section>

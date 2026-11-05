@@ -235,7 +235,9 @@
     },
     "featured": {
       "badge": "Picked for you",
-      "title": "Our top picks in Albania"
+      "title": "Our top picks in Albania",
+      "previous": "Previous destination",
+      "next": "Next destination"
     }
   },
   "appBar": {
@@ -1848,5 +1850,12 @@
     },
     "flying": "Your request is on its way…",
     "stamp": "Sent"
+  },
+  "adminRating": {
+    "label": "Admin rating (private)",
+    "hint": "Sets the display order in search results. Providers and clients never see it.",
+    "invalid": "Enter a value from {{min}} to {{max}}, or leave it empty.",
+    "saveFailed": "Could not save the rating.",
+    "saved": "Saved"
   }
 }
