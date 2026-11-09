@@ -210,7 +210,7 @@ All in `packages/api-client/src/`. Always import in web via `@/services/api/<nam
 | `reviewService.ts`       | named exports                  | `createReview`, `getReviewsByProperty`, `hasUserReviewedBooking`, `getPropertyAverageRating`                                       |
 | `destinationService.ts`  | named exports                  | CRUD for destinations + wishlist                                                                                                   |
 | `monthlyPriceService.ts` | named exports                  | `getMonthlyPrices`, `upsertMonthlyPrice`                                                                                           |
-| `emailService.ts`        | named exports                  | `sendEmailDirect`, `getProviderBookingNotificationTemplate`                                                                        |
+| `emailService.ts`        | named exports                  | `notifyClientBookingStatus`                                                                        |
 | `storageService.ts`      | named exports                  | Image upload/delete to Supabase Storage                                                                                            |
 | `roleRequestService.ts`  | `roleRequestService`           | `createRoleRequest`, `getAllRoleRequests`, `updateRoleRequestStatus`                                                               |
 | `propertyRequest.ts`     | named exports                  | Property listing requests from providers                                                                                           |
@@ -315,7 +315,8 @@ t("review.addReview", "Add Review"); // key, fallback string
 | `create-paypal-order/`          | HTTP POST      | Creates PayPal order              |
 | `capture-paypal-order/`         | HTTP POST      | Captures PayPal payment           |
 | `paypal-webhook/`               | PayPal webhook | Updates booking on PayPal events  |
-| `send-email/`                   | HTTP POST      | Sends transactional emails        |
+| `send-email/`                   | HTTP POST      | Sends transactional emails. Internal: service role key only |
+| `notify-provider-booking/`      | HTTP POST      | Email to the provider for a new booking request (see MAILING.md) |
 | `notify-provider-whatsapp/`     | HTTP POST      | WhatsApp alert to the provider for a new booking request (see WHATSAPP.md) |
 
 All Edge Functions are Deno runtime. Deploy with:

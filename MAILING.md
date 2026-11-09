@@ -4,23 +4,21 @@ This project sends transactional emails through the Supabase Edge Function `send
 
 ## Core flow
 
-1. Frontend or backend code builds an email payload: `to`, `subject`, `html`, optional `text`, `replyTo`, `tags`.
-2. The payload is sent to `send-email`.
-3. `supabase/functions/send-email/index.ts` validates the payload, applies rate limiting, and sends the message to Resend.
+1. An edge function builds an email payload on the server: `to`, `subject`, `html`, optional `text`, `replyTo`, `tags`.
+2. It sends the payload to `send-email` with the service role key.
+3. `supabase/functions/send-email/index.ts` checks that key, validates the payload, and sends the message to Resend.
 4. Success and failure events are written to `email_logs` when `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` are available.
 
 ## Main pieces
 
-- Client sender: `packages/api-client/src/emailService.ts`
-  - `sendEmailDirect()` is the main reusable sender.
-  - It calls `apiClient.functions.invoke("send-email", { body })`.
-  - It is the shared entry point used by the web app.
+- App triggers: `packages/api-client/src/bookingService.ts` and `emailService.ts`
+  - The app never sends email content. It calls `notify-provider-booking` or `notify-booking-status` with a booking id.
 - Edge function: `supabase/functions/send-email/index.ts`
-  - Handles CORS, validation, optional JWT inspection, rate limiting, Resend API calls, and response formatting.
+  - Internal only: requests without the service role key get a 401. Handles validation, Resend API calls, and response formatting.
   - Uses `from: "Bookinal <noreply@bookinal.com>"` when calling Resend.
 - Function config: `supabase/config.toml`
   - `send-email` is configured with `verify_jwt = false`.
-  - This allows public invocation at the gateway level; app-level auth checks can still be added in code if needed.
+  - The gateway lets the request through and the function checks the service role key itself.
 - Email logs table: `supabase/migrations/create_email_logs_table.sql`
   - Stores `recipient`, `subject`, `status`, `message_id`, `error`, timestamps, and optional `user_id`.
 
@@ -30,30 +28,15 @@ This project sends transactional emails through the Supabase Edge Function `send
 
 - Trigger file: `packages/api-client/src/bookingService.ts`
 - Trigger moment: after `createBooking()` successfully inserts a booking.
-- Recipient: provider email from the `users` table.
-- Template used: `packages/api-client/src/emailTemplates/providerBookingTemplate.ts`
+- Trigger transport: `notify-provider-booking` Edge Function, called with the booking id only.
+- Recipient: provider email from the `users` table, resolved server-side.
+- Template used: `supabase/functions/_shared/providerBookingTemplate.ts`
 - Subject pattern: `New booking request for ${propertyName}`
 - Notes:
-  - Property name is resolved before sending.
-  - Cars use `brand + name`; apartments and hotels use `name`.
-  - Guest contact details are hidden until payment is completed.
-  - `replyTo` is only set when contact sharing is allowed.
-
-Payload shape sent to `send-email`:
-
-```ts
-{
-  to: providerData.email,
-  subject: `New booking request for ${propertyName}`,
-  html,
-  replyTo: payload.contactMail,
-  tags: {
-    category: "booking_notification",
-    bookingId: booking.id,
-    providerId: payload.providerId,
-  },
-}
-```
+  - Only the client who made the booking can trigger it, within 15 minutes, and only once (`booking.provider_email_sent_at`).
+  - Cars use `brand + name`; apartments use `name`.
+  - Guest contact details are hidden on a new request, and there is no `replyTo`.
+  - The dashboard link is a fixed URL, so emails from dev also link to production.
 
 ### 2. Client confirmation email when booking becomes confirmed
 
@@ -108,7 +91,7 @@ Payload shape sent to `send-email`:
 
 ### Active templates
 
-- `packages/api-client/src/emailTemplates/providerBookingTemplate.ts`
+- `supabase/functions/_shared/providerBookingTemplate.ts`
   - Used for provider booking request notifications.
   - Recently updated to a more polished, professional layout.
 - `packages/api-client/src/emailTemplates/clientBookingStatusTemplate.ts`
@@ -123,26 +106,24 @@ Payload shape sent to `send-email`:
   - This appears to be a helper/example template, not part of the active booking flow.
 - `apps/web/src/components/examples/EmailComponentExample.tsx`
   - Demo component showing how to send booking confirmation and contact-form emails.
-  - Useful as reference, but not an active production trigger.
+  - Not an active trigger, and it can no longer send: it goes through `sendEmailDirect()`, which `send-email` now rejects.
 
 ## Trigger-to-template map
 
 | Trigger | File | Recipient | Template |
 | --- | --- | --- | --- |
-| Booking created | `packages/api-client/src/bookingService.ts` | Provider | `packages/api-client/src/emailTemplates/providerBookingTemplate.ts` |
+| Booking created | `packages/api-client/src/bookingService.ts` | Provider | `supabase/functions/_shared/providerBookingTemplate.ts` via `notify-provider-booking` |
 | Booking confirmed | `apps/web/src/pages/dashboard/bookings/BookingsManagement.tsx` | Client | `supabase/functions/_shared/clientBookingStatusTemplate.ts` via `notify-booking-status` |
 | Booking auto-cancelled | `supabase/functions/expire-bookings/index.ts` | Client | `supabase/functions/_shared/bookingCancellationTemplate.ts` |
 | Payment received / contacts unlocked | `supabase/functions/confirm-stripe-payment/index.ts`, `supabase/functions/stripe-webhook/index.ts` | Client + Provider | `supabase/functions/_shared/contactUnlockNotifications.ts` |
-| Manual/example send | `apps/web/src/components/examples/EmailComponentExample.tsx` | User/Admin | `getBookingConfirmationTemplate()` or inline HTML |
 
 ## Reusable email helpers
 
 - `packages/api-client/src/emailService.ts`
-  - `sendEmailDirect()` - generic sender through the Supabase Edge Function.
-  - `sendClientBookingStatusEmail()` - specialized helper for client booking status emails.
+  - `notifyClientBookingStatus()` - booking status email through `notify-booking-status`.
+  - `sendEmailDirect()` and `sendClientBookingStatusEmail()` - unused, and rejected by `send-email` because they send from the browser.
 - `apps/web/src/services/email/useEmailService.ts`
-  - React hook wrapper around `sendEmailDirect()`.
-  - Adds loading and error state for UI usage.
+  - React hook wrapper around `sendEmailDirect()`, used only by the demo component above.
 
 ## Operational details
 

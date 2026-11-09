@@ -10,8 +10,6 @@ const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
 const RESEND_API_BASE = "https://api.resend.com";
 const MAX_RETRIES = 3;
-const RATE_LIMIT_WINDOW = 60; // seconds
-const RATE_LIMIT_MAX = 100; // requests per window per user
 
 // ============================================================================
 // TYPES
@@ -43,11 +41,6 @@ interface ResendResponse {
     message: string;
   };
   message?: string;
-}
-
-interface RateLimitEntry {
-  count: number;
-  resetAt: number;
 }
 
 // ============================================================================
@@ -146,72 +139,6 @@ function validateEmailRequest(payload: unknown): {
       tags: req.tags as Record<string, string> | undefined,
     },
   };
-}
-
-// ============================================================================
-// SECURITY & RATE LIMITING
-// ============================================================================
-
-// In-memory rate limiter (replace with Redis in production)
-const rateLimitStore = new Map<string, RateLimitEntry>();
-
-function checkRateLimit(identifier: string): {
-  allowed: boolean;
-  retryAfter?: number;
-} {
-  const now = Date.now() / 1000; // Convert to seconds
-  const entry = rateLimitStore.get(identifier);
-
-  if (!entry || now > entry.resetAt) {
-    // New window or expired
-    rateLimitStore.set(identifier, {
-      count: 1,
-      resetAt: now + RATE_LIMIT_WINDOW,
-    });
-    return { allowed: true };
-  }
-
-  if (entry.count >= RATE_LIMIT_MAX) {
-    return {
-      allowed: false,
-      retryAfter: Math.ceil(entry.resetAt - now),
-    };
-  }
-
-  entry.count++;
-  return { allowed: true };
-}
-
-/**
- * Verify JWT token from Authorization header
- */
-async function verifyJWT(
-  token: string,
-  supabaseUrl: string,
-  serviceRoleKey: string,
-): Promise<{ valid: boolean; userId?: string; error?: string }> {
-  try {
-    if (!token.startsWith("Bearer ")) {
-      return { valid: false, error: "Invalid authorization header format" };
-    }
-
-    const jwtToken = token.replace("Bearer ", "");
-
-    // Create Supabase client with service role key to verify JWT
-    const supabase = createClient(supabaseUrl, serviceRoleKey);
-
-    // Verify the token by attempting to use it
-    const { data, error } = await supabase.auth.getUser(jwtToken);
-
-    if (error || !data.user) {
-      return { valid: false, error: "Invalid or expired token" };
-    }
-
-    return { valid: true, userId: data.user.id };
-  } catch (err) {
-    console.error("[Auth] JWT verification failed:", err);
-    return { valid: false, error: "Token verification failed" };
-  }
 }
 
 // ============================================================================
@@ -383,6 +310,26 @@ Deno.serve(async (req: Request) => {
     );
   }
 
+  // Internal only: other edge functions call this with the service role key.
+  // A user's token is not enough, it could send any content to anyone from our
+  // domain. verify_jwt stays false in config.toml because this check replaces it.
+  if (
+    !SUPABASE_SERVICE_ROLE_KEY ||
+    req.headers.get("authorization") !== `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`
+  ) {
+    console.warn("[Email] Rejected request without the service role key");
+    return new Response(
+      JSON.stringify({ success: false, error: "Unauthorized", statusCode: 401 }),
+      {
+        status: 401,
+        headers: {
+          "Content-Type": "application/json",
+          ...getCorsHeaders(),
+        },
+      },
+    );
+  }
+
   try {
     // Check environment variables
     if (!RESEND_API_KEY) {
@@ -446,49 +393,6 @@ Deno.serve(async (req: Request) => {
     }
 
     const emailData = validation.data!;
-
-    // Rate limiting (per user or IP)
-    const identifier =
-      emailData.userId || req.headers.get("x-forwarded-for") || "anonymous";
-    const rateLimitCheck = checkRateLimit(identifier);
-
-    if (!rateLimitCheck.allowed) {
-      console.warn("[Email] Rate limit exceeded for:", identifier);
-      return new Response(
-        JSON.stringify({
-          success: false,
-          error: "Rate limit exceeded",
-          statusCode: 429,
-        }),
-        {
-          status: 429,
-          headers: {
-            "Content-Type": "application/json",
-            "Retry-After": String(rateLimitCheck.retryAfter),
-            ...getCorsHeaders(),
-          },
-        },
-      );
-    }
-
-    // Optional: Verify JWT token if provided
-    const authHeader = req.headers.get("authorization");
-    if (authHeader && SUPABASE_URL && SUPABASE_SERVICE_ROLE_KEY) {
-      const jwtVerification = await verifyJWT(
-        authHeader,
-        SUPABASE_URL,
-        SUPABASE_SERVICE_ROLE_KEY,
-      );
-      if (!jwtVerification.valid) {
-        console.warn("[Auth] Invalid token:", jwtVerification.error);
-        // Continue anyway - allow unauthenticated requests for now
-        // To enforce auth, uncomment the lines below:
-        // return new Response(
-        //   JSON.stringify({ success: false, error: jwtVerification.error }),
-        //   { status: 401, headers: { "Content-Type": "application/json", ...getCorsHeaders() } }
-        // );
-      }
-    }
 
     // Send email via Resend
     console.log(

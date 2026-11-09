@@ -1,6 +1,5 @@
 import { apiClient } from "./apiClient";
 import {
-  getProviderBookingNotificationTemplate,
   getClientBookingStatusTemplate,
   type BookingStatusType,
 } from "./emailTemplates";

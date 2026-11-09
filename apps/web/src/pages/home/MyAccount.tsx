@@ -529,6 +529,11 @@ export default function MyAccount() {
                       />
                     )}
                   />
+                  {formData.role === "provider" && (
+                    <p className="mt-2 text-xs" style={{ color: tk.labelText }}>
+                      {t("account.whatsappAlertsHint")}
+                    </p>
+                  )}
                 </div>
 
                 {/* Location */}

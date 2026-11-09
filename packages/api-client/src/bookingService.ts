@@ -4,15 +4,6 @@ import { Booking } from "@albania/shared-types";
 import { CreateBookingDto } from "@albania/shared-types";
 import { getCarById } from "./carService";
 import { getApartmentById } from "./apartmentService";
-import { sendEmailDirect } from "./emailService";
-import { getProviderBookingNotificationTemplate } from "./emailTemplates";
-/**
- * Provider data interface
- */
-interface ProviderData {
-  email: string;
-  full_name: string;
-}
 
 /**
  * Apartment bookings are free: no service fee and no online payment.
@@ -48,70 +39,6 @@ const maskContactDetailsForProvider = (booking: Booking): Booking => {
   };
 };
 
-const getPropertyTypeLabel = (
-  propertyType: CreateBookingDto["propertyType"],
-): string => {
-  switch (propertyType) {
-    case "apartment":
-      return "Apartment";
-    case "car":
-    default:
-      return "Car";
-  }
-};
-
-const getPropertyDisplayName = async (
-  propertyId: string,
-  propertyType: CreateBookingDto["propertyType"],
-): Promise<string> => {
-  const numericId = Number(propertyId);
-
-  if (!Number.isFinite(numericId)) {
-    return propertyId;
-  }
-
-  try {
-    switch (propertyType) {
-      case "car": {
-        const car = await getCarById(numericId);
-        return car ? `${car.brand} ${car.name}`.trim() : propertyId;
-      }
-      case "apartment":
-      default: {
-        const apartment = await getApartmentById(numericId);
-        return apartment?.name || propertyId;
-      }
-    }
-  } catch (error) {
-    console.warn("[Booking Service] Unable to resolve property name:", {
-      propertyId,
-      propertyType,
-      error,
-    });
-    return propertyId;
-  }
-};
-
-/**
- * Get provider details by ID
- */
-const getProviderEmail = async (
-  providerId: string,
-): Promise<ProviderData | null> => {
-  const { data, error } = await apiClient
-    .from("users")
-    .select("email, full_name")
-    .eq("id", providerId)
-    .single();
-
-  if (error) {
-    console.error("[Booking Service] Error fetching provider:", error);
-    return null;
-  }
-
-  return data as ProviderData;
-};
-
 /**
  * Create a new booking for the currently authenticated user
  */
@@ -144,185 +71,32 @@ export const createBooking = async (
   }
 
   const booking = data as Booking;
-  // Send email notification to provider
-  try {
-    console.log("[Booking Service] 📧 Starting email notification process...");
-    console.log("[Booking Service] Provider ID:", payload.providerId);
 
-    const [providerData, propertyName] = await Promise.all([
-      getProviderEmail(payload.providerId),
-      getPropertyDisplayName(payload.propertyId, payload.propertyType),
-    ]);
-    const propertyTypeLabel = getPropertyTypeLabel(payload.propertyType);
-    const shareGuestContact = canShareContactDetails(booking);
-
-    console.log("[Booking Service] Provider data retrieved:", {
-      email: providerData?.email,
-      fullName: providerData?.full_name,
-      hasData: !!providerData,
-    });
-    console.log("[Booking Service] Property details retrieved:", {
-      propertyId: payload.propertyId,
-      propertyName,
-      propertyType: propertyTypeLabel,
-    });
-
-    if (providerData?.email) {
-      console.log("[Booking Service] Generating email template...");
-      console.log("[Booking Service] Template data:", {
-        providerName: providerData.full_name || "Provider",
-        propertyName,
-        propertyType: propertyTypeLabel,
-        guestName: payload.requesterName,
-        guestEmail: shareGuestContact ? payload.contactMail : "",
-        guestPhone: shareGuestContact ? payload.contactPhone : "",
-        checkInDate: new Date(payload.startDate).toLocaleDateString(),
-        checkOutDate: new Date(payload.endDate).toLocaleDateString(),
-        totalPrice: payload.totalPrice,
-        bookingId: booking.id,
-        showGuestContact: shareGuestContact,
-      });
-
-      const html = getProviderBookingNotificationTemplate({
-        providerName: providerData.full_name || "Provider",
-        propertyName,
-        propertyType: propertyTypeLabel,
-        guestName: payload.requesterName,
-        guestEmail: shareGuestContact ? payload.contactMail : "",
-        guestPhone: shareGuestContact ? payload.contactPhone : "",
-        checkInDate: new Date(payload.startDate).toLocaleDateString(),
-        checkOutDate: new Date(payload.endDate).toLocaleDateString(),
-        totalPrice: payload.totalPrice,
-        bookingId: booking.id,
-        showGuestContact: shareGuestContact,
-        isFreeBooking: isFreeBooking(booking),
-        dashboardUrl: `${window.location.origin}/dashboard/bookings`,
-      });
-
-      console.log(
-        "[Booking Service] ✅ Email HTML generated, length:",
-        html?.length || 0,
-      );
-      console.log(
-        "[Booking Service] HTML preview (first 200 chars):",
-        html?.substring(0, 200),
-      );
-
-      // Validate email data before sending
-      const emailPayload = {
-        to: providerData.email, // For testing
-        subject: `New booking request for ${propertyName}`,
-        html,
-        replyTo: shareGuestContact ? payload.contactMail : undefined,
-        tags: {
-          category: "booking_notification",
-          bookingId: booking.id,
-          providerId: payload.providerId,
-        },
-      };
-
-      console.log("[Booking Service] 📤 Email payload prepared:", {
-        to: emailPayload.to,
-        subject: emailPayload.subject,
-        hasHtml: !!emailPayload.html,
-        htmlLength: emailPayload.html?.length || 0,
-        replyTo: emailPayload.replyTo,
-        tags: emailPayload.tags,
-      });
-
-      // Validate required fields
-      if (!emailPayload.to || !emailPayload.subject || !emailPayload.html) {
-        console.error("[Booking Service] ❌ Missing required email fields:", {
-          hasTo: !!emailPayload.to,
-          hasSubject: !!emailPayload.subject,
-          hasHtml: !!emailPayload.html,
-        });
-        throw new Error("Missing required email fields");
-      }
-
-      // Validate email format
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(emailPayload.to)) {
-        console.error(
-          "[Booking Service] ❌ Invalid email format:",
-          emailPayload.to,
-        );
-        throw new Error(`Invalid email format: ${emailPayload.to}`);
-      }
-
-      if (emailPayload.replyTo && !emailRegex.test(emailPayload.replyTo)) {
-        console.error(
-          "[Booking Service] ❌ Invalid replyTo email format:",
-          emailPayload.replyTo,
-        );
-        throw new Error(
-          `Invalid replyTo email format: ${emailPayload.replyTo}`,
-        );
-      }
-
-      console.log("[Booking Service] ✅ Email validation passed");
-      console.log("[Booking Service] Calling sendEmailDirect...");
-
-      const emailResult = await sendEmailDirect(emailPayload);
-
-      console.log("[Booking Service] 📨 Email result received:", {
-        success: emailResult?.success,
-        messageId: emailResult?.messageId,
-        error: emailResult?.error,
-        statusCode: emailResult?.statusCode,
-        fullResult: emailResult,
-      });
-
-      if (emailResult?.success) {
-        console.log(
-          "[Booking Service] ✅ Provider notification email sent successfully!",
-          emailResult.messageId,
-        );
-      } else {
-        console.warn(
-          "[Booking Service] ⚠️ Failed to send provider notification:",
-          {
-            error: emailResult?.error,
-            statusCode: emailResult?.statusCode,
-            fullResult: emailResult,
-          },
-        );
-      }
-    } else {
-      console.warn(
-        "[Booking Service] ⚠️ No provider email found, skipping notification",
-      );
-    }
-  } catch (err) {
-    // Don't fail the booking creation if email sending fails
-    console.error("[Booking Service] ❌ Error sending provider notification:", {
-      error: err,
-      message: err instanceof Error ? err.message : "Unknown error",
-      stack: err instanceof Error ? err.stack : undefined,
-    });
-  }
-
-  notifyProviderWhatsApp(booking.id);
+  notifyProvider("notify-provider-booking", booking.id);
+  notifyProvider("notify-provider-whatsapp", booking.id);
 
   return booking;
 };
 
 /**
- * WhatsApp alert to the provider about the new request (sent by the
- * notify-provider-whatsapp edge function). Fire-and-forget: a WhatsApp problem
- * never blocks or fails the booking, and the email is still sent.
+ * Tells the provider about the new request, by email and by WhatsApp. The edge
+ * functions build the messages from the booking. Fire-and-forget, one call each:
+ * a problem with one never blocks the booking or the other alert.
  */
-const notifyProviderWhatsApp = (bookingId: string): void => {
+const notifyProvider = (
+  functionName: "notify-provider-booking" | "notify-provider-whatsapp",
+  bookingId: string,
+): void => {
   apiClient.functions
-    .invoke("notify-provider-whatsapp", { body: { bookingId } })
+    .invoke(functionName, { body: { bookingId } })
     .then(({ data, error }) => {
       if (error) {
-        console.warn("[Booking Service] WhatsApp provider alert failed:", error.message);
+        console.warn(`[Booking Service] ${functionName} failed:`, error.message);
       } else {
-        console.log("[Booking Service] WhatsApp provider alert:", data);
+        console.log(`[Booking Service] ${functionName}:`, data);
       }
     })
-    .catch((err) => console.warn("[Booking Service] WhatsApp provider alert failed:", err));
+    .catch((err) => console.warn(`[Booking Service] ${functionName} failed:`, err));
 };
 
 /**

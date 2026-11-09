@@ -284,6 +284,10 @@ export default function ProviderRequest() {
                     </ul>
                   </div>
 
+                  <p style={{ color: tk.mutedText }} className="text-sm mb-4">
+                    {t("provider.whatsappConsent")}
+                  </p>
+
                   <button
                     type="submit"
                     disabled={submitting || formData.reason.trim().length < 50}

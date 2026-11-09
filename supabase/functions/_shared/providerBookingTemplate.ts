@@ -26,11 +26,6 @@ export const getProviderBookingNotificationTemplate = (data: {
   isFreeBooking?: boolean; // free booking: contact unlocks on confirmation
   dashboardUrl: string;
 }): string => {
-  console.log(
-    "[Email Service] 📝 Generating provider booking notification template with data:",
-    data,
-  );
-
   const providerName = escapeHtml(data.providerName || "Provider");
   const propertyName = escapeHtml(data.propertyName);
   const propertyType = escapeHtml(data.propertyType);
@@ -44,7 +39,7 @@ export const getProviderBookingNotificationTemplate = (data: {
   const totalPrice = formatPrice(data.totalPrice);
   const showGuestContact = data.showGuestContact === true;
 
-  const template = `
+  return `
     <!DOCTYPE html>
     <html>
     <head>
@@ -161,10 +156,4 @@ export const getProviderBookingNotificationTemplate = (data: {
     </body>
     </html>
   `;
-
-  console.log(
-    "[Email Service] ✅ Provider booking notification template generated, length:",
-    template.length,
-  );
-  return template;
 };
