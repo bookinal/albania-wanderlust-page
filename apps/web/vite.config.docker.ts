@@ -66,9 +66,6 @@ export default defineConfig(({ mode }) => {
       "import.meta.env.VITE_PAYPAL_BASE_URL": JSON.stringify(
         env.VITE_PAYPAL_BASE_URL,
       ),
-      "import.meta.env.VITE_PAYPAL_CLIENT_SECRET": JSON.stringify(
-        env.VITE_PAYPAL_CLIENT_SECRET,
-      ),
       "import.meta.env.VITE_FRONTEND_URL": JSON.stringify(
         env.VITE_FRONTEND_URL,
       ),
